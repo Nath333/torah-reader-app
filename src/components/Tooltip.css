@@ -1,0 +1,166 @@
+/* =============================================================================
+   Tooltip - Clean & Accessible
+   ============================================================================= */
+
+.tooltip-wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: var(--z-tooltip, 1000);
+  pointer-events: none;
+  animation: tooltipFadeIn 0.15s ease-out;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Positioning */
+.tooltip-top {
+  left: var(--tooltip-x);
+  top: var(--tooltip-y);
+  transform: translateX(-50%) translateY(-100%);
+}
+
+.tooltip-bottom {
+  left: var(--tooltip-x);
+  top: var(--tooltip-y);
+  transform: translateX(-50%);
+}
+
+.tooltip-left {
+  left: var(--tooltip-x);
+  top: var(--tooltip-y);
+  transform: translateX(-100%) translateY(-50%);
+}
+
+.tooltip-right {
+  left: var(--tooltip-x);
+  top: var(--tooltip-y);
+  transform: translateY(-50%);
+}
+
+/* Content Box */
+.tooltip-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: var(--text-primary);
+  color: var(--bg-elevated);
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  white-space: nowrap;
+  max-width: 250px;
+}
+
+.tooltip-text {
+  flex: 1;
+}
+
+/* Keyboard Shortcut */
+.tooltip-shortcut {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding-left: var(--space-2);
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tooltip-shortcut kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.tooltip-key-separator {
+  opacity: 0.5;
+  font-size: 10px;
+  margin: 0 1px;
+}
+
+/* Arrow */
+.tooltip-arrow {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--text-primary);
+  transform: rotate(45deg);
+}
+
+.tooltip-top .tooltip-arrow {
+  bottom: -4px;
+  left: 50%;
+  margin-left: -4px;
+}
+
+.tooltip-bottom .tooltip-arrow {
+  top: -4px;
+  left: 50%;
+  margin-left: -4px;
+}
+
+.tooltip-left .tooltip-arrow {
+  right: -4px;
+  top: 50%;
+  margin-top: -4px;
+}
+
+.tooltip-right .tooltip-arrow {
+  left: -4px;
+  top: 50%;
+  margin-top: -4px;
+}
+
+/* Dark Mode */
+.app.dark-mode .tooltip-content {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.app.dark-mode .tooltip-arrow {
+  background: var(--bg-elevated);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.app.dark-mode .tooltip-shortcut kbd {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+}
+
+/* Hide on mobile - touch devices don't need hover tooltips */
+@media (max-width: 768px) {
+  .tooltip {
+    display: none;
+  }
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .tooltip {
+    animation: none;
+  }
+}

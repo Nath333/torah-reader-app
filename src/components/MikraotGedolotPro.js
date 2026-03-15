@@ -137,6 +137,46 @@ const MikraotGedolotPro = ({
     loadAllCommentaries();
   }, [verses, selectedBook, selectedChapter]);
 
+  // Keyboard shortcuts for navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Don't trigger if user is typing in an input
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+      switch (e.key) {
+        case 'ArrowLeft':
+          // In RTL context, left arrow goes to next chapter
+          if (hasNextChapter && onNextChapter) {
+            e.preventDefault();
+            onNextChapter();
+          }
+          break;
+        case 'ArrowRight':
+          // In RTL context, right arrow goes to previous chapter
+          if (hasPrevChapter && onPrevChapter) {
+            e.preventDefault();
+            onPrevChapter();
+          }
+          break;
+        case 'Home':
+          // Scroll to top
+          e.preventDefault();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          break;
+        case 'End':
+          // Scroll to bottom
+          e.preventDefault();
+          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onPrevChapter, onNextChapter, hasPrevChapter, hasNextChapter]);
+
   const bookInfo = hebrewBooks[selectedBook] || { name: selectedBook, short: selectedBook };
   const hebrewChapter = hebrewNumerals[selectedChapter] || selectedChapter;
 

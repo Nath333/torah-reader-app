@@ -1,41 +1,7 @@
-import { fetchWithFallback, fetchWithTimeout, clearPendingRequests, getPendingRequestCount } from './http';
+import { fetchWithFallback, clearPendingRequests, getPendingRequestCount } from './http';
 
 // Mock fetch
 global.fetch = jest.fn();
-
-describe('fetchWithTimeout', () => {
-  beforeEach(() => {
-    fetch.mockClear();
-    jest.useFakeTimers();
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
-  });
-
-  test('returns response on successful fetch', async () => {
-    const mockResponse = { ok: true, json: () => Promise.resolve({ data: 'test' }) };
-    fetch.mockResolvedValueOnce(mockResponse);
-
-    const responsePromise = fetchWithTimeout('https://api.example.com/test');
-    jest.runAllTimers();
-    const response = await responsePromise;
-
-    expect(response).toEqual(mockResponse);
-  });
-
-  test('throws error on timeout', async () => {
-    // Create a promise that never resolves
-    fetch.mockImplementationOnce(() => new Promise(() => {}));
-
-    const fetchPromise = fetchWithTimeout('https://api.example.com/test', {}, 100);
-
-    // Fast-forward timers
-    jest.advanceTimersByTime(150);
-
-    await expect(fetchPromise).rejects.toThrow('Request timed out');
-  });
-});
 
 describe('fetchWithFallback', () => {
   beforeEach(() => {

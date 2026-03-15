@@ -69,11 +69,24 @@
    ----------------------------------------------------------------------------- */
 .torah-reader {
   padding: var(--space-6);
-  background: var(--bg-elevated);
-  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, var(--bg-elevated) 0%, rgba(255, 255, 255, 0.98) 100%);
+  border-radius: var(--radius-xl);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
   position: relative;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.app.dark-mode .torah-reader {
+  background: linear-gradient(180deg, var(--bg-elevated) 0%, rgba(30, 41, 59, 0.98) 100%);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 /* Reading Progress Bar */
@@ -83,9 +96,12 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--primary) var(--reading-progress, 0%), transparent var(--reading-progress, 0%));
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  height: 4px;
+  background: linear-gradient(90deg,
+    var(--primary) var(--reading-progress, 0%),
+    var(--accent-purple) var(--reading-progress, 0%),
+    transparent var(--reading-progress, 0%));
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   transition: background 0.3s ease;
 }
 
@@ -316,20 +332,40 @@
    ----------------------------------------------------------------------------- */
 .verses-container {
   line-height: 1.8;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
 }
 
 /* Individual Verse - Enhanced Card Design */
 .verse {
   padding: var(--space-5);
-  margin-bottom: var(--space-4);
   border-radius: var(--radius-xl);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid var(--border-light);
   position: relative;
-  background: var(--bg-elevated);
+  background: linear-gradient(135deg, var(--bg-elevated) 0%, rgba(255, 255, 255, 0.95) 100%);
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.02),
-    0 2px 4px rgba(0, 0, 0, 0.02);
+    0 2px 4px rgba(0, 0, 0, 0.02),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  overflow: hidden;
+}
+
+/* Subtle gradient overlay on hover */
+.verse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(91, 76, 219, 0.02) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.verse:hover::after {
+  opacity: 1;
 }
 
 .verse:last-child {
@@ -337,27 +373,46 @@
 }
 
 .verse:hover {
-  background: var(--bg-subtle);
-  border-color: var(--primary);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, var(--bg-subtle) 100%);
+  border-color: rgba(91, 76, 219, 0.4);
   box-shadow:
-    0 4px 12px rgba(91, 76, 219, 0.08),
-    0 8px 24px rgba(91, 76, 219, 0.06);
-  transform: translateY(-3px);
+    0 8px 20px rgba(91, 76, 219, 0.1),
+    0 16px 40px rgba(91, 76, 219, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transform: translateY(-4px);
 }
 
 .verse:active {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .verse.highlighted {
-  background: var(--primary-light);
+  background: linear-gradient(135deg, var(--primary-light) 0%, rgba(124, 58, 237, 0.08) 100%);
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-glow);
+  box-shadow: 0 0 0 4px var(--primary-glow);
 }
 
 .verse.has-note {
   border-left: 4px solid var(--warning);
-  background: rgba(245, 158, 11, 0.04);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, rgba(245, 158, 11, 0.02) 100%);
+}
+
+/* Dark mode verse styling */
+.app.dark-mode .verse {
+  background: linear-gradient(135deg, var(--bg-elevated) 0%, rgba(30, 41, 59, 0.95) 100%);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.1),
+    0 2px 4px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.app.dark-mode .verse:hover {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.98) 0%, var(--bg-subtle) 100%);
+  border-color: rgba(129, 140, 248, 0.5);
+  box-shadow:
+    0 8px 20px rgba(129, 140, 248, 0.12),
+    0 16px 40px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .verse.has-note::after {
@@ -527,6 +582,54 @@
 .verse-content {
   cursor: pointer;
   padding: var(--space-3) 0;
+}
+
+/* One-click AI Study indicator */
+.verse-content.clickable-study {
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.verse-content.clickable-study::after {
+  content: '✨ Click to Study';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 0.7em;
+  font-weight: 500;
+  color: var(--primary);
+  background: rgba(91, 76, 219, 0.1);
+  padding: 4px 10px;
+  border-radius: 12px;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.verse-content.clickable-study:hover::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.verse-content.clickable-study:hover .hebrew-text {
+  background: linear-gradient(135deg, rgba(91, 76, 219, 0.08) 0%, rgba(124, 58, 237, 0.05) 100%);
+  border-right-color: var(--primary-dark, #4338ca);
+}
+
+.verse-content.clickable-study.studying .hebrew-text {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(91, 76, 219, 0.08) 100%);
+  border-right: 4px solid #10b981;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.15);
+}
+
+.verse-content.clickable-study.studying::after {
+  content: '📖 Studying';
+  opacity: 1;
+  transform: translateY(0);
+  background: rgba(16, 185, 129, 0.15);
+  color: #059669;
 }
 
 .hebrew-text {
@@ -839,6 +942,25 @@
   color: var(--text-muted);
   font-style: italic;
   opacity: 0.7;
+}
+
+/* English Translation toggle button */
+.control-button.translation-btn {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+.control-button.translation-btn:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: #3b82f6;
+}
+
+.control-button.translation-btn.active {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border-color: #2563eb;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
 /* Onkelos toggle button */
@@ -3106,6 +3228,27 @@
 .app.dark-mode .hebrew-text {
   background: linear-gradient(135deg, rgba(129, 140, 248, 0.06) 0%, transparent 100%);
   border-right-color: var(--primary);
+}
+
+/* Dark mode: One-click AI Study indicator */
+.app.dark-mode .verse-content.clickable-study::after {
+  color: #a5b4fc;
+  background: rgba(129, 140, 248, 0.15);
+}
+
+.app.dark-mode .verse-content.clickable-study:hover .hebrew-text {
+  background: linear-gradient(135deg, rgba(129, 140, 248, 0.12) 0%, rgba(167, 139, 250, 0.08) 100%);
+}
+
+.app.dark-mode .verse-content.clickable-study.studying .hebrew-text {
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.12) 0%, rgba(129, 140, 248, 0.1) 100%);
+  border-right-color: #34d399;
+  box-shadow: 0 0 16px rgba(52, 211, 153, 0.2);
+}
+
+.app.dark-mode .verse-content.clickable-study.studying::after {
+  background: rgba(52, 211, 153, 0.2);
+  color: #6ee7b7;
 }
 
 .app.dark-mode .verse:nth-child(10n) .verse-number {

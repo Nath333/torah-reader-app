@@ -576,7 +576,7 @@ const cleanDefinition = (text) => {
 /**
  * Single Source Definition Item with French translation
  */
-const SourceDefinitionItem = React.memo(({ def, showFrench, frenchTranslation }) => {
+const SourceDefinitionItem = React.memo(function SourceDefinitionItem({ def, showFrench, frenchTranslation }) {
   const [french, setFrench] = useState(frenchTranslation || null);
   const [loadingFr, setLoadingFr] = useState(false);
 
@@ -623,7 +623,7 @@ const SourceDefinitionItem = React.memo(({ def, showFrench, frenchTranslation })
  * WordDefinitionCard - Card displayed below text (like EN/FR translation cards)
  * Shows ALL dictionary sources (BDB, Jastrow, Strong's, etc.) with French for each
  */
-const WordDefinitionCard = React.memo(({
+const WordDefinitionCard = React.memo(function WordDefinitionCard({
   word,
   translationData,
   isLoading,
@@ -632,7 +632,7 @@ const WordDefinitionCard = React.memo(({
   isInVocabulary,
   onSave,
   onClose
-}) => {
+}) {
   const translation = translationData?.english || translationData?.translation;
   const french = translationData?.french;
   const root = translationData?.root;
@@ -763,7 +763,7 @@ const WordDefinitionCard = React.memo(({
           <div className="word-def-sources-list">
             {allDefinitions.map((def, idx) => (
               <SourceDefinitionItem
-                key={idx}
+                key={`${def.source}-${idx}`}
                 def={def}
                 showFrench={showFrench}
                 frenchTranslation={idx === 0 ? french : null}
@@ -784,7 +784,7 @@ const WordDefinitionCard = React.memo(({
           {isInVocabulary ? (
             <span className="word-def-saved">✓ Saved</span>
           ) : onSave && (
-            <button className="word-def-save-btn" onClick={onSave}>+ Save Word</button>
+            <button className="word-def-save-btn" onClick={() => onSave()} type="button">+ Save Word</button>
           )}
         </div>
       )}

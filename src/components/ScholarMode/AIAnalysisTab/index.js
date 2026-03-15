@@ -15,11 +15,12 @@ import './AIAnalysisTab.css';
 const formatResultAsText = (result, mode, reference) => {
   if (!result) return '';
 
-  const modeInfo = ALL_MODES.find(m => m.id === mode) || { name: mode };
+  const modeInfo = ALL_MODES.find(m => m.id === mode) || { label: mode };
+  const modeName = modeInfo.label || modeInfo.name || mode;
   const lines = [];
 
   lines.push(`═══════════════════════════════════════`);
-  lines.push(`📖 ${modeInfo.name || mode} Analysis`);
+  lines.push(`📖 ${modeName} Analysis`);
   lines.push(`📍 Reference: ${reference || 'N/A'}`);
   lines.push(`📅 Date: ${new Date().toLocaleDateString()}`);
   lines.push(`═══════════════════════════════════════`);
@@ -199,6 +200,19 @@ const KeyPointsList = ({ points }) => (
         <span className="point-text">{point}</span>
       </div>
     ))}
+  </div>
+);
+
+// Loading Skeleton Component
+const LoadingSkeleton = () => (
+  <div className="loading-skeleton">
+    <div className="skeleton-line skeleton-header"></div>
+    <div className="skeleton-line full"></div>
+    <div className="skeleton-line full"></div>
+    <div className="skeleton-line medium"></div>
+    <div className="skeleton-line short"></div>
+    <div className="skeleton-line full"></div>
+    <div className="skeleton-line medium"></div>
   </div>
 );
 
@@ -619,9 +633,10 @@ const AIAnalysisTab = ({
           chapter: selectedVerse?.chapter,
           verse: selectedVerse?.verse,
           mode: selectedMode,
-          modeName: modeInfo.name,
+          modeName: modeInfo.label || modeInfo.name || selectedMode,
           textType,
-          result: analysisResult
+          result: analysisResult,
+          summary: analysisResult.summary || analysisResult.oneLineSummary || ''
         });
       } else {
         setError(analysisResult.error || 'Analysis failed');
@@ -632,6 +647,18 @@ const AIAnalysisTab = ({
       setLoading(false);
     }
   }, [getTextToAnalyze, textType, reference, selectedMode, getCachedResult, addAnalysis, selectedBook, selectedVerse]);
+
+  // Keyboard shortcut: Ctrl/Cmd + Enter to analyze
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !loading && text) {
+        e.preventDefault();
+        handleAnalyze();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [loading, text, handleAnalyze]);
 
   // Handle follow-up question
   const handleFollowUp = useCallback(async () => {
@@ -674,7 +701,8 @@ const AIAnalysisTab = ({
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     const modeInfo = ALL_MODES.find(m => m.id === selectedMode) || {};
-    const filename = `torah-analysis-${modeInfo.name || selectedMode}-${new Date().toISOString().split('T')[0]}.txt`;
+    const modeName = (modeInfo.label || modeInfo.name || selectedMode).toLowerCase().replace(/\s+/g, '-');
+    const filename = `torah-analysis-${modeName}-${new Date().toISOString().split('T')[0]}.txt`;
 
     link.href = url;
     link.download = filename;
@@ -708,6 +736,7 @@ const AIAnalysisTab = ({
     if (!result || !studyContext?.addNote) return;
 
     const modeInfo = ALL_MODES.find(m => m.id === selectedMode) || {};
+    const modeName = modeInfo.label || modeInfo.name || selectedMode;
     const noteContent = formatResultAsText(result, selectedMode, reference);
 
     try {
@@ -719,7 +748,7 @@ const AIAnalysisTab = ({
         content: noteContent,
         type: 'ai-analysis',
         mode: selectedMode,
-        modeName: modeInfo.name,
+        modeName: modeName,
         createdAt: new Date().toISOString()
       });
 
@@ -826,22 +855,28 @@ const AIAnalysisTab = ({
       )}
 
       {/* Analyze Button */}
-      <button
-        onClick={handleAnalyze}
-        disabled={loading || !text}
-        className="btn-analyze"
-      >
-        {loading ? (
-          <>
-            <span className="loading-spinner-small"></span>
-            Analyzing...
-          </>
-        ) : (
-          <>
-            <span>🧠</span> Analyze
-          </>
-        )}
-      </button>
+      <div className="analyze-button-wrapper">
+        <button
+          onClick={() => handleAnalyze()}
+          disabled={loading || !text}
+          className="btn-analyze"
+        >
+          {loading ? (
+            <>
+              <span className="loading-spinner-small"></span>
+              Analyzing...
+            </>
+          ) : (
+            <>
+              <span>🧠</span> Analyze
+            </>
+          )}
+        </button>
+        <span className="analyze-hint">Ctrl+Enter to analyze</span>
+      </div>
+
+      {/* Loading Skeleton */}
+      {loading && <LoadingSkeleton />}
 
       {/* Error Display */}
       {error && (
@@ -954,7 +989,22 @@ const AIAnalysisTab = ({
                 <p className="history-empty">No analyses yet. Run an analysis to build your history.</p>
               ) : (
                 getRecentAnalyses(10).map(item => (
-                  <div key={item.id} className="history-item">
+                  <div
+                    key={item.id}
+                    className="history-item clickable"
+                    onClick={() => {
+                      // Load the cached result
+                      if (item.result) {
+                        setResult(item.result);
+                        setSelectedMode(item.mode);
+                        setCompletedModes(prev => new Set([...prev, item.mode]));
+                        setSaveSuccess('Loaded from history');
+                        setTimeout(() => setSaveSuccess(null), 1500);
+                        setShowHistory(false);
+                      }
+                    }}
+                    title="Click to load this analysis"
+                  >
                     <div className="history-item-header">
                       <span className="history-mode">{item.modeName || item.mode}</span>
                       <span className="history-ref">{item.reference}</span>

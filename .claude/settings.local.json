@@ -48,7 +48,9 @@
       "Bash(npm run deploy:*)",
       "Bash(powershell -Command:*)",
       "Bash(git reset:*)",
-      "Bash(npx gh-pages:*)"
+      "Bash(npx gh-pages:*)",
+      "Bash(npx acorn:*)",
+      "Bash(npm test:*)"
     ]
   }
 }

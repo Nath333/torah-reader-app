@@ -1,0 +1,664 @@
+/**
+ * WordDefinitionCard - Scholarly Dictionary Card Styles
+ *
+ * A clean, professional design inspired by academic lexicons
+ * with support for both Hebrew and Aramaic content.
+ */
+
+/* =============================================================================
+   CSS Variables - Theming
+   ============================================================================= */
+
+.word-definition-card {
+  /* Colors */
+  --wdc-bg: linear-gradient(180deg, #fefdfb 0%, #faf9f7 100%);
+  --wdc-border: #e8e4dc;
+  --wdc-header-border: #1a365d;
+  --wdc-text: #292524;
+  --wdc-text-muted: #78716c;
+  --wdc-word-color: #1a365d;
+  --wdc-accent: #0369a1;
+
+  /* Typography */
+  --wdc-font-serif: 'Crimson Pro', 'Times New Roman', Georgia, serif;
+  --wdc-font-hebrew: 'Frank Ruhl Libre', 'SBL Hebrew', serif;
+  --wdc-font-mono: 'SFMono-Regular', 'Consolas', monospace;
+}
+
+.word-definition-card.aramaic {
+  --wdc-header-border: #065f46;
+  --wdc-word-color: #065f46;
+  --wdc-accent: #059669;
+}
+
+/* =============================================================================
+   Card Container
+   ============================================================================= */
+
+.word-definition-card {
+  margin-top: 14px;
+  background: var(--wdc-bg);
+  border: 1px solid var(--wdc-border);
+  border-radius: 6px;
+  overflow: hidden;
+  animation: wdc-slide-in 0.2s ease-out;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+@keyframes wdc-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =============================================================================
+   Header
+   ============================================================================= */
+
+.wdc-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px 20px 12px;
+  border-bottom: 2px solid var(--wdc-header-border);
+  background: linear-gradient(180deg, #ffffff 0%, #faf9f7 100%);
+}
+
+.wdc-header-left {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.wdc-word {
+  font-family: var(--wdc-font-hebrew);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--wdc-word-color);
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+}
+
+.wdc-lang {
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  font-style: italic;
+  font-family: var(--wdc-font-serif);
+  border-radius: 3px;
+  border: 1px solid currentColor;
+}
+
+.wdc-lang.hebrew {
+  color: #1a365d;
+}
+
+.wdc-lang.aramaic {
+  color: #065f46;
+}
+
+.wdc-strong {
+  padding: 2px 8px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-family: var(--wdc-font-mono);
+  border-radius: 3px;
+  border: 1px solid #fcd34d;
+}
+
+.wdc-close {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #6b7280;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.wdc-close:hover {
+  background: #f3f4f6;
+  color: #374151;
+  border-color: #9ca3af;
+}
+
+.wdc-close:active {
+  transform: scale(0.95);
+}
+
+/* =============================================================================
+   Etymology Section
+   ============================================================================= */
+
+.wdc-etymology {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 20px;
+  background: #f8f7f4;
+  border-bottom: 1px solid var(--wdc-border);
+  font-family: var(--wdc-font-serif);
+}
+
+.wdc-root,
+.wdc-headword {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.wdc-label {
+  font-size: 0.72rem;
+  color: var(--wdc-text-muted);
+  font-style: italic;
+}
+
+.wdc-value {
+  font-family: var(--wdc-font-hebrew);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #7c2d12;
+}
+
+/* =============================================================================
+   Morphology Tags
+   ============================================================================= */
+
+.wdc-morphology {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--wdc-border);
+}
+
+.wdc-tag {
+  font-size: 0.72rem;
+  padding: 3px 10px;
+  background: transparent;
+  color: #57534e;
+  border: 1px solid #d6d3d1;
+  border-radius: 3px;
+  font-style: italic;
+  font-family: var(--wdc-font-serif);
+}
+
+.wdc-tag-pos {
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fecaca;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.wdc-tag-binyan {
+  background: #f5f3ff;
+  color: #5b21b6;
+  border-color: #ddd6fe;
+  font-weight: 600;
+  font-style: normal;
+}
+
+/* =============================================================================
+   Definitions Section
+   ============================================================================= */
+
+.wdc-definitions {
+  padding: 16px 20px;
+}
+
+.wdc-def-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--wdc-border);
+}
+
+.wdc-flag {
+  padding: 3px 10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--wdc-font-mono);
+  border-radius: 3px;
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.wdc-flag-fr {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+.wdc-source-count {
+  font-size: 0.72rem;
+  color: var(--wdc-text-muted);
+  margin-left: auto;
+  font-style: italic;
+  font-family: var(--wdc-font-serif);
+}
+
+/* =============================================================================
+   Source Items
+   ============================================================================= */
+
+.wdc-sources {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.wdc-source-item {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--wdc-border);
+  transition: background 0.15s ease;
+}
+
+.wdc-source-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.wdc-source-item:hover {
+  background: rgba(250, 249, 247, 0.5);
+}
+
+.wdc-source-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.wdc-source-badge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--wdc-word-color);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-family: var(--wdc-font-serif);
+}
+
+.wdc-source-badge::before {
+  content: '▸';
+  margin-right: 6px;
+  font-size: 0.7rem;
+}
+
+.wdc-source-year {
+  font-weight: 400;
+  font-size: 0.72rem;
+  color: var(--wdc-text-muted);
+  font-style: italic;
+}
+
+.wdc-source-text {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: var(--wdc-text);
+  font-family: var(--wdc-font-serif);
+  text-align: justify;
+  hyphens: auto;
+}
+
+/* =============================================================================
+   French Translation
+   ============================================================================= */
+
+.wdc-french {
+  margin-top: 10px;
+  margin-left: 16px;
+  padding: 10px 14px;
+  background: #f0f9ff;
+  border-left: 3px solid var(--wdc-accent);
+  border-radius: 0 4px 4px 0;
+}
+
+.wdc-french-loading {
+  font-size: 0.82rem;
+  color: #64748b;
+  font-style: italic;
+  font-family: var(--wdc-font-serif);
+  animation: wdc-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes wdc-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.wdc-french-text {
+  font-size: 0.88rem;
+  color: #0c4a6e;
+  font-family: var(--wdc-font-serif);
+  line-height: 1.55;
+  font-style: italic;
+}
+
+/* =============================================================================
+   Loading & Empty States
+   ============================================================================= */
+
+.wdc-skeleton {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.wdc-skeleton-bar {
+  height: 14px;
+  background: linear-gradient(90deg,
+    #f3f4f6 0%,
+    #e5e7eb 30%,
+    #f3f4f6 60%,
+    #f3f4f6 100%
+  );
+  background-size: 200% 100%;
+  animation: wdc-shimmer 1.2s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+.wdc-skeleton-wide { width: 90%; }
+.wdc-skeleton-medium { width: 70%; }
+.wdc-skeleton-narrow { width: 45%; }
+
+@keyframes wdc-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.wdc-empty {
+  padding: 28px;
+  text-align: center;
+  color: var(--wdc-text-muted);
+  font-size: 0.9rem;
+  font-family: var(--wdc-font-serif);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.wdc-empty-icon {
+  font-size: 1.5rem;
+  opacity: 0.6;
+}
+
+/* =============================================================================
+   Footer
+   ============================================================================= */
+
+.wdc-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 20px;
+  background: #f8f7f4;
+  border-top: 1px solid var(--wdc-border);
+}
+
+.wdc-save-btn {
+  padding: 8px 18px;
+  background: var(--wdc-word-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: 'Inter', -apple-system, sans-serif;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  letter-spacing: 0.02em;
+}
+
+.wdc-save-btn:hover {
+  background: #1e40af;
+  box-shadow: 0 2px 8px rgba(26, 54, 93, 0.25);
+  transform: translateY(-1px);
+}
+
+.wdc-save-btn:active {
+  transform: translateY(0);
+}
+
+.word-definition-card.aramaic .wdc-save-btn {
+  background: #065f46;
+}
+
+.word-definition-card.aramaic .wdc-save-btn:hover {
+  background: #047857;
+  box-shadow: 0 2px 8px rgba(6, 95, 70, 0.25);
+}
+
+.wdc-saved {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background: #d1fae5;
+  color: #065f46;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid #6ee7b7;
+}
+
+/* =============================================================================
+   Dark Mode
+   ============================================================================= */
+
+.app.dark-mode .word-definition-card {
+  --wdc-bg: linear-gradient(180deg, #1e1e1e 0%, #171717 100%);
+  --wdc-border: #3f3f46;
+  --wdc-text: #d4d4d8;
+  --wdc-text-muted: #71717a;
+  --wdc-word-color: #e2e8f0;
+  --wdc-accent: #0ea5e9;
+}
+
+.app.dark-mode .word-definition-card.hebrew {
+  --wdc-header-border: #a5b4fc;
+}
+
+.app.dark-mode .word-definition-card.aramaic {
+  --wdc-header-border: #6ee7b7;
+  --wdc-word-color: #6ee7b7;
+  --wdc-accent: #10b981;
+}
+
+.app.dark-mode .wdc-header {
+  background: linear-gradient(180deg, #262626 0%, #1e1e1e 100%);
+}
+
+.app.dark-mode .wdc-lang.hebrew {
+  color: #a5b4fc;
+}
+
+.app.dark-mode .wdc-lang.aramaic {
+  color: #6ee7b7;
+}
+
+.app.dark-mode .wdc-strong {
+  background: #422006;
+  border-color: #a16207;
+  color: #fcd34d;
+}
+
+.app.dark-mode .wdc-close {
+  background: #262626;
+  border-color: #3f3f46;
+  color: #a1a1aa;
+}
+
+.app.dark-mode .wdc-close:hover {
+  background: #3f3f46;
+  color: #e4e4e7;
+}
+
+.app.dark-mode .wdc-etymology {
+  background: #1a1a1a;
+}
+
+.app.dark-mode .wdc-value {
+  color: #fca5a5;
+}
+
+.app.dark-mode .wdc-tag {
+  color: #a1a1aa;
+  border-color: #52525b;
+}
+
+.app.dark-mode .wdc-tag-pos {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.app.dark-mode .wdc-tag-binyan {
+  background: rgba(139, 92, 246, 0.15);
+  color: #c4b5fd;
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.app.dark-mode .wdc-flag {
+  background: rgba(16, 185, 129, 0.15);
+  color: #6ee7b7;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.app.dark-mode .wdc-flag-fr {
+  background: rgba(59, 130, 246, 0.15);
+  color: #93c5fd;
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.app.dark-mode .wdc-source-item:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.app.dark-mode .wdc-source-badge {
+  color: #a5b4fc;
+}
+
+.app.dark-mode .word-definition-card.aramaic .wdc-source-badge {
+  color: #6ee7b7;
+}
+
+.app.dark-mode .wdc-french {
+  background: rgba(14, 165, 233, 0.1);
+  border-left-color: #0ea5e9;
+}
+
+.app.dark-mode .wdc-french-text {
+  color: #7dd3fc;
+}
+
+.app.dark-mode .wdc-skeleton-bar {
+  background: linear-gradient(90deg,
+    #27272a 0%,
+    #3f3f46 30%,
+    #27272a 60%,
+    #27272a 100%
+  );
+  background-size: 200% 100%;
+}
+
+.app.dark-mode .wdc-footer {
+  background: #1a1a1a;
+}
+
+.app.dark-mode .wdc-save-btn {
+  background: #4f46e5;
+}
+
+.app.dark-mode .wdc-save-btn:hover {
+  background: #6366f1;
+}
+
+.app.dark-mode .word-definition-card.aramaic .wdc-save-btn {
+  background: #059669;
+}
+
+.app.dark-mode .word-definition-card.aramaic .wdc-save-btn:hover {
+  background: #10b981;
+}
+
+.app.dark-mode .wdc-saved {
+  background: rgba(16, 185, 129, 0.15);
+  color: #6ee7b7;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+/* =============================================================================
+   Responsive
+   ============================================================================= */
+
+@media (max-width: 640px) {
+  .word-definition-card {
+    margin-top: 12px;
+  }
+
+  .wdc-header {
+    padding: 14px 16px 10px;
+  }
+
+  .wdc-word {
+    font-size: 1.5rem;
+  }
+
+  .wdc-header-left {
+    gap: 10px;
+  }
+
+  .wdc-etymology {
+    padding: 8px 16px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .wdc-morphology {
+    padding: 8px 16px;
+  }
+
+  .wdc-definitions {
+    padding: 14px 16px;
+  }
+
+  .wdc-source-text {
+    font-size: 0.88rem;
+    text-align: left;
+  }
+
+  .wdc-french {
+    margin-left: 12px;
+    padding: 8px 12px;
+  }
+
+  .wdc-footer {
+    padding: 10px 16px;
+  }
+}

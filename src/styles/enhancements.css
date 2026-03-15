@@ -1,0 +1,483 @@
+/* =============================================================================
+   Visual Polish Enhancements
+   Premium animations, micro-interactions, and refined effects
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   Premium Button Transitions
+   ----------------------------------------------------------------------------- */
+
+/* Enhanced toolbar button transitions */
+.toolbar-btn {
+  transition:
+    transform var(--duration-fast, 150ms) var(--ease-out-back, cubic-bezier(0.34, 1.56, 0.64, 1)),
+    background var(--duration-fast, 150ms) ease,
+    color var(--duration-fast, 150ms) ease,
+    box-shadow var(--duration-fast, 150ms) ease,
+    border-color var(--duration-fast, 150ms) ease !important;
+}
+
+/* Shimmer effect on button hover */
+.toolbar-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+  transition: left var(--duration-slow, 400ms) ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.toolbar-btn:hover::after {
+  left: 100%;
+}
+
+/* Enhanced hover states */
+.toolbar-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+.toolbar-btn:hover svg {
+  transform: scale(1.15) rotate(-3deg) !important;
+}
+
+.toolbar-btn:active {
+  transform: translateY(0) scale(0.98) !important;
+  transition-duration: 50ms !important;
+}
+
+/* Icon-only button enhanced hover */
+.toolbar-btn.icon-only:hover svg {
+  transform: scale(1.2) !important;
+}
+
+/* Active button glow effect */
+.toolbar-btn.active {
+  box-shadow: var(--shadow-primary, 0 4px 14px rgba(91, 76, 219, 0.25)) !important;
+}
+
+.toolbar-btn.active svg {
+  filter: drop-shadow(0 0 4px var(--primary-glow, rgba(91, 76, 219, 0.4)));
+}
+
+/* -----------------------------------------------------------------------------
+   Glass Cards & Containers
+   ----------------------------------------------------------------------------- */
+
+.content-card,
+.navigation,
+.loading-indicator {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Subtle gradient mesh background for main content */
+.main-content::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--gradient-mesh,
+    radial-gradient(at 40% 20%, rgba(91, 76, 219, 0.08) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(124, 58, 237, 0.06) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, rgba(13, 148, 136, 0.06) 0px, transparent 50%)
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* -----------------------------------------------------------------------------
+   Enhanced Loading States
+   ----------------------------------------------------------------------------- */
+
+/* Skeleton loading shimmer */
+@keyframes shimmerLoad {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.loading-shimmer,
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-subtle, #f1f5f9) 0%,
+    var(--bg-elevated, #ffffff) 50%,
+    var(--bg-subtle, #f1f5f9) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmerLoad 1.5s ease-in-out infinite;
+}
+
+/* Pulse loading animation */
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 var(--primary-glow, rgba(91, 76, 219, 0.4));
+  }
+  50% {
+    opacity: 0.8;
+    box-shadow: 0 0 0 10px transparent;
+  }
+}
+
+.loading-pulse {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* Spinner with gradient */
+@keyframes spinGradient {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border, #e2e8f0);
+  border-top-color: var(--primary, #5b4cdb);
+  border-radius: 50%;
+  animation: spinGradient 0.8s linear infinite;
+}
+
+/* -----------------------------------------------------------------------------
+   Enhanced Hover Effects for Cards
+   ----------------------------------------------------------------------------- */
+
+/* Lift effect on hover */
+.verse-item,
+.bookmark-item,
+.history-item,
+.vocabulary-item {
+  transition:
+    transform var(--duration-normal, 250ms) var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1)),
+    box-shadow var(--duration-normal, 250ms) ease !important;
+}
+
+.verse-item:hover,
+.bookmark-item:hover,
+.history-item:hover,
+.vocabulary-item:hover {
+  transform: translateY(-2px) !important;
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.08),
+    0 4px 10px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Border glow on focus */
+.verse-item:focus-within,
+.search-box:focus-within {
+  box-shadow:
+    0 0 0 2px var(--bg, #f8fafc),
+    0 0 0 4px var(--primary, #5b4cdb),
+    0 4px 14px var(--primary-glow, rgba(91, 76, 219, 0.15)) !important;
+}
+
+/* -----------------------------------------------------------------------------
+   Smooth Page Transitions
+   ----------------------------------------------------------------------------- */
+
+/* Fade in from bottom */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade in from right (for Hebrew RTL) */
+@keyframes fadeSlideLeft {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Scale and fade */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Apply to content areas */
+.chapter-header,
+.welcome-banner {
+  animation: fadeSlideUp 0.4s var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1)) backwards;
+}
+
+.content-header {
+  animation: fadeSlideUp 0.35s var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1)) backwards;
+  animation-delay: 0.05s;
+}
+
+/* Staggered list animations */
+.verse-item:nth-child(1) { animation-delay: 0.02s; }
+.verse-item:nth-child(2) { animation-delay: 0.04s; }
+.verse-item:nth-child(3) { animation-delay: 0.06s; }
+.verse-item:nth-child(4) { animation-delay: 0.08s; }
+.verse-item:nth-child(5) { animation-delay: 0.1s; }
+.verse-item:nth-child(6) { animation-delay: 0.12s; }
+.verse-item:nth-child(7) { animation-delay: 0.14s; }
+.verse-item:nth-child(8) { animation-delay: 0.16s; }
+.verse-item:nth-child(9) { animation-delay: 0.18s; }
+.verse-item:nth-child(10) { animation-delay: 0.2s; }
+
+/* -----------------------------------------------------------------------------
+   Modal & Overlay Animations
+   ----------------------------------------------------------------------------- */
+
+/* Backdrop fade in */
+@keyframes backdropFade {
+  from {
+    backdrop-filter: blur(0);
+    background: transparent;
+  }
+  to {
+    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Modal slide up */
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Apply to modals */
+.api-key-modal-overlay,
+.commentary-selector-overlay,
+.keyboard-help-overlay {
+  animation: backdropFade 0.3s ease forwards;
+}
+
+.api-key-settings,
+.commentary-selector-modal,
+.keyboard-help-modal {
+  animation: modalSlideUp 0.35s var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1)) forwards;
+}
+
+/* -----------------------------------------------------------------------------
+   Floating Action Button Enhancements
+   ----------------------------------------------------------------------------- */
+
+.floating-action-button {
+  transition:
+    transform var(--duration-fast, 150ms) var(--ease-spring, cubic-bezier(0.175, 0.885, 0.32, 1.275)),
+    box-shadow var(--duration-fast, 150ms) ease !important;
+}
+
+.floating-action-button:hover {
+  transform: scale(1.1) !important;
+  box-shadow:
+    0 8px 25px var(--primary-glow, rgba(91, 76, 219, 0.4)),
+    0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.floating-action-button:active {
+  transform: scale(0.95) !important;
+}
+
+/* Ripple effect */
+.floating-action-button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.3) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.floating-action-button:active::after {
+  opacity: 1;
+}
+
+/* -----------------------------------------------------------------------------
+   Reading Progress Bar Enhancement
+   ----------------------------------------------------------------------------- */
+
+.reading-progress-bar {
+  background: linear-gradient(
+    90deg,
+    var(--primary, #5b4cdb) 0%,
+    var(--accent-purple, #7c3aed) 50%,
+    var(--accent-teal, #0d9488) 100%
+  ) !important;
+  background-size: 200% 100% !important;
+  animation: progressShift 3s ease-in-out infinite !important;
+  box-shadow: 0 0 10px var(--primary-glow, rgba(91, 76, 219, 0.5));
+}
+
+@keyframes progressShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Tooltip Enhancements
+   ----------------------------------------------------------------------------- */
+
+.tooltip {
+  animation: tooltipPop 0.2s var(--ease-out-back, cubic-bezier(0.34, 1.56, 0.64, 1)) forwards !important;
+}
+
+@keyframes tooltipPop {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateX(-50%);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateX(-50%);
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Dark Mode Enhancements
+   ----------------------------------------------------------------------------- */
+
+.app.dark-mode .toolbar-btn:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.app.dark-mode .toolbar-btn.active {
+  box-shadow: var(--shadow-primary, 0 4px 14px rgba(129, 140, 248, 0.3)) !important;
+}
+
+.app.dark-mode .verse-item:hover,
+.app.dark-mode .bookmark-item:hover,
+.app.dark-mode .history-item:hover {
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.3),
+    0 4px 10px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Dark mode gradient mesh */
+.app.dark-mode .main-content::before {
+  background: var(--gradient-mesh,
+    radial-gradient(at 40% 20%, rgba(129, 140, 248, 0.1) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(167, 139, 250, 0.08) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, rgba(20, 184, 166, 0.06) 0px, transparent 50%)
+  );
+}
+
+/* -----------------------------------------------------------------------------
+   Focus Ring Enhancements
+   ----------------------------------------------------------------------------- */
+
+/* Beautiful animated focus ring */
+@keyframes focusRing {
+  0% {
+    box-shadow: 0 0 0 0 var(--primary-glow, rgba(91, 76, 219, 0.5));
+  }
+  50% {
+    box-shadow: 0 0 0 4px var(--primary-glow, rgba(91, 76, 219, 0.3));
+  }
+  100% {
+    box-shadow: 0 0 0 2px var(--primary-glow, rgba(91, 76, 219, 0.4));
+  }
+}
+
+button:focus-visible,
+.toolbar-btn:focus-visible,
+a:focus-visible {
+  animation: focusRing 0.3s ease forwards;
+}
+
+/* -----------------------------------------------------------------------------
+   Scroll Behavior Enhancements
+   ----------------------------------------------------------------------------- */
+
+/* Smooth momentum scrolling */
+.main-content,
+.sidebar-content,
+.verse-container {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Scroll snap for better reading experience */
+@media (min-width: 768px) {
+  .verse-container {
+    scroll-snap-type: y proximity;
+  }
+
+  .verse-item {
+    scroll-snap-align: start;
+    scroll-margin-top: 80px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Text Selection Styling
+   ----------------------------------------------------------------------------- */
+
+::selection {
+  background: var(--primary-light, #f0eeff);
+  color: var(--primary, #5b4cdb);
+}
+
+.app.dark-mode ::selection {
+  background: var(--primary, #818cf8);
+  color: white;
+}
+
+/* Hebrew text selection */
+[dir="rtl"]::selection,
+[lang="he"]::selection {
+  background: rgba(91, 76, 219, 0.3);
+}
+
+/* -----------------------------------------------------------------------------
+   Reduced Motion Support
+   ----------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .toolbar-btn::after {
+    display: none;
+  }
+}

@@ -668,7 +668,7 @@ const CommentaryCard = ({ source, commentaries, showTranslation, enableClickable
 };
 
 // Commentary Selector Modal
-const CommentarySelector = ({
+const CommentarySelector = React.memo(({
   isOpen,
   onClose,
   onSelect,
@@ -737,10 +737,10 @@ const CommentarySelector = ({
       </div>
     </div>
   );
-};
+});
 
 // Side-by-side Commentary Panel
-const CommentaryPanel = ({
+const CommentaryPanel = React.memo(({
   isOpen,
   onClose,
   verse,
@@ -976,7 +976,7 @@ const CommentaryPanel = ({
       </div>
     </div>
   );
-};
+});
 
 export {
   CommentarySelector,

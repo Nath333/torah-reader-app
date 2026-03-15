@@ -26,6 +26,9 @@ import ApiKeySettings from './components/ApiKeySettings';
 import WelcomeBanner from './components/WelcomeBanner';
 import TraditionalPageView from './components/TraditionalPageView';
 import StudyDashboard from './components/StudyDashboard';
+import QuickActions from './components/QuickActions';
+import Breadcrumb from './components/Breadcrumb';
+import FloatingActionButton from './components/FloatingActionButton';
 
 // Context hooks
 import { useTorah } from './context/TorahContext';
@@ -450,61 +453,22 @@ function App() {
 
             <div className="toolbar-divider" />
 
-            {/* Secondary Actions */}
-            <div className="toolbar-group">
-              <button
-                onClick={() => setView(v => v === 'discover' ? 'reader' : 'discover')}
-                className={`toolbar-btn icon-only ${view === 'discover' ? 'active' : ''}`}
-                title="Discover Random Texts"
-                aria-label="Discover Random Texts"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-              </button>
-              <button
-                onClick={() => setView(v => v === 'versions' ? 'reader' : 'versions')}
-                className={`toolbar-btn icon-only ${view === 'versions' ? 'active' : ''}`}
-                title="Text Versions & Translations"
-                aria-label="Text Versions & Translations"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M3 5h12M9 3v2m1.048 3.5A3.5 3.5 0 016.5 12 3.5 3.5 0 013 8.5 3.5 3.5 0 016.5 5c1.313 0 2.465.72 3.048 1.5zM12.5 18c1.93 0 3.5-1.57 3.5-3.5 0-1.93-1.57-3.5-3.5-3.5-1.93 0-3.5 1.57-3.5 3.5 0 1.93 1.57 3.5 3.5 3.5zM21 21l-4-4" />
-                </svg>
-              </button>
-              <button
-                onClick={() => setShowAudioPlayer(true)}
-                className="toolbar-btn icon-only"
-                title="Audio Player"
-                aria-label="Audio Player"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                  <path d="M15.54 8.46a5 5 0 010 7.07" />
-                </svg>
-              </button>
-              <button
-                onClick={() => setView(v => v === 'vocabulary' ? 'reader' : 'vocabulary')}
-                className={`toolbar-btn icon-only ${view === 'vocabulary' ? 'active' : ''}`}
-                title="Vocabulary Bank"
-                aria-label="Vocabulary Bank"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-                {study.vocabulary.length > 0 && <span className="badge">{study.vocabulary.length}</span>}
-              </button>
-              <button
-                onClick={() => setView(v => v === 'study' ? 'reader' : 'study')}
-                className={`toolbar-btn icon-only ${view === 'study' ? 'active' : ''}`}
-                title="Study Dashboard - Track Progress & Goals"
-                aria-label="Study Dashboard"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </button>
-            </div>
+            {/* Quick Actions Dropdown - Consolidates secondary actions */}
+            <QuickActions
+              onOpenDiscover={() => setView(v => v === 'discover' ? 'reader' : 'discover')}
+              onOpenVersions={() => setView(v => v === 'versions' ? 'reader' : 'versions')}
+              onOpenAudio={() => setShowAudioPlayer(true)}
+              onOpenVocabulary={() => setView(v => v === 'vocabulary' ? 'reader' : 'vocabulary')}
+              onOpenStudy={() => setView(v => v === 'study' ? 'reader' : 'study')}
+              onOpenBookmarks={() => setView(v => v === 'bookmarks' ? 'reader' : 'bookmarks')}
+              onOpenHistory={() => setView(v => v === 'history' ? 'reader' : 'history')}
+              onOpenHelp={() => setShowHelp(true)}
+              vocabularyCount={study.vocabulary.length}
+              isDiscoverActive={view === 'discover'}
+              isVersionsActive={view === 'versions'}
+              isVocabularyActive={view === 'vocabulary'}
+              isStudyActive={view === 'study'}
+            />
 
             <div className="toolbar-divider" />
 
@@ -569,6 +533,21 @@ function App() {
           </div>
         )}
 
+        {/* Breadcrumb Navigation */}
+        {view === 'reader' && torah.book && (
+          <div className="breadcrumb-wrapper">
+            <Breadcrumb
+              category={torah.category}
+              book={torah.book}
+              chapter={torah.chapter}
+              onNavigateHome={goToReader}
+              onNavigateCategory={() => torah.setCategory(torah.category)}
+              onNavigateBook={() => torah.setBook(torah.book)}
+              isTalmud={torah.isTalmudBook}
+            />
+          </div>
+        )}
+
         {/* Main Content */}
         <div className="main-content">
           {/* Welcome Banner - only show on reader view */}
@@ -589,6 +568,16 @@ function App() {
           {content}
         </div>
       </main>
+
+      {/* Floating Action Button for Mobile */}
+      <FloatingActionButton
+        onFocusMode={() => setShowFocusMode(true)}
+        onSplitView={() => setView(v => v === 'splitPane' ? 'reader' : 'splitPane')}
+        onTraditional={() => setView(v => v === 'traditional' ? 'reader' : 'traditional')}
+        onBookmark={() => setView(v => v === 'bookmarks' ? 'reader' : 'bookmarks')}
+        onSearch={() => searchBarRef.current?.focus()}
+        isVisible={view === 'reader'}
+      />
 
       {/* Modals */}
       <KeyboardHelp isOpen={showHelp} onClose={() => setShowHelp(false)} />

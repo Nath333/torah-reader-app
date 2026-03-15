@@ -3,7 +3,7 @@
    Centralized design system values
    ============================================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Crimson+Pro:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Crimson+Pro:wght@400;500;600&family=David+Libre:wght@400;500;600;700&family=Frank+Ruhl+Libre:wght@300;400;500;700&family=Noto+Sans+Hebrew:wght@400;500;600;700&display=swap');
 
 :root {
   /* -------------------------------------------------------------------------
@@ -45,14 +45,45 @@
   --border-light: #f1f5f9;
 
   /* -------------------------------------------------------------------------
-     Shadows
+     Shadows - Premium layered shadows for depth and dimensionality
      ------------------------------------------------------------------------- */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
-  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
-  --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 1px rgba(0, 0, 0, 0.02);
+  --shadow-sm:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 2px 4px rgba(0, 0, 0, 0.03),
+    0 4px 8px rgba(0, 0, 0, 0.02);
+  --shadow:
+    0 2px 4px rgba(0, 0, 0, 0.04),
+    0 4px 8px rgba(0, 0, 0, 0.04),
+    0 8px 16px rgba(0, 0, 0, 0.03);
+  --shadow-md:
+    0 4px 8px rgba(0, 0, 0, 0.04),
+    0 8px 16px rgba(0, 0, 0, 0.04),
+    0 16px 32px rgba(0, 0, 0, 0.03);
+  --shadow-lg:
+    0 8px 16px rgba(0, 0, 0, 0.04),
+    0 16px 32px rgba(0, 0, 0, 0.04),
+    0 32px 64px rgba(0, 0, 0, 0.03);
+  --shadow-xl:
+    0 16px 32px rgba(0, 0, 0, 0.08),
+    0 32px 64px rgba(0, 0, 0, 0.06),
+    0 64px 128px rgba(0, 0, 0, 0.04);
+  --shadow-2xl:
+    0 24px 48px rgba(0, 0, 0, 0.1),
+    0 48px 96px rgba(0, 0, 0, 0.08);
+
+  /* Colored shadows for interactive elements */
+  --shadow-primary: 0 4px 14px rgba(91, 76, 219, 0.25);
+  --shadow-primary-lg: 0 8px 25px rgba(91, 76, 219, 0.3);
+  --shadow-purple: 0 4px 14px rgba(124, 58, 237, 0.25);
+  --shadow-teal: 0 4px 14px rgba(13, 148, 136, 0.25);
+  --shadow-success: 0 4px 14px rgba(16, 185, 129, 0.25);
+  --shadow-error: 0 4px 14px rgba(239, 68, 68, 0.25);
+
+  /* Glow effects */
+  --glow-primary: 0 0 20px rgba(91, 76, 219, 0.4);
+  --glow-purple: 0 0 20px rgba(124, 58, 237, 0.4);
+  --glow-teal: 0 0 20px rgba(13, 148, 136, 0.4);
 
   /* -------------------------------------------------------------------------
      Spacing (4px base grid)
@@ -90,20 +121,63 @@
   --radius-full: 9999px;
 
   /* -------------------------------------------------------------------------
-     Transitions
+     Transitions & Easing
      ------------------------------------------------------------------------- */
   --transition-fast: 120ms ease;
   --transition: 200ms ease;
   --transition-slow: 300ms ease;
   --transition-bounce: 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
 
+  /* Premium easing curves */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-in-out-circ: cubic-bezier(0.85, 0, 0.15, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  /* Duration tokens */
+  --duration-instant: 50ms;
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+  --duration-slower: 600ms;
+
   /* -------------------------------------------------------------------------
-     Typography
+     Typography - General
      ------------------------------------------------------------------------- */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-serif: 'Crimson Pro', 'Times New Roman', serif;
-  --font-hebrew: 'SBL Hebrew', 'Frank Ruehl CLM', 'David CLM', serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* -------------------------------------------------------------------------
+     Typography - Hebrew Fonts (Professional Torah Study)
+     ------------------------------------------------------------------------- */
+  --font-hebrew: 'David Libre', 'Frank Ruhl Libre', 'SBL Hebrew', 'David', serif;
+  --font-hebrew-modern: 'Noto Sans Hebrew', 'Frank Ruhl Libre', sans-serif;
+  --font-torah: 'David Libre', 'Frank Ruhl Libre', 'Times New Roman', serif;
+  --font-rashi: 'Rashi', 'David Libre', serif; /* For Rashi script commentary */
+  --font-gemara: 'Frank Ruhl Libre', 'David Libre', serif;
+  --font-commentary: 'Frank Ruhl Libre', 'David Libre', serif;
+
+  /* -------------------------------------------------------------------------
+     Traditional Sefarim Colors (Printed Book Aesthetic)
+     ------------------------------------------------------------------------- */
+  --sefer-parchment: #fdf8f0;
+  --sefer-parchment-dark: #f5ead4;
+  --sefer-ink: #1a1612;
+  --sefer-ink-light: #2d2820;
+  --sefer-gold: #c9a227;
+  --sefer-gold-accent: #6b4423;
+  --sefer-gold-light: #e8d9a0;
+  --sefer-brown: #5d4e37;
+  --sefer-brown-light: #8b7355;
+  --sefer-border: #c4a574;
+  --sefer-gilded: linear-gradient(135deg, #c9a227 0%, #e8d9a0 50%, #c9a227 100%);
+
+  /* Dark mode sefarim colors */
+  --sefer-parchment-dm: #2a2520;
+  --sefer-ink-dm: #e8dcc8;
+  --sefer-gold-dm: #c4a054;
+  --sefer-border-dm: #4a4035;
 
   --text-xs: 11px;
   --text-sm: 13px;
@@ -114,10 +188,21 @@
   --text-2xl: 24px;
   --text-3xl: 30px;
 
+  /* Hebrew text sizes (larger for readability) */
+  --text-hebrew-sm: 1rem;
+  --text-hebrew-base: 1.2rem;
+  --text-hebrew-lg: 1.4rem;
+  --text-hebrew-xl: 1.6rem;
+  --text-hebrew-2xl: 2rem;
+  --text-torah: 1.5rem;
+  --text-commentary: 0.95rem;
+  --text-rashi: 0.9rem;
+
   --leading-tight: 1.25;
   --leading-normal: 1.5;
   --leading-relaxed: 1.75;
   --leading-loose: 2;
+  --leading-hebrew: 2.2; /* Optimal for Hebrew text with vowels */
 
   /* -------------------------------------------------------------------------
      Layout
@@ -138,6 +223,54 @@
   --z-modal: 500;
   --z-popover: 600;
   --z-tooltip: 700;
+
+  /* -------------------------------------------------------------------------
+     Glass Morphism Effects - Premium glassmorphism
+     ------------------------------------------------------------------------- */
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-bg-elevated: rgba(255, 255, 255, 0.88);
+  --glass-bg-subtle: rgba(255, 255, 255, 0.4);
+  --glass-border: rgba(255, 255, 255, 0.25);
+  --glass-border-subtle: rgba(255, 255, 255, 0.12);
+  --glass-blur: blur(24px);
+  --glass-blur-lg: blur(40px);
+  --glass-saturate: saturate(180%);
+  --glass-backdrop: blur(24px) saturate(180%);
+
+  /* -------------------------------------------------------------------------
+     Inner Glow & Highlight Effects
+     ------------------------------------------------------------------------- */
+  --inner-glow-white: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  --inner-glow-subtle: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  --inner-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  --top-highlight: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, transparent 50%);
+
+  /* -------------------------------------------------------------------------
+     Gradient Presets
+     ------------------------------------------------------------------------- */
+  --gradient-primary: linear-gradient(135deg, #5b4cdb 0%, #7c3aed 100%);
+  --gradient-primary-soft: linear-gradient(135deg, rgba(91, 76, 219, 0.1) 0%, rgba(124, 58, 237, 0.05) 100%);
+  --gradient-hero: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-sunset: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --gradient-ocean: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --gradient-forest: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  --gradient-royal: linear-gradient(135deg, #5b4cdb 0%, #667eea 50%, #764ba2 100%);
+  --gradient-shimmer: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+  --gradient-mesh: radial-gradient(at 40% 20%, rgba(91, 76, 219, 0.15) 0px, transparent 50%),
+                   radial-gradient(at 80% 0%, rgba(124, 58, 237, 0.1) 0px, transparent 50%),
+                   radial-gradient(at 0% 50%, rgba(13, 148, 136, 0.1) 0px, transparent 50%);
+
+  /* Premium card gradients */
+  --gradient-card: linear-gradient(180deg, var(--bg-elevated) 0%, rgba(248, 250, 252, 0.8) 100%);
+  --gradient-card-hover: linear-gradient(180deg, var(--bg-elevated) 0%, var(--primary-light) 100%);
+  --gradient-surface: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.95) 100%);
+
+  /* Premium border gradients */
+  --gradient-border: linear-gradient(135deg, var(--border) 0%, var(--primary-light) 100%);
+  --gradient-border-active: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%);
+
+  /* Noise texture overlay (use as background-image) */
+  --noise-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
 }
 
 /* =============================================================================
@@ -173,4 +306,24 @@
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.35);
   --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+
+  /* Colored shadows for dark mode */
+  --shadow-primary: 0 4px 14px rgba(129, 140, 248, 0.3);
+  --shadow-primary-lg: 0 8px 25px rgba(129, 140, 248, 0.35);
+  --shadow-purple: 0 4px 14px rgba(167, 139, 250, 0.3);
+
+  /* Glow effects for dark mode */
+  --glow-primary: 0 0 25px rgba(129, 140, 248, 0.5);
+  --glow-purple: 0 0 25px rgba(167, 139, 250, 0.5);
+
+  /* Glass morphism for dark mode */
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --glass-bg-elevated: rgba(30, 41, 59, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.08);
+
+  /* Gradient adjustments for dark mode */
+  --gradient-primary-soft: linear-gradient(135deg, rgba(129, 140, 248, 0.12) 0%, rgba(167, 139, 250, 0.08) 100%);
+  --gradient-mesh: radial-gradient(at 40% 20%, rgba(129, 140, 248, 0.15) 0px, transparent 50%),
+                   radial-gradient(at 80% 0%, rgba(167, 139, 250, 0.12) 0px, transparent 50%),
+                   radial-gradient(at 0% 50%, rgba(20, 184, 166, 0.1) 0px, transparent 50%);
 }

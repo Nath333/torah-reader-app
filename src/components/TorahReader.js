@@ -99,6 +99,8 @@ const TorahReader = ({
   const [rippleVerse, setRippleVerse] = useState(null); // For ripple animation
   const [showSelectionPreview, setShowSelectionPreview] = useState(false); // For selection preview panel
   const [cacheCleared, setCacheCleared] = useState(false); // For cache clear feedback
+  const [quickRangeInput, setQuickRangeInput] = useState(''); // For quick verse range selection
+  const [showQuickSelect, setShowQuickSelect] = useState(false); // Toggle quick select panel
   // Scholar Mode state - discourse analysis, NER, citations
   const [scholarModeText, setScholarModeText] = useState('');
   const { speak, stop, speaking, supported: speechSupported, hebrewVoiceAvailable, voicesLoaded } = useSpeech();
@@ -348,8 +350,15 @@ const TorahReader = ({
     }
   }, [selectedBook, selectedChapter]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleVerseClick = useCallback((verseNumber) => {
-    setHighlightedVerse(prev => prev === verseNumber ? null : verseNumber);
+  // One-click AI Study: clicking verse content opens AI Study directly
+  const handleVerseClick = useCallback((verse) => {
+    // Open AI Study Center for this verse
+    setStudyPanelState({
+      isOpen: true,
+      verse: verse,
+      verses: null,
+      isMultiVerse: false
+    });
   }, []);
 
   // Create a unique ID for a verse (for multi-page selection)
@@ -482,6 +491,67 @@ const TorahReader = ({
       return !prev;
     });
   }, []);
+
+  // Parse and select verses from quick range input (e.g., "1-10", "5,7,9", "1-5,8,10-12")
+  const parseAndSelectRange = useCallback((input) => {
+    if (!input.trim() || !verses.length) return;
+
+    const maxVerse = verses.length;
+    const selectedNums = new Set();
+
+    // Parse input: supports "1-10", "5,7,9", "1-5,8,10-12"
+    const parts = input.split(',').map(p => p.trim());
+
+    parts.forEach(part => {
+      if (part.includes('-')) {
+        // Range: "1-10"
+        const [startStr, endStr] = part.split('-').map(s => s.trim());
+        const start = parseInt(startStr, 10);
+        const end = parseInt(endStr, 10);
+        if (!isNaN(start) && !isNaN(end)) {
+          for (let i = Math.max(1, start); i <= Math.min(end, maxVerse); i++) {
+            selectedNums.add(i);
+          }
+        }
+      } else {
+        // Single verse: "5"
+        const num = parseInt(part, 10);
+        if (!isNaN(num) && num >= 1 && num <= maxVerse) {
+          selectedNums.add(num);
+        }
+      }
+    });
+
+    if (selectedNums.size === 0) return;
+
+    // Add selected verses
+    setSelectedVerses(prev => {
+      const existingIds = new Set(prev.map(v => v.id));
+      const newVerses = Array.from(selectedNums)
+        .map(num => verses.find(v => v.verse === num))
+        .filter(v => v && !existingIds.has(getVerseId(selectedBook, selectedChapter, v.verse)))
+        .map(v => ({
+          ...v,
+          id: getVerseId(selectedBook, selectedChapter, v.verse),
+          book: selectedBook,
+          chapter: selectedChapter
+        }));
+      return [...prev, ...newVerses];
+    });
+
+    setQuickRangeInput('');
+  }, [verses, selectedBook, selectedChapter, getVerseId]);
+
+  // Quick selection presets
+  const selectFirstN = useCallback((n) => {
+    const endVerse = Math.min(n, verses.length);
+    parseAndSelectRange(`1-${endVerse}`);
+  }, [verses, parseAndSelectRange]);
+
+  const selectLastN = useCallback((n) => {
+    const startVerse = Math.max(1, verses.length - n + 1);
+    parseAndSelectRange(`${startVerse}-${verses.length}`);
+  }, [verses, parseAndSelectRange]);
 
   // Open Study Center with multiple selected verses (passage analysis)
   const openMultiVerseStudy = useCallback(() => {
@@ -727,18 +797,19 @@ const TorahReader = ({
         <div className="control-group">
           <button
             onClick={() => setShowTranslation(!showTranslation)}
-            className="control-button"
+            className={`control-button translation-btn ${showTranslation ? 'active' : ''}`}
             aria-pressed={showTranslation}
             aria-label={showTranslation ? 'Hide English translation' : 'Show English translation'}
+            title={showTranslation ? 'English translation is ON - click to hide' : 'Show English translation'}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="button-icon" aria-hidden="true">
               {showTranslation ? (
-                <path d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-              ) : (
                 <><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></>
+              ) : (
+                <path d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
               )}
             </svg>
-            {showTranslation ? 'Hide' : 'Show'} Translation
+            {showTranslation ? 'English ✓' : 'English'}
           </button>
 
           <button
@@ -1246,13 +1317,13 @@ const TorahReader = ({
                       e.stopPropagation();
                       toggleVerseSelection(verse, e);
                     } else {
-                      handleVerseClick(verse.verse);
+                      handleVerseClick(verse);
                     }
                   }}
                   aria-label={selectionMode
                     ? `Verse ${verse.verse}, click to ${isSelected ? 'deselect' : 'select'}`
-                    : `Verse ${verse.verse}, click to ${highlightedVerse === verse.verse ? 'unhighlight' : 'highlight'}`}
-                  aria-pressed={selectionMode ? isSelected : highlightedVerse === verse.verse}
+                    : `Verse ${verse.verse}, click to open AI Study`}
+                  aria-pressed={selectionMode ? isSelected : studyPanelState.verse?.verse === verse.verse}
                 >
                   {verse.verse}
                 </button>
@@ -1327,7 +1398,7 @@ const TorahReader = ({
                 </div>
               </div>
 
-              <div className={`verse-content ${isTalmud ? 'talmud-content' : ''} ${showOnkelos && onkelosMap[verse.verse] ? 'with-onkelos' : ''}`} onClick={() => handleVerseClick(verse.verse)}>
+              <div className={`verse-content clickable-study ${isTalmud ? 'talmud-content' : ''} ${showOnkelos && onkelosMap[verse.verse] ? 'with-onkelos' : ''} ${studyPanelState.verse?.verse === verse.verse ? 'studying' : ''}`} onClick={() => handleVerseClick(verse)} title="Click to open AI Study">
                 {enableClickableText ? (
                   <ClickableText language="hebrew"
                     text={processHebrewText(verse.hebrewText, { showVowels, showCantillation }) || 'טעות בטעינת הפסוק'}

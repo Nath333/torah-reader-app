@@ -3,22 +3,54 @@
    ============================================================================= */
 
 .search-bar {
-  padding: var(--space-4);
-  background: var(--bg-elevated);
+  padding: var(--space-5);
+  background: linear-gradient(135deg, var(--bg-elevated) 0%, rgba(255, 255, 255, 0.95) 100%);
   border-radius: var(--radius-xl);
   border: 1px solid var(--border);
   box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.04),
-    0 4px 12px rgba(0, 0, 0, 0.02);
+    0 1px 2px rgba(0, 0, 0, 0.03),
+    0 2px 4px rgba(0, 0, 0, 0.02),
+    0 4px 8px rgba(0, 0, 0, 0.02),
+    0 8px 16px rgba(0, 0, 0, 0.01),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.search-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--accent-purple), var(--accent-teal));
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.search-bar:focus-within::before {
+  opacity: 1;
 }
 
 .search-bar:focus-within {
   border-color: var(--primary);
   box-shadow:
-    0 0 0 3px var(--primary-glow),
-    0 4px 20px rgba(91, 76, 219, 0.1);
+    0 0 0 4px var(--primary-glow),
+    0 8px 32px rgba(91, 76, 219, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Dark mode adjustments */
+.app.dark-mode .search-bar {
+  background: linear-gradient(135deg, var(--bg-elevated) 0%, rgba(30, 41, 59, 0.98) 100%);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .search-form {
@@ -45,22 +77,30 @@
 .search-input {
   width: 100%;
   padding: var(--space-3) var(--space-10) var(--space-3) var(--space-10);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
   font-size: 15px;
-  background: var(--bg-elevated);
+  font-weight: 500;
+  background: var(--bg-subtle);
   color: var(--text-primary);
-  transition: all var(--transition-fast);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search-input:hover {
+  background: var(--bg-elevated);
+  border-color: var(--text-muted);
 }
 
 .search-input:focus {
   outline: none;
+  background: var(--bg-elevated);
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-glow);
+  box-shadow: 0 0 0 4px var(--primary-glow);
 }
 
 .search-input::placeholder {
   color: var(--text-muted);
+  font-weight: 400;
 }
 
 .clear-button {
@@ -156,22 +196,39 @@
 
 .search-hint {
   margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-light);
   font-size: 12px;
   color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.search-hint .hint-text {
   display: flex;
   align-items: center;
   gap: var(--space-2);
 }
 
 .search-hint kbd {
-  padding: 2px 6px;
-  background: var(--bg-subtle);
+  padding: 3px 8px;
+  background: linear-gradient(135deg, var(--bg-subtle) 0%, var(--bg-elevated) 100%);
   border: 1px solid var(--border);
-  border-radius: 4px;
-  font-family: inherit;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-secondary);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.search-hint kbd:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 /* Responsive */
