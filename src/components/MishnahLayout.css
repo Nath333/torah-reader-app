@@ -1,0 +1,629 @@
+/* MishnahLayout - Traditional Mishnah Page Layout */
+
+/* === FONTS === */
+@import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&display=swap');
+
+/* === VARIABLES === */
+.mishnah-layout {
+  --ml-parchment: #f8f5ed;
+  --ml-parchment-dark: #efe9dc;
+  --ml-ink: #1a1612;
+  --ml-ink-light: #4a4035;
+  --ml-blue: #1a4a7a;
+  --ml-blue-light: #2a6aaa;
+  --ml-gold: #8b6914;
+  --ml-border: #c4b896;
+  --ml-shadow: rgba(50, 40, 30, 0.15);
+
+  /* Commentary colors */
+  --ml-bartenura: #6b2a7a;
+  --ml-tosafot-yt: #1a6a4a;
+
+  background: linear-gradient(135deg, #d8d0c0 0%, #c8c0b0 100%);
+  padding: 2rem;
+  min-height: 100vh;
+  font-family: 'Frank Ruhl Libre', 'David', 'Times New Roman', serif;
+}
+
+/* === PAGE FRAME === */
+.ml-frame {
+  background: var(--ml-parchment);
+  max-width: 1500px;
+  margin: 0 auto;
+  border: 3px solid var(--ml-blue);
+  border-radius: 4px;
+  box-shadow:
+    0 0 0 6px var(--ml-parchment-dark),
+    0 0 0 8px var(--ml-border),
+    0 15px 50px var(--ml-shadow),
+    inset 0 0 100px rgba(26, 74, 122, 0.03);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative corners */
+.ml-corner {
+  position: absolute;
+  font-size: 1.5rem;
+  color: var(--ml-blue);
+  opacity: 0.4;
+  z-index: 10;
+}
+
+.ml-corner-tl { top: 0.5rem; left: 0.5rem; }
+.ml-corner-tr { top: 0.5rem; right: 0.5rem; }
+.ml-corner-bl { bottom: 0.5rem; left: 0.5rem; }
+.ml-corner-br { bottom: 0.5rem; right: 0.5rem; }
+
+/* === PAGE HEADER === */
+.ml-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(180deg, #e8e0d0 0%, var(--ml-parchment) 100%);
+  border-bottom: 3px double var(--ml-blue);
+}
+
+.ml-header-seder {
+  font-size: 1rem;
+  color: var(--ml-ink-light);
+  font-weight: 600;
+}
+
+.ml-header-badge {
+  text-align: right;
+  font-size: 1.1rem;
+  color: var(--ml-blue);
+  letter-spacing: 0.2em;
+  font-weight: 600;
+}
+
+.ml-header-center {
+  text-align: center;
+}
+
+.ml-tractate {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--ml-ink);
+  margin: 0 0 0.5rem 0;
+  letter-spacing: 0.15em;
+  text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+}
+
+.ml-chapter-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.ml-perek-label {
+  font-size: 1.2rem;
+  color: var(--ml-ink-light);
+}
+
+.ml-perek-num {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--ml-blue);
+  border: 2px solid var(--ml-blue);
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #fff 0%, #f0e8d8 100%);
+}
+
+/* === MISHNAH TEXT SECTION === */
+.ml-mishnah-section {
+  padding: 1.5rem 2rem;
+  border-bottom: 2px solid var(--ml-border);
+  background: linear-gradient(180deg, #fdfbf6 0%, var(--ml-parchment) 100%);
+}
+
+.ml-section-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.ml-section-title {
+  display: inline-block;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--ml-blue);
+  padding: 0.4rem 2rem;
+  border: 1px solid var(--ml-blue);
+  border-radius: 20px;
+  background: rgba(26, 74, 122, 0.05);
+  letter-spacing: 0.15em;
+}
+
+.ml-mishnah-content {
+  font-size: 1.5rem;
+  line-height: 2.4;
+  color: var(--ml-ink);
+}
+
+.ml-mishnah-item {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px dotted var(--ml-border);
+}
+
+.ml-mishnah-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.ml-mishnah-num {
+  font-size: 0.8em;
+  font-weight: 700;
+  color: var(--ml-blue);
+  margin-left: 0.5em;
+}
+
+.ml-mishnah-text {
+  /* inherits */
+}
+
+.ml-mishnah-english {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed var(--ml-border);
+}
+
+.ml-english-item {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #555;
+  font-style: italic;
+}
+
+.ml-eng-num {
+  font-weight: 700;
+  color: var(--ml-blue);
+  font-style: normal;
+  margin-right: 0.3em;
+}
+
+/* === COMMENTARY SECTION === */
+.ml-commentary-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.ml-commentary-box {
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+  max-height: 450px;
+  border-right: 1px solid var(--ml-border);
+}
+
+.ml-commentary-box:last-child {
+  border-right: none;
+}
+
+.ml-box-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid;
+  flex-wrap: wrap;
+}
+
+.ml-box-icon {
+  font-size: 1.2rem;
+}
+
+.ml-box-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.ml-box-subtitle {
+  font-size: 0.85rem;
+  color: #666;
+  font-style: italic;
+}
+
+.ml-box-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  font-size: 1rem;
+  line-height: 1.95;
+}
+
+/* Custom scrollbar */
+.ml-box-content::-webkit-scrollbar {
+  width: 10px;
+}
+
+.ml-box-content::-webkit-scrollbar-track {
+  background: rgba(196, 184, 150, 0.2);
+  border-radius: 5px;
+}
+
+.ml-box-content::-webkit-scrollbar-thumb {
+  background: var(--ml-border);
+  border-radius: 5px;
+}
+
+.ml-box-content::-webkit-scrollbar-thumb:hover {
+  background: var(--ml-gold);
+}
+
+.ml-entry {
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px dotted rgba(0,0,0,0.1);
+}
+
+.ml-entry:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.ml-mishnah-marker {
+  font-size: 0.85em;
+  font-weight: 700;
+  margin-left: 0.4em;
+}
+
+.ml-dibbur {
+  font-weight: 700;
+  padding: 0 0.2em;
+}
+
+.ml-commentary-text {
+  color: var(--ml-ink);
+}
+
+.ml-empty {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  padding: 2rem;
+}
+
+/* === BARTENURA BOX === */
+.bartenura-box {
+  background: rgba(107, 42, 122, 0.04);
+}
+
+.bartenura-box .ml-box-header {
+  background: linear-gradient(180deg, rgba(107, 42, 122, 0.1) 0%, transparent 100%);
+  border-bottom-color: var(--ml-bartenura);
+}
+
+.bartenura-box .ml-box-title {
+  color: var(--ml-bartenura);
+}
+
+.bartenura-box .ml-mishnah-marker {
+  color: var(--ml-bartenura);
+}
+
+.bartenura-box .ml-dibbur {
+  color: var(--ml-bartenura);
+  background: linear-gradient(180deg, transparent 60%, rgba(107, 42, 122, 0.12) 60%);
+}
+
+/* === TOSAFOT YOM TOV BOX === */
+.tosafot-yom-tov-box {
+  background: rgba(26, 106, 74, 0.04);
+}
+
+.tosafot-yom-tov-box .ml-box-header {
+  background: linear-gradient(180deg, rgba(26, 106, 74, 0.1) 0%, transparent 100%);
+  border-bottom-color: var(--ml-tosafot-yt);
+}
+
+.tosafot-yom-tov-box .ml-box-title {
+  color: var(--ml-tosafot-yt);
+}
+
+.tosafot-yom-tov-box .ml-mishnah-marker {
+  color: var(--ml-tosafot-yt);
+}
+
+.tosafot-yom-tov-box .ml-dibbur {
+  color: var(--ml-tosafot-yt);
+  background: linear-gradient(180deg, transparent 60%, rgba(26, 106, 74, 0.12) 60%);
+}
+
+/* === PAGE FOOTER === */
+.ml-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: linear-gradient(0deg, #e8e0d0 0%, var(--ml-parchment) 100%);
+  border-top: 3px double var(--ml-blue);
+  font-size: 1rem;
+  color: var(--ml-ink-light);
+}
+
+.ml-footer-center {
+  color: var(--ml-blue);
+  font-size: 1.3rem;
+}
+
+/* === LOADING STATE === */
+.mishnah-layout.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+}
+
+.ml-loading {
+  text-align: center;
+  background: var(--ml-parchment);
+  padding: 3rem 4rem;
+  border-radius: 12px;
+  border: 3px solid var(--ml-blue);
+  box-shadow: 0 10px 40px var(--ml-shadow);
+}
+
+.ml-loading-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.ml-loading-icon {
+  font-size: 4rem;
+  animation: ml-bounce 1.5s ease-in-out infinite;
+}
+
+@keyframes ml-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.ml-loading-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--ml-blue);
+  letter-spacing: 0.15em;
+}
+
+.ml-loading-tractate {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--ml-ink);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.2em;
+}
+
+.ml-loading-seder {
+  font-size: 1.2rem;
+  color: var(--ml-ink-light);
+  margin-bottom: 1.5rem;
+}
+
+.ml-loading-bar {
+  width: 300px;
+  height: 8px;
+  background: rgba(26, 74, 122, 0.15);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 0 auto 1rem;
+}
+
+.ml-loading-progress {
+  height: 100%;
+  background: linear-gradient(90deg, var(--ml-blue) 0%, var(--ml-blue-light) 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.ml-loading-text {
+  font-size: 1.1rem;
+  color: var(--ml-ink-light);
+}
+
+/* === DARK MODE === */
+.dark-mode .mishnah-layout {
+  --ml-parchment: #1a1816;
+  --ml-parchment-dark: #121110;
+  --ml-ink: #e8dcc8;
+  --ml-ink-light: #b8a894;
+  --ml-blue: #7db8e8;
+  --ml-blue-light: #9dd0f8;
+  --ml-gold: #c4a87a;
+  --ml-border: #3a3530;
+  --ml-shadow: rgba(0, 0, 0, 0.4);
+
+  --ml-bartenura: #d8a8e8;
+  --ml-tosafot-yt: #7ae8b8;
+
+  background: linear-gradient(135deg, #0a0908 0%, #141210 100%);
+}
+
+.dark-mode .ml-frame {
+  box-shadow:
+    0 0 0 6px var(--ml-parchment-dark),
+    0 0 0 8px var(--ml-border),
+    0 15px 50px var(--ml-shadow);
+}
+
+.dark-mode .ml-header {
+  background: linear-gradient(180deg, #252220 0%, var(--ml-parchment) 100%);
+}
+
+.dark-mode .ml-perek-num {
+  background: linear-gradient(180deg, #3a3530 0%, #252220 100%);
+}
+
+.dark-mode .ml-mishnah-section {
+  background: linear-gradient(180deg, #1e1c1a 0%, var(--ml-parchment) 100%);
+}
+
+.dark-mode .ml-section-title {
+  background: rgba(125, 184, 232, 0.1);
+}
+
+.dark-mode .ml-mishnah-item {
+  border-bottom-color: var(--ml-border);
+}
+
+.dark-mode .ml-mishnah-english {
+  border-top-color: var(--ml-border);
+}
+
+.dark-mode .ml-english-item {
+  color: #a08060;
+}
+
+.dark-mode .bartenura-box {
+  background: rgba(216, 168, 232, 0.03);
+}
+
+.dark-mode .tosafot-yom-tov-box {
+  background: rgba(122, 232, 184, 0.03);
+}
+
+.dark-mode .ml-entry {
+  border-bottom-color: rgba(255,255,255,0.08);
+}
+
+.dark-mode .ml-box-content::-webkit-scrollbar-track {
+  background: rgba(58, 53, 48, 0.3);
+}
+
+.dark-mode .ml-footer {
+  background: linear-gradient(0deg, #252220 0%, var(--ml-parchment) 100%);
+}
+
+.dark-mode .ml-loading {
+  background: var(--ml-parchment);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 1200px) {
+  .ml-commentary-row {
+    grid-template-columns: 1fr;
+  }
+
+  .ml-commentary-box {
+    border-right: none;
+    border-bottom: 1px solid var(--ml-border);
+    max-height: 350px;
+  }
+
+  .ml-commentary-box:last-child {
+    border-bottom: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .mishnah-layout {
+    padding: 0.5rem;
+  }
+
+  .ml-header {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 0.5rem;
+  }
+
+  .ml-header-seder,
+  .ml-header-badge {
+    text-align: center;
+  }
+
+  .ml-tractate {
+    font-size: 2.2rem;
+  }
+
+  .ml-mishnah-section {
+    padding: 1rem;
+  }
+
+  .ml-mishnah-content {
+    font-size: 1.25rem;
+    line-height: 2;
+  }
+
+  .ml-box-content {
+    padding: 0.75rem;
+    font-size: 0.95rem;
+  }
+
+  .ml-corner {
+    display: none;
+  }
+
+  .ml-footer {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+}
+
+@media (max-width: 500px) {
+  .ml-tractate {
+    font-size: 1.8rem;
+  }
+
+  .ml-mishnah-content {
+    font-size: 1.15rem;
+  }
+
+  .ml-box-title {
+    font-size: 1.1rem;
+  }
+
+  .ml-commentary-box {
+    max-height: 300px;
+  }
+
+  .ml-loading {
+    padding: 2rem;
+  }
+
+  .ml-loading-tractate {
+    font-size: 1.8rem;
+  }
+}
+
+/* === PRINT === */
+@media print {
+  .mishnah-layout {
+    background: white;
+    padding: 0;
+  }
+
+  .ml-frame {
+    box-shadow: none;
+    border: 2px solid #000;
+    max-width: 100%;
+  }
+
+  .ml-corner {
+    display: none;
+  }
+
+  .ml-commentary-box {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .ml-box-content {
+    overflow: visible;
+    max-height: none;
+  }
+}

@@ -1,0 +1,1754 @@
+/* StudyVerse.css - Professional Torah Study Styling */
+
+/* ===== FONT IMPORTS ===== */
+/* Rashi script font - SBL Hebrew for authentic look */
+@import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&display=swap');
+
+/* We'll use a custom Rashi-style appearance through CSS */
+
+/* ===== STUDY VERSE CONTAINER ===== */
+.study-verse {
+  background: var(--card-bg, #ffffff);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border-color, #e5e7eb);
+  transition: all 0.2s ease;
+}
+
+.study-verse:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.study-verse.highlighted {
+  border-color: var(--primary-color, #4f46e5);
+  background: var(--highlight-bg, #f5f3ff);
+}
+
+/* ===== VERSE TOOLBAR ===== */
+.verse-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-light, #f0f0f0);
+}
+
+.verse-ref {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted, #6b7280);
+  background: var(--badge-bg, #f3f4f6);
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+}
+
+.verse-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary, #4b5563);
+  background: var(--btn-bg, #f9fafb);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.action-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.action-btn:hover {
+  background: var(--btn-hover-bg, #f3f4f6);
+  border-color: var(--border-hover, #d1d5db);
+}
+
+.action-btn.active {
+  background: var(--primary-color, #4f46e5);
+  color: white;
+  border-color: var(--primary-color, #4f46e5);
+}
+
+.action-btn.bookmark-btn:hover {
+  color: var(--warning-color, #f59e0b);
+  border-color: var(--warning-color, #f59e0b);
+}
+
+/* ===== MAIN HEBREW TEXT WITH ENLARGED FIRST LETTER ===== */
+.verse-main-text {
+  margin-bottom: 1.25rem;
+}
+
+.hebrew-text-study {
+  font-family: 'Frank Ruhl Libre', 'David Libre', 'Ezra SIL', 'Times New Roman', serif;
+  font-size: 1.625rem;
+  line-height: 2;
+  color: var(--text-primary, #1f2937);
+  direction: rtl;
+  text-align: right;
+}
+
+.hebrew-text-study .first-letter,
+.hebrew-text-study .enlarged-letter {
+  font-size: 2.5em;
+  font-weight: 700;
+  color: var(--primary-color, #4f46e5);
+  line-height: 1;
+  vertical-align: baseline;
+}
+
+/* ===== ENGLISH TRANSLATION ===== */
+.verse-translation {
+  margin-bottom: 1.25rem;
+  padding: 0.75rem 1rem;
+  background: var(--translation-bg, #fafafa);
+  border-radius: 8px;
+  border-left: 3px solid var(--accent-color, #6366f1);
+}
+
+.verse-translation .english-text {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-secondary, #4b5563);
+  font-style: italic;
+  margin: 0;
+}
+
+/* ===== SECTION HEADERS (TARGUM, RASHI) ===== */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--border-light, #e5e7eb);
+}
+
+.section-badge {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  direction: rtl;
+}
+
+.section-badge.targum {
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: white;
+}
+
+.section-badge.rashi {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: white;
+}
+
+.section-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+}
+
+/* ===== TARGUM SECTION ===== */
+.targum-section {
+  background: var(--targum-bg, #f0fdf4);
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--targum-border, #bbf7d0);
+}
+
+.targum-content {
+  padding-top: 0.5rem;
+}
+
+.targum-aramaic {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 1.25rem;
+  line-height: 1.9;
+  color: var(--text-primary, #1f2937);
+  margin-bottom: 1rem;
+}
+
+.targum-translation {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  font-size: 0.9375rem;
+}
+
+.targum-translation .trans-label {
+  font-weight: 700;
+  color: var(--label-color, #059669);
+  min-width: 28px;
+}
+
+.targum-translation.french .trans-label {
+  color: var(--french-color, #2563eb);
+}
+
+.targum-translation .trans-text {
+  color: var(--text-secondary, #4b5563);
+}
+
+/* ===== RASHI SECTION ===== */
+.rashi-section {
+  background: var(--rashi-bg, #f5f3ff);
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--rashi-border, #ddd6fe);
+}
+
+.rashi-header {
+  border-bottom-color: var(--rashi-border, #c4b5fd);
+}
+
+.rashi-comments {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ===== RASHI COMMENT BLOCK ===== */
+.rashi-comment-block {
+  background: var(--card-bg, #ffffff);
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid var(--rashi-border, #e5e7eb);
+}
+
+/* ===== DIBBUR HAMATCHIL (OPENING WORDS) ===== */
+.dibbur-hamatchil-section {
+  background: var(--dibbur-bg, #faf5ff);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-left: 4px solid var(--primary-color, #8b5cf6);
+}
+
+.dibbur-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px dashed var(--border-light, #e5e7eb);
+}
+
+.dibbur-label-he {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primary-color, #7c3aed);
+  direction: rtl;
+}
+
+.dibbur-label-en {
+  font-size: 0.75rem;
+  color: var(--text-muted, #9ca3af);
+  font-style: italic;
+}
+
+.dibbur-script-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+.script-badge {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  min-width: 60px;
+  text-align: center;
+  direction: rtl;
+  font-family: 'Frank Ruhl Libre', serif;
+}
+
+.rashi-script-badge {
+  background: var(--rashi-badge-bg, #7c3aed);
+  color: white;
+}
+
+.block-script-badge {
+  background: var(--block-badge-bg, #64748b);
+  color: white;
+}
+
+.dibbur-text {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+}
+
+/* ===== FONT STYLES ===== */
+/* Rashi Script - Simulated using font features */
+.rashi-font {
+  font-family: 'Frank Ruhl Libre', 'Ezra SIL', 'SBL Hebrew', serif;
+  font-feature-settings: 'ss01' 1; /* Enable stylistic set if available */
+  font-style: italic;
+  letter-spacing: 0.02em;
+}
+
+/* Block/Square Script - Standard Hebrew */
+.block-font {
+  font-family: 'Frank Ruhl Libre', 'David Libre', serif;
+  font-style: normal;
+  font-weight: 500;
+}
+
+/* ===== DIBBUR TRANSLATIONS ===== */
+.dibbur-translations {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-light, #e5e7eb);
+}
+
+.dibbur-trans-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  font-size: 0.875rem;
+}
+
+.dibbur-trans-row .trans-lang {
+  font-weight: 700;
+  min-width: 28px;
+  color: var(--primary-color, #4f46e5);
+}
+
+.dibbur-trans-row .trans-lang.fr {
+  color: var(--french-color, #2563eb);
+}
+
+.dibbur-trans-row .trans-text {
+  color: var(--text-secondary, #4b5563);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+/* ===== RASHI BODY TEXT ===== */
+.rashi-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rashi-text-block {
+  background: var(--text-block-bg, #fafafa);
+  border-radius: 6px;
+  padding: 0.875rem;
+}
+
+.script-label {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--primary-color, #7c3aed);
+  margin-bottom: 0.5rem;
+  padding: 0.15rem 0.4rem;
+  background: var(--label-bg, #f3e8ff);
+  border-radius: 4px;
+  direction: rtl;
+  font-family: 'Frank Ruhl Libre', serif;
+}
+
+.script-label.standard {
+  color: var(--text-muted, #64748b);
+  background: var(--label-bg-alt, #f1f5f9);
+}
+
+.rashi-text {
+  font-size: 1.125rem;
+  line-height: 1.9;
+  color: var(--text-primary, #1f2937);
+  direction: rtl;
+}
+
+/* ===== RASHI TRANSLATION ===== */
+.rashi-translation {
+  padding: 0.75rem 1rem;
+  background: var(--translation-bg, #f8fafc);
+  border-radius: 6px;
+  border-left: 3px solid var(--accent-color, #6366f1);
+}
+
+.rashi-translation .translation-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--primary-color, #4f46e5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.375rem;
+  display: block;
+}
+
+.rashi-translation .translation-text {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--text-secondary, #4b5563);
+  margin: 0;
+}
+
+/* =============================================================================
+   SCHOLARLY STUDY TOOL STYLING
+   Professional academic presentation with source citations
+   ============================================================================= */
+
+/* ===== SCHOLARLY VERSE CONTAINER ===== */
+.study-verse.scholarly {
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #d1d5db);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* ===== SCHOLARLY HEADER ===== */
+.verse-scholarly-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 7px 7px 0 0;
+}
+
+.verse-reference {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  font-family: 'Frank Ruhl Libre', Georgia, serif;
+}
+
+.ref-book {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text-primary, #1f2937);
+}
+
+.ref-chapter {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary-color, #4f46e5);
+}
+
+.ref-verse {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary-color, #4f46e5);
+}
+
+.verse-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.6875rem;
+  color: var(--text-muted, #9ca3af);
+}
+
+.meta-source,
+.meta-manuscript {
+  padding: 0.15rem 0.5rem;
+  background: var(--badge-bg, #f3f4f6);
+  border-radius: 4px;
+}
+
+/* ===== SCHOLARLY TOOLBAR ===== */
+.verse-toolbar.scholarly {
+  padding: 0.75rem 1rem;
+  background: var(--toolbar-bg, #fafafa);
+  border-bottom: 1px solid var(--border-light, #f0f0f0);
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.verse-type-badge {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--text-muted, #6b7280);
+  padding: 0.15rem 0.5rem;
+  background: var(--badge-bg, #e5e7eb);
+  border-radius: 4px;
+  direction: rtl;
+}
+
+.action-btn.scholarly {
+  font-family: 'Frank Ruhl Libre', serif;
+  gap: 0.5rem;
+}
+
+.action-btn.scholarly span {
+  direction: rtl;
+  font-size: 0.8125rem;
+}
+
+/* ===== SCHOLARLY TEXT BLOCKS ===== */
+.verse-main-text.scholarly {
+  padding: 1rem;
+  background: var(--text-bg, #ffffff);
+  border-radius: 6px;
+  margin: 1rem;
+  border: 1px solid var(--border-light, #f0f0f0);
+}
+
+.text-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px dashed var(--border-light, #e5e7eb);
+}
+
+.lang-badge {
+  font-size: 0.625rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.lang-badge.he {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+}
+
+.lang-badge.en {
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: white;
+}
+
+.lang-badge.fr {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: white;
+}
+
+.lang-badge.arc {
+  background: linear-gradient(135deg, #d97706, #f59e0b);
+  color: white;
+}
+
+.text-source {
+  font-size: 0.6875rem;
+  color: var(--text-muted, #9ca3af);
+  font-style: italic;
+}
+
+.clickable-hint {
+  font-size: 0.625rem;
+  color: #059669;
+  font-style: italic;
+  background: rgba(5, 150, 105, 0.1);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  margin-left: auto;
+}
+
+/* ===== TRANSLATION BLOCK ===== */
+.translation-block {
+  margin: 0.75rem 1rem;
+  padding: 1rem;
+  background: var(--translation-bg, #fafafa);
+  border-radius: 8px;
+  border-left: 3px solid var(--accent-color, #6366f1);
+}
+
+.translation-block.english {
+  border-left-color: #059669;
+}
+
+.translation-block.french {
+  border-left-color: #2563eb;
+}
+
+.translation-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.translation-label {
+  font-size: 0.6875rem;
+  color: var(--text-muted, #6b7280);
+  font-style: italic;
+}
+
+.translation-content {
+  padding-top: 0.5rem;
+}
+
+.translation-content .translation-text {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--text-secondary, #4b5563);
+  margin: 0;
+}
+
+.translation-content .loading-text {
+  color: var(--text-muted, #9ca3af);
+  font-style: italic;
+  font-size: 0.875rem;
+}
+
+/* Inline Hebrew in translations */
+.inline-hebrew {
+  font-family: 'Frank Ruhl Libre', 'David Libre', serif;
+  color: var(--primary-color, #5b4cdb);
+  unicode-bidi: isolate;
+}
+
+/* ===== SOURCE REFERENCE ===== */
+.source-reference {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.625rem;
+  color: var(--text-muted, #6b7280);
+}
+
+.source-name {
+  font-weight: 600;
+}
+
+.source-method {
+  color: var(--text-light-muted, #9ca3af);
+}
+
+.accuracy-indicator {
+  padding: 0.1rem 0.375rem;
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 0.5625rem;
+}
+
+.accuracy-indicator.high {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.accuracy-indicator.medium {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.accuracy-indicator.auto {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.accuracy-indicator.partial {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+/* ===== SCHOLARLY DIBBUR TRANSLATIONS ===== */
+.dibbur-translations.scholarly {
+  background: var(--dibbur-trans-bg, #f8fafc);
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-top: 0.75rem;
+}
+
+.dibbur-translations.scholarly .dibbur-trans-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0;
+}
+
+.trans-lang-badge {
+  font-size: 0.5625rem;
+  font-weight: 700;
+  padding: 0.15rem 0.375rem;
+  border-radius: 3px;
+  min-width: 22px;
+  text-align: center;
+}
+
+.trans-lang-badge.en {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.trans-lang-badge.fr {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.trans-source {
+  font-size: 0.5625rem;
+  color: var(--text-muted, #9ca3af);
+  margin-left: auto;
+}
+
+.trans-accuracy {
+  font-size: 0.5625rem;
+  font-weight: 600;
+}
+
+.trans-accuracy.high { color: #166534; }
+.trans-accuracy.medium { color: #92400e; }
+.trans-accuracy.auto { color: #1e40af; }
+
+.trans-text.loading {
+  color: var(--text-muted, #9ca3af);
+  font-style: italic;
+}
+
+/* ===== SCHOLARLY SECTIONS ===== */
+.targum-section.scholarly,
+.rashi-section.scholarly {
+  margin: 0.75rem 1rem;
+  border-radius: 8px;
+}
+
+.section-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-header .section-ref,
+.section-header .section-info {
+  font-size: 0.6875rem;
+  color: var(--text-muted, #9ca3af);
+  margin-left: auto;
+}
+
+.targum-aramaic-block {
+  padding: 0.75rem;
+  background: var(--aramaic-bg, #fefce8);
+  border-radius: 6px;
+  margin-bottom: 0.75rem;
+}
+
+/* ===== SCHOLARLY COMMENT BLOCK ===== */
+.rashi-comment-block.scholarly {
+  border: 1px solid var(--border-color, #e5e7eb);
+}
+
+.comment-scholarly-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  background: var(--header-bg, #f8fafc);
+  border-bottom: 1px solid var(--border-light, #f0f0f0);
+  border-radius: 7px 7px 0 0;
+  margin: -1rem -1rem 1rem -1rem;
+}
+
+.comment-index {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary-color, #7c3aed);
+  direction: rtl;
+}
+
+.comment-ref {
+  font-size: 0.625rem;
+  color: var(--text-muted, #9ca3af);
+}
+
+.dibbur-hamatchil-section.scholarly {
+  border-left: 3px solid var(--primary-color, #7c3aed);
+  background: var(--dibbur-bg, #faf5ff);
+}
+
+.rashi-body.scholarly .rashi-text-block {
+  border: 1px solid var(--border-light, #f0f0f0);
+}
+
+.script-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.script-info {
+  font-size: 0.625rem;
+  color: var(--text-muted, #9ca3af);
+  font-style: italic;
+}
+
+/* ===== SECTION FOOTER ===== */
+.section-footer,
+.comment-footer {
+  padding-top: 0.75rem;
+  margin-top: 0.75rem;
+  border-top: 1px dashed var(--border-light, #e5e7eb);
+}
+
+.source-attribution {
+  font-size: 0.625rem;
+  color: var(--text-muted, #9ca3af);
+  font-style: italic;
+}
+
+/* ===== SCHOLARLY CITATION FOOTER ===== */
+.verse-scholarly-footer {
+  padding: 0.75rem 1rem;
+  background: var(--footer-bg, #f8fafc);
+  border-top: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 0 0 7px 7px;
+}
+
+.scholarly-citation {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.6875rem;
+  color: var(--text-muted, #6b7280);
+}
+
+.citation-ref {
+  font-weight: 600;
+  color: var(--text-secondary, #4b5563);
+}
+
+.citation-source {
+  font-style: italic;
+}
+
+.citation-date {
+  color: var(--text-light-muted, #9ca3af);
+}
+
+/* ===== DARK MODE - SCHOLARLY ===== */
+.dark-mode .study-verse.scholarly {
+  background: var(--card-bg-dark, #1f2937);
+}
+
+.dark-mode .verse-scholarly-header {
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  border-bottom-color: var(--border-dark, #374151);
+}
+
+.dark-mode .ref-book {
+  color: var(--text-light, #f3f4f6);
+}
+
+.dark-mode .verse-meta .meta-source,
+.dark-mode .verse-meta .meta-manuscript {
+  background: var(--badge-bg-dark, #374151);
+  color: var(--text-muted-dark, #9ca3af);
+}
+
+.dark-mode .verse-toolbar.scholarly {
+  background: var(--toolbar-bg-dark, #111827);
+  border-bottom-color: var(--border-dark, #374151);
+}
+
+.dark-mode .verse-type-badge {
+  background: var(--badge-bg-dark, #374151);
+  color: var(--text-muted-dark, #9ca3af);
+}
+
+.dark-mode .verse-main-text.scholarly {
+  background: var(--card-bg-dark, #1f2937);
+  border-color: var(--border-dark, #374151);
+}
+
+.dark-mode .text-source {
+  color: var(--text-muted-dark, #6b7280);
+}
+
+.dark-mode .translation-block {
+  background: var(--translation-bg-dark, #111827);
+}
+
+.dark-mode .translation-content .translation-text {
+  color: var(--text-muted-dark, #cbd5e1);
+}
+
+.dark-mode .dibbur-translations.scholarly {
+  background: var(--dibbur-trans-bg-dark, #1e1b4b);
+}
+
+.dark-mode .targum-aramaic-block {
+  background: var(--aramaic-bg-dark, #422006);
+}
+
+.dark-mode .comment-scholarly-header {
+  background: var(--header-bg-dark, #111827);
+  border-bottom-color: var(--border-dark, #374151);
+}
+
+.dark-mode .verse-scholarly-footer {
+  background: var(--footer-bg-dark, #111827);
+  border-top-color: var(--border-dark, #374151);
+}
+
+.dark-mode .citation-ref {
+  color: var(--text-muted-dark, #cbd5e1);
+}
+
+/* ===== DARK MODE ===== */
+.dark-mode .study-verse {
+  background: var(--card-bg-dark, #1f2937);
+  border-color: var(--border-dark, #374151);
+}
+
+.dark-mode .study-verse.highlighted {
+  background: var(--highlight-bg-dark, #312e81);
+  border-color: var(--primary-light, #818cf8);
+}
+
+.dark-mode .verse-ref {
+  background: var(--badge-bg-dark, #374151);
+  color: var(--text-muted-dark, #9ca3af);
+}
+
+.dark-mode .action-btn {
+  background: var(--btn-bg-dark, #374151);
+  border-color: var(--border-dark, #4b5563);
+  color: var(--text-light, #e5e7eb);
+}
+
+.dark-mode .action-btn:hover {
+  background: var(--btn-hover-dark, #4b5563);
+}
+
+.dark-mode .hebrew-text-study {
+  color: var(--text-light, #f3f4f6);
+}
+
+.dark-mode .verse-translation {
+  background: var(--translation-bg-dark, #1e293b);
+}
+
+.dark-mode .verse-translation .english-text {
+  color: var(--text-muted-dark, #cbd5e1);
+}
+
+.dark-mode .targum-section {
+  background: var(--targum-bg-dark, #064e3b);
+  border-color: var(--targum-border-dark, #065f46);
+}
+
+.dark-mode .targum-aramaic {
+  color: var(--text-light, #f3f4f6);
+}
+
+.dark-mode .rashi-section {
+  background: var(--rashi-bg-dark, #2e1065);
+  border-color: var(--rashi-border-dark, #4c1d95);
+}
+
+.dark-mode .rashi-comment-block {
+  background: var(--card-bg-dark, #1f2937);
+  border-color: var(--border-dark, #374151);
+}
+
+.dark-mode .dibbur-hamatchil-section {
+  background: var(--dibbur-bg-dark, #3b0764);
+}
+
+.dark-mode .rashi-text-block {
+  background: var(--text-block-bg-dark, #1e293b);
+}
+
+.dark-mode .rashi-text,
+.dark-mode .dibbur-text {
+  color: var(--text-light, #f3f4f6);
+}
+
+.dark-mode .script-label {
+  background: var(--label-bg-dark, #4c1d95);
+  color: var(--primary-light, #c4b5fd);
+}
+
+.dark-mode .script-label.standard {
+  background: var(--label-bg-alt-dark, #334155);
+  color: var(--text-muted-dark, #94a3b8);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .study-verse {
+    padding: 1rem;
+  }
+
+  .verse-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .verse-actions {
+    width: 100%;
+  }
+
+  .action-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .hebrew-text-study {
+    font-size: 1.375rem;
+  }
+
+  .hebrew-text-study .first-letter,
+  .hebrew-text-study .enlarged-letter {
+    font-size: 2em;
+  }
+
+  .dibbur-script-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .script-badge {
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .action-btn span:not(.btn-icon) {
+    display: none;
+  }
+
+  .action-btn {
+    padding: 0.625rem;
+  }
+
+  .hebrew-text-study {
+    font-size: 1.25rem;
+  }
+
+  .rashi-text,
+  .targum-aramaic {
+    font-size: 1rem;
+  }
+}
+
+/* =============================================================================
+   ENHANCED UI COMPONENTS - Professional Study Tool
+   Icons, Language Badges, Source Info Cards, and Expandable Details
+   ============================================================================= */
+
+/* ===== SOURCE ICONS ===== */
+.source-icon {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+  flex-shrink: 0;
+}
+
+.source-icon.verified {
+  color: #16a34a;
+  fill: #16a34a;
+  stroke: none;
+}
+
+/* ===== LANGUAGE BADGE WITH FLAG ===== */
+.language-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 6px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+.language-badge .lang-flag {
+  font-size: 0.875rem;
+}
+
+.language-badge .lang-code {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.language-badge .lang-name {
+  font-size: 0.625rem;
+  opacity: 0.8;
+}
+
+.language-badge.purple {
+  background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);
+  color: white;
+}
+
+.language-badge.green {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  color: white;
+}
+
+.language-badge.blue {
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  color: white;
+}
+
+.language-badge.amber {
+  background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+  color: white;
+}
+
+.language-badge.small {
+  padding: 0.15rem 0.5rem;
+  font-size: 0.5625rem;
+}
+
+.language-badge.small .lang-flag {
+  font-size: 0.75rem;
+}
+
+.language-badge.small .lang-name {
+  display: none;
+}
+
+/* ===== SOURCE INFO CARD ===== */
+.source-info-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  margin: 0.5rem 0;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.source-info-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.source-info-card.expanded {
+  border-color: var(--primary-color, #6366f1);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+}
+
+.source-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.source-card-header:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.source-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--primary-light, #ede9fe);
+  border-radius: 8px;
+  color: var(--primary-color, #6366f1);
+}
+
+.source-card-icon .source-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.source-card-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.source-card-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+}
+
+.source-card-method {
+  font-size: 0.6875rem;
+  color: var(--text-muted, #9ca3af);
+}
+
+.source-card-accuracy {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.625rem;
+  font-weight: 600;
+}
+
+.source-card-accuracy.green {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.source-card-accuracy.amber {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.source-card-accuracy.blue {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.source-card-accuracy.gray {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.source-card-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted, #9ca3af);
+  transition: color 0.15s ease;
+}
+
+.source-card-toggle:hover {
+  color: var(--primary-color, #6366f1);
+}
+
+.source-card-toggle svg {
+  width: 16px;
+  height: 16px;
+}
+
+.source-card-details {
+  padding: 0.75rem 1rem;
+  background: white;
+  border-top: 1px solid var(--border-light, #f0f0f0);
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0;
+  font-size: 0.75rem;
+}
+
+.detail-row .detail-label {
+  font-weight: 600;
+  color: var(--text-secondary, #6b7280);
+  min-width: 80px;
+}
+
+.detail-row .detail-value {
+  color: var(--text-primary, #374151);
+}
+
+.detail-row.description {
+  margin-top: 0.25rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--border-light, #e5e7eb);
+}
+
+.detail-row .detail-desc {
+  font-size: 0.6875rem;
+  color: var(--text-muted, #9ca3af);
+  font-style: italic;
+}
+
+.detail-value.accuracy-green { color: #166534; }
+.detail-value.accuracy-amber { color: #92400e; }
+.detail-value.accuracy-blue { color: #1e40af; }
+.detail-value.accuracy-gray { color: #6b7280; }
+
+/* ===== ENHANCED TRANSLATION BLOCK ===== */
+.translation-block.enhanced {
+  position: relative;
+  border-radius: 10px;
+  padding: 0;
+  overflow: hidden;
+  border-left-width: 4px;
+}
+
+.translation-header.enhanced {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.04) 100%);
+  border-bottom: 1px solid var(--border-light, #f0f0f0);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.source-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.625rem;
+  background: white;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.6875rem;
+  color: var(--text-secondary, #6b7280);
+  transition: all 0.15s ease;
+}
+
+.source-toggle-btn:hover {
+  border-color: var(--primary-color, #6366f1);
+  color: var(--primary-color, #6366f1);
+  box-shadow: 0 2px 4px rgba(99, 102, 241, 0.1);
+}
+
+.source-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.source-preview .source-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.source-name-short {
+  font-weight: 500;
+}
+
+.toggle-chevron {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.15s ease;
+}
+
+.translation-content.enhanced {
+  padding: 1rem;
+}
+
+.loading-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.loading-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-top-color: var(--primary-color, #6366f1);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.translation-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  background: rgba(0, 0, 0, 0.02);
+  border-top: 1px solid var(--border-light, #f0f0f0);
+}
+
+.accuracy-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.625rem;
+  font-weight: 600;
+}
+
+.accuracy-pill.high {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.accuracy-pill.medium {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.accuracy-pill.auto {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.accuracy-pill.partial {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.method-indicator {
+  font-size: 0.625rem;
+  color: var(--text-muted, #9ca3af);
+  font-family: monospace;
+}
+
+/* ===== ENHANCED DIBBUR TRANSLATIONS ===== */
+.dibbur-translations.enhanced {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.dibbur-trans-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+  border-bottom: 1px solid var(--border-light, #c4b5fd);
+}
+
+.dibbur-trans-title {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--primary-color, #7c3aed);
+}
+
+.details-toggle-mini {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 1px solid var(--border-color, #c4b5fd);
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--primary-color, #7c3aed);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.details-toggle-mini:hover {
+  background: var(--primary-color, #7c3aed);
+  color: white;
+}
+
+.dibbur-trans-row.enhanced {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid var(--border-light, #f0f0f0);
+}
+
+.dibbur-trans-row.enhanced:last-child {
+  border-bottom: none;
+}
+
+.trans-lang-container {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-width: 60px;
+}
+
+.trans-flag {
+  font-size: 0.875rem;
+}
+
+.trans-text.enhanced {
+  flex: 1;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary, #1f2937);
+  letter-spacing: 0.02em;
+}
+
+.trans-source-container {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.2rem 0.5rem;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 4px;
+}
+
+.trans-source-container .source-icon {
+  width: 12px;
+  height: 12px;
+  color: var(--text-muted, #9ca3af);
+}
+
+.trans-verified {
+  font-size: 0.625rem;
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.trans-accuracy-badge {
+  font-size: 0.625rem;
+  font-weight: 700;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.trans-accuracy-badge.high {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.trans-accuracy-badge.medium {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.trans-accuracy-badge.auto {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.trans-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mini-spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-top-color: var(--primary-color, #6366f1);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Source Details Panel */
+.dibbur-source-details {
+  padding: 0.75rem;
+  background: linear-gradient(135deg, #faf5ff 0%, #f5f3ff 100%);
+  border-top: 1px solid var(--border-light, #ddd6fe);
+  animation: slideDown 0.2s ease;
+}
+
+.source-detail-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0;
+  font-size: 0.6875rem;
+}
+
+.source-detail-row .detail-icon {
+  width: 18px;
+  text-align: center;
+}
+
+.source-detail-row .detail-label {
+  font-weight: 600;
+  color: var(--text-secondary, #6b7280);
+  min-width: 75px;
+}
+
+.source-detail-row .detail-value {
+  color: var(--text-primary, #374151);
+}
+
+.source-detail-row .detail-value.accuracy-high { color: #166534; font-weight: 600; }
+.source-detail-row .detail-value.accuracy-medium { color: #92400e; font-weight: 600; }
+.source-detail-row .detail-value.accuracy-auto { color: #1e40af; font-weight: 600; }
+
+/* ===== DARK MODE - ENHANCED COMPONENTS ===== */
+.dark-mode .source-info-card {
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  border-color: var(--border-dark, #374151);
+}
+
+.dark-mode .source-info-card.expanded {
+  border-color: var(--primary-color, #818cf8);
+}
+
+.dark-mode .source-card-header:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.dark-mode .source-card-icon {
+  background: var(--primary-dark, #312e81);
+}
+
+.dark-mode .source-card-name {
+  color: var(--text-light, #f3f4f6);
+}
+
+.dark-mode .source-card-details {
+  background: var(--card-bg-dark, #111827);
+  border-top-color: var(--border-dark, #374151);
+}
+
+.dark-mode .detail-row .detail-value {
+  color: var(--text-light, #e5e7eb);
+}
+
+.dark-mode .translation-header.enhanced {
+  background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.04) 100%);
+}
+
+.dark-mode .source-toggle-btn {
+  background: var(--card-bg-dark, #1f2937);
+  border-color: var(--border-dark, #374151);
+  color: var(--text-muted-dark, #9ca3af);
+}
+
+.dark-mode .source-toggle-btn:hover {
+  border-color: var(--primary-color, #818cf8);
+  color: var(--primary-color, #818cf8);
+}
+
+.dark-mode .translation-footer {
+  background: rgba(255, 255, 255, 0.02);
+  border-top-color: var(--border-dark, #374151);
+}
+
+.dark-mode .dibbur-trans-header {
+  background: linear-gradient(135deg, #312e81 0%, #3730a3 100%);
+  border-bottom-color: var(--border-dark, #4c1d95);
+}
+
+.dark-mode .dibbur-trans-title {
+  color: #c4b5fd;
+}
+
+.dark-mode .details-toggle-mini {
+  background: var(--card-bg-dark, #1f2937);
+  border-color: var(--border-dark, #4c1d95);
+  color: #c4b5fd;
+}
+
+.dark-mode .details-toggle-mini:hover {
+  background: var(--primary-color, #7c3aed);
+  color: white;
+}
+
+.dark-mode .dibbur-trans-row.enhanced {
+  border-bottom-color: var(--border-dark, #374151);
+}
+
+.dark-mode .trans-text.enhanced {
+  color: var(--text-light, #f3f4f6);
+}
+
+.dark-mode .trans-source-container {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .dibbur-source-details {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  border-top-color: var(--border-dark, #4c1d95);
+}
+
+.dark-mode .source-detail-row .detail-value {
+  color: var(--text-light, #e5e7eb);
+}
+
+/* ===== RESPONSIVE - ENHANCED COMPONENTS ===== */
+@media (max-width: 768px) {
+  .language-badge .lang-name {
+    display: none;
+  }
+
+  .translation-header.enhanced {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .header-right {
+    width: 100%;
+  }
+
+  .source-toggle-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .source-card-accuracy .accuracy-label {
+    display: none;
+  }
+
+  .dibbur-trans-row.enhanced {
+    flex-wrap: wrap;
+  }
+
+  .trans-source-container {
+    margin-top: 0.25rem;
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .source-info-card .source-card-header {
+    padding: 0.625rem 0.75rem;
+  }
+
+  .source-info-card .source-card-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .translation-content.enhanced {
+    padding: 0.75rem;
+  }
+
+  .translation-footer {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+}

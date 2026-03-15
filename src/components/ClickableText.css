@@ -1,0 +1,2014 @@
+/* =============================================================================
+   ClickableText - Unified Interactive Text Component
+   Supports both Hebrew and Aramaic word lookup
+   ============================================================================= */
+
+/* Base Container */
+.clickable-text {
+  position: relative;
+  font-family: 'Crimson Pro', 'Times New Roman', serif;
+  line-height: 2;
+}
+
+.clickable-text.aramaic {
+  font-family: 'Frank Ruhl Libre', 'SBL Hebrew', 'Times New Roman', serif;
+  font-size: 1.25rem;
+}
+
+.clickable-text.with-enlarged-first {
+  line-height: 2.2;
+}
+
+.text-words {
+  display: inline;
+}
+
+.clickable-text.aramaic .text-words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem;
+  direction: rtl;
+}
+
+/* =============================================================================
+   Individual Word Styling
+   ============================================================================= */
+
+.clickable-word {
+  position: relative;
+  cursor: pointer;
+  padding: 3px 6px;
+  margin: 0 2px;
+  border-radius: 6px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Focus state for accessibility */
+.clickable-word:focus {
+  outline: none;
+}
+
+.clickable-word:focus-visible {
+  outline: 2px solid var(--primary, #4f46e5);
+  outline-offset: 2px;
+}
+
+/* Hebrew word styling */
+.clickable-word.hebrew {
+  background: transparent;
+  border-bottom: 2px solid transparent;
+}
+
+.clickable-word.hebrew.has-translation {
+  background: linear-gradient(to bottom, transparent 85%, var(--primary-light, rgba(79, 70, 229, 0.15)) 85%);
+  border-bottom: none;
+}
+
+.clickable-word.hebrew:hover {
+  background: var(--primary-light, rgba(79, 70, 229, 0.08));
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.12);
+}
+
+.clickable-word.hebrew.has-translation:hover {
+  background: linear-gradient(135deg, var(--primary-light, rgba(79, 70, 229, 0.12)) 0%, rgba(99, 102, 241, 0.08) 100%);
+  color: var(--primary, #4f46e5);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 12px rgba(79, 70, 229, 0.18);
+}
+
+.clickable-word.hebrew.active {
+  background: linear-gradient(135deg, var(--primary, #4f46e5) 0%, #6366f1 100%);
+  color: white;
+  border-radius: 6px;
+  transform: translateY(-1px) scale(1.02);
+  box-shadow:
+    0 4px 12px rgba(79, 70, 229, 0.35),
+    0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.clickable-word.hebrew.active.has-translation {
+  border-bottom-color: transparent;
+  background: linear-gradient(135deg, var(--primary, #4f46e5) 0%, #6366f1 100%);
+}
+
+/* Aramaic word styling - teal/green theme */
+.clickable-word.aramaic {
+  color: var(--accent-teal, #059669);
+  display: inline-block;
+  padding: 3px 6px;
+  background: transparent;
+  border-bottom: 2px solid transparent;
+}
+
+.clickable-word.aramaic:hover {
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.08) 0%, rgba(16, 185, 129, 0.05) 100%);
+  color: #047857;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.12);
+}
+
+.clickable-word.aramaic.active {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  color: white;
+  transform: translateY(-1px) scale(1.02);
+  box-shadow:
+    0 4px 12px rgba(5, 150, 105, 0.35),
+    0 0 0 3px rgba(5, 150, 105, 0.15);
+}
+
+/* Word in vocabulary indicator - subtle checkmark glow */
+.clickable-word.in-vocabulary {
+  background: linear-gradient(to bottom, transparent 80%, rgba(16, 185, 129, 0.2) 80%);
+  position: relative;
+}
+
+.clickable-word.in-vocabulary::after {
+  content: '✓';
+  position: absolute;
+  top: -6px;
+  right: -4px;
+  font-size: 9px;
+  color: #10b981;
+  background: white;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.clickable-word.aramaic.in-vocabulary {
+  background: linear-gradient(to bottom, transparent 80%, rgba(5, 150, 105, 0.25) 80%);
+}
+
+.clickable-word.in-vocabulary:hover {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(5, 150, 105, 0.08) 100%);
+}
+
+.clickable-word.in-vocabulary:hover::after {
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+/* Active state removes the checkmark to avoid clutter */
+.clickable-word.active.in-vocabulary::after {
+  display: none;
+}
+
+/* =============================================================================
+   Tooltip Styling
+   ============================================================================= */
+
+.word-tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 10px 15px -3px rgba(0, 0, 0, 0.15),
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  z-index: 10000;
+  white-space: normal;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  animation: tooltipFadeIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  min-width: 260px;
+  max-width: 420px;
+}
+
+/* Aramaic tooltip - teal gradient */
+.word-tooltip.aramaic-tooltip {
+  background: linear-gradient(135deg, #0f766e 0%, #047857 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1rem;
+  min-width: 200px;
+  max-width: 320px;
+  box-shadow: 0 8px 24px rgba(5, 150, 105, 0.35);
+  text-align: center;
+}
+
+/* Tooltip arrow */
+.word-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-top-color: var(--bg-elevated);
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.05));
+}
+
+.word-tooltip::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 9px solid transparent;
+  border-top-color: var(--border);
+}
+
+.word-tooltip.aramaic-tooltip::after {
+  border-top-color: #047857;
+}
+
+.word-tooltip.aramaic-tooltip::before {
+  display: none;
+}
+
+/* Tooltip content */
+.tooltip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-light, rgba(0,0,0,0.08));
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.tooltip-close-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--bg-secondary, #f3f4f6);
+  border: 1px solid var(--border-light, rgba(0,0,0,0.1));
+  font-size: 16px;
+  color: var(--text-muted, #9ca3af);
+  cursor: pointer;
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tooltip-close-btn:hover {
+  background: var(--bg-tertiary, #e5e7eb);
+  color: var(--text-primary, #374151);
+  transform: scale(1.1);
+}
+
+.tooltip-close-btn:active {
+  transform: scale(0.95);
+}
+
+.word-tooltip.aramaic-tooltip .tooltip-close-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.word-tooltip.aramaic-tooltip .tooltip-close-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+}
+
+.word-tooltip.aramaic-tooltip .tooltip-header {
+  border-bottom-color: rgba(255, 255, 255, 0.15);
+}
+
+.tooltip-word {
+  font-size: 1.75em;
+  font-weight: 700;
+  color: var(--primary);
+  font-family: 'Frank Ruhl Libre', 'SBL Hebrew', 'Times New Roman', serif;
+  direction: rtl;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.word-tooltip.aramaic-tooltip .tooltip-word {
+  background: transparent;
+  color: white;
+  padding: 0;
+  font-size: 1.5rem;
+  font-family: 'Frank Ruhl Libre', 'SBL Hebrew', serif;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.language-badge {
+  background: rgba(255, 255, 255, 0.2);
+  color: #d1fae5;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(4px);
+}
+
+.tooltip-headword {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.headword-label {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.7rem;
+}
+
+.tooltip-translation {
+  font-size: 0.9em;
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  direction: ltr;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.word-tooltip.aramaic-tooltip .tooltip-translation {
+  color: white;
+  font-size: 1rem;
+}
+
+.tooltip-french {
+  font-size: 0.85em;
+  color: var(--primary);
+  font-family: 'Inter', sans-serif;
+  direction: ltr;
+  padding-top: 6px;
+  border-top: 1px solid var(--border-light);
+  margin-top: 4px;
+  width: 100%;
+  text-align: center;
+}
+
+/* Loading state */
+.tooltip-loading {
+  font-size: 0.85em;
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+  font-style: italic;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.word-tooltip.aramaic-tooltip .tooltip-loading {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* No translation available - enhanced empty state */
+.tooltip-no-translation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1rem;
+  text-align: center;
+  width: 100%;
+}
+
+.no-translation-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--bg-secondary, #f3f4f6) 0%, var(--bg-tertiary, #e5e7eb) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--text-muted, #9ca3af);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.no-translation-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #6b7280);
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+}
+
+.no-translation-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted, #9ca3af);
+  font-family: 'Inter', sans-serif;
+  line-height: 1.4;
+  max-width: 220px;
+}
+
+.no-translation-word-display {
+  font-family: 'Frank Ruhl Libre', 'SBL Hebrew', serif;
+  font-size: 1.1rem;
+  color: var(--text-primary, #374151);
+  background: var(--bg-secondary, rgba(0,0,0,0.04));
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  direction: rtl;
+}
+
+/* Aramaic no-translation styling */
+.word-tooltip.aramaic-tooltip .tooltip-no-translation {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.word-tooltip.aramaic-tooltip .no-translation-icon {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%);
+  color: rgba(255, 255, 255, 0.7);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.word-tooltip.aramaic-tooltip .no-translation-text {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.word-tooltip.aramaic-tooltip .no-translation-hint {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.word-tooltip.aramaic-tooltip .no-translation-word-display {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* =============================================================================
+   Scholarly Tooltip Enhancements
+   Multi-source dictionary display for professional Torah study
+   ============================================================================= */
+
+/* Hebrew badge styling */
+.language-badge.hebrew-badge {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: white;
+  font-size: 0.6rem;
+}
+
+/* Root/Headword info section */
+.tooltip-root-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #6b7280);
+  width: 100%;
+}
+
+.word-tooltip.aramaic-tooltip .tooltip-root-info {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.root-headword-row {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.root-display, .headword-display {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.6rem;
+  background: var(--bg-secondary, rgba(0,0,0,0.04));
+  border-radius: 6px;
+}
+
+.word-tooltip.aramaic-tooltip .root-display,
+.word-tooltip.aramaic-tooltip .headword-display {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.info-label-hebrew {
+  font-size: 0.7rem;
+  color: var(--text-muted, #9ca3af);
+  font-weight: 600;
+  font-family: 'Frank Ruhl Libre', serif;
+}
+
+.info-label {
+  font-size: 0.7rem;
+  color: var(--text-muted, #9ca3af);
+  font-weight: 500;
+}
+
+.word-tooltip.aramaic-tooltip .info-label,
+.word-tooltip.aramaic-tooltip .info-label-hebrew {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Morphology/Grammar tags */
+.tooltip-morphology {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0.25rem 0;
+}
+
+.morph-tag {
+  font-size: 0.65rem;
+  padding: 0.15rem 0.4rem;
+  background: var(--bg-tertiary, rgba(0,0,0,0.08));
+  color: var(--text-secondary, #6b7280);
+  border-radius: 3px;
+  text-transform: capitalize;
+  font-weight: 500;
+}
+
+/* Specific morphology tag styling */
+.morph-tag.pos-tag {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: white;
+}
+
+.morph-tag.binyan-tag {
+  background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+  color: white;
+  font-weight: 600;
+}
+
+.morph-tag.tense-tag {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: white;
+}
+
+.morph-tag.gender-tag {
+  background: var(--bg-tertiary, rgba(0,0,0,0.08));
+  font-size: 0.75rem;
+}
+
+.morph-tag.state-tag {
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: white;
+}
+
+.word-tooltip.aramaic-tooltip .morph-tag {
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.word-tooltip.aramaic-tooltip .morph-tag.pos-tag,
+.word-tooltip.aramaic-tooltip .morph-tag.binyan-tag,
+.word-tooltip.aramaic-tooltip .morph-tag.tense-tag,
+.word-tooltip.aramaic-tooltip .morph-tag.state-tag {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+}
+
+/* Headword Hebrew styling */
+.headword-hebrew {
+  font-family: 'Frank Ruhl Libre', 'SBL Hebrew', serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* Cognates display */
+.cognates-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--text-muted, #9ca3af);
+}
+
+.cognate-list {
+  font-style: italic;
+  color: var(--text-secondary, #6b7280);
+}
+
+.word-tooltip.aramaic-tooltip .cognates-hint {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.word-tooltip.aramaic-tooltip .cognate-list {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+
+/* =============================================================================
+   Strong's Number Badge - Professional scholarly reference
+   ============================================================================= */
+
+.strong-number {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.25rem;
+}
+
+.strong-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.5rem;
+  background: linear-gradient(135deg, #d97706, #f59e0b);
+  color: white;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  box-shadow: 0 1px 3px rgba(217, 119, 6, 0.3);
+}
+
+.word-tooltip.aramaic-tooltip .strong-badge {
+  background: linear-gradient(135deg, #0f766e, #14b8a6);
+}
+
+/* Root Hebrew styling */
+.root-hebrew {
+  font-family: 'Frank Ruhl Libre', 'SBL Hebrew', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary, #4f46e5);
+}
+
+.word-tooltip.aramaic-tooltip .root-hebrew {
+  color: #d1fae5;
+}
+
+/* =============================================================================
+   Multiple Definitions Display - Scholarly numbered list
+   ============================================================================= */
+
+.definitions-list {
+  width: 100%;
+  text-align: left;
+  padding: 0.75rem;
+  background: var(--bg-secondary, rgba(0,0,0,0.03));
+  border-radius: 12px;
+  max-height: 220px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.definitions-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.definitions-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.definitions-list::-webkit-scrollbar-thumb {
+  background: var(--border, #d1d5db);
+  border-radius: 3px;
+}
+
+.definitions-list::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted, #9ca3af);
+}
+
+.word-tooltip.aramaic-tooltip .definitions-list {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.definitions-header {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-muted, #9ca3af);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 0.3rem;
+  padding-bottom: 0.2rem;
+  border-bottom: 1px solid var(--border-light, rgba(0,0,0,0.08));
+}
+
+.word-tooltip.aramaic-tooltip .definitions-header {
+  color: rgba(255, 255, 255, 0.5);
+  border-bottom-color: rgba(255, 255, 255, 0.15);
+}
+
+.definition-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.6rem 0.5rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  background: var(--bg-elevated, white);
+  border-radius: 8px;
+  margin-bottom: 0.4rem;
+  border: 1px solid var(--border-light, rgba(0,0,0,0.06));
+  transition: all 0.15s ease;
+}
+
+.definition-item:hover {
+  border-color: var(--primary-light, rgba(79, 70, 229, 0.3));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.definition-item:last-child {
+  margin-bottom: 0;
+}
+
+.word-tooltip.aramaic-tooltip .definition-item {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.word-tooltip.aramaic-tooltip .definition-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.def-source-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, var(--primary, #4f46e5), #6366f1);
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  width: fit-content;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.word-tooltip.aramaic-tooltip .def-source-badge {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.15));
+}
+
+.def-text {
+  color: var(--text-primary, #374151);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.word-tooltip.aramaic-tooltip .def-text {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.def-french {
+  color: var(--primary, #4f46e5);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-style: italic;
+  padding-left: 0.4rem;
+  border-left: 2px solid var(--primary-light, rgba(79, 70, 229, 0.3));
+}
+
+.word-tooltip.aramaic-tooltip .def-french {
+  color: rgba(167, 243, 208, 0.9);
+  border-left-color: rgba(255, 255, 255, 0.2);
+}
+
+.definitions-more {
+  text-align: center;
+  font-size: 0.7rem;
+  color: var(--primary, #4f46e5);
+  cursor: pointer;
+  padding-top: 0.2rem;
+  opacity: 0.8;
+}
+
+.word-tooltip.aramaic-tooltip .definitions-more {
+  color: #6ee7b7;
+}
+
+/* Expandable definitions toggle button */
+.definitions-toggle {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-size: 0.7rem;
+  color: var(--primary, #4f46e5);
+  background: var(--bg-tertiary, rgba(79, 70, 229, 0.08));
+  border: none;
+  border-radius: 4px;
+  padding: 0.4rem 0.6rem;
+  margin-top: 0.4rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.definitions-toggle:hover {
+  background: var(--primary-light, rgba(79, 70, 229, 0.15));
+  color: var(--primary-hover, #4338ca);
+}
+
+.word-tooltip.aramaic-tooltip .definitions-toggle {
+  color: #6ee7b7;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.word-tooltip.aramaic-tooltip .definitions-toggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Expanded state */
+.definitions-list.expanded {
+  max-height: 350px;
+}
+
+/* =============================================================================
+   Skeleton Loader - Professional loading animation
+   ============================================================================= */
+
+.tooltip-skeleton {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.5rem;
+}
+
+.skeleton-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.skeleton-word {
+  width: 70px;
+  height: 28px;
+  background: linear-gradient(90deg,
+    var(--bg-secondary, #f3f4f6) 0%,
+    var(--bg-tertiary, #e5e7eb) 20%,
+    var(--bg-secondary, #f3f4f6) 40%,
+    var(--bg-secondary, #f3f4f6) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.2s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+.skeleton-badge {
+  width: 45px;
+  height: 20px;
+  background: linear-gradient(90deg,
+    var(--bg-secondary, #f3f4f6) 0%,
+    var(--bg-tertiary, #e5e7eb) 20%,
+    var(--bg-secondary, #f3f4f6) 40%,
+    var(--bg-secondary, #f3f4f6) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.2s ease-in-out infinite;
+  animation-delay: 0.1s;
+  border-radius: 10px;
+}
+
+.skeleton-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.6rem;
+  background: var(--bg-secondary, rgba(0,0,0,0.03));
+  border-radius: 10px;
+}
+
+.skeleton-line {
+  height: 14px;
+  background: linear-gradient(90deg,
+    var(--bg-tertiary, #e5e7eb) 0%,
+    var(--border-light, #d1d5db) 20%,
+    var(--bg-tertiary, #e5e7eb) 40%,
+    var(--bg-tertiary, #e5e7eb) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.2s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+.skeleton-line.short { width: 40%; animation-delay: 0.15s; }
+.skeleton-line.medium { width: 65%; animation-delay: 0.1s; }
+.skeleton-line.long { width: 90%; animation-delay: 0.05s; }
+
+.skeleton-definitions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.6rem;
+  background: var(--bg-secondary, rgba(0,0,0,0.03));
+  border-radius: 10px;
+}
+
+.skeleton-def {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.5rem;
+  background: var(--bg-elevated, white);
+  border-radius: 8px;
+  border: 1px solid var(--border-light, rgba(0,0,0,0.05));
+}
+
+.skeleton-source {
+  width: 55px;
+  height: 16px;
+  background: linear-gradient(90deg,
+    var(--primary-light, rgba(79, 70, 229, 0.15)) 0%,
+    var(--primary, rgba(79, 70, 229, 0.3)) 20%,
+    var(--primary-light, rgba(79, 70, 229, 0.15)) 40%,
+    var(--primary-light, rgba(79, 70, 229, 0.15)) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.2s ease-in-out infinite;
+  animation-delay: 0.2s;
+  border-radius: 4px;
+}
+
+@keyframes skeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Aramaic skeleton styles */
+.word-tooltip.aramaic-tooltip .skeleton-word,
+.word-tooltip.aramaic-tooltip .skeleton-badge,
+.word-tooltip.aramaic-tooltip .skeleton-line {
+  background: linear-gradient(90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.5s infinite;
+}
+
+.word-tooltip.aramaic-tooltip .skeleton-info,
+.word-tooltip.aramaic-tooltip .skeleton-definitions {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.word-tooltip.aramaic-tooltip .skeleton-source {
+  background: linear-gradient(90deg,
+    rgba(110, 231, 183, 0.2) 25%,
+    rgba(110, 231, 183, 0.35) 50%,
+    rgba(110, 231, 183, 0.2) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.5s infinite;
+}
+
+/* =============================================================================
+   Scholarly Tooltip Enhancements - Professional Layout
+   ============================================================================= */
+
+.scholarly-tooltip {
+  min-width: 300px;
+  max-width: 440px;
+  max-height: 75vh;
+  overflow-y: auto;
+  white-space: normal;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.scholarly-tooltip::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scholarly-tooltip::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scholarly-tooltip::-webkit-scrollbar-thumb {
+  background: var(--border, #d1d5db);
+  border-radius: 3px;
+}
+
+/* Center scholarly tooltip on screen for better visibility */
+.scholarly-tooltip {
+  position: fixed;
+  bottom: auto;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+}
+
+.scholarly-tooltip::after,
+.scholarly-tooltip::before {
+  display: none;
+}
+
+/* Add backdrop shadow for modal effect */
+.clickable-word.active::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 9999;
+  pointer-events: none;
+  animation: backdropFadeIn 0.25s ease-out;
+}
+
+/* Scholarly Info Section - Root, Strong's, Morphology */
+.scholarly-info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 100%;
+  padding: 0.4rem;
+  background: var(--bg-secondary, rgba(0,0,0,0.03));
+  border-radius: 6px;
+  margin: 0.35rem 0;
+}
+
+.word-tooltip.aramaic-tooltip .scholarly-info-section {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+
+
+/* Save word button in tooltip */
+.save-word-btn {
+  margin-top: 8px;
+  padding: 8px 20px;
+  background: linear-gradient(135deg, var(--primary, #4f46e5), #6366f1);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+}
+
+.save-word-btn::before {
+  content: '+';
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.save-word-btn:hover {
+  background: linear-gradient(135deg, #4338ca, #4f46e5);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+
+.save-word-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.word-tooltip.aramaic-tooltip .save-word-btn {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.15));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.word-tooltip.aramaic-tooltip .save-word-btn:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.25));
+}
+
+.in-vocab-badge {
+  margin-top: 8px;
+  padding: 6px 14px;
+  background: linear-gradient(135deg, var(--success, #10b981), #34d399);
+  color: white;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.in-vocab-badge::before {
+  content: '✓';
+  font-size: 11px;
+}
+
+.word-tooltip.aramaic-tooltip .in-vocab-badge {
+  background: linear-gradient(135deg, rgba(167, 243, 208, 0.3), rgba(110, 231, 183, 0.2));
+  color: #a7f3d0;
+}
+
+/* =============================================================================
+   Enlarged First Letter - Professional Study Display
+   ============================================================================= */
+
+.clickable-word.first-word {
+  display: inline;
+}
+
+.enlarged-letter {
+  font-size: 2.4em;
+  font-weight: 700;
+  color: var(--primary, #4f46e5);
+  line-height: 1;
+  vertical-align: baseline;
+  display: inline;
+  margin-left: -0.05em;
+}
+
+.clickable-word.first-word:hover .enlarged-letter {
+  color: var(--primary-hover, #4338ca);
+}
+
+
+/* =============================================================================
+   Dark Mode
+   ============================================================================= */
+
+.app.dark-mode .word-tooltip {
+  background: var(--bg-elevated);
+  border-color: var(--border);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.3),
+    0 10px 15px -3px rgba(0, 0, 0, 0.4),
+    0 20px 25px -5px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.app.dark-mode .word-tooltip::after {
+  border-top-color: var(--border);
+}
+
+.app.dark-mode .tooltip-close-btn {
+  background: var(--bg-tertiary, #374151);
+  border-color: var(--border, #4b5563);
+  color: var(--text-muted, #9ca3af);
+}
+
+.app.dark-mode .tooltip-close-btn:hover {
+  background: var(--bg-secondary, #4b5563);
+  color: var(--text-primary, #f3f4f6);
+}
+
+.app.dark-mode .clickable-word.active::before {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.app.dark-mode .definition-item {
+  background: var(--bg-tertiary, #374151);
+  border-color: var(--border, #4b5563);
+}
+
+.app.dark-mode .definition-item:hover {
+  border-color: var(--primary-light, rgba(129, 140, 248, 0.4));
+}
+
+.app.dark-mode .definitions-list {
+  scrollbar-color: var(--border, #4b5563) transparent;
+}
+
+/* Dark mode no-translation state */
+.app.dark-mode .no-translation-icon {
+  background: linear-gradient(135deg, var(--bg-tertiary, #374151) 0%, var(--bg-secondary, #4b5563) 100%);
+  color: var(--text-muted, #9ca3af);
+}
+
+.app.dark-mode .no-translation-text {
+  color: var(--text-secondary, #d1d5db);
+}
+
+.app.dark-mode .no-translation-hint {
+  color: var(--text-muted, #9ca3af);
+}
+
+.app.dark-mode .no-translation-word-display {
+  background: var(--bg-tertiary, rgba(255,255,255,0.08));
+  color: var(--text-primary, #f3f4f6);
+}
+
+.app.dark-mode .enlarged-letter {
+  color: var(--primary-light, #818cf8);
+}
+
+.app.dark-mode .clickable-word.first-word:hover .enlarged-letter {
+  color: var(--primary, #6366f1);
+}
+
+/* Dark mode Hebrew word styling */
+.app.dark-mode .clickable-word.hebrew.has-translation {
+  background: linear-gradient(to bottom, transparent 85%, rgba(129, 140, 248, 0.15) 85%);
+}
+
+.app.dark-mode .clickable-word.hebrew:hover {
+  background: rgba(129, 140, 248, 0.12);
+  box-shadow: 0 2px 8px rgba(129, 140, 248, 0.15);
+}
+
+.app.dark-mode .clickable-word.hebrew.has-translation:hover {
+  background: linear-gradient(135deg, rgba(129, 140, 248, 0.15) 0%, rgba(99, 102, 241, 0.1) 100%);
+  color: #a5b4fc;
+}
+
+.app.dark-mode .clickable-word.hebrew.active {
+  background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+  box-shadow:
+    0 4px 12px rgba(99, 102, 241, 0.4),
+    0 0 0 3px rgba(129, 140, 248, 0.2);
+}
+
+/* Dark mode Aramaic */
+.app.dark-mode .clickable-word.aramaic {
+  color: #34d399;
+}
+
+.app.dark-mode .clickable-word.aramaic:hover {
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.12) 0%, rgba(16, 185, 129, 0.08) 100%);
+  color: #6ee7b7;
+  box-shadow: 0 2px 8px rgba(52, 211, 153, 0.15);
+}
+
+.app.dark-mode .clickable-word.aramaic.active {
+  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  color: white;
+  box-shadow:
+    0 4px 12px rgba(52, 211, 153, 0.4),
+    0 0 0 3px rgba(52, 211, 153, 0.2);
+}
+
+/* Dark mode vocabulary indicator */
+.app.dark-mode .clickable-word.in-vocabulary {
+  background: linear-gradient(to bottom, transparent 80%, rgba(52, 211, 153, 0.2) 80%);
+}
+
+.app.dark-mode .clickable-word.in-vocabulary::after {
+  color: #34d399;
+  background: var(--bg-elevated, #1f2937);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* =============================================================================
+   Animations
+   ============================================================================= */
+
+@keyframes tooltipFadeIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.92);
+  }
+  60% {
+    transform: translate(-50%, -50%) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes backdropFadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(4px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* =============================================================================
+   Responsive
+   ============================================================================= */
+
+@media (max-width: 768px) {
+  .word-tooltip {
+    position: fixed;
+    bottom: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 16px 20px;
+  }
+
+  .word-tooltip::after,
+  .word-tooltip::before {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .clickable-text.aramaic {
+    font-size: 1.1rem;
+  }
+
+  .word-tooltip.aramaic-tooltip {
+    min-width: 180px;
+    max-width: 280px;
+    padding: 0.6rem 0.8rem;
+  }
+}
+
+/* =============================================================================
+   LexiconPanel Integration
+   ============================================================================= */
+
+.word-tooltip.lexicon-panel-wrapper {
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  min-width: auto;
+  max-width: none;
+}
+
+.word-tooltip.lexicon-panel-wrapper::after,
+.word-tooltip.lexicon-panel-wrapper::before {
+  display: none;
+}
+
+.word-tooltip.lexicon-panel-wrapper .lexicon-panel {
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .word-tooltip.lexicon-panel-wrapper {
+    position: fixed;
+    bottom: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000;
+  }
+
+  .word-tooltip.lexicon-panel-wrapper .lexicon-panel {
+    max-width: 90vw;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+}
+
+/* =============================================================================
+   WORD DEFINITION CARD - Scholarly Lexicon Design
+   Professional dictionary-style layout for Torah study
+   ============================================================================= */
+
+/* Remove backdrop for clickable words */
+.clickable-word.active::before {
+  display: none;
+}
+
+/* Main card - Classic paper/book aesthetic */
+.word-definition-card {
+  margin-top: 14px;
+  background: linear-gradient(180deg, #fefdfb 0%, #faf9f7 100%);
+  border: 1px solid #e8e4dc;
+  border-radius: 4px;
+  overflow: hidden;
+  animation: wordCardSlideDown 0.2s ease-out;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.05),
+    0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+@keyframes wordCardSlideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header - Dictionary entry style */
+.word-def-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px 20px 12px;
+  border-bottom: 2px solid #1a365d;
+  background: linear-gradient(180deg, #ffffff 0%, #faf9f7 100%);
+}
+
+.word-def-header-left {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* Main headword - Large, prominent */
+.word-def-word {
+  font-family: 'Frank Ruhl Libre', 'SBL Hebrew', 'Times New Roman', serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1a365d;
+  letter-spacing: 0.01em;
+}
+
+/* Language indicator - Scholarly abbreviation */
+.word-def-lang-badge {
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  font-style: italic;
+  font-family: 'Times New Roman', Georgia, serif;
+  border-radius: 2px;
+}
+
+.word-def-lang-badge.hebrew {
+  background: transparent;
+  color: #1a365d;
+  border: 1px solid #1a365d;
+}
+
+.word-def-lang-badge.aramaic {
+  background: transparent;
+  color: #065f46;
+  border: 1px solid #065f46;
+}
+
+/* Strong's number - Reference style */
+.word-def-strong {
+  padding: 2px 8px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', monospace;
+  border-radius: 2px;
+  border: 1px solid #fcd34d;
+}
+
+.word-def-close {
+  width: 26px;
+  height: 26px;
+  border-radius: 3px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #6b7280;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.word-def-close:hover {
+  background: #f3f4f6;
+  color: #374151;
+  border-color: #9ca3af;
+}
+
+/* Root/Headword - Etymological info */
+.word-def-root-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 8px 20px;
+  background: #f8f7f4;
+  border-bottom: 1px solid #e8e4dc;
+  font-family: 'Times New Roman', Georgia, serif;
+}
+
+.word-def-root,
+.word-def-headword {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.root-label,
+.headword-label {
+  font-size: 0.72rem;
+  color: #78716c;
+  font-style: italic;
+}
+
+.root-value,
+.headword-value {
+  font-family: 'Frank Ruhl Libre', 'SBL Hebrew', serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #7c2d12;
+}
+
+/* Morphology - Grammatical tags */
+.word-def-morphology {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  border-bottom: 1px solid #e8e4dc;
+  font-family: 'Times New Roman', Georgia, serif;
+}
+
+.word-def-morphology .morph-tag {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  background: transparent;
+  color: #57534e;
+  border: 1px solid #d6d3d1;
+  border-radius: 2px;
+  font-style: italic;
+}
+
+.word-def-morphology .morph-tag.pos {
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fecaca;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.word-def-morphology .morph-tag.binyan {
+  background: #f5f3ff;
+  color: #5b21b6;
+  border-color: #ddd6fe;
+  font-weight: 600;
+  font-style: normal;
+}
+
+/* Loading State */
+.word-def-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 28px;
+  color: #78716c;
+  font-size: 0.88rem;
+  font-family: 'Times New Roman', Georgia, serif;
+  font-style: italic;
+}
+
+.word-def-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #e7e5e4;
+  border-top-color: #1a365d;
+  border-radius: 50%;
+  animation: wordDefSpin 0.8s linear infinite;
+}
+
+@keyframes wordDefSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Definitions Block */
+.word-def-block {
+  padding: 16px 20px;
+}
+
+.word-def-block-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e8e4dc;
+}
+
+.word-def-flag {
+  font-size: 1rem;
+}
+
+.word-def-code {
+  padding: 2px 8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: 'SFMono-Regular', monospace;
+  border-radius: 2px;
+}
+
+.word-def-block.english .word-def-code {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.word-def-source {
+  font-size: 0.72rem;
+  color: #78716c;
+  margin-left: auto;
+  font-style: italic;
+  font-family: 'Times New Roman', Georgia, serif;
+}
+
+/* Sources List - Dictionary entries */
+.word-def-sources-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.word-def-source-item {
+  padding: 14px 0;
+  border-bottom: 1px solid #e8e4dc;
+  transition: background 0.15s ease;
+}
+
+.word-def-source-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.word-def-source-item:hover {
+  background: rgba(250, 249, 247, 0.5);
+}
+
+/* Source citation - Academic style */
+.word-def-source-item .source-badge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 6px;
+  font-family: 'Times New Roman', Georgia, serif;
+}
+
+.word-def-source-item .source-badge::before {
+  content: '▸';
+  color: #1a365d;
+  font-size: 0.7rem;
+  margin-right: 4px;
+}
+
+.word-def-source-item .source-badge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1a365d;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.word-def-source-item .source-year {
+  font-weight: 400;
+  font-size: 0.72rem;
+  color: #78716c;
+  font-style: italic;
+  text-transform: none;
+}
+
+/* Definition text - Scholarly typography */
+.word-def-source-item .source-text {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: #292524;
+  font-family: 'Crimson Pro', 'Times New Roman', Georgia, serif;
+  text-align: justify;
+  hyphens: auto;
+}
+
+/* French translation - Indented secondary */
+.word-def-source-item .source-french {
+  margin-top: 10px;
+  margin-left: 16px;
+  padding: 10px 14px;
+  background: #f0f9ff;
+  border-left: 3px solid #0369a1;
+  border-radius: 0 4px 4px 0;
+}
+
+.word-def-source-item .french-loading {
+  font-size: 0.82rem;
+  color: #64748b;
+  font-style: italic;
+  font-family: 'Times New Roman', Georgia, serif;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.word-def-source-item .french-text {
+  font-size: 0.88rem;
+  color: #0c4a6e;
+  font-family: 'Crimson Pro', 'Times New Roman', Georgia, serif;
+  line-height: 1.55;
+  font-style: italic;
+}
+
+/* Empty State */
+.word-def-empty {
+  padding: 28px;
+  text-align: center;
+  color: #78716c;
+  font-size: 0.9rem;
+  font-family: 'Times New Roman', Georgia, serif;
+  font-style: italic;
+}
+
+/* Footer - Action bar */
+.word-def-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 20px;
+  background: #f8f7f4;
+  border-top: 1px solid #e8e4dc;
+}
+
+.word-def-save-btn {
+  padding: 8px 18px;
+  background: #1a365d;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: 'Inter', -apple-system, sans-serif;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  letter-spacing: 0.02em;
+}
+
+.word-def-save-btn:hover {
+  background: #1e40af;
+  box-shadow: 0 2px 8px rgba(26, 54, 93, 0.25);
+}
+
+.word-def-saved {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background: #d1fae5;
+  color: #065f46;
+  border-radius: 3px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid #6ee7b7;
+}
+
+.word-def-saved::before {
+  content: '✓';
+  font-weight: 700;
+}
+
+/* =============================================================================
+   Aramaic Theme - Green scholarly accents
+   ============================================================================= */
+
+.word-definition-card.aramaic {
+  border-color: #d1fae5;
+}
+
+.word-definition-card.aramaic .word-def-header {
+  border-bottom-color: #065f46;
+}
+
+.word-definition-card.aramaic .word-def-word {
+  color: #065f46;
+}
+
+.word-definition-card.aramaic .word-def-spinner {
+  border-top-color: #065f46;
+}
+
+.word-definition-card.aramaic .word-def-source-item .source-badge {
+  color: #065f46;
+}
+
+.word-definition-card.aramaic .word-def-source-item .source-badge::before {
+  color: #065f46;
+}
+
+.word-definition-card.aramaic .root-value,
+.word-definition-card.aramaic .headword-value {
+  color: #065f46;
+}
+
+.word-definition-card.aramaic .word-def-save-btn {
+  background: #065f46;
+}
+
+.word-definition-card.aramaic .word-def-save-btn:hover {
+  background: #047857;
+  box-shadow: 0 2px 8px rgba(6, 95, 70, 0.25);
+}
+
+/* =============================================================================
+   Dark Mode - Scholarly dark theme
+   ============================================================================= */
+
+.app.dark-mode .word-definition-card {
+  background: linear-gradient(180deg, #1e1e1e 0%, #171717 100%);
+  border-color: #3f3f46;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.app.dark-mode .word-def-header {
+  background: linear-gradient(180deg, #262626 0%, #1e1e1e 100%);
+  border-bottom-color: #a5b4fc;
+}
+
+.app.dark-mode .word-def-word {
+  color: #e2e8f0;
+}
+
+.app.dark-mode .word-def-lang-badge.hebrew {
+  color: #a5b4fc;
+  border-color: #a5b4fc;
+}
+
+.app.dark-mode .word-def-lang-badge.aramaic {
+  color: #6ee7b7;
+  border-color: #6ee7b7;
+}
+
+.app.dark-mode .word-def-strong {
+  background: #422006;
+  border-color: #a16207;
+  color: #fcd34d;
+}
+
+.app.dark-mode .word-def-close {
+  background: #262626;
+  border-color: #3f3f46;
+  color: #a1a1aa;
+}
+
+.app.dark-mode .word-def-close:hover {
+  background: #3f3f46;
+  color: #e4e4e7;
+}
+
+.app.dark-mode .word-def-root-info {
+  background: #1a1a1a;
+  border-bottom-color: #3f3f46;
+}
+
+.app.dark-mode .root-label,
+.app.dark-mode .headword-label {
+  color: #71717a;
+}
+
+.app.dark-mode .root-value,
+.app.dark-mode .headword-value {
+  color: #fca5a5;
+}
+
+.app.dark-mode .word-def-morphology {
+  border-bottom-color: #3f3f46;
+}
+
+.app.dark-mode .word-def-morphology .morph-tag {
+  background: transparent;
+  color: #a1a1aa;
+  border-color: #52525b;
+}
+
+.app.dark-mode .word-def-morphology .morph-tag.pos {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.app.dark-mode .word-def-morphology .morph-tag.binyan {
+  background: rgba(139, 92, 246, 0.15);
+  color: #c4b5fd;
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.app.dark-mode .word-def-loading {
+  color: #71717a;
+}
+
+.app.dark-mode .word-def-spinner {
+  border-color: #3f3f46;
+  border-top-color: #a5b4fc;
+}
+
+.app.dark-mode .word-def-block-header {
+  border-bottom-color: #3f3f46;
+}
+
+.app.dark-mode .word-def-block.english .word-def-code {
+  background: rgba(16, 185, 129, 0.15);
+  color: #6ee7b7;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.app.dark-mode .word-def-source {
+  color: #71717a;
+}
+
+.app.dark-mode .word-def-source-item {
+  border-bottom-color: #3f3f46;
+}
+
+.app.dark-mode .word-def-source-item:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.app.dark-mode .word-def-source-item .source-badge {
+  color: #a5b4fc;
+}
+
+.app.dark-mode .word-def-source-item .source-badge::before {
+  color: #a5b4fc;
+}
+
+.app.dark-mode .word-def-source-item .source-year {
+  color: #71717a;
+}
+
+.app.dark-mode .word-def-source-item .source-text {
+  color: #d4d4d8;
+}
+
+.app.dark-mode .word-def-source-item .source-french {
+  background: rgba(14, 165, 233, 0.1);
+  border-left-color: #0ea5e9;
+}
+
+.app.dark-mode .word-def-source-item .french-loading {
+  color: #71717a;
+}
+
+.app.dark-mode .word-def-source-item .french-text {
+  color: #7dd3fc;
+}
+
+.app.dark-mode .word-def-empty {
+  color: #71717a;
+}
+
+.app.dark-mode .word-def-footer {
+  background: #1a1a1a;
+  border-top-color: #3f3f46;
+}
+
+.app.dark-mode .word-def-save-btn {
+  background: #4f46e5;
+}
+
+.app.dark-mode .word-def-save-btn:hover {
+  background: #6366f1;
+}
+
+.app.dark-mode .word-def-saved {
+  background: rgba(16, 185, 129, 0.15);
+  color: #6ee7b7;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+/* Dark mode Aramaic */
+.app.dark-mode .word-definition-card.aramaic {
+  border-color: #065f46;
+}
+
+.app.dark-mode .word-definition-card.aramaic .word-def-header {
+  border-bottom-color: #6ee7b7;
+}
+
+.app.dark-mode .word-definition-card.aramaic .word-def-word {
+  color: #6ee7b7;
+}
+
+.app.dark-mode .word-definition-card.aramaic .word-def-spinner {
+  border-top-color: #6ee7b7;
+}
+
+.app.dark-mode .word-definition-card.aramaic .word-def-source-item .source-badge {
+  color: #6ee7b7;
+}
+
+.app.dark-mode .word-definition-card.aramaic .word-def-source-item .source-badge::before {
+  color: #6ee7b7;
+}
+
+.app.dark-mode .word-definition-card.aramaic .root-value,
+.app.dark-mode .word-definition-card.aramaic .headword-value {
+  color: #6ee7b7;
+}
+
+.app.dark-mode .word-definition-card.aramaic .word-def-save-btn {
+  background: #059669;
+}
+
+.app.dark-mode .word-definition-card.aramaic .word-def-save-btn:hover {
+  background: #10b981;
+}

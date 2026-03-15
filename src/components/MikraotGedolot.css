@@ -1,0 +1,1540 @@
+/* MikraotGedolot - Premium Traditional Torah Page Layout */
+/* Authentic Mikraot Gedolot styling like a real printed sefer */
+
+/* ===== PAPER TEXTURE & BOOK EFFECT ===== */
+.mikraot-gedolot {
+  --paper-color: #faf6ed;
+  --paper-dark: #f0e8d8;
+  --ink-black: #1a1612;
+  --gold-accent: #8b6914;
+  --gold-light: #c4a054;
+  --border-brown: #6b4f1d;
+  --shadow-color: rgba(60, 40, 20, 0.15);
+
+  position: relative;
+  background: var(--paper-color);
+  margin: 1.5rem auto;
+  max-width: 1400px;
+  font-family: 'David Libre', 'David', 'Frank Ruehl CLM', 'Times New Roman', serif;
+
+  /* Realistic book shadow with depth */
+  box-shadow:
+    /* Outer glow */
+    0 0 60px rgba(139, 105, 20, 0.08),
+    /* Main drop shadow */
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    /* Book spine shadow */
+    -8px 0 15px -5px rgba(0, 0, 0, 0.1),
+    8px 0 15px -5px rgba(0, 0, 0, 0.1),
+    /* Inner page depth */
+    inset 0 0 80px rgba(139, 105, 20, 0.03);
+
+  /* Gilded edge effect */
+  border: none;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+/* Gold gilded edges */
+.mikraot-gedolot::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 5px solid transparent;
+  border-image: linear-gradient(
+    135deg,
+    #d4af37 0%,
+    #f4e4a6 15%,
+    #c4954a 30%,
+    #d4af37 50%,
+    #f4e4a6 70%,
+    #c4954a 85%,
+    #d4af37 100%
+  ) 1;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Inner decorative frame */
+.mikraot-gedolot::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  border: 2px double var(--border-brown);
+  border-radius: 1px;
+  pointer-events: none;
+  z-index: 9;
+}
+
+/* Paper texture overlay */
+.mikraot-gedolot .paper-texture {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    /* Paper grain */
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"),
+    /* Aged paper spots */
+    radial-gradient(ellipse at 20% 30%, rgba(139, 105, 20, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(139, 105, 20, 0.02) 0%, transparent 40%),
+    radial-gradient(ellipse at 60% 20%, rgba(100, 80, 40, 0.02) 0%, transparent 30%);
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.mikraot-gedolot.full-page {
+  min-height: 92vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== LOADING STATE ===== */
+.mikraot-gedolot.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  background: linear-gradient(180deg, var(--paper-color) 0%, var(--paper-dark) 100%);
+}
+
+.mg-loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  color: var(--border-brown);
+  font-size: 1.8rem;
+  text-align: center;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.mg-loading-sub {
+  font-size: 1.1rem;
+  color: #8b7355;
+  font-style: italic;
+}
+
+.mg-loading-spinner .loading-spinner {
+  width: 70px;
+  height: 70px;
+  animation: mg-spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  stroke: var(--gold-accent);
+}
+
+@keyframes mg-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== PAGE HEADER - Ornate Traditional Style ===== */
+.mg-page-header {
+  position: relative;
+  background: linear-gradient(
+    180deg,
+    #f5ead4 0%,
+    var(--paper-color) 60%,
+    var(--paper-color) 100%
+  );
+  padding: 2rem 2.5rem 1.5rem;
+  text-align: center;
+  z-index: 5;
+}
+
+/* Decorative header border */
+.mg-page-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 2rem;
+  right: 2rem;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--gold-accent) 10%,
+    var(--gold-light) 50%,
+    var(--gold-accent) 90%,
+    transparent 100%
+  );
+}
+
+/* Ornamental corners */
+.mg-page-header::before {
+  content: '❧';
+  position: absolute;
+  top: 50%;
+  left: 1.5rem;
+  transform: translateY(-50%);
+  font-size: 2rem;
+  color: var(--gold-accent);
+  opacity: 0.6;
+}
+
+.mg-page-title {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.mg-sefer {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--ink-black);
+  letter-spacing: 0.2em;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.8);
+  font-family: 'David Libre', 'Frank Ruehl CLM', serif;
+}
+
+.mg-perek {
+  font-size: 2.2rem;
+  color: var(--border-brown);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+
+.mg-page-label {
+  font-size: 1.5rem;
+  color: var(--gold-accent);
+  margin-top: 0.75rem;
+  letter-spacing: 0.4em;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-family: 'David Libre', serif;
+}
+
+/* ===== PAGE CONTROLS ===== */
+.mg-page-controls {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 20;
+}
+
+.mg-control-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--gold-accent);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--border-brown);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mg-control-btn:hover {
+  background: var(--gold-accent);
+  color: white;
+  transform: scale(1.05);
+}
+
+.mg-control-btn.active {
+  background: var(--gold-accent);
+  color: white;
+  box-shadow: 0 2px 12px rgba(107, 68, 35, 0.3);
+}
+
+.mg-control-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ===== TORAH TEXT BOX ===== */
+.mg-torah-box {
+  position: relative;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 252, 0.9) 0%,
+    var(--paper-color) 100%
+  );
+  padding: 2rem 3rem;
+  z-index: 5;
+  border-bottom: 1px solid rgba(196, 160, 84, 0.3);
+}
+
+/* Decorative line above Torah text */
+.mg-torah-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 3rem;
+  right: 3rem;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--gold-accent) 20%,
+    var(--gold-accent) 80%,
+    transparent
+  );
+}
+
+.mg-box-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.mg-box-title {
+  display: inline-block;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--border-brown);
+  padding: 0.5rem 3rem;
+  border: 2px solid var(--gold-accent);
+  border-radius: 30px;
+  background: linear-gradient(180deg, rgba(212, 175, 55, 0.1) 0%, transparent 100%);
+  letter-spacing: 0.15em;
+  box-shadow: 0 2px 10px rgba(139, 105, 20, 0.1);
+}
+
+.mg-torah-text {
+  font-size: 1.7rem;
+  line-height: 2.6;
+  color: var(--ink-black);
+  text-align: justify;
+  column-count: 2;
+  column-gap: 4rem;
+  column-rule: 1px solid rgba(196, 160, 84, 0.4);
+  hyphens: none;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1;
+}
+
+.mg-pasuk {
+  display: inline;
+}
+
+.mg-pasuk-num {
+  font-size: 0.65em;
+  color: var(--gold-accent);
+  vertical-align: super;
+  font-weight: 800;
+  margin-left: 0.3em;
+  margin-right: 0.1em;
+  font-family: 'Times New Roman', serif;
+}
+
+.mg-pasuk-text {
+  /* Inherits from parent */
+}
+
+.mg-torah-english {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed rgba(196, 160, 84, 0.5);
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: #5a5040;
+  font-style: italic;
+  column-count: 2;
+  column-gap: 4rem;
+  font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+/* ===== THREE COLUMN COMMENTARIES ===== */
+.mg-commentaries-row {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr 1fr;
+  flex: 1;
+  min-height: 450px;
+  position: relative;
+  z-index: 5;
+}
+
+.mg-column {
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Column dividers - ornate lines */
+.mg-column:not(:first-child)::before {
+  content: '';
+  position: absolute;
+  top: 2rem;
+  bottom: 2rem;
+  left: 0;
+  width: 2px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    var(--gold-accent) 10%,
+    var(--gold-accent) 90%,
+    transparent 100%
+  );
+}
+
+/* ===== COLUMN HEADERS ===== */
+.mg-col-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+  background: linear-gradient(
+    180deg,
+    rgba(212, 175, 55, 0.15) 0%,
+    transparent 100%
+  );
+  border-bottom: 2px solid rgba(196, 160, 84, 0.4);
+  border-radius: 8px 8px 0 0;
+  position: relative;
+}
+
+.mg-col-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 3px;
+  background: var(--gold-accent);
+  border-radius: 2px;
+}
+
+.mg-col-icon {
+  font-size: 1.4rem;
+}
+
+.mg-col-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--ink-black);
+  letter-spacing: 0.15em;
+  font-family: 'David Libre', 'Frank Ruehl CLM', serif;
+}
+
+.mg-col-content {
+  flex: 1;
+  overflow-y: auto;
+  font-size: 1.05rem;
+  line-height: 2;
+  padding-right: 0.75rem;
+  scroll-behavior: smooth;
+}
+
+/* Elegant scrollbar */
+.mg-col-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.mg-col-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mg-col-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--gold-light), var(--gold-accent));
+  border-radius: 3px;
+}
+
+.mg-col-content::-webkit-scrollbar-thumb:hover {
+  background: var(--border-brown);
+}
+
+/* ===== ONKELOS COLUMN ===== */
+.mg-onkelos-col {
+  background: linear-gradient(
+    135deg,
+    rgba(220, 252, 231, 0.2) 0%,
+    rgba(240, 253, 244, 0.3) 100%
+  );
+}
+
+.mg-onkelos-col .mg-col-header {
+  background: linear-gradient(180deg, rgba(34, 197, 94, 0.12) 0%, transparent 100%);
+  border-bottom-color: rgba(34, 197, 94, 0.3);
+}
+
+.mg-onkelos-col .mg-col-header::after {
+  background: #22c55e;
+}
+
+.mg-onk-entry {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px dotted rgba(34, 197, 94, 0.3);
+  transition: background 0.2s ease;
+}
+
+.mg-onk-entry:hover {
+  background: rgba(34, 197, 94, 0.05);
+  border-radius: 4px;
+  padding-left: 0.5rem;
+  margin-left: -0.5rem;
+}
+
+.mg-onk-entry:last-child {
+  border-bottom: none;
+}
+
+.mg-entry-verse {
+  font-size: 0.85em;
+  color: #16a34a;
+  font-weight: 700;
+  margin-left: 0.4em;
+  font-family: 'Times New Roman', serif;
+}
+
+.mg-onk-aramaic {
+  color: #166534;
+  font-family: 'David Libre', serif;
+}
+
+/* ===== RASHI COLUMN ===== */
+.mg-rashi-col {
+  background: linear-gradient(
+    135deg,
+    rgba(254, 226, 226, 0.2) 0%,
+    rgba(254, 242, 242, 0.3) 100%
+  );
+}
+
+.mg-rashi-col .mg-col-header {
+  background: linear-gradient(180deg, rgba(239, 68, 68, 0.1) 0%, transparent 100%);
+  border-bottom-color: rgba(239, 68, 68, 0.3);
+}
+
+.mg-rashi-col .mg-col-header::after {
+  background: #dc2626;
+}
+
+.mg-rashi-entry {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px dotted rgba(239, 68, 68, 0.25);
+  transition: background 0.2s ease;
+}
+
+.mg-rashi-entry:hover {
+  background: rgba(239, 68, 68, 0.03);
+  border-radius: 4px;
+  padding-left: 0.5rem;
+  margin-left: -0.5rem;
+}
+
+.mg-rashi-entry:last-child {
+  border-bottom: none;
+}
+
+.mg-rashi-entry .mg-entry-verse {
+  color: #dc2626;
+}
+
+.mg-dibbur {
+  color: #b91c1c;
+  display: inline;
+}
+
+.mg-dibbur strong {
+  background: linear-gradient(180deg, transparent 60%, rgba(252, 165, 165, 0.5) 60%);
+  padding: 0 0.25em;
+  font-weight: 700;
+}
+
+.mg-rashi-text {
+  color: #2d2d2d;
+  font-family: 'SBL Hebrew', 'David Libre', 'David', serif;
+  font-size: 0.95em;
+}
+
+/* ===== RAMBAN COLUMN ===== */
+.mg-ramban-col {
+  background: linear-gradient(
+    135deg,
+    rgba(243, 232, 255, 0.2) 0%,
+    rgba(250, 245, 255, 0.3) 100%
+  );
+}
+
+.mg-ramban-col .mg-col-header {
+  background: linear-gradient(180deg, rgba(147, 51, 234, 0.1) 0%, transparent 100%);
+  border-bottom-color: rgba(147, 51, 234, 0.3);
+}
+
+.mg-ramban-col .mg-col-header::after {
+  background: #9333ea;
+}
+
+.mg-ramban-entry {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px dotted rgba(147, 51, 234, 0.25);
+  transition: background 0.2s ease;
+}
+
+.mg-ramban-entry:hover {
+  background: rgba(147, 51, 234, 0.03);
+  border-radius: 4px;
+  padding-left: 0.5rem;
+  margin-left: -0.5rem;
+}
+
+.mg-ramban-entry:last-child {
+  border-bottom: none;
+}
+
+.mg-ramban-entry .mg-entry-verse {
+  color: #9333ea;
+}
+
+.mg-ramban-entry .mg-dibbur {
+  color: #7c3aed;
+}
+
+.mg-ramban-entry .mg-dibbur strong {
+  background: linear-gradient(180deg, transparent 60%, rgba(196, 181, 253, 0.5) 60%);
+}
+
+.mg-ramban-text {
+  color: #2d2d2d;
+}
+
+/* ===== EMPTY STATE ===== */
+.mg-empty {
+  color: #8b7355;
+  font-style: italic;
+  text-align: center;
+  padding: 3rem 2rem;
+  background: rgba(139, 105, 20, 0.03);
+  border-radius: 8px;
+  border: 1px dashed rgba(139, 105, 20, 0.2);
+}
+
+/* ===== PAGE FOOTER ===== */
+.mg-page-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 2.5rem;
+  background: linear-gradient(0deg, #f0e6d6 0%, var(--paper-color) 100%);
+  position: relative;
+  z-index: 5;
+  font-size: 1.05rem;
+  color: var(--border-brown);
+}
+
+.mg-page-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 2rem;
+  right: 2rem;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--gold-accent) 10%,
+    var(--gold-light) 50%,
+    var(--gold-accent) 90%,
+    transparent 100%
+  );
+}
+
+.mg-footer-left,
+.mg-footer-right {
+  font-family: 'David Libre', serif;
+  letter-spacing: 0.05em;
+}
+
+.mg-footer-center {
+  font-size: 1.5rem;
+  color: var(--gold-accent);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+}
+
+/* ===== DARK MODE ===== */
+.dark-mode .mikraot-gedolot {
+  --paper-color: #1a1814;
+  --paper-dark: #141210;
+  --ink-black: #e8dcc8;
+  --gold-accent: #c4a054;
+  --gold-light: #d4b86a;
+  --border-brown: #a08060;
+  --shadow-color: rgba(0, 0, 0, 0.4);
+
+  background: var(--paper-color);
+  box-shadow:
+    0 0 60px rgba(196, 160, 84, 0.05),
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    inset 0 0 80px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .mikraot-gedolot::before {
+  border-image: linear-gradient(
+    135deg,
+    #8b6914 0%,
+    #c4a054 15%,
+    #6b4f1d 30%,
+    #8b6914 50%,
+    #c4a054 70%,
+    #6b4f1d 85%,
+    #8b6914 100%
+  ) 1;
+}
+
+.dark-mode .mikraot-gedolot::after {
+  border-color: #4a3a20;
+}
+
+.dark-mode .mikraot-gedolot .paper-texture {
+  opacity: 0.15;
+  filter: invert(1);
+}
+
+.dark-mode .mg-page-header {
+  background: linear-gradient(180deg, #252018 0%, var(--paper-color) 100%);
+}
+
+.dark-mode .mg-page-header::after,
+.dark-mode .mg-page-footer::before {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #6b4f1d 10%,
+    #8b6914 50%,
+    #6b4f1d 90%,
+    transparent 100%
+  );
+}
+
+.dark-mode .mg-sefer {
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+.dark-mode .mg-torah-box {
+  background: linear-gradient(180deg, #201c15 0%, var(--paper-color) 100%);
+}
+
+.dark-mode .mg-torah-box::before {
+  background: linear-gradient(90deg, transparent, #6b4f1d 20%, #6b4f1d 80%, transparent);
+}
+
+.dark-mode .mg-box-title {
+  border-color: #6b4f1d;
+  background: linear-gradient(180deg, rgba(139, 105, 20, 0.2) 0%, transparent 100%);
+}
+
+.dark-mode .mg-torah-text {
+  column-rule-color: rgba(139, 105, 20, 0.3);
+}
+
+.dark-mode .mg-torah-english {
+  border-top-color: rgba(139, 105, 20, 0.3);
+  color: #a08060;
+}
+
+.dark-mode .mg-column:not(:first-child)::before {
+  background: linear-gradient(180deg, transparent 0%, #6b4f1d 10%, #6b4f1d 90%, transparent 100%);
+}
+
+.dark-mode .mg-col-header {
+  border-bottom-color: #4a3a20;
+}
+
+.dark-mode .mg-onkelos-col {
+  background: linear-gradient(135deg, rgba(20, 83, 45, 0.15) 0%, rgba(22, 101, 52, 0.1) 100%);
+}
+
+.dark-mode .mg-onkelos-col .mg-col-header::after {
+  background: #16a34a;
+}
+
+.dark-mode .mg-onk-entry {
+  border-bottom-color: rgba(34, 197, 94, 0.2);
+}
+
+.dark-mode .mg-onk-entry:hover {
+  background: rgba(34, 197, 94, 0.08);
+}
+
+.dark-mode .mg-onk-aramaic {
+  color: #86efac;
+}
+
+.dark-mode .mg-entry-verse {
+  color: #4ade80;
+}
+
+.dark-mode .mg-rashi-col {
+  background: linear-gradient(135deg, rgba(127, 29, 29, 0.15) 0%, rgba(153, 27, 27, 0.1) 100%);
+}
+
+.dark-mode .mg-rashi-col .mg-col-header::after {
+  background: #ef4444;
+}
+
+.dark-mode .mg-rashi-entry {
+  border-bottom-color: rgba(239, 68, 68, 0.2);
+}
+
+.dark-mode .mg-rashi-entry:hover {
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.dark-mode .mg-rashi-entry .mg-entry-verse,
+.dark-mode .mg-rashi-col .mg-dibbur {
+  color: #fca5a5;
+}
+
+.dark-mode .mg-rashi-text,
+.dark-mode .mg-ramban-text {
+  color: #d4c8b4;
+}
+
+.dark-mode .mg-ramban-col {
+  background: linear-gradient(135deg, rgba(88, 28, 135, 0.15) 0%, rgba(107, 33, 168, 0.1) 100%);
+}
+
+.dark-mode .mg-ramban-col .mg-col-header::after {
+  background: #a855f7;
+}
+
+.dark-mode .mg-ramban-entry {
+  border-bottom-color: rgba(147, 51, 234, 0.2);
+}
+
+.dark-mode .mg-ramban-entry:hover {
+  background: rgba(147, 51, 234, 0.05);
+}
+
+.dark-mode .mg-ramban-entry .mg-entry-verse,
+.dark-mode .mg-ramban-entry .mg-dibbur {
+  color: #c4b5fd;
+}
+
+.dark-mode .mg-empty {
+  background: rgba(139, 105, 20, 0.08);
+  border-color: rgba(139, 105, 20, 0.3);
+}
+
+.dark-mode .mg-page-footer {
+  background: linear-gradient(0deg, #141210 0%, var(--paper-color) 100%);
+}
+
+.dark-mode .mg-control-btn {
+  background: rgba(26, 24, 20, 0.9);
+  border-color: #6b4f1d;
+  color: #c4a054;
+}
+
+.dark-mode .mg-control-btn:hover {
+  background: #6b4f1d;
+  color: #1a1814;
+}
+
+.dark-mode .mg-control-btn.active {
+  background: #6b4f1d;
+  color: #1a1814;
+  box-shadow: 0 2px 12px rgba(107, 79, 29, 0.4);
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1200px) {
+  .mg-torah-text {
+    column-count: 1;
+    font-size: 1.5rem;
+  }
+
+  .mg-torah-english {
+    column-count: 1;
+  }
+
+  .mikraot-gedolot::before {
+    border-width: 4px;
+  }
+}
+
+@media (max-width: 900px) {
+  .mg-commentaries-row {
+    grid-template-columns: 1fr;
+  }
+
+  .mg-column {
+    border-left: none;
+    max-height: 450px;
+  }
+
+  .mg-column:not(:first-child)::before {
+    display: none;
+  }
+
+  .mg-column:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 2rem;
+    right: 2rem;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold-accent), transparent);
+  }
+
+  .mikraot-gedolot::before {
+    border-width: 3px;
+  }
+
+  .mg-page-header::before {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .mikraot-gedolot {
+    margin: 0.5rem;
+    border-radius: 0;
+  }
+
+  .mikraot-gedolot::before {
+    border-width: 2px;
+  }
+
+  .mikraot-gedolot::after {
+    top: 4px;
+    left: 4px;
+    right: 4px;
+    bottom: 4px;
+  }
+
+  .mg-sefer {
+    font-size: 2.2rem;
+  }
+
+  .mg-perek {
+    font-size: 1.5rem;
+  }
+
+  .mg-page-title {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .mg-page-label {
+    font-size: 1.2rem;
+  }
+
+  .mg-torah-text {
+    font-size: 1.3rem;
+    line-height: 2.2;
+    padding: 0 0.5rem;
+  }
+
+  .mg-torah-box {
+    padding: 1.5rem 1.5rem;
+  }
+
+  .mg-col-content {
+    font-size: 0.95rem;
+  }
+
+  .mg-column {
+    padding: 1rem;
+    max-height: 350px;
+  }
+
+  .mg-page-footer {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+  }
+
+  .mg-page-controls {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+
+  .mg-control-btn {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  .mikraot-gedolot {
+    box-shadow: none !important;
+    border: 2px solid #000;
+    page-break-inside: avoid;
+    margin: 0;
+    max-width: 100%;
+  }
+
+  .mikraot-gedolot::before,
+  .mikraot-gedolot::after,
+  .paper-texture {
+    display: none;
+  }
+
+  .mg-column {
+    overflow: visible;
+    max-height: none;
+    page-break-inside: avoid;
+  }
+
+  .mg-col-content {
+    overflow: visible;
+    max-height: none;
+  }
+
+  .mg-page-controls {
+    display: none;
+  }
+}
+
+/* ===== ANIMATIONS ===== */
+.mg-column {
+  animation: slideUp 0.5s ease-out;
+  animation-fill-mode: backwards;
+}
+
+.mg-column:nth-child(1) { animation-delay: 0.1s; }
+.mg-column:nth-child(2) { animation-delay: 0.2s; }
+.mg-column:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mg-torah-box {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.mg-page-header {
+  animation: slideDown 0.4s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fullscreen mode */
+.mikraot-gedolot.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  max-width: 100%;
+  z-index: 9999;
+  border-radius: 0;
+  min-height: 100vh;
+}
+
+/* ====================================================== */
+/* SETTINGS PANEL - Professional Overlay */
+/* ====================================================== */
+
+.mg-settings-panel {
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  z-index: 100;
+  width: 320px;
+  background: linear-gradient(180deg, #faf6ed 0%, #f0e8d8 100%);
+  border: 2px solid var(--gold-accent);
+  border-radius: 12px;
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.2),
+    0 4px 12px rgba(139, 105, 20, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  animation: mgSettingsSlideIn 0.25s ease-out;
+  overflow: hidden;
+}
+
+@keyframes mgSettingsSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.mg-settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, var(--gold-accent), #d4af37);
+  color: white;
+}
+
+.mg-settings-header h3 {
+  margin: 0;
+  font-family: 'David Libre', serif;
+  font-size: 1.3rem;
+  letter-spacing: 0.1em;
+}
+
+.mg-settings-close {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.mg-settings-close:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1);
+}
+
+.mg-settings-section {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(139, 105, 20, 0.2);
+}
+
+.mg-settings-section:last-of-type {
+  border-bottom: none;
+}
+
+.mg-settings-section h4 {
+  margin: 0 0 12px 0;
+  font-family: 'David Libre', serif;
+  font-size: 1rem;
+  color: var(--gold-accent);
+  font-weight: 600;
+}
+
+.mg-settings-row {
+  margin-bottom: 10px;
+}
+
+.mg-settings-row:last-child {
+  margin-bottom: 0;
+}
+
+.mg-diacritic-mode {
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: rgba(139, 105, 20, 0.08);
+  border-radius: 6px;
+  text-align: center;
+}
+
+.mg-mode-label {
+  font-family: 'David Libre', serif;
+  font-size: 0.9rem;
+  color: var(--ink-black);
+  font-weight: 500;
+}
+
+/* ====================================================== */
+/* TOGGLE SWITCH - Premium iOS-style */
+/* ====================================================== */
+
+.mg-toggle-switch {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  direction: rtl;
+}
+
+.mg-toggle-switch input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.mg-switch-slider {
+  position: relative;
+  width: 48px;
+  height: 26px;
+  background: #d4c8b4;
+  border-radius: 13px;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.mg-switch-slider::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.mg-toggle-switch input:checked + .mg-switch-slider {
+  background: linear-gradient(135deg, var(--gold-accent), #d4af37);
+}
+
+.mg-toggle-switch input:checked + .mg-switch-slider::before {
+  transform: translateX(22px);
+}
+
+.mg-toggle-switch input:focus + .mg-switch-slider {
+  box-shadow: 0 0 0 3px rgba(139, 105, 20, 0.2);
+}
+
+.mg-switch-label {
+  font-family: 'David Libre', serif;
+  font-size: 0.95rem;
+  color: var(--ink-black);
+  flex: 1;
+}
+
+/* ====================================================== */
+/* ZOOM CONTROL - Inline buttons */
+/* ====================================================== */
+
+.mg-zoom-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px;
+  background: rgba(139, 105, 20, 0.06);
+  border-radius: 8px;
+}
+
+.mg-zoom-control button {
+  width: 36px;
+  height: 36px;
+  border: 2px solid var(--gold-accent);
+  background: white;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--gold-accent);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mg-zoom-control button:hover:not(:disabled) {
+  background: var(--gold-accent);
+  color: white;
+  transform: scale(1.1);
+}
+
+.mg-zoom-control button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.mg-zoom-value {
+  font-family: 'David Libre', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ink-black);
+  min-width: 50px;
+  text-align: center;
+}
+
+/* ====================================================== */
+/* KEYBOARD SHORTCUTS SECTION */
+/* ====================================================== */
+
+.mg-settings-shortcuts {
+  padding: 16px 20px;
+  background: rgba(139, 105, 20, 0.04);
+}
+
+.mg-settings-shortcuts h4 {
+  margin: 0 0 12px 0;
+  font-family: 'David Libre', serif;
+  font-size: 0.9rem;
+  color: var(--border-brown);
+  font-weight: 600;
+}
+
+.mg-shortcut-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+  direction: rtl;
+}
+
+.mg-shortcut {
+  font-family: 'David Libre', serif;
+  font-size: 0.8rem;
+  color: var(--border-brown);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mg-shortcut kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  background: white;
+  border: 1px solid #c4a054;
+  border-radius: 4px;
+  font-family: system-ui, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--ink-black);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* ====================================================== */
+/* NAVIGATION BUTTONS */
+/* ====================================================== */
+
+.mg-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border: 2px solid var(--gold-accent);
+  background: rgba(250, 246, 237, 0.95);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.mg-nav-btn:hover:not(:disabled) {
+  background: var(--gold-accent);
+  color: white;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 4px 12px rgba(139, 105, 20, 0.3);
+}
+
+.mg-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.mg-nav-btn svg {
+  width: 24px;
+  height: 24px;
+  color: var(--gold-accent);
+}
+
+.mg-nav-btn:hover:not(:disabled) svg {
+  color: white;
+}
+
+.mg-nav-prev {
+  left: 1.5rem;
+}
+
+.mg-nav-next {
+  right: 1.5rem;
+}
+
+/* Header content wrapper for centered title with nav buttons */
+.mg-header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Style badge */
+.mg-style-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-family: 'David Libre', serif;
+}
+
+/* ====================================================== */
+/* DARK MODE - Settings Panel & New Elements */
+/* ====================================================== */
+
+.dark-mode .mg-settings-panel {
+  background: linear-gradient(180deg, #2a2520 0%, #1e1a16 100%);
+  border-color: #6b4f1d;
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.5),
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .mg-settings-header {
+  background: linear-gradient(135deg, #6b4f1d, #4a3a20);
+}
+
+.dark-mode .mg-settings-section {
+  border-bottom-color: rgba(107, 79, 29, 0.3);
+}
+
+.dark-mode .mg-settings-section h4 {
+  color: #c4a054;
+}
+
+.dark-mode .mg-diacritic-mode {
+  background: rgba(107, 79, 29, 0.2);
+}
+
+.dark-mode .mg-mode-label {
+  color: #e8dcc8;
+}
+
+.dark-mode .mg-switch-slider {
+  background: #4a3a20;
+}
+
+.dark-mode .mg-toggle-switch input:checked + .mg-switch-slider {
+  background: linear-gradient(135deg, #c4a054, #8b6914);
+}
+
+.dark-mode .mg-switch-label {
+  color: #d4c8b4;
+}
+
+.dark-mode .mg-zoom-control {
+  background: rgba(107, 79, 29, 0.15);
+}
+
+.dark-mode .mg-zoom-control button {
+  background: #2a2520;
+  border-color: #6b4f1d;
+  color: #c4a054;
+}
+
+.dark-mode .mg-zoom-control button:hover:not(:disabled) {
+  background: #6b4f1d;
+  color: #faf6ed;
+}
+
+.dark-mode .mg-zoom-value {
+  color: #e8dcc8;
+}
+
+.dark-mode .mg-settings-shortcuts {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode .mg-settings-shortcuts h4 {
+  color: #a08060;
+}
+
+.dark-mode .mg-shortcut {
+  color: #a08060;
+}
+
+.dark-mode .mg-shortcut kbd {
+  background: #2a2520;
+  border-color: #6b4f1d;
+  color: #e8dcc8;
+}
+
+.dark-mode .mg-nav-btn {
+  background: rgba(26, 24, 20, 0.95);
+  border-color: #6b4f1d;
+}
+
+.dark-mode .mg-nav-btn svg {
+  color: #c4a054;
+}
+
+.dark-mode .mg-nav-btn:hover:not(:disabled) {
+  background: #6b4f1d;
+}
+
+.dark-mode .mg-nav-btn:hover:not(:disabled) svg {
+  color: #faf6ed;
+}
+
+/* ====================================================== */
+/* RESPONSIVE - Settings Panel */
+/* ====================================================== */
+
+@media (max-width: 600px) {
+  .mg-settings-panel {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    border-radius: 16px 16px 0 0;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  .mg-shortcut-list {
+    grid-template-columns: 1fr;
+  }
+
+  .mg-nav-btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  .mg-nav-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .mg-nav-prev {
+    left: 0.5rem;
+  }
+
+  .mg-nav-next {
+    right: 0.5rem;
+  }
+}

@@ -1,0 +1,517 @@
+/* AudioPlayer.css - Modal audio player for Torah verses */
+
+.audio-player-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.audio-player-modal {
+  background: var(--bg-primary, white);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dark-mode .audio-player-modal {
+  background: var(--bg-primary, #1a1a1a);
+}
+
+/* Header */
+.audio-player-modal .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, #4a90d9 0%, #357abd 100%);
+  color: white;
+}
+
+.audio-player-modal .modal-header h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.audio-player-modal .modal-header h2 svg {
+  width: 22px;
+  height: 22px;
+}
+
+.audio-player-modal .close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  cursor: pointer;
+  color: white;
+  transition: all 0.2s;
+}
+
+.audio-player-modal .close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.audio-player-modal .close-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Content */
+.audio-player-modal .modal-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.25rem;
+}
+
+/* Voice Warning */
+.voice-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  color: #856404;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.dark-mode .voice-warning {
+  background: #332701;
+  border-color: #664d03;
+  color: #ffc107;
+}
+
+.voice-warning svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Now Playing */
+.now-playing {
+  text-align: center;
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  background: var(--bg-secondary, #f8f9fa);
+  border-radius: 12px;
+}
+
+.dark-mode .now-playing {
+  background: #252525;
+}
+
+.chapter-info {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #666);
+  margin-bottom: 0.5rem;
+}
+
+.dark-mode .chapter-info {
+  color: #999;
+}
+
+.verse-info .verse-label {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--primary-color, #4a90d9);
+  margin-bottom: 0.5rem;
+}
+
+.verse-preview {
+  font-family: 'SBL Hebrew', 'Ezra SIL', 'Times New Roman', serif;
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: var(--text-primary, #333);
+}
+
+.dark-mode .verse-preview {
+  color: #eee;
+}
+
+/* Progress */
+.progress-container {
+  position: relative;
+  height: 6px;
+  background: var(--bg-tertiary, #e0e0e0);
+  border-radius: 3px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.dark-mode .progress-container {
+  background: #333;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #4a90d9, #5a9fea);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  position: absolute;
+  right: 0;
+  top: 10px;
+  font-size: 0.75rem;
+  color: var(--text-secondary, #666);
+}
+
+/* Playback Controls */
+.playback-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.control-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: var(--bg-secondary, #f0f0f0);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-primary, #333);
+}
+
+.dark-mode .control-btn {
+  background: #333;
+  color: #eee;
+}
+
+.control-btn:hover:not(:disabled) {
+  background: var(--primary-color, #4a90d9);
+  color: white;
+  transform: scale(1.05);
+}
+
+.control-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.control-btn.active {
+  background: var(--primary-color, #4a90d9);
+  color: white;
+}
+
+.control-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.control-btn.play-pause {
+  width: 56px;
+  height: 56px;
+  background: var(--primary-color, #4a90d9);
+  color: white;
+}
+
+.control-btn.play-pause:hover {
+  background: #357abd;
+  transform: scale(1.08);
+}
+
+.control-btn.play-pause svg {
+  width: 26px;
+  height: 26px;
+}
+
+.control-btn.play-all {
+  width: 40px;
+  height: 40px;
+}
+
+.control-btn.repeat.active svg {
+  stroke: white;
+}
+
+/* Speed Control */
+.speed-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: var(--bg-secondary, #f5f5f5);
+  border-radius: 8px;
+}
+
+.dark-mode .speed-control {
+  background: #252525;
+}
+
+.speed-control label {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #666);
+}
+
+.dark-mode .speed-control label {
+  color: #aaa;
+}
+
+.speed-control input[type="range"] {
+  width: 120px;
+  height: 4px;
+  -webkit-appearance: none;
+  background: #ddd;
+  border-radius: 2px;
+  outline: none;
+}
+
+.dark-mode .speed-control input[type="range"] {
+  background: #444;
+}
+
+.speed-control input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--primary-color, #4a90d9);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.speed-value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary-color, #4a90d9);
+  min-width: 45px;
+}
+
+/* Settings */
+.playback-settings {
+  margin-bottom: 1rem;
+}
+
+.setting-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text-secondary, #666);
+}
+
+.dark-mode .setting-toggle {
+  color: #aaa;
+}
+
+.setting-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary-color, #4a90d9);
+}
+
+/* Verse List */
+.verse-list {
+  margin-top: 1rem;
+}
+
+.verse-list h3 {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary, #666);
+}
+
+.dark-mode .verse-list h3 {
+  color: #aaa;
+}
+
+.verses-scroll {
+  max-height: 200px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.verse-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border: none;
+  background: var(--bg-secondary, #f5f5f5);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  width: 100%;
+}
+
+.dark-mode .verse-item {
+  background: #252525;
+}
+
+.verse-item:hover {
+  background: var(--bg-hover, #e9ecef);
+}
+
+.dark-mode .verse-item:hover {
+  background: #2a2a2a;
+}
+
+.verse-item.active {
+  background: rgba(74, 144, 217, 0.15);
+  border-left: 3px solid var(--primary-color, #4a90d9);
+}
+
+.verse-item .verse-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: var(--primary-color, #4a90d9);
+  color: white;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.verse-item .verse-text {
+  flex: 1;
+  font-family: 'SBL Hebrew', 'Ezra SIL', 'Times New Roman', serif;
+  font-size: 0.95rem;
+  color: var(--text-primary, #333);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dark-mode .verse-item .verse-text {
+  color: #ddd;
+}
+
+/* Playing Indicator */
+.playing-indicator {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 16px;
+}
+
+.playing-indicator .bar {
+  width: 3px;
+  background: var(--primary-color, #4a90d9);
+  border-radius: 1px;
+  animation: soundBars 0.5s ease infinite alternate;
+}
+
+.playing-indicator .bar:nth-child(1) {
+  height: 6px;
+  animation-delay: 0s;
+}
+
+.playing-indicator .bar:nth-child(2) {
+  height: 12px;
+  animation-delay: 0.15s;
+}
+
+.playing-indicator .bar:nth-child(3) {
+  height: 8px;
+  animation-delay: 0.3s;
+}
+
+@keyframes soundBars {
+  from { height: 4px; }
+  to { height: 16px; }
+}
+
+/* Footer */
+.audio-player-modal .modal-footer {
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid var(--border-color, #e0e0e0);
+}
+
+.dark-mode .audio-player-modal .modal-footer {
+  border-top-color: #333;
+}
+
+.footer-note {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--text-tertiary, #888);
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .audio-player-modal {
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .playback-controls {
+    gap: 0.25rem;
+  }
+
+  .control-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .control-btn.play-pause {
+    width: 50px;
+    height: 50px;
+  }
+
+  .control-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .verses-scroll {
+    max-height: 150px;
+  }
+}

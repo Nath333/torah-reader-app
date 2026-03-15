@@ -1,0 +1,211 @@
+/* =============================================================================
+   CommentaryBlock Component Styles
+   ============================================================================= */
+
+.commentary-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Commentary Source Group */
+.commentary-source-group {
+  background: var(--bg-elevated, #fff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: var(--radius, 10px);
+  overflow: hidden;
+}
+
+.commentary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: var(--bg-subtle, #f8fafc);
+  border-bottom: 1px solid var(--border, #e2e8f0);
+}
+
+.commentary-source {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.source-icon {
+  font-size: 1.1rem;
+}
+
+.source-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-primary, #0f172a);
+}
+
+.commentary-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Action Buttons */
+.ai-summary-toggle,
+.translate-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  background: var(--bg-elevated, #fff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: var(--radius-sm, 6px);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary, #475569);
+  cursor: pointer;
+  transition: all var(--transition-fast, 120ms);
+}
+
+.ai-summary-toggle:hover,
+.translate-toggle:hover {
+  background: var(--primary-light, #f0eeff);
+  border-color: var(--primary, #5b4cdb);
+  color: var(--primary, #5b4cdb);
+}
+
+.ai-summary-toggle.active,
+.translate-toggle.active {
+  background: var(--primary, #5b4cdb);
+  border-color: var(--primary, #5b4cdb);
+  color: white;
+}
+
+.ai-summary-toggle svg,
+.translate-toggle svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Commentary Body */
+.commentary-body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.commentary-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.commentary-text {
+  line-height: 1.7;
+}
+
+.commentary-text.hebrew-commentary {
+  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
+  font-size: 1.1rem;
+  direction: rtl;
+  text-align: right;
+  color: var(--text-primary, #0f172a);
+}
+
+.commentary-text.english-translation {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #475569);
+  padding-left: 1rem;
+  border-left: 2px solid var(--primary-light, #f0eeff);
+}
+
+.commentary-text.english-text {
+  font-size: 0.95rem;
+  color: var(--text-primary, #0f172a);
+}
+
+/* Loading and Empty States */
+.commentary-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.9rem;
+}
+
+.commentary-none {
+  text-align: center;
+  padding: 1.5rem;
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* Animations */
+.slide-down {
+  animation: slideDown 200ms ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Dark Mode */
+.dark-mode .commentary-source-group {
+  background: var(--bg-elevated, #1e293b);
+  border-color: var(--border, #334155);
+}
+
+.dark-mode .commentary-header {
+  background: var(--bg-subtle, #1e293b);
+  border-color: var(--border, #334155);
+}
+
+.dark-mode .source-name {
+  color: var(--text-primary, #f1f5f9);
+}
+
+.dark-mode .ai-summary-toggle,
+.dark-mode .translate-toggle {
+  background: var(--bg-elevated, #1e293b);
+  border-color: var(--border, #334155);
+  color: var(--text-secondary, #94a3b8);
+}
+
+.dark-mode .ai-summary-toggle:hover,
+.dark-mode .translate-toggle:hover {
+  background: var(--primary-light, rgba(129, 140, 248, 0.12));
+  color: var(--primary, #818cf8);
+}
+
+.dark-mode .commentary-text.hebrew-commentary {
+  color: var(--text-primary, #f1f5f9);
+}
+
+.dark-mode .commentary-text.english-translation {
+  color: var(--text-secondary, #94a3b8);
+  border-left-color: var(--primary-light, rgba(129, 140, 248, 0.12));
+}
+
+.dark-mode .commentary-text.english-text {
+  color: var(--text-primary, #f1f5f9);
+}

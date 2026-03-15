@@ -1,0 +1,176 @@
+/* =============================================================================
+   Design Tokens - CSS Variables
+   Centralized design system values
+   ============================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Crimson+Pro:wght@400;500;600&display=swap');
+
+:root {
+  /* -------------------------------------------------------------------------
+     Brand Colors
+     ------------------------------------------------------------------------- */
+  --primary: #5b4cdb;
+  --primary-hover: #4c3fc7;
+  --primary-light: #f0eeff;
+  --primary-glow: rgba(91, 76, 219, 0.15);
+
+  /* -------------------------------------------------------------------------
+     Accent Colors
+     ------------------------------------------------------------------------- */
+  --accent-purple: #7c3aed;
+  --accent-teal: #0d9488;
+  --accent-rose: #e11d48;
+  --accent-amber: #d97706;
+  --accent-emerald: #059669;
+  --accent-blue: #3b82f6;
+
+  /* -------------------------------------------------------------------------
+     Semantic Colors
+     ------------------------------------------------------------------------- */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+
+  /* -------------------------------------------------------------------------
+     Neutral Palette
+     ------------------------------------------------------------------------- */
+  --bg: #f8fafc;
+  --bg-elevated: #ffffff;
+  --bg-subtle: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+
+  /* -------------------------------------------------------------------------
+     Shadows
+     ------------------------------------------------------------------------- */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
+  --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+  /* -------------------------------------------------------------------------
+     Spacing (4px base grid)
+     ------------------------------------------------------------------------- */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* Legacy spacing aliases (for compatibility) */
+  --space-xs: 6px;
+  --space-sm: 12px;
+  --space-md: 20px;
+  --space-lg: 32px;
+  --space-xl: 48px;
+  --space-2xl: 64px;
+
+  /* -------------------------------------------------------------------------
+     Border Radius
+     ------------------------------------------------------------------------- */
+  --radius-none: 0;
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* -------------------------------------------------------------------------
+     Transitions
+     ------------------------------------------------------------------------- */
+  --transition-fast: 120ms ease;
+  --transition: 200ms ease;
+  --transition-slow: 300ms ease;
+  --transition-bounce: 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* -------------------------------------------------------------------------
+     Typography
+     ------------------------------------------------------------------------- */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-serif: 'Crimson Pro', 'Times New Roman', serif;
+  --font-hebrew: 'SBL Hebrew', 'Frank Ruehl CLM', 'David CLM', serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  --text-xs: 11px;
+  --text-sm: 13px;
+  --text-base: 15px;
+  --text-md: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+  --leading-loose: 2;
+
+  /* -------------------------------------------------------------------------
+     Layout
+     ------------------------------------------------------------------------- */
+  --header-height: 64px;
+  --sidebar-width: 280px;
+  --sidebar-collapsed-width: 64px;
+  --content-max-width: 900px;
+  --content-wide-width: 1200px;
+
+  /* -------------------------------------------------------------------------
+     Z-Index Scale
+     ------------------------------------------------------------------------- */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal-backdrop: 400;
+  --z-modal: 500;
+  --z-popover: 600;
+  --z-tooltip: 700;
+}
+
+/* =============================================================================
+   Dark Mode Theme
+   ============================================================================= */
+.app.dark-mode {
+  /* Backgrounds */
+  --bg: #0f172a;
+  --bg-elevated: #1e293b;
+  --bg-subtle: #1e293b;
+
+  /* Text */
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  /* Borders */
+  --border: #334155;
+  --border-light: #1e293b;
+
+  /* Brand colors adjusted for dark */
+  --primary: #818cf8;
+  --primary-hover: #6366f1;
+  --primary-light: rgba(129, 140, 248, 0.12);
+  --primary-glow: rgba(129, 140, 248, 0.2);
+
+  /* Accents adjusted */
+  --accent-purple: #a78bfa;
+  --accent-teal: #14b8a6;
+
+  /* Shadows (stronger in dark mode) */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+}

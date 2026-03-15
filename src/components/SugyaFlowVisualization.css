@@ -1,0 +1,597 @@
+/* =============================================================================
+   SugyaFlowVisualization Styles
+   Visual representation of Talmudic discourse structure
+============================================================================= */
+
+.sugya-flow-visualization {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .sugya-flow-visualization {
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    border-color: #374151;
+  }
+}
+
+/* =============================================================================
+   Header
+============================================================================= */
+
+.flow-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.flow-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.structure-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .flow-header {
+    border-bottom-color: #374151;
+  }
+
+  .flow-title {
+    color: #f3f4f6;
+  }
+
+  .structure-label {
+    background: #374151;
+    color: #9ca3af;
+  }
+}
+
+/* =============================================================================
+   Statistics Panel
+============================================================================= */
+
+.flow-statistics {
+  background: white;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.stat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.stat-title {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.complexity-badge {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.complexity-simple {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.complexity-moderate {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.complexity-complex {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.stat-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 60px;
+}
+
+.stat-icon {
+  font-size: 1.25rem;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.stat-label {
+  font-size: 0.625rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .flow-statistics {
+    background: #1f2937;
+  }
+
+  .stat-title {
+    color: #e5e7eb;
+  }
+
+  .stat-value {
+    color: #f3f4f6;
+  }
+}
+
+/* =============================================================================
+   Flow Diagram
+============================================================================= */
+
+.flow-diagram {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  padding: 16px 0;
+}
+
+/* =============================================================================
+   Flow Node
+============================================================================= */
+
+.flow-node {
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  border-radius: 8px;
+  padding: 12px 16px;
+  border-left: 4px solid var(--node-color, #6b7280);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.flow-node:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.flow-node-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.flow-node-icon {
+  font-size: 1.25rem;
+}
+
+.flow-node-label {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #1f2937;
+}
+
+.flow-node-count {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-left: auto;
+}
+
+.flow-node-expand {
+  font-size: 0.625rem;
+  color: #9ca3af;
+  margin-left: 8px;
+}
+
+.flow-node-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.flow-node-marker {
+  font-family: 'Frank Ruhl Libre', 'SBL Hebrew', serif;
+  font-size: 0.875rem;
+  background: #f9fafb;
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: #374151;
+}
+
+@media (prefers-color-scheme: dark) {
+  .flow-node {
+    background: #1f2937;
+  }
+
+  .flow-node-label {
+    color: #f3f4f6;
+  }
+
+  .flow-node-items {
+    border-top-color: #374151;
+  }
+
+  .flow-node-marker {
+    background: #374151;
+    color: #e5e7eb;
+  }
+}
+
+/* Node type specific styles */
+.flow-node-mishna {
+  border-left-color: #3B82F6;
+}
+
+.flow-node-gemara {
+  border-left-color: #8B4513;
+}
+
+.flow-node-question {
+  border-left-color: #F59E0B;
+}
+
+.flow-node-objection {
+  border-left-color: #EF4444;
+}
+
+.flow-node-proof {
+  border-left-color: #10B981;
+}
+
+.flow-node-resolution {
+  border-left-color: #7C3AED;
+}
+
+.flow-node-source_citation {
+  border-left-color: #14B8A6;
+}
+
+.flow-node-legal_ruling {
+  border-left-color: #0891B2;
+}
+
+/* =============================================================================
+   Flow Connector
+============================================================================= */
+
+.flow-connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.connector-line {
+  width: 2px;
+  height: 16px;
+  background: #d1d5db;
+}
+
+.connector-arrow {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.connector-answer .connector-line {
+  background: #10B981;
+}
+
+.connector-answer .connector-arrow {
+  color: #10B981;
+}
+
+.connector-resolve .connector-line {
+  background: #7C3AED;
+}
+
+.connector-resolve .connector-arrow {
+  color: #7C3AED;
+}
+
+.connector-challenge .connector-line {
+  background: #EF4444;
+}
+
+.connector-challenge .connector-arrow {
+  color: #EF4444;
+}
+
+/* =============================================================================
+   Legend
+============================================================================= */
+
+.flow-legend {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.legend-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+}
+
+.legend-icon {
+  font-size: 0.875rem;
+}
+
+.legend-label {
+  color: #4b5563;
+}
+
+.legend-color {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+/* Compact legend */
+.flow-legend.compact {
+  display: flex;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: none;
+  margin-top: 12px;
+}
+
+.legend-item-compact {
+  font-size: 1rem;
+  cursor: help;
+}
+
+@media (prefers-color-scheme: dark) {
+  .flow-legend {
+    border-top-color: #374151;
+  }
+
+  .legend-label {
+    color: #9ca3af;
+  }
+}
+
+/* =============================================================================
+   Empty State
+============================================================================= */
+
+.sugya-flow-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6b7280;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-text {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.empty-hint {
+  font-size: 0.875rem;
+  color: #9ca3af;
+}
+
+/* =============================================================================
+   Variants
+============================================================================= */
+
+/* Compact variant */
+.variant-compact {
+  padding: 12px;
+}
+
+.variant-compact .flow-header {
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+}
+
+.variant-compact .flow-title {
+  font-size: 1rem;
+}
+
+.variant-compact .flow-node {
+  padding: 8px 12px;
+}
+
+.variant-compact .flow-node-icon {
+  font-size: 1rem;
+}
+
+.variant-compact .flow-statistics {
+  padding: 8px 12px;
+}
+
+/* Mini variant */
+.variant-mini {
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.variant-mini .flow-header {
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+}
+
+.variant-mini .flow-title {
+  font-size: 0.875rem;
+}
+
+.variant-mini .structure-label {
+  display: none;
+}
+
+.variant-mini .flow-node {
+  padding: 6px 10px;
+  max-width: 300px;
+}
+
+.variant-mini .flow-node-items {
+  display: none;
+}
+
+.variant-mini .connector-line {
+  height: 8px;
+}
+
+/* =============================================================================
+   Inline Flow Indicator
+============================================================================= */
+
+.inline-flow-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  background: color-mix(in srgb, var(--indicator-color) 15%, white);
+  border: 1px solid color-mix(in srgb, var(--indicator-color) 30%, white);
+  margin: 0 2px;
+  vertical-align: middle;
+}
+
+.indicator-icon {
+  font-size: 0.875rem;
+}
+
+.indicator-label {
+  font-weight: 500;
+  color: #374151;
+}
+
+@media (prefers-color-scheme: dark) {
+  .inline-flow-indicator {
+    background: color-mix(in srgb, var(--indicator-color) 20%, #1f2937);
+    border-color: color-mix(in srgb, var(--indicator-color) 40%, #1f2937);
+  }
+
+  .indicator-label {
+    color: #e5e7eb;
+  }
+}
+
+/* =============================================================================
+   Mini Flow Bar
+============================================================================= */
+
+.mini-flow-bar {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: #f9fafb;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.mini-flow-item {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  cursor: help;
+}
+
+.mini-flow-more {
+  display: flex;
+  align-items: center;
+  font-size: 0.625rem;
+  color: #6b7280;
+  padding: 0 4px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .mini-flow-bar {
+    background: #374151;
+  }
+
+  .mini-flow-more {
+    color: #9ca3af;
+  }
+}
+
+/* =============================================================================
+   Responsive
+============================================================================= */
+
+@media (max-width: 640px) {
+  .sugya-flow-visualization {
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  .flow-node {
+    max-width: 100%;
+  }
+
+  .stat-grid {
+    gap: 8px;
+  }
+
+  .stat-item {
+    min-width: 50px;
+  }
+
+  .legend-items {
+    gap: 8px;
+  }
+}

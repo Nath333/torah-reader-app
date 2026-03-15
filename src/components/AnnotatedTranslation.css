@@ -1,0 +1,41 @@
+/* ============================================================================
+   AnnotatedTranslation - Clean styling for direct translations
+   Bold = Direct translation of Hebrew/Aramaic
+   Normal = Explanatory text added by translators
+   ============================================================================ */
+
+.annotated-translation {
+  display: inline;
+}
+
+/* Direct translation - Bold, larger, and slightly darker for emphasis */
+.annotated-translation .direct-translation {
+  font-weight: 700;
+  font-size: 1.12em;
+  color: inherit;
+  letter-spacing: 0.01em;
+}
+
+/* Context/explanation text - Normal weight */
+.annotated-translation .context-text {
+  font-weight: 400;
+}
+
+/* Dark mode - ensure contrast */
+[data-theme="dark"] .annotated-translation .direct-translation,
+.dark-mode .annotated-translation .direct-translation {
+  color: inherit;
+  font-weight: 700;
+}
+
+/* Sepia/Study mode */
+[data-theme="sepia"] .annotated-translation .direct-translation {
+  color: #2d1f14;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .annotated-translation .direct-translation {
+    font-weight: 800;
+  }
+}

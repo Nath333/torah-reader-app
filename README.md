@@ -1,70 +1,132 @@
-# Getting Started with Create React App
+# Torah Reader App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern, feature-rich React application for reading and studying Torah, Talmud, and Mishnah with AI-powered analysis and seamless integration to the Sefaria Project API.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+### Text Library
+- **Torah** - All 5 books with Hebrew text and English translations
+- **Nevi'im (Prophets)** - 21 books including Joshua, Isaiah, Jeremiah
+- **Ketuvim (Writings)** - 13 books including Psalms, Proverbs, Job
+- **Talmud Bavli** - 39 tractates with traditional Tzurat HaDaf layout
+- **Mishnah** - All 6 orders (63 tractates)
 
-### `npm start`
+### Commentaries
+- **Rashi** - Primary commentary on Torah and Talmud
+- **Ramban (Nachmanides)** - Philosophical and mystical insights
+- **Tosafot** - Talmudic discussions and analysis
+- **Maharsha** - Deep Talmudic analysis
+- **Onkelos** - Aramaic Targum translation
+- **Ibn Ezra, Sforno, Radak** - Additional classic commentators
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### AI-Powered Study Tools
+- **Smart Summaries** - AI-generated summaries of verses and commentaries
+- **PaRDeS Analysis** - Four levels of Torah interpretation (Pshat, Remez, Drash, Sod)
+- **Mussar Insights** - Character development and ethical teachings
+- **Gematria Analysis** - Numerical patterns in Hebrew text
+- **Lexicon Mode** - Scholarly dictionary analysis (BDB, Jastrow, HALOT)
+- **Intertextual Analysis** - Cross-references across Jewish texts
+- **Talmud-Specific Modes** - Sugya flow, Shakla Vetarya dialectic analysis
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Study Features
+- **Bookmarks** - Save and organize favorite verses with import/export
+- **Reading History** - Track your learning progress
+- **Verse Notes** - Personal annotations on any verse
+- **Vocabulary Bank** - Learn and review Hebrew/Aramaic words
+- **Reading Statistics** - Track your study habits
 
-### `npm test`
+### Navigation
+- **Weekly Parsha** - Jump to current Torah portion
+- **Daf Yomi** - Daily Talmud page
+- **Cross-References** - Navigate between related texts
+- **Powerful Search** - Full-text search across all texts
+- **URL Sharing** - Share specific verses via URL
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Accessibility & UX
+- **Dark/Light Mode** - System preference detection
+- **Adjustable Font Sizes** - Comfortable reading at any size
+- **Keyboard Shortcuts** - Efficient navigation (Ctrl+K search, Ctrl+B bookmarks)
+- **Text-to-Speech** - Hebrew audio with voice selection
+- **Pronunciation Guide** - Ashkenazi and Sephardic traditions
+- **Offline Support** - Service Worker for offline access
+- **Responsive Design** - Works on desktop and mobile
 
-### `npm run build`
+### Translations
+- **English** - Full English translations
+- **French** - AI-powered English to French translation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Technical Stack
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- **React 19** - Modern hooks-based architecture
+- **Context API** - State management (Torah, Settings, Study contexts)
+- **Sefaria API** - Authentic Jewish text data
+- **Groq AI** - Llama 3.3 70B for intelligent analysis
+- **CSS Variables** - Theming and design system
+- **LocalStorage** - Persistent user data
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Project Structure
 
-### `npm run eject`
+```
+src/
+├── components/          # 75+ UI components
+│   ├── TorahReader.js   # Main text display
+│   ├── AIStudyPanel.js  # AI analysis interface
+│   ├── CommentarySelector.js
+│   ├── Sidebar.js
+│   └── ...
+├── services/            # 25 specialized services
+│   ├── sefariaApi.js    # API integration & caching
+│   ├── groqService.js   # AI analysis
+│   ├── rashiService.js  # Rashi commentary
+│   └── ...
+├── context/             # State management
+│   ├── TorahContext.js  # Text data
+│   ├── SettingsContext.js # User preferences
+│   └── StudyContext.js  # Learning data
+├── hooks/               # 14 custom hooks
+│   ├── useDarkMode.js
+│   ├── useKeyboardShortcuts.js
+│   └── ...
+├── utils/               # Utilities
+│   ├── cache.js         # Unified caching
+│   └── ...
+└── styles/              # CSS design system
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Getting Started
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Create `.env` file with your API key (optional):
+   ```
+   REACT_APP_GROQ_API_KEY=your_groq_api_key
+   ```
+4. Start the development server: `npm start`
+5. Open http://localhost:3000 in your browser
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Keyboard Shortcuts
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl/Cmd + K` | Open search |
+| `Ctrl/Cmd + B` | Toggle bookmarks |
+| `Ctrl/Cmd + D` | Toggle dark mode |
+| `Escape` | Close modals/panels |
+| `←` / `→` | Previous/Next chapter |
 
-## Learn More
+## API Keys
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Groq AI (Optional)
+For AI-powered analysis features, get a free API key from [Groq](https://console.groq.com/).
+You can add it via the app's AI settings panel or in your `.env` file.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Deployment
 
-### Code Splitting
+```bash
+npm run build     # Create production build
+npm run deploy    # Deploy to GitHub Pages
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## License
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+MIT

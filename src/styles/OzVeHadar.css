@@ -1,0 +1,936 @@
+/* ============================================
+   OZ VEHADAR STYLE - Premium Traditional Layout
+   ============================================
+   Based on the renowned Oz VeHadar Talmud editions
+   known for exceptional typography and readability
+*/
+
+/* ===== TYPOGRAPHY VARIABLES ===== */
+:root {
+  /* Oz VeHadar Font Stack */
+  --oz-font-gemara: 'Frank Ruhl Libre', 'David Libre', 'SBL Hebrew', 'Times New Roman', serif;
+  --oz-font-rashi: 'Noto Rashi Hebrew', 'SBL Hebrew', 'David Libre', serif;
+  --oz-font-tosafot: 'Noto Serif Hebrew', 'David Libre', 'Frank Ruhl Libre', serif;
+  --oz-font-titles: 'Frank Ruhl Libre', 'David Libre', serif;
+
+  /* Traditional Page Colors */
+  --oz-paper: #faf6ed;
+  --oz-paper-aged: #f3ece0;
+  --oz-ink: #1a1612;
+  --oz-ink-secondary: #2d2820;
+  --oz-gold-primary: #8b6914;
+  --oz-gold-light: #c9a227;
+  --oz-gold-dark: #5d4810;
+  --oz-border-ornate: #6b4e2a;
+  --oz-rashi-tint: rgba(139, 69, 19, 0.04);
+  --oz-tosafot-tint: rgba(25, 55, 109, 0.04);
+
+  /* Typography Spacing */
+  --oz-line-height-gemara: 2.6;
+  --oz-line-height-rashi: 2.2;
+  --oz-line-height-tosafot: 2.0;
+  --oz-letter-spacing-hebrew: 0.02em;
+  --oz-word-spacing-hebrew: 0.12em;
+
+  /* Column Proportions (Traditional Oz VeHadar ratios) */
+  --oz-col-tosafot: 1fr;
+  --oz-col-gemara: 1.6fr;
+  --oz-col-rashi: 1fr;
+}
+
+/* ===== OZ VEHADAR THEME CLASS ===== */
+.oz-vehadar-theme {
+  /* Override default colors */
+  --paper-color: var(--oz-paper);
+  --paper-dark: var(--oz-paper-aged);
+  --ink-black: var(--oz-ink);
+  --gold-accent: var(--oz-gold-primary);
+  --gold-light: var(--oz-gold-light);
+  --border-brown: var(--oz-border-ornate);
+}
+
+/* ===== ENHANCED PAGE FRAME ===== */
+.oz-vehadar-theme.tzurat-hadaf {
+  background: linear-gradient(
+    180deg,
+    var(--oz-paper) 0%,
+    var(--oz-paper-aged) 50%,
+    var(--oz-paper) 100%
+  );
+  border-radius: 3px;
+
+  /* More pronounced book shadow */
+  box-shadow:
+    0 0 100px rgba(107, 68, 35, 0.06),
+    0 30px 60px -15px rgba(0, 0, 0, 0.22),
+    -10px 0 20px -8px rgba(0, 0, 0, 0.08),
+    10px 0 20px -8px rgba(0, 0, 0, 0.08),
+    inset 0 0 100px rgba(107, 68, 35, 0.02);
+}
+
+/* Ornate gilded border - Oz VeHadar style */
+.oz-vehadar-theme.tzurat-hadaf::before {
+  border-width: 6px;
+  border-image: linear-gradient(
+    135deg,
+    var(--oz-gold-dark) 0%,
+    var(--oz-gold-light) 12%,
+    var(--oz-gold-primary) 25%,
+    var(--oz-gold-light) 40%,
+    var(--oz-gold-dark) 55%,
+    var(--oz-gold-light) 70%,
+    var(--oz-gold-primary) 85%,
+    var(--oz-gold-dark) 100%
+  ) 1;
+}
+
+/* Double inner frame with corner ornaments */
+.oz-vehadar-theme.tzurat-hadaf::after {
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  border: 2px double var(--oz-border-ornate);
+  border-radius: 2px;
+}
+
+/* ===== ENHANCED HEADER - Oz VeHadar Style ===== */
+.oz-vehadar-theme .daf-page-header {
+  padding: 2.5rem 3rem 2rem;
+  background: linear-gradient(
+    180deg,
+    #f0e8d8 0%,
+    var(--oz-paper) 80%
+  );
+  gap: 4rem;
+}
+
+/* Decorative header border - thicker, more ornate */
+.oz-vehadar-theme .daf-page-header::after {
+  height: 5px;
+  left: 2.5rem;
+  right: 2.5rem;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--oz-gold-dark) 5%,
+    var(--oz-gold-light) 20%,
+    var(--oz-gold-primary) 50%,
+    var(--oz-gold-light) 80%,
+    var(--oz-gold-dark) 95%,
+    transparent 100%
+  );
+  border-radius: 2px;
+}
+
+/* Ornamental Star of David decorations */
+.oz-vehadar-theme .daf-page-header::before {
+  font-size: 2.2rem;
+  color: var(--oz-gold-primary);
+  opacity: 0.6;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Masechet title - enhanced Oz VeHadar typography */
+.oz-vehadar-theme .daf-masechet {
+  font-family: var(--oz-font-titles);
+  font-size: 4rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  color: var(--oz-ink);
+  text-shadow:
+    1px 1px 0 rgba(255, 255, 255, 0.9),
+    2px 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.oz-vehadar-theme .daf-value {
+  font-family: var(--oz-font-titles);
+  font-size: 3.5rem;
+  font-weight: 700;
+}
+
+.oz-vehadar-theme .daf-label {
+  font-family: var(--oz-font-titles);
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+/* ===== THREE COLUMN LAYOUT - Oz VeHadar Proportions ===== */
+.oz-vehadar-theme .daf-three-columns {
+  grid-template-columns: var(--oz-col-tosafot) var(--oz-col-gemara) var(--oz-col-rashi);
+  gap: 0;
+}
+
+.oz-vehadar-theme .daf-column {
+  padding: 2rem 2.5rem;
+}
+
+/* Column dividers - elegant gold lines */
+.oz-vehadar-theme .daf-tosafot-col::after,
+.oz-vehadar-theme .daf-rashi-col::before {
+  width: 3px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    var(--oz-gold-dark) 5%,
+    var(--oz-gold-light) 20%,
+    var(--oz-gold-primary) 50%,
+    var(--oz-gold-light) 80%,
+    var(--oz-gold-dark) 95%,
+    transparent 100%
+  );
+}
+
+/* Column backgrounds - subtle tinting */
+.oz-vehadar-theme .daf-tosafot-col {
+  background: linear-gradient(
+    180deg,
+    var(--oz-tosafot-tint) 0%,
+    transparent 100%
+  );
+}
+
+.oz-vehadar-theme .daf-gemara-col {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(250, 246, 237, 0.2) 100%
+  );
+}
+
+.oz-vehadar-theme .daf-rashi-col {
+  background: linear-gradient(
+    180deg,
+    var(--oz-rashi-tint) 0%,
+    transparent 100%
+  );
+}
+
+/* ===== COLUMN HEADERS - Oz VeHadar Style ===== */
+.oz-vehadar-theme .daf-col-header {
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(
+    180deg,
+    rgba(139, 105, 20, 0.15) 0%,
+    rgba(139, 105, 20, 0.05) 100%
+  );
+  border-bottom: 3px solid var(--oz-gold-primary);
+  border-radius: 4px 4px 0 0;
+}
+
+.oz-vehadar-theme .daf-col-header::after {
+  width: 60px;
+  height: 4px;
+  background: var(--oz-gold-light);
+  bottom: -2px;
+}
+
+.oz-vehadar-theme .daf-col-title {
+  font-family: var(--oz-font-titles);
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  color: var(--oz-ink);
+}
+
+/* Gemara header - more prominent */
+.oz-vehadar-theme .daf-gemara-header {
+  background: linear-gradient(
+    180deg,
+    rgba(139, 105, 20, 0.25) 0%,
+    rgba(139, 105, 20, 0.08) 100%
+  );
+}
+
+.oz-vehadar-theme .daf-gemara-header .daf-col-title {
+  font-size: 2rem;
+}
+
+.oz-vehadar-theme .daf-gemara-header::after {
+  width: 100px;
+  height: 5px;
+}
+
+/* ===== GEMARA TEXT - Premium Typography ===== */
+.oz-vehadar-theme .daf-gemara-text {
+  font-family: var(--oz-font-gemara);
+  font-size: 1.65rem;
+  font-weight: 500;
+  line-height: var(--oz-line-height-gemara);
+  letter-spacing: var(--oz-letter-spacing-hebrew);
+  word-spacing: var(--oz-word-spacing-hebrew);
+  color: var(--oz-ink);
+  text-align: justify;
+  text-justify: inter-character;
+
+  /* Advanced typography */
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Proper Hebrew hyphenation */
+  hyphens: none;
+  overflow-wrap: break-word;
+}
+
+/* Verse markers styling */
+.oz-vehadar-theme .daf-gemara-text .verse-marker {
+  font-weight: 700;
+  color: var(--oz-gold-dark);
+  margin: 0 0.3em;
+}
+
+.oz-vehadar-theme .daf-gemara-english {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 2px dashed rgba(139, 105, 20, 0.3);
+  font-size: 1.1rem;
+  line-height: 1.95;
+  color: #5a5045;
+  font-family: 'Tinos', 'Georgia', serif;
+}
+
+/* ===== RASHI TEXT - Distinctive Rashi Script ===== */
+.oz-vehadar-theme .daf-rashi-text,
+.oz-vehadar-theme .rashi-script {
+  font-family: var(--oz-font-rashi);
+  font-size: 1.05rem;
+  font-weight: 400;
+  line-height: var(--oz-line-height-rashi);
+  letter-spacing: 0.01em;
+  color: var(--oz-ink-secondary);
+
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1;
+}
+
+.oz-vehadar-theme .daf-rashi-entry {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  padding-left: 0.75rem;
+  border-bottom: 1px dotted rgba(139, 69, 19, 0.25);
+  border-left: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.oz-vehadar-theme .daf-rashi-entry:hover {
+  background: linear-gradient(
+    90deg,
+    rgba(139, 69, 19, 0.04) 0%,
+    transparent 100%
+  );
+  border-left-color: var(--oz-gold-primary);
+  padding-left: 1rem;
+}
+
+/* Dibbur HaMatchil - highlighted opening words */
+.oz-vehadar-theme .daf-rashi-col .daf-dibbur {
+  color: #8b4513;
+  font-weight: 600;
+}
+
+.oz-vehadar-theme .daf-rashi-col .daf-dibbur strong {
+  background: linear-gradient(
+    180deg,
+    transparent 55%,
+    rgba(139, 69, 19, 0.2) 55%,
+    rgba(139, 69, 19, 0.2) 85%,
+    transparent 85%
+  );
+  padding: 0 0.35em;
+  font-weight: 700;
+}
+
+/* ===== TOSAFOT TEXT ===== */
+.oz-vehadar-theme .daf-tosafot-text {
+  font-family: var(--oz-font-tosafot);
+  font-size: 1.05rem;
+  font-weight: 400;
+  line-height: var(--oz-line-height-tosafot);
+  color: var(--oz-ink-secondary);
+
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1;
+}
+
+.oz-vehadar-theme .daf-tosafot-entry {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  padding-right: 0.75rem;
+  border-bottom: 1px dotted rgba(25, 55, 109, 0.25);
+  border-right: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.oz-vehadar-theme .daf-tosafot-entry:hover {
+  background: linear-gradient(
+    270deg,
+    rgba(25, 55, 109, 0.04) 0%,
+    transparent 100%
+  );
+  border-right-color: #1e40af;
+  padding-right: 1rem;
+}
+
+.oz-vehadar-theme .daf-tosafot-col .daf-dibbur {
+  color: #1e3a8a;
+  font-weight: 600;
+}
+
+.oz-vehadar-theme .daf-tosafot-col .daf-dibbur strong {
+  background: linear-gradient(
+    180deg,
+    transparent 55%,
+    rgba(30, 64, 175, 0.15) 55%,
+    rgba(30, 64, 175, 0.15) 85%,
+    transparent 85%
+  );
+  padding: 0 0.35em;
+  font-weight: 700;
+}
+
+/* Tosafot header styling */
+.oz-vehadar-theme .daf-tosafot-col .daf-col-header {
+  background: linear-gradient(
+    180deg,
+    rgba(30, 64, 175, 0.1) 0%,
+    rgba(30, 64, 175, 0.03) 100%
+  );
+  border-bottom-color: #1e40af;
+}
+
+.oz-vehadar-theme .daf-tosafot-col .daf-col-header::after {
+  background: #3b82f6;
+}
+
+/* Rashi header styling */
+.oz-vehadar-theme .daf-rashi-col .daf-col-header {
+  background: linear-gradient(
+    180deg,
+    rgba(139, 69, 19, 0.1) 0%,
+    rgba(139, 69, 19, 0.03) 100%
+  );
+  border-bottom-color: #8b4513;
+}
+
+.oz-vehadar-theme .daf-rashi-col .daf-col-header::after {
+  background: #b45309;
+}
+
+/* ===== FOOTER - Oz VeHadar Style ===== */
+.oz-vehadar-theme .daf-page-footer {
+  padding: 1.5rem 3rem;
+  background: linear-gradient(
+    0deg,
+    #e8dcc8 0%,
+    var(--oz-paper) 100%
+  );
+  font-family: var(--oz-font-titles);
+  font-size: 1.2rem;
+  letter-spacing: 0.1em;
+}
+
+.oz-vehadar-theme .daf-page-footer::before {
+  height: 4px;
+  left: 2.5rem;
+  right: 2.5rem;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--oz-gold-dark) 5%,
+    var(--oz-gold-light) 20%,
+    var(--oz-gold-primary) 50%,
+    var(--oz-gold-light) 80%,
+    var(--oz-gold-dark) 95%,
+    transparent 100%
+  );
+}
+
+/* ===== SCROLLBAR - Elegant Gold ===== */
+.oz-vehadar-theme .daf-col-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.oz-vehadar-theme .daf-col-content::-webkit-scrollbar-track {
+  background: rgba(139, 105, 20, 0.08);
+  border-radius: 4px;
+}
+
+.oz-vehadar-theme .daf-col-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    var(--oz-gold-light),
+    var(--oz-gold-primary),
+    var(--oz-gold-dark)
+  );
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.oz-vehadar-theme .daf-col-content::-webkit-scrollbar-thumb:hover {
+  background: var(--oz-gold-primary);
+}
+
+/* ===== EMPTY STATE ===== */
+.oz-vehadar-theme .daf-empty {
+  background: rgba(139, 105, 20, 0.05);
+  border: 1px dashed var(--oz-gold-primary);
+  border-radius: 8px;
+  font-family: var(--oz-font-titles);
+  color: var(--oz-border-ornate);
+}
+
+/* ===== DARK MODE - Oz VeHadar ===== */
+.dark-mode .oz-vehadar-theme {
+  --oz-paper: #1c1915;
+  --oz-paper-aged: #14120f;
+  --oz-ink: #e5dcc8;
+  --oz-ink-secondary: #c9bda8;
+  --oz-gold-primary: #a08050;
+  --oz-gold-light: #c4a060;
+  --oz-gold-dark: #6b5530;
+  --oz-border-ornate: #8b7355;
+  --oz-rashi-tint: rgba(139, 69, 19, 0.08);
+  --oz-tosafot-tint: rgba(59, 130, 246, 0.06);
+}
+
+.dark-mode .oz-vehadar-theme.tzurat-hadaf {
+  background: linear-gradient(
+    180deg,
+    var(--oz-paper) 0%,
+    var(--oz-paper-aged) 50%,
+    var(--oz-paper) 100%
+  );
+  box-shadow:
+    0 0 100px rgba(160, 128, 80, 0.04),
+    0 30px 60px -15px rgba(0, 0, 0, 0.5),
+    inset 0 0 100px rgba(0, 0, 0, 0.25);
+}
+
+.dark-mode .oz-vehadar-theme .daf-page-header {
+  background: linear-gradient(
+    180deg,
+    #2a2520 0%,
+    var(--oz-paper) 100%
+  );
+}
+
+.dark-mode .oz-vehadar-theme .daf-masechet,
+.dark-mode .oz-vehadar-theme .daf-value {
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.dark-mode .oz-vehadar-theme .daf-rashi-entry:hover {
+  background: linear-gradient(
+    90deg,
+    rgba(139, 69, 19, 0.1) 0%,
+    transparent 100%
+  );
+}
+
+.dark-mode .oz-vehadar-theme .daf-tosafot-entry:hover {
+  background: linear-gradient(
+    270deg,
+    rgba(59, 130, 246, 0.08) 0%,
+    transparent 100%
+  );
+}
+
+.dark-mode .oz-vehadar-theme .daf-gemara-english {
+  border-top-color: rgba(139, 105, 20, 0.25);
+  color: #a09080;
+}
+
+.dark-mode .oz-vehadar-theme .daf-page-footer {
+  background: linear-gradient(
+    0deg,
+    #0f0d0a 0%,
+    var(--oz-paper) 100%
+  );
+}
+
+.dark-mode .oz-vehadar-theme .daf-col-content::-webkit-scrollbar-track {
+  background: rgba(139, 105, 20, 0.12);
+}
+
+/* ===== RESPONSIVE - Oz VeHadar ===== */
+@media (max-width: 1100px) {
+  .oz-vehadar-theme .daf-masechet {
+    font-size: 3rem;
+  }
+
+  .oz-vehadar-theme .daf-gemara-text {
+    font-size: 1.4rem;
+  }
+
+  .oz-vehadar-theme .daf-column {
+    padding: 1.5rem 2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .oz-vehadar-theme .daf-masechet {
+    font-size: 2.5rem;
+  }
+
+  .oz-vehadar-theme .daf-gemara-text {
+    font-size: 1.25rem;
+    line-height: 2.3;
+  }
+
+  .oz-vehadar-theme .daf-rashi-text,
+  .oz-vehadar-theme .daf-tosafot-text {
+    font-size: 0.95rem;
+    line-height: 2;
+  }
+
+  .oz-vehadar-theme .daf-page-header {
+    padding: 1.5rem 2rem 1.25rem;
+  }
+
+  .oz-vehadar-theme .daf-page-footer {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+  }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  .oz-vehadar-theme .daf-gemara-text {
+    font-size: 14pt;
+    line-height: 2.2;
+  }
+
+  .oz-vehadar-theme .daf-rashi-text,
+  .oz-vehadar-theme .daf-tosafot-text {
+    font-size: 10pt;
+    line-height: 1.9;
+  }
+}
+
+/* ============================================
+   MIKRAOT GEDOLOT - Oz VeHadar Style
+   ============================================ */
+
+/* Enhanced page frame */
+.oz-vehadar-theme.mikraot-gedolot {
+  background: linear-gradient(
+    180deg,
+    var(--oz-paper) 0%,
+    var(--oz-paper-aged) 50%,
+    var(--oz-paper) 100%
+  );
+  border-radius: 3px;
+  box-shadow:
+    0 0 100px rgba(107, 68, 35, 0.06),
+    0 30px 60px -15px rgba(0, 0, 0, 0.22),
+    -10px 0 20px -8px rgba(0, 0, 0, 0.08),
+    10px 0 20px -8px rgba(0, 0, 0, 0.08),
+    inset 0 0 100px rgba(107, 68, 35, 0.02);
+}
+
+/* Page header */
+.oz-vehadar-theme .mg-page-header {
+  padding: 2.5rem 3rem 2rem;
+  background: linear-gradient(
+    180deg,
+    #f0e8d8 0%,
+    var(--oz-paper) 80%
+  );
+}
+
+.oz-vehadar-theme .mg-sefer {
+  font-family: var(--oz-font-titles);
+  font-size: 3.5rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--oz-ink);
+}
+
+.oz-vehadar-theme .mg-perek {
+  font-family: var(--oz-font-titles);
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.oz-vehadar-theme .mg-page-label {
+  font-family: var(--oz-font-titles);
+  font-size: 1.5rem;
+  letter-spacing: 0.15em;
+  color: var(--oz-gold-primary);
+}
+
+/* Torah text box */
+.oz-vehadar-theme .mg-torah-box {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.6) 0%,
+    rgba(250, 246, 237, 0.3) 100%
+  );
+  border: 3px solid var(--oz-gold-primary);
+  border-radius: 4px;
+}
+
+.oz-vehadar-theme .mg-box-header {
+  background: linear-gradient(
+    180deg,
+    rgba(139, 105, 20, 0.2) 0%,
+    rgba(139, 105, 20, 0.08) 100%
+  );
+  border-bottom: 2px solid var(--oz-gold-primary);
+}
+
+.oz-vehadar-theme .mg-box-title {
+  font-family: var(--oz-font-titles);
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+}
+
+/* Torah text - Premium typography */
+.oz-vehadar-theme .mg-torah-text {
+  font-family: var(--oz-font-gemara);
+  font-size: 1.7rem;
+  font-weight: 500;
+  line-height: 2.8;
+  letter-spacing: var(--oz-letter-spacing-hebrew);
+  word-spacing: var(--oz-word-spacing-hebrew);
+  color: var(--oz-ink);
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+.oz-vehadar-theme .mg-pasuk-text {
+  font-family: var(--oz-font-gemara);
+}
+
+.oz-vehadar-theme .mg-pasuk-num {
+  color: var(--oz-gold-primary);
+  font-weight: 700;
+}
+
+/* Column headers */
+.oz-vehadar-theme .mg-col-header {
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(
+    180deg,
+    rgba(139, 105, 20, 0.15) 0%,
+    rgba(139, 105, 20, 0.05) 100%
+  );
+  border-bottom: 3px solid var(--oz-gold-primary);
+  border-radius: 4px 4px 0 0;
+}
+
+.oz-vehadar-theme .mg-col-title {
+  font-family: var(--oz-font-titles);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--oz-ink);
+}
+
+/* Onkelos column */
+.oz-vehadar-theme .mg-onkelos-col {
+  background: linear-gradient(
+    180deg,
+    rgba(34, 139, 34, 0.04) 0%,
+    transparent 100%
+  );
+}
+
+.oz-vehadar-theme .mg-onkelos-col .mg-col-header {
+  background: linear-gradient(
+    180deg,
+    rgba(34, 139, 34, 0.12) 0%,
+    rgba(34, 139, 34, 0.04) 100%
+  );
+  border-bottom-color: #228b22;
+}
+
+.oz-vehadar-theme .mg-onk-aramaic {
+  font-family: var(--oz-font-tosafot);
+  font-size: 1.1rem;
+  line-height: 2.2;
+  color: var(--oz-ink-secondary);
+}
+
+/* Rashi column */
+.oz-vehadar-theme .mg-rashi-col {
+  background: linear-gradient(
+    180deg,
+    var(--oz-rashi-tint) 0%,
+    transparent 100%
+  );
+}
+
+.oz-vehadar-theme .mg-rashi-col .mg-col-header {
+  background: linear-gradient(
+    180deg,
+    rgba(139, 69, 19, 0.12) 0%,
+    rgba(139, 69, 19, 0.04) 100%
+  );
+  border-bottom-color: #8b4513;
+}
+
+.oz-vehadar-theme .mg-rashi-text {
+  font-family: var(--oz-font-rashi);
+  font-size: 1.05rem;
+  line-height: var(--oz-line-height-rashi);
+  color: var(--oz-ink-secondary);
+}
+
+.oz-vehadar-theme .mg-rashi-entry {
+  padding-left: 0.75rem;
+  border-left: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.oz-vehadar-theme .mg-rashi-entry:hover {
+  background: linear-gradient(
+    90deg,
+    rgba(139, 69, 19, 0.04) 0%,
+    transparent 100%
+  );
+  border-left-color: #8b4513;
+}
+
+/* Ramban column */
+.oz-vehadar-theme .mg-ramban-col {
+  background: linear-gradient(
+    180deg,
+    rgba(128, 0, 128, 0.03) 0%,
+    transparent 100%
+  );
+}
+
+.oz-vehadar-theme .mg-ramban-col .mg-col-header {
+  background: linear-gradient(
+    180deg,
+    rgba(128, 0, 128, 0.1) 0%,
+    rgba(128, 0, 128, 0.03) 100%
+  );
+  border-bottom-color: #800080;
+}
+
+.oz-vehadar-theme .mg-ramban-text {
+  font-family: var(--oz-font-tosafot);
+  font-size: 1.05rem;
+  line-height: var(--oz-line-height-tosafot);
+  color: var(--oz-ink-secondary);
+}
+
+.oz-vehadar-theme .mg-ramban-entry {
+  padding-right: 0.75rem;
+  border-right: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.oz-vehadar-theme .mg-ramban-entry:hover {
+  background: linear-gradient(
+    270deg,
+    rgba(128, 0, 128, 0.04) 0%,
+    transparent 100%
+  );
+  border-right-color: #800080;
+}
+
+/* Dibbur styling for MG */
+.oz-vehadar-theme .mg-dibbur {
+  color: var(--oz-gold-dark);
+  font-weight: 600;
+}
+
+.oz-vehadar-theme .mg-dibbur strong {
+  background: linear-gradient(
+    180deg,
+    transparent 55%,
+    rgba(139, 105, 20, 0.2) 55%,
+    rgba(139, 105, 20, 0.2) 85%,
+    transparent 85%
+  );
+  padding: 0 0.35em;
+  font-weight: 700;
+}
+
+/* Footer */
+.oz-vehadar-theme .mg-page-footer {
+  padding: 1.5rem 3rem;
+  background: linear-gradient(
+    0deg,
+    #e8dcc8 0%,
+    var(--oz-paper) 100%
+  );
+  font-family: var(--oz-font-titles);
+  font-size: 1.2rem;
+  letter-spacing: 0.1em;
+}
+
+/* Control button active state */
+.oz-vehadar-theme .mg-control-btn.active {
+  background: var(--oz-gold-primary);
+  color: white;
+  box-shadow: 0 2px 12px rgba(139, 105, 20, 0.3);
+}
+
+/* Dark mode for MikraotGedolot */
+.dark-mode .oz-vehadar-theme.mikraot-gedolot {
+  background: linear-gradient(
+    180deg,
+    var(--oz-paper) 0%,
+    var(--oz-paper-aged) 50%,
+    var(--oz-paper) 100%
+  );
+}
+
+.dark-mode .oz-vehadar-theme .mg-page-header {
+  background: linear-gradient(
+    180deg,
+    #2a2520 0%,
+    var(--oz-paper) 100%
+  );
+}
+
+.dark-mode .oz-vehadar-theme .mg-torah-box {
+  border-color: var(--oz-gold-dark);
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.dark-mode .oz-vehadar-theme .mg-page-footer {
+  background: linear-gradient(
+    0deg,
+    #0f0d0a 0%,
+    var(--oz-paper) 100%
+  );
+}
+
+/* Responsive MG */
+@media (max-width: 1100px) {
+  .oz-vehadar-theme .mg-sefer {
+    font-size: 2.8rem;
+  }
+
+  .oz-vehadar-theme .mg-torah-text {
+    font-size: 1.4rem;
+    line-height: 2.4;
+  }
+}
+
+@media (max-width: 600px) {
+  .oz-vehadar-theme .mg-sefer {
+    font-size: 2.2rem;
+  }
+
+  .oz-vehadar-theme .mg-torah-text {
+    font-size: 1.2rem;
+    line-height: 2.2;
+  }
+
+  .oz-vehadar-theme .mg-rashi-text,
+  .oz-vehadar-theme .mg-ramban-text,
+  .oz-vehadar-theme .mg-onk-aramaic {
+    font-size: 0.95rem;
+    line-height: 2;
+  }
+}

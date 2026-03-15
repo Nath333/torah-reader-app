@@ -1,0 +1,605 @@
+/* =============================================================================
+   Vocabulary Bank - Clean Modern Design
+   ============================================================================= */
+
+.vocabulary-bank {
+  background: var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.vocabulary-header {
+  padding: var(--space-5);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  background: var(--bg-subtle);
+}
+
+.vocabulary-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.vocabulary-header h2::before {
+  content: '';
+  width: 4px;
+  height: 22px;
+  background: var(--primary);
+  border-radius: 2px;
+}
+
+.vocabulary-tabs {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-1);
+  background: var(--bg-elevated);
+  border-radius: var(--radius);
+}
+
+.vocabulary-tabs .tab {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+}
+
+.vocabulary-tabs .tab svg {
+  width: 16px;
+  height: 16px;
+}
+
+.vocabulary-tabs .tab:hover {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.vocabulary-tabs .tab.active {
+  background: var(--primary);
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.vocabulary-content {
+  padding: var(--space-5);
+  min-height: 400px;
+}
+
+/* -----------------------------------------------------------------------------
+   Word List View
+   ----------------------------------------------------------------------------- */
+.vocabulary-toolbar {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.search-box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.search-box svg {
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+}
+
+.search-box input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  color: var(--text-primary);
+  outline: none;
+}
+
+.search-box input::placeholder {
+  color: var(--text-muted);
+}
+
+.sort-select {
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.vocabulary-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.vocabulary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: all var(--transition-fast);
+}
+
+.vocabulary-item:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow);
+}
+
+.vocabulary-item.mastered {
+  border-color: var(--success);
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.word-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.word-hebrew {
+  font-family: 'Crimson Pro', 'Times New Roman', serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  direction: rtl;
+}
+
+.word-translations {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.word-english {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.word-french {
+  font-size: 14px;
+  color: var(--primary);
+  cursor: pointer;
+}
+
+.word-french em {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.word-french:hover {
+  text-decoration: underline;
+}
+
+.edit-french {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
+}
+
+.edit-french input {
+  padding: 4px 8px;
+  border: 1px solid var(--primary);
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.edit-french .save-btn,
+.edit-french .cancel-btn {
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.edit-french .save-btn {
+  background: var(--primary);
+  color: white;
+}
+
+.edit-french .cancel-btn {
+  background: var(--border);
+  color: var(--text-secondary);
+}
+
+.word-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.review-count {
+  padding: 2px 8px;
+  background: var(--border-light);
+  border-radius: 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.mastered-badge {
+  padding: 2px 8px;
+  background: var(--success);
+  color: white;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.remove-word {
+  padding: 6px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+}
+
+.remove-word:hover {
+  background: var(--error);
+  color: white;
+}
+
+.remove-word svg {
+  width: 16px;
+  height: 16px;
+}
+
+.empty-vocabulary,
+.no-review-words {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xl);
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.empty-vocabulary svg,
+.no-review-words svg {
+  width: 64px;
+  height: 64px;
+  margin-bottom: var(--space-md);
+  color: var(--text-muted);
+}
+
+.empty-vocabulary p,
+.no-review-words p {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin: 0 0 var(--space-xs);
+}
+
+.empty-vocabulary span,
+.no-review-words span {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* -----------------------------------------------------------------------------
+   Flashcard Review
+   ----------------------------------------------------------------------------- */
+.flashcard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-lg) 0;
+}
+
+.flashcard-progress {
+  margin-bottom: var(--space-lg);
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.flashcard {
+  width: 100%;
+  max-width: 400px;
+  height: 250px;
+  perspective: 1000px;
+  cursor: pointer;
+}
+
+.flashcard-front,
+.flashcard-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  backface-visibility: hidden;
+  transition: transform 0.6s;
+  box-shadow: var(--shadow-md);
+}
+
+.flashcard-front {
+  transform: rotateY(0deg);
+}
+
+.flashcard-back {
+  transform: rotateY(180deg);
+}
+
+.flashcard.flipped .flashcard-front {
+  transform: rotateY(-180deg);
+}
+
+.flashcard.flipped .flashcard-back {
+  transform: rotateY(0deg);
+}
+
+.flashcard-hebrew {
+  font-family: 'Crimson Pro', 'Times New Roman', serif;
+  font-size: 3rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  direction: rtl;
+  margin-bottom: var(--space-md);
+}
+
+.flashcard-hint {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.flashcard-translations {
+  width: 100%;
+}
+
+.translation-row {
+  display: flex;
+  gap: var(--space-md);
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.translation-row:last-child {
+  border-bottom: none;
+}
+
+.lang-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  min-width: 30px;
+}
+
+.translation-text {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.flashcard-actions {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+}
+
+.action-correct,
+.action-incorrect {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-xl);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.action-correct {
+  background: var(--success);
+  color: white;
+}
+
+.action-correct:hover {
+  background: #059669;
+  transform: translateY(-2px);
+}
+
+.action-incorrect {
+  background: var(--error);
+  color: white;
+}
+
+.action-incorrect:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+}
+
+.action-correct svg,
+.action-incorrect svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* -----------------------------------------------------------------------------
+   Statistics View
+   ----------------------------------------------------------------------------- */
+.vocabulary-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-md);
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.stat-card.total {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.stat-card.mastered {
+  border-color: var(--success);
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.stat-card.learning {
+  border-color: var(--warning);
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.stat-card.progress {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.stat-label {
+  margin-top: var(--space-sm);
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.stats-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--border);
+}
+
+.export-btn,
+.import-btn,
+.clear-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.export-btn:hover,
+.import-btn:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.clear-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.export-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.export-btn svg,
+.import-btn svg,
+.clear-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive
+   ----------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .vocabulary-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .vocabulary-tabs {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .vocabulary-toolbar {
+    flex-direction: column;
+  }
+
+  .flashcard {
+    max-width: 100%;
+    height: 200px;
+  }
+
+  .flashcard-hebrew {
+    font-size: 2rem;
+  }
+
+  .flashcard-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .action-correct,
+  .action-incorrect {
+    justify-content: center;
+  }
+
+  .stats-actions {
+    flex-wrap: wrap;
+  }
+}

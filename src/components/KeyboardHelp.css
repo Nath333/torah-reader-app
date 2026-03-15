@@ -1,0 +1,206 @@
+/* =============================================================================
+   Keyboard Help Modal - Clean Modern Design
+   ============================================================================= */
+
+.keyboard-help-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: overlayFadeIn 0.15s ease;
+}
+
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.keyboard-help-modal {
+  background: var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  max-width: 420px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: modalSlideUp 0.2s ease;
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.keyboard-help-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-subtle);
+}
+
+.keyboard-help-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.keyboard-help-header .close-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.keyboard-help-header .close-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+}
+
+.keyboard-help-header .close-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.shortcuts-list {
+  padding: var(--space-3) var(--space-5);
+  overflow-y: auto;
+  flex: 1;
+}
+
+.shortcut-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) 0;
+  gap: var(--space-4);
+}
+
+.shortcut-item:not(:last-child) {
+  border-bottom: 1px solid var(--border-light);
+}
+
+.shortcut-keys {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.shortcut-keys kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 26px;
+  padding: 0 8px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg) 100%);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 2px 0 var(--border);
+}
+
+.key-separator {
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.shortcut-description {
+  color: var(--text-secondary);
+  font-size: 13px;
+  text-align: right;
+  flex: 1;
+}
+
+.keyboard-help-footer {
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--border);
+  background: var(--bg-subtle);
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.keyboard-help-footer kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 6px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin: 0 3px;
+  box-shadow: 0 1px 0 var(--border);
+}
+
+/* Dark Mode Adjustments */
+.app.dark-mode .keyboard-help-overlay {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.app.dark-mode .shortcut-keys kbd {
+  background: linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg) 100%);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .keyboard-help-modal {
+    width: 95%;
+    max-height: 85vh;
+  }
+
+  .keyboard-help-header,
+  .shortcuts-list,
+  .keyboard-help-footer {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+
+  .shortcut-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  .shortcut-description {
+    text-align: left;
+  }
+}

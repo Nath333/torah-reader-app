@@ -1,0 +1,753 @@
+/* MikraotGedolotPro - Authentic Printed Sefer Layout */
+
+/* === FONTS === */
+@import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&display=swap');
+
+/* Rashi Script font face - uses SBL Hebrew which has Rashi-like appearance */
+@font-face {
+  font-family: 'Rashi Script';
+  src: local('SBL Hebrew'), local('Ezra SIL'), local('Frank Ruehl CLM');
+  font-weight: normal;
+}
+
+/* === MAIN CONTAINER === */
+.mikraot-gedolot-pro {
+  --mgp-parchment: #faf6eb;
+  --mgp-parchment-dark: #f5ecd8;
+  --mgp-ink: #1a1410;
+  --mgp-ink-light: #3d3020;
+  --mgp-gold: #8b6914;
+  --mgp-gold-dark: #6b4f0f;
+  --mgp-border: #c4a87a;
+  --mgp-shadow: rgba(60, 40, 20, 0.15);
+
+  /* Commentary colors */
+  --mgp-rashi: #8b2525;
+  --mgp-ramban: #4a2c7a;
+  --mgp-ibnezra: #2a5a2a;
+  --mgp-sforno: #1a4a6a;
+  --mgp-onkelos: #3a6a3a;
+
+  background: linear-gradient(135deg, #e8dcc8 0%, #d4c4a8 100%);
+  padding: 2rem;
+  min-height: 100vh;
+  font-family: 'Frank Ruhl Libre', 'David', 'Times New Roman', serif;
+}
+
+/* === PAGE FRAME (Like a real book page) === */
+.mgp-frame {
+  background: var(--mgp-parchment);
+  max-width: 1600px;
+  margin: 0 auto;
+  border: 3px double var(--mgp-gold);
+  border-radius: 4px;
+  box-shadow:
+    0 0 0 8px var(--mgp-parchment-dark),
+    0 0 0 10px var(--mgp-border),
+    0 15px 50px var(--mgp-shadow),
+    inset 0 0 100px rgba(139, 105, 20, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative corner flourishes */
+.mgp-corner {
+  position: absolute;
+  font-size: 2rem;
+  color: var(--mgp-gold);
+  opacity: 0.6;
+  z-index: 10;
+}
+.mgp-corner-tl { top: 0.5rem; left: 0.5rem; transform: rotate(0deg); }
+.mgp-corner-tr { top: 0.5rem; right: 0.5rem; transform: rotate(90deg); }
+.mgp-corner-bl { bottom: 0.5rem; left: 0.5rem; transform: rotate(-90deg); }
+.mgp-corner-br { bottom: 0.5rem; right: 0.5rem; transform: rotate(180deg); }
+
+/* === PAGE HEADER === */
+.mgp-header {
+  background: linear-gradient(180deg, #f0e6d2 0%, var(--mgp-parchment) 100%);
+  border-bottom: 3px double var(--mgp-gold);
+  padding: 1.5rem 2rem;
+  text-align: center;
+  position: relative;
+}
+
+.mgp-header-decoration {
+  font-size: 1.5rem;
+  color: var(--mgp-gold);
+  margin-bottom: 0.5rem;
+}
+
+.mgp-header-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mgp-sefer {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--mgp-ink);
+  margin: 0;
+  letter-spacing: 0.15em;
+  text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+}
+
+.mgp-chapter-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mgp-perek-label {
+  font-size: 1.3rem;
+  color: var(--mgp-ink-light);
+}
+
+.mgp-perek-num {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--mgp-gold-dark);
+  border: 2px solid var(--mgp-gold);
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #fff 0%, #f5ead4 100%);
+}
+
+.mgp-header-badge {
+  position: absolute;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.1rem;
+  color: var(--mgp-gold-dark);
+  letter-spacing: 0.2em;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  opacity: 0.7;
+}
+
+/* === TORAH SECTION (Main Text) === */
+.mgp-torah-section {
+  background: linear-gradient(180deg, #fffef8 0%, var(--mgp-parchment) 100%);
+  border-bottom: 2px solid var(--mgp-border);
+  padding: 1.5rem 2rem;
+}
+
+.mgp-torah-header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.mgp-torah-title {
+  display: inline-block;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--mgp-gold-dark);
+  padding: 0.4rem 2rem;
+  border: 1px solid var(--mgp-border);
+  border-radius: 20px;
+  background: rgba(212, 184, 150, 0.15);
+  letter-spacing: 0.15em;
+}
+
+.mgp-torah-content {
+  font-size: 1.7rem;
+  line-height: 2.6;
+  color: var(--mgp-ink);
+  text-align: justify;
+  column-count: 2;
+  column-gap: 3rem;
+  column-rule: 1px solid var(--mgp-border);
+  padding: 0.5rem;
+}
+
+.mgp-pasuk {
+  display: inline;
+}
+
+.mgp-pasuk-num {
+  font-size: 0.6em;
+  color: var(--mgp-gold);
+  vertical-align: super;
+  font-weight: 700;
+  margin-left: 0.15em;
+  margin-right: 0.3em;
+}
+
+.mgp-pasuk-text {
+  /* inherits */
+}
+
+.mgp-pasuk-sep {
+  display: inline;
+}
+
+.mgp-torah-english {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--mgp-border);
+  font-size: 1rem;
+  line-height: 1.9;
+  color: #555;
+  font-style: italic;
+  column-count: 2;
+  column-gap: 3rem;
+}
+
+.mgp-eng-num {
+  color: var(--mgp-gold);
+  font-style: normal;
+  margin-right: 0.2em;
+}
+
+/* === COMMENTARY SECTIONS === */
+.mgp-upper-row {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  border-bottom: 2px solid var(--mgp-border);
+}
+
+.mgp-lower-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* === COMMENTARY BOX (Generic) === */
+.mgp-commentary-box {
+  border-right: 1px solid var(--mgp-border);
+  display: flex;
+  flex-direction: column;
+  min-height: 250px;
+  max-height: 400px;
+}
+
+.mgp-commentary-box:last-child {
+  border-right: none;
+}
+
+.mgp-box-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid;
+  flex-wrap: wrap;
+}
+
+.mgp-box-icon {
+  font-size: 1.2rem;
+}
+
+.mgp-box-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.mgp-box-subtitle {
+  font-size: 0.85rem;
+  color: #666;
+  font-style: italic;
+}
+
+.mgp-box-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  font-size: 1rem;
+  line-height: 1.95;
+}
+
+/* Custom scrollbar */
+.mgp-box-content::-webkit-scrollbar {
+  width: 10px;
+}
+
+.mgp-box-content::-webkit-scrollbar-track {
+  background: rgba(196, 168, 122, 0.2);
+  border-radius: 5px;
+}
+
+.mgp-box-content::-webkit-scrollbar-thumb {
+  background: var(--mgp-border);
+  border-radius: 5px;
+}
+
+.mgp-box-content::-webkit-scrollbar-thumb:hover {
+  background: var(--mgp-gold);
+}
+
+.mgp-entry {
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px dotted rgba(0,0,0,0.15);
+}
+
+.mgp-entry:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.mgp-verse-marker {
+  font-size: 0.8em;
+  font-weight: 700;
+  margin-left: 0.4em;
+}
+
+.mgp-dibbur {
+  font-weight: 700;
+}
+
+.mgp-text {
+  color: var(--mgp-ink);
+}
+
+.mgp-aramaic {
+  font-family: 'Frank Ruhl Libre', serif;
+  color: var(--mgp-onkelos);
+}
+
+.mgp-empty {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  padding: 2rem;
+}
+
+/* === ONKELOS BOX === */
+.onkelos-box {
+  background: rgba(58, 106, 58, 0.06);
+}
+
+.onkelos-box .mgp-box-header {
+  background: linear-gradient(180deg, rgba(58, 106, 58, 0.15) 0%, transparent 100%);
+  border-bottom-color: var(--mgp-onkelos);
+}
+
+.onkelos-box .mgp-box-title {
+  color: var(--mgp-onkelos);
+}
+
+.onkelos-box .mgp-verse-marker {
+  color: var(--mgp-onkelos);
+}
+
+/* === RASHI BOX === */
+.rashi-box {
+  background: rgba(139, 37, 37, 0.05);
+}
+
+.rashi-box .mgp-box-header {
+  background: linear-gradient(180deg, rgba(139, 37, 37, 0.12) 0%, transparent 100%);
+  border-bottom-color: var(--mgp-rashi);
+}
+
+.rashi-box .mgp-box-title {
+  color: var(--mgp-rashi);
+}
+
+.rashi-box .mgp-verse-marker {
+  color: var(--mgp-rashi);
+}
+
+.rashi-box .mgp-dibbur {
+  color: var(--mgp-rashi);
+  background: linear-gradient(180deg, transparent 60%, rgba(139, 37, 37, 0.15) 60%);
+  padding: 0 0.2em;
+}
+
+.rashi-box .mgp-text {
+  font-family: 'Rashi Script', 'SBL Hebrew', serif;
+}
+
+/* === RAMBAN BOX === */
+.ramban-box {
+  background: rgba(74, 44, 122, 0.05);
+}
+
+.ramban-box .mgp-box-header {
+  background: linear-gradient(180deg, rgba(74, 44, 122, 0.12) 0%, transparent 100%);
+  border-bottom-color: var(--mgp-ramban);
+}
+
+.ramban-box .mgp-box-title {
+  color: var(--mgp-ramban);
+}
+
+.ramban-box .mgp-verse-marker {
+  color: var(--mgp-ramban);
+}
+
+.ramban-box .mgp-dibbur {
+  color: var(--mgp-ramban);
+  background: linear-gradient(180deg, transparent 60%, rgba(74, 44, 122, 0.15) 60%);
+  padding: 0 0.2em;
+}
+
+/* === IBN EZRA BOX === */
+.ibnezra-box {
+  background: rgba(42, 90, 42, 0.05);
+}
+
+.ibnezra-box .mgp-box-header {
+  background: linear-gradient(180deg, rgba(42, 90, 42, 0.12) 0%, transparent 100%);
+  border-bottom-color: var(--mgp-ibnezra);
+}
+
+.ibnezra-box .mgp-box-title {
+  color: var(--mgp-ibnezra);
+}
+
+.ibnezra-box .mgp-verse-marker {
+  color: var(--mgp-ibnezra);
+}
+
+.ibnezra-box .mgp-dibbur {
+  color: var(--mgp-ibnezra);
+  background: linear-gradient(180deg, transparent 60%, rgba(42, 90, 42, 0.15) 60%);
+  padding: 0 0.2em;
+}
+
+/* === SFORNO BOX === */
+.sforno-box {
+  background: rgba(26, 74, 106, 0.05);
+}
+
+.sforno-box .mgp-box-header {
+  background: linear-gradient(180deg, rgba(26, 74, 106, 0.12) 0%, transparent 100%);
+  border-bottom-color: var(--mgp-sforno);
+}
+
+.sforno-box .mgp-box-title {
+  color: var(--mgp-sforno);
+}
+
+.sforno-box .mgp-verse-marker {
+  color: var(--mgp-sforno);
+}
+
+.sforno-box .mgp-dibbur {
+  color: var(--mgp-sforno);
+  background: linear-gradient(180deg, transparent 60%, rgba(26, 74, 106, 0.15) 60%);
+  padding: 0 0.2em;
+}
+
+/* === PAGE FOOTER === */
+.mgp-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: linear-gradient(0deg, #f0e6d2 0%, var(--mgp-parchment) 100%);
+  border-top: 3px double var(--mgp-gold);
+  font-size: 1rem;
+  color: var(--mgp-ink-light);
+}
+
+.mgp-footer-center {
+  color: var(--mgp-gold);
+  font-size: 1.3rem;
+}
+
+/* === LOADING STATE === */
+.mikraot-gedolot-pro.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+}
+
+.mgp-loading {
+  text-align: center;
+  background: var(--mgp-parchment);
+  padding: 3rem 4rem;
+  border-radius: 12px;
+  border: 3px double var(--mgp-gold);
+  box-shadow: 0 10px 40px var(--mgp-shadow);
+}
+
+.mgp-loading-sefer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.mgp-loading-icon {
+  font-size: 4rem;
+  animation: mgp-float 2s ease-in-out infinite;
+}
+
+@keyframes mgp-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.mgp-loading-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--mgp-gold-dark);
+  letter-spacing: 0.15em;
+}
+
+.mgp-loading-bar {
+  width: 300px;
+  height: 8px;
+  background: rgba(139, 105, 20, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 0 auto 1rem;
+}
+
+.mgp-loading-progress {
+  height: 100%;
+  background: linear-gradient(90deg, var(--mgp-gold) 0%, var(--mgp-gold-dark) 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.mgp-loading-text {
+  font-size: 1.2rem;
+  color: var(--mgp-ink-light);
+  margin-bottom: 0.5rem;
+}
+
+.mgp-loading-sub {
+  font-size: 1rem;
+  color: #888;
+  font-style: italic;
+}
+
+/* === DARK MODE === */
+.dark-mode .mikraot-gedolot-pro {
+  --mgp-parchment: #1e1a14;
+  --mgp-parchment-dark: #151210;
+  --mgp-ink: #e8dcc8;
+  --mgp-ink-light: #c4b8a4;
+  --mgp-gold: #c4a87a;
+  --mgp-gold-dark: #a08060;
+  --mgp-border: #4a3f30;
+  --mgp-shadow: rgba(0, 0, 0, 0.4);
+
+  --mgp-rashi: #fca5a5;
+  --mgp-ramban: #c4b5fd;
+  --mgp-ibnezra: #86efac;
+  --mgp-sforno: #7dd3fc;
+  --mgp-onkelos: #86efac;
+
+  background: linear-gradient(135deg, #0f0d0a 0%, #1a1510 100%);
+}
+
+.dark-mode .mgp-frame {
+  box-shadow:
+    0 0 0 8px var(--mgp-parchment-dark),
+    0 0 0 10px var(--mgp-border),
+    0 15px 50px var(--mgp-shadow);
+}
+
+.dark-mode .mgp-header {
+  background: linear-gradient(180deg, #2a2520 0%, var(--mgp-parchment) 100%);
+}
+
+.dark-mode .mgp-torah-section {
+  background: linear-gradient(180deg, #252018 0%, var(--mgp-parchment) 100%);
+}
+
+.dark-mode .mgp-perek-num {
+  background: linear-gradient(180deg, #3d3429 0%, #2a2520 100%);
+  border-color: var(--mgp-gold);
+  color: var(--mgp-gold);
+}
+
+.dark-mode .mgp-footer {
+  background: linear-gradient(0deg, #2a2520 0%, var(--mgp-parchment) 100%);
+}
+
+.dark-mode .mgp-torah-english {
+  color: #a08060;
+  border-top-color: var(--mgp-border);
+}
+
+.dark-mode .mgp-box-subtitle {
+  color: #888;
+}
+
+.dark-mode .mgp-box-content::-webkit-scrollbar-track {
+  background: rgba(74, 63, 48, 0.3);
+}
+
+.dark-mode .mgp-entry {
+  border-bottom-color: rgba(255,255,255,0.1);
+}
+
+.dark-mode .onkelos-box {
+  background: rgba(134, 239, 172, 0.05);
+}
+
+.dark-mode .rashi-box {
+  background: rgba(252, 165, 165, 0.05);
+}
+
+.dark-mode .ramban-box {
+  background: rgba(196, 181, 253, 0.05);
+}
+
+.dark-mode .ibnezra-box {
+  background: rgba(134, 239, 172, 0.05);
+}
+
+.dark-mode .sforno-box {
+  background: rgba(125, 211, 252, 0.05);
+}
+
+.dark-mode .mgp-loading {
+  background: var(--mgp-parchment);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 1400px) {
+  .mgp-lower-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .mgp-lower-row .mgp-commentary-box:nth-child(3) {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 1100px) {
+  .mgp-torah-content {
+    column-count: 1;
+    font-size: 1.5rem;
+  }
+
+  .mgp-torah-english {
+    column-count: 1;
+  }
+
+  .mgp-upper-row {
+    grid-template-columns: 1fr;
+  }
+
+  .mgp-lower-row {
+    grid-template-columns: 1fr;
+  }
+
+  .mgp-commentary-box {
+    border-right: none;
+    border-bottom: 1px solid var(--mgp-border);
+    max-height: 350px;
+  }
+
+  .mgp-commentary-box:last-child {
+    border-bottom: none;
+  }
+
+  .mgp-lower-row .mgp-commentary-box:nth-child(3) {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .mikraot-gedolot-pro {
+    padding: 0.5rem;
+  }
+
+  .mgp-header {
+    padding: 1rem;
+  }
+
+  .mgp-sefer {
+    font-size: 2.5rem;
+  }
+
+  .mgp-header-badge {
+    display: none;
+  }
+
+  .mgp-torah-content {
+    font-size: 1.3rem;
+    line-height: 2.2;
+  }
+
+  .mgp-torah-section {
+    padding: 1rem;
+  }
+
+  .mgp-box-content {
+    padding: 0.75rem;
+    font-size: 0.95rem;
+  }
+
+  .mgp-corner {
+    display: none;
+  }
+
+  .mgp-footer {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+}
+
+@media (max-width: 500px) {
+  .mgp-sefer {
+    font-size: 2rem;
+  }
+
+  .mgp-perek-num {
+    font-size: 2rem;
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .mgp-torah-content {
+    font-size: 1.15rem;
+    line-height: 2;
+  }
+
+  .mgp-box-title {
+    font-size: 1.2rem;
+  }
+
+  .mgp-commentary-box {
+    max-height: 300px;
+  }
+}
+
+/* === PRINT STYLES === */
+@media print {
+  .mikraot-gedolot-pro {
+    background: white;
+    padding: 0;
+  }
+
+  .mgp-frame {
+    box-shadow: none;
+    border: 2px solid #000;
+    max-width: 100%;
+  }
+
+  .mgp-corner {
+    display: none;
+  }
+
+  .mgp-commentary-box {
+    max-height: none;
+    overflow: visible;
+    page-break-inside: avoid;
+  }
+
+  .mgp-box-content {
+    overflow: visible;
+    max-height: none;
+  }
+}

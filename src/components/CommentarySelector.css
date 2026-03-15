@@ -1,0 +1,1777 @@
+/* =============================================================================
+   Commentary Selector & Panel Styles - Enhanced UI
+   ============================================================================= */
+
+/* =============================================================================
+   Selector Modal Overlay
+   ============================================================================= */
+.commentary-selector-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.commentary-selector-modal {
+  background: white;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+  animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark-mode .commentary-selector-modal {
+  background: #1e293b;
+}
+
+.selector-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.dark-mode .selector-header {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-bottom-color: #334155;
+}
+
+.selector-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.dark-mode .selector-header h3 {
+  color: #f1f5f9;
+}
+
+.verse-ref {
+  margin-left: auto;
+  padding: 4px 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.selector-header .close-btn {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: #64748b;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.selector-header .close-btn:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.dark-mode .selector-header .close-btn:hover {
+  background: #334155;
+  color: #f1f5f9;
+}
+
+.selector-header .close-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* =============================================================================
+   Selector Grid
+   ============================================================================= */
+.selector-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+  padding: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.selector-grid.compact {
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+  padding: 16px;
+}
+
+.source-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.source-option::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--option-color, #667eea) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.dark-mode .source-option {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.source-option:hover {
+  border-color: var(--option-color, #667eea);
+  transform: translateY(-3px) scale(1.01);
+  box-shadow:
+    0 8px 25px -5px rgba(var(--option-color-rgb, 102, 126, 234), 0.25),
+    0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.source-option:hover::before {
+  opacity: 0.05;
+}
+
+.source-option:active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+.source-option:focus-visible {
+  outline: none;
+  border-color: var(--option-color, #667eea);
+  box-shadow:
+    0 0 0 3px rgba(102, 126, 234, 0.3),
+    0 8px 25px -5px rgba(102, 126, 234, 0.2);
+}
+
+.source-option.selected {
+  border-color: var(--option-color, #667eea);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.05) 100%);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+}
+
+.source-option.view-all {
+  background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+  border-style: dashed;
+  border-color: #a5b4fc;
+}
+
+.source-option.view-all:hover {
+  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+  border-style: solid;
+}
+
+.dark-mode .source-option.view-all {
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+  border-color: #4f46e5;
+}
+
+.option-icon {
+  font-size: 32px;
+  line-height: 1;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  transition: transform 0.2s;
+}
+
+.source-option:hover .option-icon {
+  transform: scale(1.1);
+}
+
+.selector-grid.compact .option-icon {
+  font-size: 26px;
+}
+
+.option-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.option-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.dark-mode .option-name {
+  color: #f1f5f9;
+}
+
+.option-hebrew {
+  font-size: 14px;
+  color: var(--option-color, #667eea);
+  font-weight: 500;
+}
+
+.option-desc {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.dark-mode .option-desc {
+  color: #94a3b8;
+}
+
+.selected-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  background: var(--option-color, #667eea);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.selected-check svg {
+  width: 14px;
+  height: 14px;
+  color: white;
+}
+
+.selector-footer {
+  padding: 16px 20px;
+  border-top: 1px solid #e5e7eb;
+  background: #f8fafc;
+}
+
+.dark-mode .selector-footer {
+  background: #0f172a;
+  border-top-color: #334155;
+}
+
+.view-all-btn {
+  width: 100%;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.view-all-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+/* =============================================================================
+   Commentary Panel (Side-by-side)
+   ============================================================================= */
+.commentary-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: white;
+  border-radius: 16px;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 10px 30px -5px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  animation: slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark-mode .commentary-panel {
+  background: #1e293b;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.3),
+    0 10px 30px -5px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+  color: white;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.panel-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.header-left,
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.back-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateX(-2px);
+}
+
+.back-btn:active {
+  transform: scale(0.95);
+}
+
+.back-btn:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
+}
+
+.back-btn svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.2s;
+}
+
+.back-btn:hover svg {
+  transform: translateX(-2px);
+}
+
+.verse-badge {
+  padding: 5px 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.translate-btn,
+.panel-header .close-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+  transition: background 0.2s;
+}
+
+.translate-btn:hover,
+.panel-header .close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.translate-btn:focus-visible,
+.panel-header .close-btn:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
+}
+
+.translate-btn:active,
+.panel-header .close-btn:active {
+  transform: scale(0.95);
+}
+
+.translate-btn.active {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.translate-btn svg,
+.panel-header .close-btn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar styling */
+.panel-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.panel-content::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 4px 0;
+}
+
+.panel-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #c7d2fe 0%, #a5b4fc 100%);
+  border-radius: 4px;
+  border: 2px solid white;
+}
+
+.panel-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #a5b4fc 0%, #818cf8 100%);
+}
+
+.dark-mode .panel-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #4f46e5 0%, #6366f1 100%);
+  border-color: #1e293b;
+}
+
+.dark-mode .panel-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #6366f1 0%, #818cf8 100%);
+}
+
+/* Selector modal scrollbar */
+.selector-grid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.selector-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.selector-grid::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.selector-grid::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.dark-mode .selector-grid::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark-mode .selector-grid::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* =============================================================================
+   Loading State
+   ============================================================================= */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 20px;
+  color: #64748b;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.loading-state .loading-spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #667eea;
+  border-right-color: #8b5cf6;
+  border-radius: 50%;
+  animation: spin 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  margin-bottom: 16px;
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-state p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.dark-mode .loading-state {
+  color: #94a3b8;
+}
+
+.dark-mode .loading-state .loading-spinner {
+  border-color: #334155;
+  border-top-color: #818cf8;
+  border-right-color: #a78bfa;
+  box-shadow: 0 0 20px rgba(129, 140, 248, 0.3);
+}
+
+/* =============================================================================
+   Commentary Card
+   ============================================================================= */
+.commentary-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  margin-bottom: 14px;
+  overflow: hidden;
+  border-left: 5px solid var(--card-color, #667eea);
+  transition: all 0.25s ease;
+  animation: fadeInUp 0.3s ease-out backwards;
+}
+
+.commentary-card:nth-child(1) { animation-delay: 0ms; }
+.commentary-card:nth-child(2) { animation-delay: 50ms; }
+.commentary-card:nth-child(3) { animation-delay: 100ms; }
+.commentary-card:nth-child(4) { animation-delay: 150ms; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.commentary-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateX(3px);
+}
+
+.dark-mode .commentary-card {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.dark-mode .commentary-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border-bottom: 1px solid transparent;
+}
+
+.dark-mode .card-header {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+}
+
+.card-header:hover {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  padding-left: 22px;
+}
+
+.dark-mode .card-header:hover {
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-icon {
+  font-size: 24px;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+}
+
+.card-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: -0.3px;
+}
+
+.dark-mode .card-name {
+  color: #f1f5f9;
+}
+
+.card-hebrew-name {
+  font-size: 15px;
+  color: var(--card-color, #667eea);
+  font-weight: 600;
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ai-btn,
+.expand-btn {
+  background: none;
+  border: none;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #64748b;
+  transition: all 0.2s;
+}
+
+.ai-btn:hover,
+.expand-btn:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.dark-mode .ai-btn:hover,
+.dark-mode .expand-btn:hover {
+  background: #334155;
+  color: #f1f5f9;
+}
+
+.ai-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.expand-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.card-body {
+  padding: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.dark-mode .card-body {
+  border-top-color: #334155;
+}
+
+/* =============================================================================
+   Commentary Entry
+   ============================================================================= */
+.commentary-entry {
+  margin-bottom: 12px;
+}
+
+.commentary-entry:last-child {
+  margin-bottom: 0;
+}
+
+.commentary-text {
+  line-height: 1.9;
+  font-size: 15px;
+}
+
+.commentary-text.hebrew {
+  font-family: 'SBL Hebrew', 'Ezra SIL', 'Frank Ruehl', serif;
+  font-size: 18px;
+  direction: rtl;
+  color: #1e293b;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.04) 0%, transparent 100%);
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.dark-mode .commentary-text.hebrew {
+  color: #f1f5f9;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, transparent 100%);
+}
+
+.commentary-text.english {
+  color: #475569;
+  font-size: 14px;
+  padding: 12px 16px;
+  border-left: 3px solid var(--card-color, #667eea);
+  background: #f8fafc;
+  border-radius: 0 10px 10px 0;
+  margin-top: 8px;
+  font-family: 'Crimson Pro', Georgia, serif;
+}
+
+.dark-mode .commentary-text.english {
+  color: #94a3b8;
+  background: rgba(51, 65, 85, 0.5);
+}
+
+.no-commentary {
+  text-align: center;
+  padding: 40px 24px;
+  color: #94a3b8;
+  font-style: italic;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 12px;
+  border: 2px dashed #e2e8f0;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.no-commentary::before {
+  content: '📚';
+  display: block;
+  font-size: 32px;
+  margin-bottom: 12px;
+  filter: grayscale(0.5) opacity(0.6);
+}
+
+.dark-mode .no-commentary {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-color: #334155;
+  color: #64748b;
+}
+
+/* =============================================================================
+   Pagination
+   ============================================================================= */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 16px;
+  background: linear-gradient(180deg, transparent 0%, rgba(248, 250, 252, 0.8) 100%);
+}
+
+.dark-mode .pagination {
+  border-top-color: #334155;
+  background: linear-gradient(180deg, transparent 0%, rgba(15, 23, 42, 0.8) 100%);
+}
+
+.pagination button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.pagination button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #667eea 0%, #8b5cf6 100%);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.pagination button span {
+  position: relative;
+  z-index: 1;
+}
+
+.dark-mode .pagination button {
+  background: #1e293b;
+  border-color: #334155;
+  color: #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.pagination button:hover:not(:disabled) {
+  border-color: #667eea;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.pagination button:hover:not(:disabled)::before {
+  opacity: 1;
+}
+
+.pagination button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.pagination .page-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4f46e5;
+}
+
+.pagination .page-info .current-page {
+  color: #1e293b;
+}
+
+.dark-mode .pagination .page-info {
+  background: linear-gradient(135deg, #312e81 0%, #3730a3 100%);
+  color: #a5b4fc;
+}
+
+.dark-mode .pagination .page-info .current-page {
+  color: #e0e7ff;
+}
+
+.pagination span {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* =============================================================================
+   All Commentaries View
+   ============================================================================= */
+.all-commentaries {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.single-commentary {
+  display: flex;
+  flex-direction: column;
+}
+
+/* =============================================================================
+   Professional Scholarly Styles
+   ============================================================================= */
+
+/* Era & Approach Badges */
+.era-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'SBL Hebrew', serif;
+  letter-spacing: 0.3px;
+}
+
+.era-rishonim {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+}
+
+.era-acharonim {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1e40af;
+}
+
+.era-targum {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  color: #065f46;
+}
+
+.era-tannaim {
+  background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+  color: #9d174d;
+}
+
+.era-amoraim {
+  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+  color: #4338ca;
+}
+
+.era-geonim {
+  background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%);
+  color: #0f766e;
+}
+
+.era-mini {
+  font-size: 10px;
+  padding: 1px 5px;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 3px;
+  color: #64748b;
+  font-family: 'SBL Hebrew', serif;
+}
+
+.dark-mode .era-mini {
+  background: rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+}
+
+.approach-badge {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'SBL Hebrew', serif;
+}
+
+.approach-peshat {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.approach-derash {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
+.approach-remez {
+  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+  color: #4338ca;
+  border: 1px solid #a5b4fc;
+}
+
+.approach-sod {
+  background: linear-gradient(135deg, #fae8ff 0%, #f5d0fe 100%);
+  color: #86198f;
+  border: 1px solid #e879f9;
+}
+
+/* Approach bar in card */
+.approach-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.dark-mode .approach-bar {
+  background: rgba(51, 65, 85, 0.5);
+}
+
+.approach-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Scholarly Info Panel */
+.scholarly-info {
+  margin-bottom: 16px;
+}
+
+.scholarly-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.scholarly-toggle:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+.dark-mode .scholarly-toggle {
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+.dark-mode .scholarly-toggle:hover {
+  background: #334155;
+  color: #e2e8f0;
+}
+
+.toggle-icon {
+  font-size: 14px;
+}
+
+.scholarly-details {
+  margin-top: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dark-mode .scholarly-details {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-color: #334155;
+}
+
+.scholar-header {
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.dark-mode .scholar-header {
+  border-bottom-color: #334155;
+}
+
+.scholar-name-he {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--card-color, #4f46e5);
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  direction: rtl;
+}
+
+.scholar-name-en {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #475569;
+}
+
+.dark-mode .scholar-name-en {
+  color: #94a3b8;
+}
+
+.scholar-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.meta-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  min-width: 70px;
+}
+
+.meta-value {
+  font-size: 13px;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.dark-mode .meta-value {
+  color: #e2e8f0;
+}
+
+.approach-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.scholar-methodology {
+  margin: 12px 0 0 0;
+  padding: 10px 12px;
+  background: white;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #475569;
+  font-style: italic;
+  border-left: 3px solid var(--card-color, #4f46e5);
+}
+
+.dark-mode .scholar-methodology {
+  background: rgba(51, 65, 85, 0.3);
+  color: #cbd5e1;
+}
+
+/* Enhanced Card Header */
+.card-title {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title-main {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.title-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-dates {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.dark-mode .card-dates {
+  color: #94a3b8;
+}
+
+/* Commentary content structure */
+.commentary-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.commentary-entry.hebrew-entry,
+.commentary-entry.english-entry {
+  position: relative;
+}
+
+.entry-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.lang-indicator {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.lang-indicator.en {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1e40af;
+}
+
+.dark-mode .lang-indicator {
+  background: linear-gradient(135deg, #334155 0%, #475569 100%);
+  color: #e2e8f0;
+}
+
+.entry-num {
+  font-size: 10px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.translation-section {
+  margin-top: 12px;
+}
+
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.section-divider::before,
+.section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+}
+
+.dark-mode .section-divider::before,
+.dark-mode .section-divider::after {
+  background: linear-gradient(90deg, transparent, #334155, transparent);
+}
+
+.section-divider span {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Importance indicator for cards */
+.commentary-card.importance-primary {
+  border-left-width: 6px;
+}
+
+.commentary-card.importance-secondary {
+  border-left-width: 4px;
+}
+
+.commentary-card.importance-tertiary {
+  border-left-width: 3px;
+  opacity: 0.9;
+}
+
+/* Source option enhancements */
+.source-option.importance-primary {
+  border-width: 2px;
+}
+
+.source-option.importance-primary::after {
+  content: '★';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 12px;
+  color: var(--option-color, #667eea);
+  opacity: 0.6;
+}
+
+.option-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.option-header.compact {
+  margin-bottom: 2px;
+}
+
+.option-dates {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.option-approach {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.option-approach .approach-badge {
+  font-size: 10px;
+  padding: 1px 6px;
+}
+
+/* No commentary state enhancement */
+.no-commentary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.no-commentary::before {
+  display: none;
+}
+
+.no-commentary-icon {
+  font-size: 32px;
+  filter: grayscale(0.5) opacity(0.6);
+}
+
+/* =============================================================================
+   Gematria Display
+   ============================================================================= */
+.gematria-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 1px solid #fcd34d;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #92400e;
+  cursor: help;
+  transition: all 0.2s;
+}
+
+.gematria-badge:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
+}
+
+.gematria-icon {
+  font-family: 'SBL Hebrew', serif;
+  font-weight: 700;
+  font-size: 10px;
+  color: #b45309;
+}
+
+.gematria-value {
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  color: #78350f;
+}
+
+.dark-mode .gematria-badge {
+  background: linear-gradient(135deg, #451a03 0%, #78350f 100%);
+  border-color: #92400e;
+  color: #fde68a;
+}
+
+.dark-mode .gematria-icon,
+.dark-mode .gematria-value {
+  color: #fcd34d;
+}
+
+/* =============================================================================
+   Hebrew Term Tooltips
+   ============================================================================= */
+.hebrew-term {
+  position: relative;
+  display: inline-flex;
+  padding: 2px 6px;
+  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+  border-radius: 4px;
+  font-family: 'SBL Hebrew', serif;
+  font-weight: 600;
+  color: #4338ca;
+  cursor: help;
+  border-bottom: 2px dotted #a5b4fc;
+  transition: all 0.2s;
+}
+
+.hebrew-term:hover {
+  background: linear-gradient(135deg, #c7d2fe 0%, #a5b4fc 100%);
+}
+
+.hebrew-term:hover .term-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.term-tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(5px);
+  width: 220px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  border-radius: 10px;
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.term-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #334155;
+}
+
+.tooltip-hebrew {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  color: #a5b4fc;
+  font-family: 'SBL Hebrew', serif;
+  direction: rtl;
+  margin-bottom: 4px;
+}
+
+.tooltip-english {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 6px;
+}
+
+.tooltip-desc {
+  display: block;
+  font-size: 11px;
+  color: #94a3b8;
+  line-height: 1.4;
+  font-family: -apple-system, sans-serif;
+}
+
+.dark-mode .hebrew-term {
+  background: linear-gradient(135deg, #312e81 0%, #3730a3 100%);
+  border-bottom-color: #6366f1;
+  color: #c7d2fe;
+}
+
+.dark-mode .hebrew-term:hover {
+  background: linear-gradient(135deg, #3730a3 0%, #4338ca 100%);
+}
+
+/* =============================================================================
+   Tradition Badges
+   ============================================================================= */
+.tradition-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'SBL Hebrew', serif;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.tradition-ashkenazi {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+
+.tradition-sephardi {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
+.tradition-chassidic {
+  background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+  color: #7e22ce;
+  border: 1px solid #c4b5fd;
+}
+
+.tradition-litvish {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+
+.tradition-yemenite {
+  background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+  color: #9d174d;
+  border: 1px solid #f9a8d4;
+}
+
+/* =============================================================================
+   Source Type Badges
+   ============================================================================= */
+.source-type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'SBL Hebrew', serif;
+  letter-spacing: 0.3px;
+}
+
+.source-mikra {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  color: #065f46;
+  border: 1px solid #6ee7b7;
+}
+
+.source-talmud {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
+.source-mishnah {
+  background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+  color: #991b1b;
+  border: 1px solid #f87171;
+}
+
+.source-midrash {
+  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+  color: #4338ca;
+  border: 1px solid #a5b4fc;
+}
+
+.source-halacha {
+  background: linear-gradient(135deg, #cffafe 0%, #a5f3fc 100%);
+  color: #0e7490;
+  border: 1px solid #67e8f9;
+}
+
+.source-kabbalah {
+  background: linear-gradient(135deg, #fae8ff 0%, #f5d0fe 100%);
+  color: #86198f;
+  border: 1px solid #e879f9;
+}
+
+.source-mussar {
+  background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
+  color: #c2410c;
+  border: 1px solid #fdba74;
+}
+
+/* =============================================================================
+   Study Tools Section
+   ============================================================================= */
+.study-tools-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  border: 1px solid #e2e8f0;
+}
+
+.dark-mode .study-tools-bar {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-color: #334155;
+}
+
+.study-tool-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.study-tool-btn:hover {
+  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+  border-color: #a5b4fc;
+  color: #4338ca;
+  transform: translateY(-1px);
+}
+
+.study-tool-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+}
+
+.dark-mode .study-tool-btn {
+  background: #334155;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+.dark-mode .study-tool-btn:hover {
+  background: #475569;
+  border-color: #6366f1;
+  color: #c7d2fe;
+}
+
+.study-tool-icon {
+  font-size: 14px;
+}
+
+/* =============================================================================
+   Cross-Reference Links
+   ============================================================================= */
+.cross-ref {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  border: 1px solid #fdba74;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #c2410c;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.cross-ref:hover {
+  background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(251, 146, 60, 0.3);
+}
+
+.cross-ref-icon {
+  font-size: 10px;
+}
+
+.dark-mode .cross-ref {
+  background: linear-gradient(135deg, #431407 0%, #7c2d12 100%);
+  border-color: #ea580c;
+  color: #fed7aa;
+}
+
+.dark-mode .cross-ref:hover {
+  background: linear-gradient(135deg, #7c2d12 0%, #c2410c 100%);
+}
+
+/* =============================================================================
+   Parsha/Weekly Portion Indicator
+   ============================================================================= */
+.parsha-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 1px solid #86efac;
+  border-radius: 10px;
+  font-family: 'SBL Hebrew', serif;
+}
+
+.parsha-name-he {
+  font-size: 16px;
+  font-weight: 700;
+  color: #166534;
+  direction: rtl;
+}
+
+.parsha-name-en {
+  font-size: 13px;
+  font-weight: 600;
+  color: #15803d;
+}
+
+.parsha-divider {
+  width: 1px;
+  height: 18px;
+  background: #86efac;
+}
+
+.dark-mode .parsha-indicator {
+  background: linear-gradient(135deg, #052e16 0%, #14532d 100%);
+  border-color: #22c55e;
+}
+
+.dark-mode .parsha-name-he {
+  color: #86efac;
+}
+
+.dark-mode .parsha-name-en {
+  color: #4ade80;
+}
+
+/* =============================================================================
+   Responsive
+   ============================================================================= */
+@media (max-width: 600px) {
+  .selector-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .selector-grid.compact {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .commentary-selector-modal {
+    width: 95%;
+    max-height: 85vh;
+  }
+
+  .source-option {
+    padding: 12px;
+  }
+
+  .option-icon {
+    font-size: 22px;
+  }
+
+  .option-name {
+    font-size: 14px;
+  }
+
+  .option-desc {
+    display: none;
+  }
+
+  .panel-header {
+    padding: 10px 12px;
+  }
+
+  .panel-header h3 {
+    font-size: 14px;
+  }
+
+  .panel-content {
+    padding: 12px;
+  }
+}

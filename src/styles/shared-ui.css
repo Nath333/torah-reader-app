@@ -1,0 +1,398 @@
+/* =============================================================================
+   Shared UI Styles - Common patterns used across components
+   Import this file in components that need modal, panel, or button styles
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   CSS Variables for UI Components
+   ----------------------------------------------------------------------------- */
+:root {
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-primary-dark: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  --gradient-blue: linear-gradient(135deg, #4a90d9 0%, #357abd 100%);
+  --gradient-purple: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+  --gradient-subtle: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  --gradient-dark: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+
+  /* Overlay */
+  --overlay-bg: rgba(0, 0, 0, 0.5);
+  --overlay-bg-dark: rgba(0, 0, 0, 0.6);
+  --overlay-blur: blur(4px);
+  --overlay-blur-heavy: blur(8px);
+
+  /* Buttons */
+  --btn-close-size: 32px;
+  --btn-close-size-sm: 28px;
+  --btn-close-size-lg: 36px;
+  --btn-close-bg: rgba(255, 255, 255, 0.2);
+  --btn-close-bg-hover: rgba(255, 255, 255, 0.3);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 200ms ease;
+  --transition-smooth: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* -----------------------------------------------------------------------------
+   Modal Overlay Base
+   ----------------------------------------------------------------------------- */
+.ui-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-bg);
+  backdrop-filter: var(--overlay-blur);
+  -webkit-backdrop-filter: var(--overlay-blur);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal, 500);
+  padding: var(--space-4, 20px);
+  animation: fadeIn var(--transition-fast) ease;
+}
+
+.ui-modal-overlay--dark {
+  background: var(--overlay-bg-dark);
+  backdrop-filter: var(--overlay-blur-heavy);
+  -webkit-backdrop-filter: var(--overlay-blur-heavy);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Modal Container
+   ----------------------------------------------------------------------------- */
+.ui-modal {
+  background: var(--bg-primary, #ffffff);
+  border-radius: var(--radius-lg, 16px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: scaleIn var(--transition-normal) ease;
+}
+
+.ui-modal--sm { max-width: 400px; }
+.ui-modal--md { max-width: 600px; }
+.ui-modal--lg { max-width: 800px; }
+.ui-modal--xl { max-width: 1000px; }
+.ui-modal--full { max-width: 95vw; max-height: 95vh; }
+
+/* -----------------------------------------------------------------------------
+   Panel Header with Gradient
+   ----------------------------------------------------------------------------- */
+.ui-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: var(--gradient-primary);
+  color: white;
+}
+
+.ui-panel-header--blue {
+  background: var(--gradient-blue);
+}
+
+.ui-panel-header--purple {
+  background: var(--gradient-purple);
+}
+
+.ui-panel-header--dark {
+  background: var(--gradient-dark);
+}
+
+.ui-panel-header--subtle {
+  background: var(--gradient-subtle);
+  color: var(--text-primary, #1f2937);
+}
+
+.ui-panel-header h2,
+.ui-panel-header h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+/* -----------------------------------------------------------------------------
+   Close Button (Circular)
+   ----------------------------------------------------------------------------- */
+.ui-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--btn-close-size);
+  height: var(--btn-close-size);
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--btn-close-bg);
+  color: inherit;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.ui-close-btn:hover {
+  background: var(--btn-close-bg-hover);
+  transform: scale(1.1);
+}
+
+.ui-close-btn:active {
+  transform: scale(0.95);
+}
+
+.ui-close-btn--sm {
+  width: var(--btn-close-size-sm);
+  height: var(--btn-close-size-sm);
+}
+
+.ui-close-btn--lg {
+  width: var(--btn-close-size-lg);
+  height: var(--btn-close-size-lg);
+}
+
+/* Close button for light backgrounds */
+.ui-close-btn--light {
+  background: var(--bg-secondary, #f0f0f0);
+  color: var(--text-secondary, #6b7280);
+}
+
+.ui-close-btn--light:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* Close button icon */
+.ui-close-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.ui-close-btn--sm svg {
+  width: 14px;
+  height: 14px;
+}
+
+.ui-close-btn--lg svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* -----------------------------------------------------------------------------
+   Action Buttons
+   ----------------------------------------------------------------------------- */
+.ui-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.ui-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ui-btn--primary {
+  background: var(--gradient-primary);
+  color: white;
+}
+
+.ui-btn--primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.ui-btn--secondary {
+  background: var(--bg-secondary, #f3f4f6);
+  color: var(--text-primary, #1f2937);
+}
+
+.ui-btn--secondary:hover:not(:disabled) {
+  background: var(--bg-tertiary, #e5e7eb);
+}
+
+.ui-btn--ghost {
+  background: transparent;
+  color: var(--text-secondary, #6b7280);
+}
+
+.ui-btn--ghost:hover:not(:disabled) {
+  background: var(--bg-secondary, #f3f4f6);
+  color: var(--text-primary, #1f2937);
+}
+
+.ui-btn--sm {
+  padding: 6px 12px;
+  font-size: 0.75rem;
+}
+
+.ui-btn--lg {
+  padding: 14px 28px;
+  font-size: 1rem;
+}
+
+/* -----------------------------------------------------------------------------
+   Icon Buttons
+   ----------------------------------------------------------------------------- */
+.ui-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  background: transparent;
+  color: var(--text-secondary, #6b7280);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.ui-icon-btn:hover {
+  background: var(--bg-secondary, #f3f4f6);
+  color: var(--text-primary, #1f2937);
+}
+
+.ui-icon-btn:active {
+  transform: scale(0.95);
+}
+
+.ui-icon-btn--sm {
+  width: 28px;
+  height: 28px;
+}
+
+.ui-icon-btn--lg {
+  width: 44px;
+  height: 44px;
+}
+
+.ui-icon-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* -----------------------------------------------------------------------------
+   Panel Body
+   ----------------------------------------------------------------------------- */
+.ui-panel-body {
+  padding: 20px;
+  overflow-y: auto;
+  max-height: calc(90vh - 120px);
+}
+
+.ui-panel-body--compact {
+  padding: 16px;
+}
+
+.ui-panel-body--spacious {
+  padding: 24px;
+}
+
+/* -----------------------------------------------------------------------------
+   Panel Footer
+   ----------------------------------------------------------------------------- */
+.ui-panel-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--border-color, #e5e7eb);
+  background: var(--bg-secondary, #f9fafb);
+}
+
+/* -----------------------------------------------------------------------------
+   Dividers
+   ----------------------------------------------------------------------------- */
+.ui-divider {
+  height: 1px;
+  background: var(--border-color, #e5e7eb);
+  margin: 16px 0;
+}
+
+.ui-divider--vertical {
+  width: 1px;
+  height: auto;
+  align-self: stretch;
+  margin: 0 12px;
+}
+
+/* -----------------------------------------------------------------------------
+   Dark Mode Overrides
+   ----------------------------------------------------------------------------- */
+[data-theme="dark"] .ui-modal,
+.dark .ui-modal {
+  background: var(--bg-primary-dark, #1f2937);
+  color: var(--text-primary-dark, #f9fafb);
+}
+
+[data-theme="dark"] .ui-panel-header--subtle,
+.dark .ui-panel-header--subtle {
+  background: var(--gradient-dark);
+  color: var(--text-primary-dark, #f9fafb);
+}
+
+[data-theme="dark"] .ui-close-btn--light,
+.dark .ui-close-btn--light {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary-dark, #9ca3af);
+}
+
+[data-theme="dark"] .ui-close-btn--light:hover,
+.dark .ui-close-btn--light:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+[data-theme="dark"] .ui-btn--secondary,
+.dark .ui-btn--secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary-dark, #f9fafb);
+}
+
+[data-theme="dark"] .ui-btn--secondary:hover:not(:disabled),
+.dark .ui-btn--secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="dark"] .ui-panel-footer,
+.dark .ui-panel-footer {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.1);
+}

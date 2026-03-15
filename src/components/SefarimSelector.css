@@ -1,0 +1,214 @@
+/* =============================================================================
+   Sefarim Selector - Clean Compact Design
+   ============================================================================= */
+
+.sefarim-selector {
+  background: var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Category Tabs - Compact Pill Style */
+.category-tabs {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+  padding: var(--space-1);
+  background: var(--bg-subtle);
+  border-radius: var(--radius);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.category-tab {
+  flex: 1;
+  min-width: max-content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-3) var(--space-4);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.category-tab:hover {
+  background: var(--bg-elevated);
+}
+
+.category-tab.active {
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-sm);
+}
+
+.category-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 3px;
+  background: var(--primary);
+  border-radius: 2px;
+}
+
+.category-hebrew {
+  font-family: 'Crimson Pro', 'Times New Roman', serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  direction: rtl;
+  transition: color var(--transition-fast);
+}
+
+.category-tab:hover .category-hebrew,
+.category-tab.active .category-hebrew {
+  color: var(--text-primary);
+}
+
+.category-english {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.category-tab.active .category-english {
+  color: var(--primary);
+}
+
+/* Selection Row - Side by Side */
+.selection-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.sefarim-selector .book-selector,
+.sefarim-selector .chapter-selector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.sefarim-selector .book-selector label,
+.sefarim-selector .chapter-selector label {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.label-hebrew {
+  font-family: 'Crimson Pro', 'Times New Roman', serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.label-english {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.sefarim-selector select {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 15px;
+  font-weight: 500;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 40px;
+}
+
+.sefarim-selector select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.sefarim-selector select:hover {
+  border-color: var(--primary);
+}
+
+/* Dark mode select arrow */
+.app.dark-mode .sefarim-selector select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sefarim-selector {
+    padding: var(--space-4);
+  }
+
+  .category-tabs {
+    padding: var(--space-1);
+    gap: var(--space-1);
+  }
+
+  .category-tab {
+    flex-direction: row;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .category-hebrew {
+    font-size: 1rem;
+  }
+
+  .category-english {
+    font-size: 0.65rem;
+  }
+
+  .selection-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .sefarim-selector select {
+    padding: var(--space-3);
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+@media (max-width: 480px) {
+  .sefarim-selector {
+    padding: var(--space-3);
+    border-radius: var(--radius);
+  }
+
+  .category-tab {
+    padding: var(--space-2);
+  }
+
+  .category-hebrew {
+    font-size: 0.9rem;
+  }
+
+  .category-english {
+    display: none;
+  }
+
+  .label-english {
+    display: none;
+  }
+}

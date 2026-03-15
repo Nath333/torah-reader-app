@@ -1,0 +1,2061 @@
+/* TzuratHaDaf - Premium Vilna Shas Page Layout */
+/* Authentic Talmud page styling like a real printed Gemara */
+
+/* ===== PAPER TEXTURE & BOOK EFFECT ===== */
+.tzurat-hadaf {
+  --paper-color: #fdf8f0;
+  --paper-dark: #f5ead4;
+  --ink-black: #1a1612;
+  --gold-accent: #6b4423;
+  --gold-light: #c4a77d;
+  --border-brown: #5d4e37;
+  --shadow-color: rgba(60, 40, 20, 0.15);
+
+  position: relative;
+  background: var(--paper-color);
+  margin: 1.5rem auto;
+  max-width: 1400px;
+  font-family: 'David Libre', 'David', 'Frank Ruehl CLM', 'Times New Roman', serif;
+
+  /* Realistic book shadow with depth */
+  box-shadow:
+    /* Outer glow */
+    0 0 60px rgba(107, 68, 35, 0.08),
+    /* Main drop shadow */
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    /* Book spine shadow */
+    -8px 0 15px -5px rgba(0, 0, 0, 0.1),
+    8px 0 15px -5px rgba(0, 0, 0, 0.1),
+    /* Inner page depth */
+    inset 0 0 80px rgba(107, 68, 35, 0.03);
+
+  /* Gilded edge effect */
+  border: none;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+/* Gold gilded edges - traditional brown/gold */
+.tzurat-hadaf::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 5px solid transparent;
+  border-image: linear-gradient(
+    135deg,
+    #8b6914 0%,
+    #c4a77d 15%,
+    #6b4423 30%,
+    #8b6914 50%,
+    #c4a77d 70%,
+    #6b4423 85%,
+    #8b6914 100%
+  ) 1;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Inner decorative frame */
+.tzurat-hadaf::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  border: 2px double var(--border-brown);
+  border-radius: 1px;
+  pointer-events: none;
+  z-index: 9;
+}
+
+/* Paper texture overlay */
+.tzurat-hadaf .paper-texture {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    /* Paper grain */
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"),
+    /* Aged paper spots */
+    radial-gradient(ellipse at 15% 25%, rgba(107, 68, 35, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 75%, rgba(107, 68, 35, 0.02) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 10%, rgba(100, 80, 40, 0.02) 0%, transparent 30%);
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.tzurat-hadaf.full-page {
+  min-height: 92vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== LOADING STATE ===== */
+.tzurat-hadaf.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  background: linear-gradient(180deg, var(--paper-color) 0%, var(--paper-dark) 100%);
+}
+
+.daf-loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  color: var(--border-brown);
+  font-size: 1.8rem;
+  text-align: center;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.daf-loading-sub {
+  font-size: 1.1rem;
+  color: #8b7355;
+  font-style: italic;
+}
+
+.daf-loading-spinner .loading-spinner {
+  width: 70px;
+  height: 70px;
+  animation: daf-spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  stroke: var(--gold-accent);
+}
+
+@keyframes daf-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== PAGE CONTROLS ===== */
+.daf-page-controls {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 20;
+}
+
+.daf-control-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--gold-accent);
+  background: rgba(253, 248, 240, 0.95);
+  color: var(--border-brown);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.daf-control-btn:hover {
+  background: var(--gold-accent);
+  color: white;
+  transform: scale(1.05);
+}
+
+.daf-control-btn.active {
+  background: var(--gold-accent);
+  color: white;
+  box-shadow: 0 2px 12px rgba(107, 68, 35, 0.3);
+}
+
+.daf-control-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ===== DAF HEADER - Traditional Gemara Header ===== */
+.daf-page-header {
+  position: relative;
+  background: linear-gradient(
+    180deg,
+    #f5ead4 0%,
+    var(--paper-color) 60%,
+    var(--paper-color) 100%
+  );
+  padding: 2rem 2.5rem 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3.5rem;
+  z-index: 5;
+}
+
+/* Decorative header border */
+.daf-page-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 2rem;
+  right: 2rem;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--gold-accent) 10%,
+    var(--gold-light) 50%,
+    var(--gold-accent) 90%,
+    transparent 100%
+  );
+}
+
+/* Ornamental decorations */
+.daf-page-header::before {
+  content: '✡';
+  position: absolute;
+  top: 50%;
+  left: 1.5rem;
+  transform: translateY(-50%);
+  font-size: 1.8rem;
+  color: var(--gold-accent);
+  opacity: 0.5;
+}
+
+.daf-masechet {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--ink-black);
+  letter-spacing: 0.2em;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.8);
+  font-family: 'David Libre', 'Frank Ruehl CLM', serif;
+}
+
+.daf-number {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.daf-label {
+  font-size: 1.8rem;
+  color: var(--border-brown);
+  font-weight: 600;
+}
+
+.daf-value {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--ink-black);
+  font-family: 'David Libre', serif;
+}
+
+.daf-amud {
+  font-size: 1.5rem;
+  color: var(--gold-accent);
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+/* ===== THREE COLUMN LAYOUT ===== */
+.daf-three-columns {
+  display: grid;
+  grid-template-columns: 1fr 1.8fr 1fr;
+  flex: 1;
+  min-height: 500px;
+  position: relative;
+  z-index: 5;
+}
+
+.daf-column {
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Column dividers - ornate lines */
+.daf-tosafot-col::after {
+  content: '';
+  position: absolute;
+  top: 2rem;
+  bottom: 2rem;
+  right: 0;
+  width: 2px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    var(--gold-light) 10%,
+    var(--gold-light) 90%,
+    transparent 100%
+  );
+}
+
+.daf-rashi-col::before {
+  content: '';
+  position: absolute;
+  top: 2rem;
+  bottom: 2rem;
+  left: 0;
+  width: 2px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    var(--gold-light) 10%,
+    var(--gold-light) 90%,
+    transparent 100%
+  );
+}
+
+/* Column backgrounds */
+.daf-tosafot-col {
+  background: linear-gradient(
+    135deg,
+    rgba(219, 234, 254, 0.2) 0%,
+    rgba(239, 246, 255, 0.3) 100%
+  );
+}
+
+.daf-gemara-col {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(253, 248, 240, 0.3) 100%
+  );
+}
+
+.daf-rashi-col {
+  background: linear-gradient(
+    135deg,
+    rgba(254, 226, 226, 0.2) 0%,
+    rgba(254, 242, 242, 0.3) 100%
+  );
+}
+
+/* ===== COLUMN HEADERS ===== */
+.daf-col-header {
+  text-align: center;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+  background: linear-gradient(
+    180deg,
+    rgba(196, 167, 125, 0.2) 0%,
+    transparent 100%
+  );
+  border-bottom: 2px solid rgba(196, 167, 125, 0.4);
+  border-radius: 8px 8px 0 0;
+  position: relative;
+}
+
+.daf-col-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 3px;
+  background: var(--gold-accent);
+  border-radius: 2px;
+}
+
+.daf-gemara-header {
+  background: linear-gradient(
+    180deg,
+    rgba(196, 167, 125, 0.35) 0%,
+    transparent 100%
+  );
+}
+
+.daf-gemara-header::after {
+  width: 80px;
+  height: 4px;
+}
+
+.daf-col-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ink-black);
+  letter-spacing: 0.2em;
+  font-family: 'David Libre', 'Frank Ruehl CLM', serif;
+}
+
+.daf-col-content {
+  flex: 1;
+  overflow-y: auto;
+  font-size: 1.05rem;
+  line-height: 2;
+  padding-right: 0.75rem;
+  scroll-behavior: smooth;
+}
+
+/* Elegant scrollbar */
+.daf-col-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.daf-col-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.daf-col-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--gold-light), var(--gold-accent));
+  border-radius: 3px;
+}
+
+.daf-col-content::-webkit-scrollbar-thumb:hover {
+  background: var(--border-brown);
+}
+
+/* ===== GEMARA COLUMN (Center) ===== */
+.daf-gemara-content {
+  text-align: justify;
+}
+
+.daf-gemara-text {
+  font-size: 1.5rem;
+  line-height: 2.4;
+  color: var(--ink-black);
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1;
+}
+
+.daf-gemara-english {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed rgba(196, 167, 125, 0.5);
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: #5a5040;
+  font-style: italic;
+  font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+/* ===== RASHI COLUMN (Right) ===== */
+.daf-rashi-entry {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px dotted rgba(239, 68, 68, 0.25);
+  transition: background 0.2s ease;
+}
+
+.daf-rashi-entry:hover {
+  background: rgba(239, 68, 68, 0.03);
+  border-radius: 4px;
+  padding-left: 0.5rem;
+  margin-left: -0.5rem;
+}
+
+.daf-rashi-entry:last-child {
+  border-bottom: none;
+}
+
+.daf-dibbur {
+  color: var(--gold-accent);
+  display: inline;
+}
+
+.daf-dibbur strong {
+  background: linear-gradient(180deg, transparent 60%, rgba(196, 167, 125, 0.5) 60%);
+  padding: 0 0.25em;
+  font-weight: 700;
+}
+
+.daf-rashi-text {
+  color: #2d2d2d;
+  font-family: 'SBL Hebrew', 'David Libre', 'David', serif;
+}
+
+.rashi-script {
+  font-family: 'SBL Hebrew', 'David Libre', serif;
+  font-size: 0.95em;
+}
+
+/* ===== TOSAFOT COLUMN (Left) ===== */
+.daf-tosafot-entry {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px dotted rgba(59, 130, 246, 0.25);
+  transition: background 0.2s ease;
+}
+
+.daf-tosafot-entry:hover {
+  background: rgba(59, 130, 246, 0.03);
+  border-radius: 4px;
+  padding-left: 0.5rem;
+  margin-left: -0.5rem;
+}
+
+.daf-tosafot-entry:last-child {
+  border-bottom: none;
+}
+
+.daf-tosafot-text {
+  color: #2d2d2d;
+}
+
+/* Tosafot header styling */
+.daf-tosafot-col .daf-col-header {
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.12) 0%, transparent 100%);
+  border-bottom-color: rgba(59, 130, 246, 0.3);
+}
+
+.daf-tosafot-col .daf-col-header::after {
+  background: #3b82f6;
+}
+
+.daf-tosafot-col .daf-dibbur {
+  color: #1d4ed8;
+}
+
+.daf-tosafot-col .daf-dibbur strong {
+  background: linear-gradient(180deg, transparent 60%, rgba(147, 197, 253, 0.5) 60%);
+}
+
+/* Rashi header styling */
+.daf-rashi-col .daf-col-header {
+  background: linear-gradient(180deg, rgba(239, 68, 68, 0.1) 0%, transparent 100%);
+  border-bottom-color: rgba(239, 68, 68, 0.3);
+}
+
+.daf-rashi-col .daf-col-header::after {
+  background: #dc2626;
+}
+
+.daf-rashi-col .daf-dibbur {
+  color: #b91c1c;
+}
+
+/* ===== EMPTY STATE ===== */
+.daf-empty {
+  color: #8b7355;
+  font-style: italic;
+  text-align: center;
+  padding: 3rem 2rem;
+  background: rgba(107, 68, 35, 0.03);
+  border-radius: 8px;
+  border: 1px dashed rgba(107, 68, 35, 0.2);
+}
+
+/* ===== DAF FOOTER ===== */
+.daf-page-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 2.5rem;
+  background: linear-gradient(0deg, #f0e6d6 0%, var(--paper-color) 100%);
+  position: relative;
+  z-index: 5;
+  font-size: 1.1rem;
+  color: var(--border-brown);
+}
+
+.daf-page-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 2rem;
+  right: 2rem;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--gold-accent) 10%,
+    var(--gold-light) 50%,
+    var(--gold-accent) 90%,
+    transparent 100%
+  );
+}
+
+.daf-footer-label {
+  font-family: 'David Libre', serif;
+  letter-spacing: 0.15em;
+  font-weight: 600;
+}
+
+/* ===== DARK MODE ===== */
+.dark-mode .tzurat-hadaf {
+  --paper-color: #1e1a16;
+  --paper-dark: #141210;
+  --ink-black: #e8dcc8;
+  --gold-accent: #a08060;
+  --gold-light: #8b7355;
+  --border-brown: #c4a77d;
+  --shadow-color: rgba(0, 0, 0, 0.4);
+
+  background: var(--paper-color);
+  box-shadow:
+    0 0 60px rgba(160, 128, 96, 0.05),
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    inset 0 0 80px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .tzurat-hadaf::before {
+  border-image: linear-gradient(
+    135deg,
+    #5d4e37 0%,
+    #8b7355 15%,
+    #3d3429 30%,
+    #5d4e37 50%,
+    #8b7355 70%,
+    #3d3429 85%,
+    #5d4e37 100%
+  ) 1;
+}
+
+.dark-mode .tzurat-hadaf::after {
+  border-color: #3d3429;
+}
+
+.dark-mode .tzurat-hadaf .paper-texture {
+  opacity: 0.15;
+  filter: invert(1);
+}
+
+.dark-mode .daf-page-header {
+  background: linear-gradient(180deg, #2d2520 0%, var(--paper-color) 100%);
+}
+
+.dark-mode .daf-page-header::after,
+.dark-mode .daf-page-footer::before {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #5d4e37 10%,
+    #8b7355 50%,
+    #5d4e37 90%,
+    transparent 100%
+  );
+}
+
+.dark-mode .daf-masechet,
+.dark-mode .daf-value {
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+.dark-mode .daf-tosafot-col {
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.15) 0%, rgba(37, 99, 235, 0.1) 100%);
+}
+
+.dark-mode .daf-tosafot-col::after {
+  background: linear-gradient(180deg, transparent 0%, #3d3429 10%, #3d3429 90%, transparent 100%);
+}
+
+.dark-mode .daf-gemara-col {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, transparent 100%);
+}
+
+.dark-mode .daf-rashi-col {
+  background: linear-gradient(135deg, rgba(127, 29, 29, 0.15) 0%, rgba(153, 27, 27, 0.1) 100%);
+}
+
+.dark-mode .daf-rashi-col::before {
+  background: linear-gradient(180deg, transparent 0%, #3d3429 10%, #3d3429 90%, transparent 100%);
+}
+
+.dark-mode .daf-col-header {
+  border-bottom-color: #3d3429;
+}
+
+.dark-mode .daf-gemara-header {
+  background: linear-gradient(180deg, rgba(93, 78, 55, 0.3) 0%, transparent 100%);
+}
+
+.dark-mode .daf-gemara-text {
+  color: var(--ink-black);
+}
+
+.dark-mode .daf-gemara-english {
+  border-top-color: #3d3429;
+  color: #a08060;
+}
+
+.dark-mode .daf-rashi-entry {
+  border-bottom-color: rgba(239, 68, 68, 0.2);
+}
+
+.dark-mode .daf-rashi-entry:hover {
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.dark-mode .daf-tosafot-entry {
+  border-bottom-color: rgba(59, 130, 246, 0.2);
+}
+
+.dark-mode .daf-tosafot-entry:hover {
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.dark-mode .daf-dibbur {
+  color: var(--border-brown);
+}
+
+.dark-mode .daf-dibbur strong {
+  background: linear-gradient(180deg, transparent 60%, rgba(93, 78, 55, 0.4) 60%);
+}
+
+.dark-mode .daf-rashi-text,
+.dark-mode .daf-tosafot-text {
+  color: #d4c8b4;
+}
+
+.dark-mode .daf-empty {
+  background: rgba(107, 68, 35, 0.08);
+  border-color: rgba(107, 68, 35, 0.3);
+}
+
+.dark-mode .daf-page-footer {
+  background: linear-gradient(0deg, #141210 0%, var(--paper-color) 100%);
+}
+
+.dark-mode .daf-control-btn {
+  background: rgba(30, 26, 22, 0.95);
+  border-color: #5d4e37;
+  color: #c4a77d;
+}
+
+.dark-mode .daf-control-btn:hover {
+  background: #5d4e37;
+  color: #1e1a16;
+}
+
+.dark-mode .daf-tosafot-col .daf-col-header::after {
+  background: #60a5fa;
+}
+
+.dark-mode .daf-rashi-col .daf-col-header::after {
+  background: #f87171;
+}
+
+.dark-mode .daf-tosafot-col .daf-dibbur {
+  color: #93c5fd;
+}
+
+.dark-mode .daf-rashi-col .daf-dibbur {
+  color: #fca5a5;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1100px) {
+  .daf-three-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .daf-column {
+    max-height: 450px;
+  }
+
+  .daf-tosafot-col {
+    order: 2;
+  }
+
+  .daf-tosafot-col::after {
+    display: none;
+  }
+
+  .daf-tosafot-col::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 2rem;
+    right: 2rem;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+  }
+
+  .daf-gemara-col {
+    order: 1;
+  }
+
+  .daf-gemara-col::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 2rem;
+    right: 2rem;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+  }
+
+  .daf-rashi-col {
+    order: 3;
+  }
+
+  .daf-rashi-col::before {
+    display: none;
+  }
+
+  .tzurat-hadaf::before {
+    border-width: 3px;
+  }
+
+  .daf-page-header::before {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .tzurat-hadaf {
+    margin: 0.5rem;
+    border-radius: 0;
+  }
+
+  .tzurat-hadaf::before {
+    border-width: 2px;
+  }
+
+  .tzurat-hadaf::after {
+    top: 4px;
+    left: 4px;
+    right: 4px;
+    bottom: 4px;
+  }
+
+  .daf-masechet {
+    font-size: 2.2rem;
+  }
+
+  .daf-value {
+    font-size: 2rem;
+  }
+
+  .daf-page-header {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.5rem 1.5rem 1rem;
+  }
+
+  .daf-gemara-text {
+    font-size: 1.25rem;
+  }
+
+  .daf-col-content {
+    font-size: 0.95rem;
+  }
+
+  .daf-column {
+    padding: 1rem;
+    max-height: 350px;
+  }
+
+  .daf-page-footer {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+  }
+
+  .daf-page-controls {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+
+  .daf-control-btn {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  .tzurat-hadaf {
+    box-shadow: none !important;
+    border: 2px solid #000;
+    page-break-inside: avoid;
+    margin: 0;
+    max-width: 100%;
+  }
+
+  .tzurat-hadaf::before,
+  .tzurat-hadaf::after,
+  .paper-texture {
+    display: none;
+  }
+
+  .daf-column {
+    overflow: visible;
+    max-height: none;
+    page-break-inside: avoid;
+  }
+
+  .daf-col-content {
+    overflow: visible;
+    max-height: none;
+  }
+
+  .daf-page-controls {
+    display: none;
+  }
+}
+
+/* ===== ANIMATIONS ===== */
+.daf-column {
+  animation: slideUp 0.5s ease-out;
+  animation-fill-mode: backwards;
+}
+
+.daf-tosafot-col { animation-delay: 0.1s; }
+.daf-gemara-col { animation-delay: 0.2s; }
+.daf-rashi-col { animation-delay: 0.3s; }
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.daf-page-header {
+  animation: slideDown 0.4s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fullscreen mode */
+.tzurat-hadaf.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  max-width: 100%;
+  z-index: 9999;
+  border-radius: 0;
+  min-height: 100vh;
+}
+
+/* ====================================================== */
+/* DISCOURSE MARKER HIGHLIGHTING STYLES */
+/* ====================================================== */
+
+/* Toggle Button */
+.daf-discourse-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  margin-right: 12px;
+  background: var(--daf-parchment, #faf8f2);
+  border: 1px solid var(--daf-border, #c4a574);
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all 0.2s ease;
+  opacity: 0.8;
+}
+
+.daf-discourse-toggle:hover {
+  background: var(--daf-gold-light, #f5e8c8);
+  opacity: 1;
+}
+
+.daf-discourse-toggle.active {
+  background: linear-gradient(135deg, #4A90D920, #27AE6020);
+  border-color: var(--daf-gold, #c4a574);
+  opacity: 1;
+}
+
+.daf-toggle-icon {
+  font-size: 0.8rem;
+}
+
+.daf-toggle-label {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 0.7rem;
+}
+
+/* Discourse Legend */
+.daf-discourse-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  background: linear-gradient(to bottom, #f8f6f0, #f0ebe0);
+  border-radius: 8px;
+  border: 1px solid var(--daf-border, #c4a574);
+  justify-content: center;
+}
+
+.daf-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.65rem;
+  background: white;
+  border-left: 3px solid;
+}
+
+.daf-legend-icon {
+  font-size: 0.7rem;
+}
+
+.daf-legend-label {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 0.6rem;
+  color: #555;
+}
+
+/* Gemara with markers */
+.daf-gemara-with-markers {
+  line-height: 2.2;
+}
+
+/* Discourse markers in text */
+.daf-discourse-marker {
+  position: relative;
+  cursor: help;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.daf-discourse-marker:hover {
+  transform: scale(1.02);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.daf-discourse-icon {
+  font-size: 0.7em;
+  vertical-align: super;
+}
+
+.daf-discourse-plain {
+  /* Regular text between markers */
+}
+
+/* Oz VeHadar theme overrides for discourse */
+.oz-vehadar-theme .daf-discourse-toggle {
+  background: #f5f0e5;
+  border-color: #c9a227;
+}
+
+.oz-vehadar-theme .daf-discourse-toggle.active {
+  background: linear-gradient(135deg, #c9a22720, #27AE6020);
+  border-color: #c9a227;
+}
+
+.oz-vehadar-theme .daf-discourse-legend {
+  background: linear-gradient(to bottom, #f5f0e5, #e8e0d0);
+  border-color: #c9a227;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .daf-discourse-toggle {
+    background: #2a2520;
+    border-color: #4a4035;
+    color: #d4c8b8;
+  }
+
+  .daf-discourse-toggle:hover {
+    background: #3a3025;
+  }
+
+  .daf-discourse-toggle.active {
+    background: linear-gradient(135deg, #4A90D940, #27AE6040);
+  }
+
+  .daf-discourse-legend {
+    background: linear-gradient(to bottom, #2a2520, #1e1a15);
+    border-color: #4a4035;
+  }
+
+  .daf-legend-item {
+    background: #2a2520;
+    color: #d4c8b8;
+  }
+
+  .daf-legend-label {
+    color: #a09080;
+  }
+}
+
+/* Print styles */
+@media print {
+  .daf-discourse-toggle {
+    display: none;
+  }
+
+  .daf-discourse-legend {
+    page-break-inside: avoid;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .daf-discourse-marker {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* ====================================================== */
+/* STYLE SELECTOR DROPDOWN */
+/* ====================================================== */
+
+.daf-style-selector {
+  position: relative;
+  display: inline-flex;
+}
+
+.daf-control-btn.style-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  min-width: 120px;
+}
+
+.style-btn .style-icon {
+  font-size: 1rem;
+}
+
+.style-btn .style-name {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.style-btn .dropdown-arrow {
+  width: 12px;
+  height: 12px;
+  margin-right: auto;
+}
+
+.daf-style-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  min-width: 220px;
+  margin-top: 4px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.1);
+  border: 1px solid #d4c4a8;
+  overflow: hidden;
+}
+
+.style-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: right;
+  transition: background 0.15s ease;
+}
+
+.style-option:hover {
+  background: #f5f0e6;
+}
+
+.style-option.active {
+  background: linear-gradient(to left, #e8f4fc, #f5f0e6);
+  border-right: 3px solid #4A90D9;
+}
+
+.style-option .option-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.style-option .option-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.style-option .option-name {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2d2820;
+}
+
+.style-option .option-desc {
+  font-size: 0.7rem;
+  color: #6b5344;
+}
+
+/* ====================================================== */
+/* COLUMN FILTER BUTTONS */
+/* ====================================================== */
+
+.daf-column-filters {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.daf-control-btn.filter-btn {
+  padding: 4px 10px;
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 12px;
+}
+
+.daf-control-btn.filter-btn:not(.active) {
+  opacity: 0.5;
+  background: transparent;
+}
+
+.daf-controls-divider {
+  width: 1px;
+  height: 24px;
+  background: #c4a574;
+  margin: 0 8px;
+  opacity: 0.4;
+}
+
+/* ====================================================== */
+/* LAYOUT STYLE VARIATIONS */
+/* ====================================================== */
+
+/* Simple Layout - Gemara only */
+.layout-simple {
+  background: #fff;
+}
+
+.layout-simple .daf-three-columns {
+  grid-template-columns: 1fr;
+}
+
+.layout-simple .daf-gemara-col {
+  max-width: 800px;
+  margin: 0 auto;
+  font-size: 1.15rem;
+}
+
+.layout-simple .daf-page-header {
+  background: #f8f8f8;
+  border-bottom: 2px solid #ddd;
+}
+
+.layout-simple .paper-texture {
+  opacity: 0;
+}
+
+/* Classic Vilna Layout */
+.layout-vilna {
+  background: linear-gradient(to bottom, #faf8f2, #f0ebe0);
+}
+
+.layout-vilna .daf-three-columns {
+  grid-template-columns: 1fr 1.8fr 1fr;
+}
+
+.layout-vilna .daf-page-header {
+  background: linear-gradient(to bottom, #e8dcc8, #d4c4a8);
+  font-family: 'Frank Ruhl Libre', serif;
+}
+
+/* Steinsaltz Layout - Modern with translation focus */
+.layout-steinsaltz {
+  background: #fafafa;
+  font-family: 'Noto Sans Hebrew', sans-serif;
+}
+
+.layout-steinsaltz .daf-three-columns {
+  grid-template-columns: 1fr 2fr;
+}
+
+.layout-steinsaltz .daf-gemara-col {
+  order: 1;
+}
+
+.layout-steinsaltz .daf-rashi-col {
+  order: 2;
+  background: #f5f5f5;
+}
+
+.layout-steinsaltz .daf-page-header {
+  background: #2d3748;
+  color: white;
+}
+
+.layout-steinsaltz .daf-masechet,
+.layout-steinsaltz .daf-number {
+  color: white;
+}
+
+.layout-steinsaltz .daf-gemara-english {
+  font-size: 1rem;
+  padding: 16px;
+  background: #e8f4fc;
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+/* ArtScroll Layout - Elucidated style */
+.layout-artscroll {
+  background: #fff8e7;
+  font-family: 'Times New Roman', serif;
+}
+
+.layout-artscroll .daf-three-columns {
+  grid-template-columns: 0.8fr 2fr 0.8fr;
+  gap: 20px;
+}
+
+.layout-artscroll .daf-gemara-col {
+  background: white;
+  border: 1px solid #d4c4a8;
+  border-radius: 4px;
+  padding: 20px;
+}
+
+.layout-artscroll .daf-page-header {
+  background: linear-gradient(135deg, #1a365d, #2c5282);
+  color: white;
+}
+
+.layout-artscroll .daf-masechet,
+.layout-artscroll .daf-number {
+  color: #ffd700;
+}
+
+/* ====================================================== */
+/* COLUMN VISIBILITY - Dynamic Grid Adjustment */
+/* ====================================================== */
+
+/* No Tosafot - Two columns */
+.daf-three-columns.no-tosafot {
+  grid-template-columns: 1.5fr 1fr;
+}
+
+.daf-three-columns.no-tosafot .daf-gemara-col {
+  grid-column: 1;
+}
+
+.daf-three-columns.no-tosafot .daf-rashi-col {
+  grid-column: 2;
+}
+
+/* No Rashi - Two columns */
+.daf-three-columns.no-rashi {
+  grid-template-columns: 1fr 1.5fr;
+}
+
+.daf-three-columns.no-rashi .daf-tosafot-col {
+  grid-column: 1;
+}
+
+.daf-three-columns.no-rashi .daf-gemara-col {
+  grid-column: 2;
+}
+
+/* Gemara only - Single column centered */
+.daf-three-columns.gemara-only {
+  grid-template-columns: 1fr;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.daf-three-columns.gemara-only .daf-gemara-col {
+  font-size: 1.2rem;
+  line-height: 2.4;
+}
+
+/* ====================================================== */
+/* FOOTER STYLE BADGE */
+/* ====================================================== */
+
+.daf-style-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 10px;
+  font-size: 0.75rem;
+}
+
+/* ====================================================== */
+/* DARK MODE FOR NEW ELEMENTS */
+/* ====================================================== */
+
+@media (prefers-color-scheme: dark) {
+  .daf-style-menu {
+    background: #2a2520;
+    border-color: #4a4035;
+  }
+
+  .style-option {
+    color: #d4c8b8;
+  }
+
+  .style-option:hover {
+    background: #3a3025;
+  }
+
+  .style-option.active {
+    background: linear-gradient(to left, #4A90D930, #3a3025);
+    border-right-color: #4A90D9;
+  }
+
+  .style-option .option-name {
+    color: #e8e0d5;
+  }
+
+  .style-option .option-desc {
+    color: #a09080;
+  }
+
+  .layout-simple {
+    background: #1a1815;
+  }
+
+  .layout-simple .daf-page-header {
+    background: #252220;
+    border-bottom-color: #4a4035;
+  }
+
+  .layout-steinsaltz {
+    background: #1a1a1a;
+  }
+
+  .layout-steinsaltz .daf-rashi-col {
+    background: #252525;
+  }
+
+  .layout-artscroll {
+    background: #1e1a15;
+  }
+
+  .layout-artscroll .daf-gemara-col {
+    background: #252220;
+    border-color: #4a4035;
+  }
+}
+
+/* ====================================================== */
+/* SETTINGS PANEL - Professional Overlay */
+/* ====================================================== */
+
+.daf-settings-panel {
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  z-index: 100;
+  width: 320px;
+  background: linear-gradient(180deg, #fdf8f0 0%, #f5ead4 100%);
+  border: 2px solid var(--gold-accent);
+  border-radius: 12px;
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.2),
+    0 4px 12px rgba(107, 68, 35, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  animation: settingsSlideIn 0.25s ease-out;
+  overflow: hidden;
+}
+
+@keyframes settingsSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.daf-settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, var(--gold-accent), #8b6914);
+  color: white;
+}
+
+.daf-settings-header h3 {
+  margin: 0;
+  font-family: 'David Libre', serif;
+  font-size: 1.3rem;
+  letter-spacing: 0.1em;
+}
+
+.daf-settings-close {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.daf-settings-close:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1);
+}
+
+.daf-settings-section {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(196, 167, 125, 0.3);
+}
+
+.daf-settings-section:last-of-type {
+  border-bottom: none;
+}
+
+.daf-settings-section h4 {
+  margin: 0 0 12px 0;
+  font-family: 'David Libre', serif;
+  font-size: 1rem;
+  color: var(--gold-accent);
+  font-weight: 600;
+}
+
+.daf-settings-row {
+  margin-bottom: 10px;
+}
+
+.daf-settings-row:last-child {
+  margin-bottom: 0;
+}
+
+.daf-diacritic-mode {
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: rgba(107, 68, 35, 0.08);
+  border-radius: 6px;
+  text-align: center;
+}
+
+.daf-mode-label {
+  font-family: 'David Libre', serif;
+  font-size: 0.9rem;
+  color: var(--ink-black);
+  font-weight: 500;
+}
+
+/* ====================================================== */
+/* TOGGLE SWITCH - Premium iOS-style */
+/* ====================================================== */
+
+.daf-toggle-switch {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  direction: rtl;
+}
+
+.daf-toggle-switch input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.daf-switch-slider {
+  position: relative;
+  width: 48px;
+  height: 26px;
+  background: #d4c8b4;
+  border-radius: 13px;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.daf-switch-slider::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.daf-toggle-switch input:checked + .daf-switch-slider {
+  background: linear-gradient(135deg, var(--gold-accent), #8b6914);
+}
+
+.daf-toggle-switch input:checked + .daf-switch-slider::before {
+  transform: translateX(22px);
+}
+
+.daf-toggle-switch input:focus + .daf-switch-slider {
+  box-shadow: 0 0 0 3px rgba(107, 68, 35, 0.2);
+}
+
+.daf-switch-label {
+  font-family: 'David Libre', serif;
+  font-size: 0.95rem;
+  color: var(--ink-black);
+  flex: 1;
+}
+
+/* ====================================================== */
+/* ZOOM CONTROL - Inline buttons */
+/* ====================================================== */
+
+.daf-zoom-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px;
+  background: rgba(107, 68, 35, 0.06);
+  border-radius: 8px;
+}
+
+.daf-zoom-control button {
+  width: 36px;
+  height: 36px;
+  border: 2px solid var(--gold-accent);
+  background: white;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--gold-accent);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.daf-zoom-control button:hover:not(:disabled) {
+  background: var(--gold-accent);
+  color: white;
+  transform: scale(1.1);
+}
+
+.daf-zoom-control button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.daf-zoom-value {
+  font-family: 'David Libre', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ink-black);
+  min-width: 50px;
+  text-align: center;
+}
+
+/* ====================================================== */
+/* KEYBOARD SHORTCUTS SECTION */
+/* ====================================================== */
+
+.daf-settings-shortcuts {
+  padding: 16px 20px;
+  background: rgba(107, 68, 35, 0.04);
+}
+
+.daf-settings-shortcuts h4 {
+  margin: 0 0 12px 0;
+  font-family: 'David Libre', serif;
+  font-size: 0.9rem;
+  color: var(--border-brown);
+  font-weight: 600;
+}
+
+.daf-shortcut-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+  direction: rtl;
+}
+
+.daf-shortcut {
+  font-family: 'David Libre', serif;
+  font-size: 0.8rem;
+  color: var(--border-brown);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.daf-shortcut kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  background: white;
+  border: 1px solid #c4a77d;
+  border-radius: 4px;
+  font-family: system-ui, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--ink-black);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* ====================================================== */
+/* NAVIGATION BUTTONS */
+/* ====================================================== */
+
+.daf-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border: 2px solid var(--gold-accent);
+  background: rgba(253, 248, 240, 0.95);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.daf-nav-btn:hover:not(:disabled) {
+  background: var(--gold-accent);
+  color: white;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 4px 12px rgba(107, 68, 35, 0.3);
+}
+
+.daf-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.daf-nav-btn svg {
+  width: 24px;
+  height: 24px;
+  color: var(--gold-accent);
+}
+
+.daf-nav-btn:hover:not(:disabled) svg {
+  color: white;
+}
+
+.daf-nav-prev {
+  left: 1.5rem;
+}
+
+.daf-nav-next {
+  right: 1.5rem;
+}
+
+/* Header content wrapper for centered title with nav buttons */
+.daf-header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ====================================================== */
+/* DARK MODE - Settings Panel & New Elements */
+/* ====================================================== */
+
+.dark-mode .daf-settings-panel {
+  background: linear-gradient(180deg, #2a2520 0%, #1e1a16 100%);
+  border-color: #5d4e37;
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.5),
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .daf-settings-header {
+  background: linear-gradient(135deg, #5d4e37, #3d3429);
+}
+
+.dark-mode .daf-settings-section {
+  border-bottom-color: rgba(93, 78, 55, 0.3);
+}
+
+.dark-mode .daf-settings-section h4 {
+  color: #c4a77d;
+}
+
+.dark-mode .daf-diacritic-mode {
+  background: rgba(93, 78, 55, 0.2);
+}
+
+.dark-mode .daf-mode-label {
+  color: #e8dcc8;
+}
+
+.dark-mode .daf-switch-slider {
+  background: #3d3429;
+}
+
+.dark-mode .daf-toggle-switch input:checked + .daf-switch-slider {
+  background: linear-gradient(135deg, #8b7355, #5d4e37);
+}
+
+.dark-mode .daf-switch-label {
+  color: #d4c8b4;
+}
+
+.dark-mode .daf-zoom-control {
+  background: rgba(93, 78, 55, 0.15);
+}
+
+.dark-mode .daf-zoom-control button {
+  background: #2a2520;
+  border-color: #5d4e37;
+  color: #c4a77d;
+}
+
+.dark-mode .daf-zoom-control button:hover:not(:disabled) {
+  background: #5d4e37;
+  color: #fdf8f0;
+}
+
+.dark-mode .daf-zoom-value {
+  color: #e8dcc8;
+}
+
+.dark-mode .daf-settings-shortcuts {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode .daf-settings-shortcuts h4 {
+  color: #a08060;
+}
+
+.dark-mode .daf-shortcut {
+  color: #a08060;
+}
+
+.dark-mode .daf-shortcut kbd {
+  background: #2a2520;
+  border-color: #5d4e37;
+  color: #e8dcc8;
+}
+
+.dark-mode .daf-nav-btn {
+  background: rgba(30, 26, 22, 0.95);
+  border-color: #5d4e37;
+}
+
+.dark-mode .daf-nav-btn svg {
+  color: #c4a77d;
+}
+
+.dark-mode .daf-nav-btn:hover:not(:disabled) {
+  background: #5d4e37;
+}
+
+.dark-mode .daf-nav-btn:hover:not(:disabled) svg {
+  color: #fdf8f0;
+}
+
+/* ====================================================== */
+/* RESPONSIVE - Settings Panel */
+/* ====================================================== */
+
+@media (max-width: 600px) {
+  .daf-settings-panel {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    border-radius: 16px 16px 0 0;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  .daf-shortcut-list {
+    grid-template-columns: 1fr;
+  }
+
+  .daf-nav-btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  .daf-nav-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .daf-nav-prev {
+    left: 0.5rem;
+  }
+
+  .daf-nav-next {
+    right: 0.5rem;
+  }
+}
+
+/* ===== MAHARSHA SECTION ===== */
+.daf-maharsha-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin: 1.5rem 2rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--gold-light, #c4a77d);
+}
+
+.daf-maharsha-column {
+  background: linear-gradient(to bottom, rgba(255,255,255,0.5), transparent);
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.daf-maharsha-header {
+  text-align: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--gold-light, #c4a77d);
+}
+
+.daf-maharsha-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--gold-accent, #6b4423);
+  font-family: 'David Libre', 'David', serif;
+}
+
+.daf-maharsha-content {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: var(--ink-black, #1a1612);
+}
+
+.daf-maharsha-entry {
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dotted rgba(107, 68, 35, 0.2);
+}
+
+.daf-maharsha-entry:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.daf-empty-small {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  padding: 1rem;
+}
+
+/* Responsive Maharsha */
+@media (max-width: 768px) {
+  .daf-maharsha-section {
+    grid-template-columns: 1fr;
+    margin: 1rem;
+  }
+}
+
+/* ===== ENHANCED LOADING UI ===== */
+.daf-loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 3rem;
+  background: var(--paper-color, #fdf8f0);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.daf-loading-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.daf-loading-icon {
+  font-size: 1.5rem;
+}
+
+.daf-loading-title {
+  font-size: 1rem;
+  color: var(--gold-accent, #6b4423);
+  font-family: 'David Libre', 'David', serif;
+}
+
+.daf-loading-masechet {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--ink-black, #1a1612);
+  font-family: 'David Libre', 'David', serif;
+  direction: rtl;
+}
+
+.daf-loading-daf {
+  font-size: 1.1rem;
+  color: var(--gold-accent, #6b4423);
+  direction: rtl;
+}
+
+.daf-loading-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(107, 68, 35, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.daf-loading-progress {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-accent, #6b4423), var(--gold-light, #c4a77d));
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.daf-loading-text {
+  font-size: 0.9rem;
+  color: #666;
+  direction: rtl;
+}
+
+/* ===== ENHANCED HEADER ===== */
+.daf-header-top {
+  font-size: 0.85rem;
+  color: var(--gold-accent, #6b4423);
+  letter-spacing: 0.5px;
+  margin-bottom: 0.25rem;
+}
