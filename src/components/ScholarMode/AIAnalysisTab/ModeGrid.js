@@ -46,6 +46,13 @@ export const APPLIED_MODES = [
   { id: ANALYSIS_MODES.HISTORICAL, icon: '🏛️', label: 'Historical', desc: 'Context & background', color: '#b45309' }
 ];
 
+// Talmud-specific modes
+export const TALMUD_MODES = [
+  { id: ANALYSIS_MODES.SUGYA_FLOW, icon: '🌊', label: 'Sugya Flow', desc: 'Discourse structure', color: '#0ea5e9' },
+  { id: ANALYSIS_MODES.SHAKLA_VETARYA, icon: '⚔️', label: 'שקו״ט', desc: 'Dialectic analysis', color: '#6366f1' },
+  { id: ANALYSIS_MODES.SUGYA_SUMMARY, icon: '📋', label: 'Sugya Summary', desc: 'Quick overview', color: '#8b5cf6' }
+];
+
 // Passage modes for multi-verse analysis
 export const PASSAGE_MODES = [
   { id: ANALYSIS_MODES.PASSAGE, icon: '📜', label: 'Overview', desc: 'Unified analysis', color: '#6366f1' },
@@ -62,6 +69,7 @@ export const ALL_MODES = [
   ...GENESIS_ONLY_MODES,
   ...MEFARSHIM_MODES,
   ...APPLIED_MODES,
+  ...TALMUD_MODES,
   ...PASSAGE_MODES
 ];
 
@@ -96,9 +104,15 @@ const ModeGrid = ({
   const [showLimud, setShowLimud] = useState(false);
   const [showMefarshim, setShowMefarshim] = useState(false);
 
+  const [showTalmud, setShowTalmud] = useState(false);
+
+  // Detect if this is Talmud content
+  const isTalmud = textType === 'talmud';
+
   // Calculate counts for each section
   const limudCount = STUDY_MODES.length + TEXTUAL_MODES.length + (showGenesisMode ? GENESIS_ONLY_MODES.length : 0);
   const mefarshimCount = MEFARSHIM_MODES.length + APPLIED_MODES.length;
+  const talmudCount = TALMUD_MODES.length;
 
   return (
     <div className="ai-mode-selector">
@@ -220,6 +234,36 @@ const ModeGrid = ({
           </div>
         )}
       </div>
+
+      {/* Talmud-specific modes (show for Talmud content or always expandable) */}
+      {(isTalmud || true) && (
+        <div className={`expandable-section ${showTalmud ? 'expanded' : ''} ${isTalmud ? 'highlighted' : ''}`}>
+          <button
+            className="expand-toggle talmud"
+            onClick={() => setShowTalmud(!showTalmud)}
+          >
+            <span className="toggle-arrow">{showTalmud ? '▼' : '▶'}</span>
+            <span className="section-title-heb">סוגיא</span>
+            <span className="section-title-eng">Talmud</span>
+            <span className="mode-count">{talmudCount}</span>
+            {isTalmud && <span className="recommended-badge">★</span>}
+          </button>
+          {showTalmud && (
+            <div className="expanded-modes">
+              {TALMUD_MODES.map(mode => (
+                <ModeButton
+                  key={mode.id}
+                  mode={mode}
+                  isSelected={selectedMode === mode.id}
+                  isCompleted={completedModes.has(mode.id)}
+                  onClick={onSelect}
+                  disabled={loading}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

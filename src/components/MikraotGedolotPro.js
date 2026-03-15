@@ -49,6 +49,11 @@ const MikraotGedolotPro = ({
   showTranslation = false,
   onSaveWord,
   hasWord,
+  // Navigation props
+  onPrevChapter,
+  onNextChapter,
+  hasPrevChapter = true,
+  hasNextChapter = true,
 }) => {
   const [commentaries, setCommentaries] = useState({
     rashi: [],
@@ -215,6 +220,19 @@ const MikraotGedolotPro = ({
 
         {/* Page Header */}
         <header className="mgp-header">
+          {onPrevChapter && (
+            <button
+              className="mgp-nav-btn mgp-nav-prev"
+              onClick={onPrevChapter}
+              disabled={!hasPrevChapter}
+              title="Previous chapter"
+              aria-label="Previous chapter"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+            </button>
+          )}
           <div className="mgp-header-decoration">✡</div>
           <div className="mgp-header-main">
             <h1 className="mgp-sefer" dir="rtl">{bookInfo.name}</h1>
@@ -224,6 +242,19 @@ const MikraotGedolotPro = ({
             </div>
           </div>
           <div className="mgp-header-badge">מקראות גדולות</div>
+          {onNextChapter && (
+            <button
+              className="mgp-nav-btn mgp-nav-next"
+              onClick={onNextChapter}
+              disabled={!hasNextChapter}
+              title="Next chapter"
+              aria-label="Next chapter"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </button>
+          )}
         </header>
 
         {/* Main Torah Text - Center Stage */}

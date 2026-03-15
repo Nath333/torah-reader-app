@@ -4,7 +4,7 @@ import useReadingHistory from '../hooks/useReadingHistory';
 import useVerseNotes from '../hooks/useVerseNotes';
 import useVocabulary from '../hooks/useVocabulary';
 
-const StudyContext = createContext(null);
+export const StudyContext = createContext(null);
 
 export function StudyProvider({ children, book, chapter }) {
   // Bookmarks

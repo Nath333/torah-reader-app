@@ -112,7 +112,7 @@ const PARSHA_INFO = {
   }
 };
 
-function FocusMode({
+const FocusMode = React.memo(function FocusMode({
   verses,
   onkelos,
   selectedBook,
@@ -1012,7 +1012,7 @@ function FocusMode({
         {studyMode === 'context' && contextVerses?.prev && (
           <div className="context-verse context-prev">
             <span className="context-verse-num">{contextVerses.prev.verse}</span>
-            <p className="context-hebrew" dir="rtl">{contextVerses.prev.hebrew}</p>
+            <p className="context-hebrew" dir="rtl" lang="he">{contextVerses.prev.hebrew}</p>
           </div>
         )}
 
@@ -1026,7 +1026,7 @@ function FocusMode({
 
           {/* Hebrew text with optional word highlighting and dual script */}
           <div className={`hebrew-text-container ${useRashiScript ? 'dual-script' : ''}`}>
-            <p className={`hebrew-text-focus ${useRashiScript ? 'block-script' : ''}`} dir="rtl">
+            <p className={`hebrew-text-focus ${useRashiScript ? 'block-script' : ''}`} dir="rtl" lang="he">
               {wordHighlightMode ? (
                 hebrewWords.map((word, idx) => (
                   <span
@@ -1043,7 +1043,7 @@ function FocusMode({
             </p>
             {/* Secondary Rashi script display */}
             {useRashiScript && (
-              <p className="hebrew-text-focus rashi-script" dir="rtl">
+              <p className="hebrew-text-focus rashi-script" dir="rtl" lang="he">
                 {currentVerse?.hebrew}
               </p>
             )}
@@ -1088,7 +1088,7 @@ function FocusMode({
               </p>
 
               {showOnkelos && currentOnkelos && (
-                <p className="onkelos-text-focus" dir="rtl">
+                <p className="onkelos-text-focus" dir="rtl" lang="arc">
                   <span className="onkelos-label">Targum:</span>
                   {currentOnkelos.aramaic}
                 </p>
@@ -1108,7 +1108,7 @@ function FocusMode({
         {studyMode === 'context' && contextVerses?.next && (
           <div className="context-verse context-next">
             <span className="context-verse-num">{contextVerses.next.verse}</span>
-            <p className="context-hebrew" dir="rtl">{contextVerses.next.hebrew}</p>
+            <p className="context-hebrew" dir="rtl" lang="he">{contextVerses.next.hebrew}</p>
           </div>
         )}
       </div>
@@ -1188,6 +1188,6 @@ function FocusMode({
       </div>
     </div>
   );
-}
+});
 
 export default FocusMode;

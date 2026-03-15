@@ -1,4 +1,6 @@
-import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle, useCallback } from 'react';
+import React, { useState, useRef, forwardRef, useImperativeHandle, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { useDebounce } from '../hooks/useDebounce';
 import './SearchBar.css';
 
 // Search configuration
@@ -13,38 +15,6 @@ const sanitizeQuery = (input) => {
     .replace(/[<>]/g, '') // Remove angle brackets
     .replace(/javascript:/gi, '') // Remove javascript: protocol
     .slice(0, MAX_QUERY_LENGTH); // Enforce max length
-};
-
-/**
- * Custom debounce hook
- */
-const useDebounce = (callback, delay) => {
-  const timeoutRef = useRef(null);
-  const callbackRef = useRef(callback);
-
-  useEffect(() => {
-    callbackRef.current = callback;
-  }, [callback]);
-
-  const debouncedCallback = useCallback((...args) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    timeoutRef.current = setTimeout(() => {
-      callbackRef.current(...args);
-    }, delay);
-  }, [delay]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
-
-  return debouncedCallback;
 };
 
 const SearchBar = forwardRef(({ onSearch, loading, enableDebounce = false }, ref) => {
@@ -202,5 +172,19 @@ const SearchBar = forwardRef(({ onSearch, loading, enableDebounce = false }, ref
 });
 
 SearchBar.displayName = 'SearchBar';
+
+SearchBar.propTypes = {
+  /** Callback function called with the search query when user submits */
+  onSearch: PropTypes.func.isRequired,
+  /** Whether a search is currently in progress */
+  loading: PropTypes.bool,
+  /** Enable auto-search with debouncing as user types */
+  enableDebounce: PropTypes.bool
+};
+
+SearchBar.defaultProps = {
+  loading: false,
+  enableDebounce: false
+};
 
 export default React.memo(SearchBar);

@@ -204,8 +204,6 @@ const useSpeech = () => {
     // Stop any ongoing speech
     stop();
 
-    console.log('Speaking Hebrew text:', text.substring(0, 50) + '...');
-
     try {
       // Try Google TTS first (most reliable for Hebrew)
       await playWithGoogleTTS(text);

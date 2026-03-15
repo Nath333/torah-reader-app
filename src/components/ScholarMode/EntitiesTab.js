@@ -1,28 +1,50 @@
 /**
  * EntitiesTab - Named entity recognition display
+ * Supports both Talmud (rabbis focus) and Torah (biblical figures focus) texts
  */
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import RabbiTooltip from './RabbiTooltip';
 
 // Stable empty array to prevent useMemo dependency issues
 const EMPTY_ITEMS = [];
 
-const EntitiesTab = React.memo(({ entities, statistics }) => {
-  const [activeType, setActiveType] = useState('rabbis');
+const EntitiesTab = React.memo(({ entities, statistics, textType = 'torah' }) => {
+  const [activeType, setActiveType] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const isTalmud = textType === 'talmud';
 
   const hasEntities = entities && (entities.rabbis?.length || entities.biblicalFigures?.length ||
       entities.places?.length || entities.citations?.length);
 
   const types = useMemo(() => {
     if (!hasEntities) return [];
-    return [
-      { id: 'rabbis', label: 'Rabbis', items: entities.rabbis || [], icon: '👤' },
-      { id: 'biblicalFigures', label: 'Biblical', items: entities.biblicalFigures || [], icon: '📖' },
-      { id: 'places', label: 'Places', items: entities.places || [], icon: '📍' },
-      { id: 'citations', label: 'Citations', items: entities.citations || [], icon: '✒️' }
-    ].filter(t => t.items.length > 0);
-  }, [hasEntities, entities]);
+
+    const typeConfig = isTalmud
+      ? [
+          // Talmud: Rabbis first
+          { id: 'rabbis', label: 'Rabbis', items: entities.rabbis || [], icon: '👤' },
+          { id: 'biblicalFigures', label: 'Biblical', items: entities.biblicalFigures || [], icon: '📖' },
+          { id: 'places', label: 'Places', items: entities.places || [], icon: '📍' },
+          { id: 'citations', label: 'Citations', items: entities.citations || [], icon: '✒️' }
+        ]
+      : [
+          // Torah: Biblical figures first
+          { id: 'biblicalFigures', label: 'People', items: entities.biblicalFigures || [], icon: '👤' },
+          { id: 'places', label: 'Places', items: entities.places || [], icon: '📍' },
+          { id: 'rabbis', label: 'Commentators', items: entities.rabbis || [], icon: '📚' },
+          { id: 'citations', label: 'Citations', items: entities.citations || [], icon: '✒️' }
+        ];
+
+    return typeConfig.filter(t => t.items.length > 0);
+  }, [hasEntities, entities, isTalmud]);
+
+  // Set default active type when types change
+  useEffect(() => {
+    if (types.length > 0 && (!activeType || !types.find(t => t.id === activeType))) {
+      setActiveType(types[0].id);
+    }
+  }, [types, activeType]);
 
   // Deduplicate and filter items
   const activeItems = types.find(t => t.id === activeType)?.items || EMPTY_ITEMS;
@@ -55,8 +77,13 @@ const EntitiesTab = React.memo(({ entities, statistics }) => {
   if (!hasEntities) {
     return (
       <div className="tab-empty">
-        <span className="empty-icon">👤</span>
-        <span className="empty-text">No named entities detected</span>
+        <span className="empty-icon">{isTalmud ? '👤' : '📖'}</span>
+        <span className="empty-text">
+          {isTalmud
+            ? 'No named entities detected in this text'
+            : 'No biblical figures or places detected in this verse'
+          }
+        </span>
       </div>
     );
   }

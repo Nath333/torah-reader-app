@@ -59,9 +59,8 @@ const WelcomeBanner = ({
           year: data.hy,
           dayHe: hebrewNumerals(data.hd)
         });
-      } catch (err) {
-        // Fallback - just show greeting
-        console.log('Could not fetch Hebrew date');
+      } catch {
+        // Fallback - just show greeting without Hebrew date
       }
     };
     fetchHebrewDate();

@@ -1,9 +1,12 @@
 // =============================================================================
 // HTTP Utility
-// Provides fetch with timeout and proxy fallback
+// Provides fetch with timeout, proxy fallback, and request deduplication
 // =============================================================================
 
 const PROXY_URL = 'https://api.allorigins.win/get?url=';
+
+// Request deduplication - prevents duplicate concurrent requests to the same URL
+const pendingRequests = new Map();
 
 /**
  * Fetch with configurable timeout using AbortController
@@ -33,16 +36,9 @@ export const fetchWithTimeout = async (url, options = {}, timeoutMs = 10000) => 
 };
 
 /**
- * Fetch with automatic proxy fallback for CORS issues
- * Tries direct fetch first, falls back to proxy if it fails
- * @param {string} url - URL to fetch
- * @param {Object} options - Configuration options
- * @param {number} options.timeout - Timeout in ms (default: 10000)
- * @param {number} options.proxyTimeout - Proxy timeout in ms (default: 15000)
- * @param {Object} options.headers - Additional headers
- * @returns {Promise<Object>} Parsed JSON response
+ * Internal fetch implementation with proxy fallback
  */
-export const fetchWithFallback = async (url, options = {}) => {
+const fetchWithFallbackInternal = async (url, options = {}) => {
   const {
     timeout = 10000,
     proxyTimeout = 15000,
@@ -86,6 +82,54 @@ export const fetchWithFallback = async (url, options = {}) => {
 };
 
 /**
+ * Fetch with automatic proxy fallback and request deduplication
+ * Prevents duplicate concurrent requests to the same URL
+ * @param {string} url - URL to fetch
+ * @param {Object} options - Configuration options
+ * @param {number} options.timeout - Timeout in ms (default: 10000)
+ * @param {number} options.proxyTimeout - Proxy timeout in ms (default: 15000)
+ * @param {Object} options.headers - Additional headers
+ * @param {boolean} options.dedupe - Enable request deduplication (default: true)
+ * @returns {Promise<Object>} Parsed JSON response
+ */
+export const fetchWithFallback = async (url, options = {}) => {
+  const { dedupe = true, ...restOptions } = options;
+
+  // If deduplication is disabled, just fetch directly
+  if (!dedupe) {
+    return fetchWithFallbackInternal(url, restOptions);
+  }
+
+  // Check if there's already a pending request for this URL
+  if (pendingRequests.has(url)) {
+    // Return the existing promise - all callers will get the same result
+    return pendingRequests.get(url);
+  }
+
+  // Create new request and store it
+  const requestPromise = fetchWithFallbackInternal(url, restOptions)
+    .finally(() => {
+      // Clean up after request completes (success or failure)
+      pendingRequests.delete(url);
+    });
+
+  pendingRequests.set(url, requestPromise);
+  return requestPromise;
+};
+
+/**
+ * Clear all pending requests (useful for cleanup)
+ */
+export const clearPendingRequests = () => {
+  pendingRequests.clear();
+};
+
+/**
+ * Get count of pending requests (useful for debugging)
+ */
+export const getPendingRequestCount = () => pendingRequests.size;
+
+/**
  * Create a configured API fetcher for a specific base URL
  * @param {string} baseUrl - Base URL for all requests
  * @param {Object} defaultOptions - Default options for all requests
@@ -98,5 +142,12 @@ export const createApiFetcher = (baseUrl, defaultOptions = {}) => {
   };
 };
 
-const httpUtils = { fetchWithTimeout, fetchWithFallback, createApiFetcher };
+const httpUtils = {
+  fetchWithTimeout,
+  fetchWithFallback,
+  createApiFetcher,
+  clearPendingRequests,
+  getPendingRequestCount
+};
+
 export default httpUtils;

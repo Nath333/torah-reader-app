@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import './ErrorBoundary.css';
 
 /**
@@ -131,6 +132,23 @@ export const withErrorBoundary = (WrappedComponent, errorBoundaryProps = {}) => 
   WithErrorBoundary.displayName = `withErrorBoundary(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`;
 
   return WithErrorBoundary;
+};
+
+ErrorBoundary.propTypes = {
+  /** Child components to wrap with error boundary */
+  children: PropTypes.node.isRequired,
+  /** Custom fallback UI to show when an error occurs */
+  fallback: PropTypes.node,
+  /** Callback called when an error is caught */
+  onError: PropTypes.func,
+  /** Optional name for this boundary (useful for logging) */
+  name: PropTypes.string
+};
+
+ErrorBoundary.defaultProps = {
+  fallback: null,
+  onError: null,
+  name: 'ErrorBoundary'
 };
 
 export default ErrorBoundary;

@@ -1,6 +1,7 @@
 // Hooks Index - Clean exports for all custom hooks
 // Usage: import { useDarkMode, useLocalStorage } from './hooks';
 
+export { default as useDebounce, useDebounce, useDebouncedValue } from './useDebounce';
 export { default as useDarkMode } from './useDarkMode';
 export { default as useKeyboardShortcuts } from './useKeyboardShortcuts';
 export { default as useLocalStorage } from './useLocalStorage';

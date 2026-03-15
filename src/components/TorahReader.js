@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import PropTypes from 'prop-types';
 import './TorahReader.css';
 import { isTalmudBook, isMishnahBook, getRashiForVerse, getTosafotForDaf, getMaharshaForDaf, getRambanForVerse } from '../services/sefariaApi';
 import { translateWithSource, translateEnglishToFrench, translateWithBoldPreservation, clearCache } from '../services/englishToFrenchService';
@@ -239,65 +240,94 @@ const TorahReader = ({
     }
   }, [showRamban, isTorahBook, verses, loadRambanForVerse]);
 
-  // Load French translations for Onkelos when showFrench is enabled
+  // Load French translations for Onkelos when showFrench is enabled (parallel loading)
   useEffect(() => {
-    if (showFrench && showOnkelos && onkelos.length > 0) {
-      const translateOnkelos = async () => {
-        const frenchTranslations = {};
-        for (const item of onkelos) {
-          if (item.english && !onkelosFrench[item.verse]) {
-            try {
-              const french = await translateEnglishToFrench(item.english);
-              if (french) {
-                frenchTranslations[item.verse] = french;
-              }
-            } catch (error) {
-              console.warn('Failed to translate Onkelos to French:', error);
-            }
+    if (!showFrench || !showOnkelos || onkelos.length === 0) return;
+
+    let cancelled = false;
+    const translateOnkelos = async () => {
+      // Filter items that need translation
+      const toTranslate = onkelos.filter(item => item.english && !onkelosFrench[item.verse]);
+      if (toTranslate.length === 0) return;
+
+      // Translate in parallel
+      const results = await Promise.all(
+        toTranslate.map(async item => {
+          try {
+            const french = await translateEnglishToFrench(item.english);
+            return french ? { verse: item.verse, french } : null;
+          } catch (error) {
+            console.warn('Failed to translate Onkelos to French:', error);
+            return null;
           }
-        }
-        if (Object.keys(frenchTranslations).length > 0) {
-          setOnkelosFrench(prev => ({ ...prev, ...frenchTranslations }));
-        }
-      };
-      translateOnkelos();
-    }
+        })
+      );
+
+      if (cancelled) return;
+
+      const frenchTranslations = {};
+      results.filter(Boolean).forEach(({ verse, french }) => {
+        frenchTranslations[verse] = french;
+      });
+
+      if (Object.keys(frenchTranslations).length > 0) {
+        setOnkelosFrench(prev => ({ ...prev, ...frenchTranslations }));
+      }
+    };
+
+    translateOnkelos();
+    return () => { cancelled = true; };
   }, [showFrench, showOnkelos, onkelos, onkelosFrench]);
 
-  // Load French translations for main verses when showFrench is enabled
+  // Load French translations for main verses when showFrench is enabled (parallel loading)
   // Uses bold-preserving translation when rawEnglishHtml is available
   useEffect(() => {
-    if (showFrench && verses.length > 0) {
-      const translateVerses = async () => {
-        const frenchTranslations = {};
-        for (const verse of verses) {
+    if (!showFrench || verses.length === 0) return;
+
+    let cancelled = false;
+    const translateVerses = async () => {
+      // Filter verses that need translation
+      const toTranslate = verses.filter(verse => {
+        const cacheKey = `${selectedBook}:${selectedChapter}:${verse.verse}`;
+        return verse.englishText && !verseFrench[cacheKey];
+      });
+      if (toTranslate.length === 0) return;
+
+      // Translate in parallel
+      const results = await Promise.all(
+        toTranslate.map(async verse => {
           const cacheKey = `${selectedBook}:${selectedChapter}:${verse.verse}`;
-          if (verse.englishText && !verseFrench[cacheKey]) {
-            try {
-              // Use bold-preserving translation if HTML markup available
-              if (verse.rawEnglishHtml && hasAnnotationMarkup(verse.rawEnglishHtml)) {
-                const result = await translateWithBoldPreservation(verse.rawEnglishHtml);
-                if (result && result.translation) {
-                  frenchTranslations[cacheKey] = result;
-                }
-              } else {
-                // Fallback to regular translation
-                const result = await translateWithSource(verse.englishText);
-                if (result && result.translation) {
-                  frenchTranslations[cacheKey] = result;
-                }
-              }
-            } catch (error) {
-              console.warn('Failed to translate verse to French:', error);
+          try {
+            // Use bold-preserving translation if HTML markup available
+            if (verse.rawEnglishHtml && hasAnnotationMarkup(verse.rawEnglishHtml)) {
+              const result = await translateWithBoldPreservation(verse.rawEnglishHtml);
+              return result?.translation ? { cacheKey, result } : null;
+            } else {
+              // Fallback to regular translation
+              const result = await translateWithSource(verse.englishText);
+              return result?.translation ? { cacheKey, result } : null;
             }
+          } catch (error) {
+            console.warn('Failed to translate verse to French:', error);
+            return null;
           }
-        }
-        if (Object.keys(frenchTranslations).length > 0) {
-          setVerseFrench(prev => ({ ...prev, ...frenchTranslations }));
-        }
-      };
-      translateVerses();
-    }
+        })
+      );
+
+      if (cancelled) return;
+
+      const frenchTranslations = {};
+      results.filter(Boolean).forEach(({ cacheKey, result }) => {
+        frenchTranslations[cacheKey] = result;
+      });
+
+      if (Object.keys(frenchTranslations).length > 0) {
+        setVerseFrench(prev => ({ ...prev, ...frenchTranslations }));
+      }
+    };
+
+    translateVerses();
+    return () => { cancelled = true; };
   }, [showFrench, verses, selectedBook, selectedChapter, verseFrench]);
 
   const speakVerse = useCallback((verse) => {
@@ -1765,6 +1795,79 @@ const TorahReader = ({
       )}
     </div>
   );
+};
+
+TorahReader.propTypes = {
+  /** Array of verse objects with verse number, Hebrew text, and English text */
+  verses: PropTypes.arrayOf(PropTypes.shape({
+    verse: PropTypes.number.isRequired,
+    hebrewText: PropTypes.string,
+    englishText: PropTypes.string,
+    rawEnglishHtml: PropTypes.string
+  })).isRequired,
+  /** Onkelos Aramaic translations */
+  onkelos: PropTypes.arrayOf(PropTypes.shape({
+    verse: PropTypes.number,
+    aramaic: PropTypes.string,
+    english: PropTypes.string
+  })),
+  /** Callback to bookmark a verse */
+  onBookmarkVerse: PropTypes.func,
+  /** Currently selected book name */
+  selectedBook: PropTypes.string.isRequired,
+  /** Currently selected chapter */
+  selectedChapter: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  /** Whether the current book is from the Torah */
+  isTorahBook: PropTypes.bool,
+  /** Whether content is loading */
+  loading: PropTypes.bool,
+  /** Function to get shareable link for a verse */
+  getShareLink: PropTypes.func,
+  /** Object containing notes for verses */
+  verseNotes: PropTypes.object,
+  /** Callback to save a word to vocabulary */
+  onSaveWord: PropTypes.func,
+  /** Function to check if a word is in vocabulary */
+  hasWord: PropTypes.func,
+  /** Whether to show French translations */
+  showFrench: PropTypes.bool,
+  /** Toggle French translations */
+  onToggleFrench: PropTypes.func,
+  /** Whether to show Onkelos */
+  showOnkelos: PropTypes.bool,
+  /** Toggle Onkelos */
+  onToggleOnkelos: PropTypes.func,
+  /** Whether to show Rashi */
+  showRashi: PropTypes.bool,
+  /** Toggle Rashi */
+  onToggleRashi: PropTypes.func,
+  /** Whether to show Tosafot (Talmud only) */
+  showTosafot: PropTypes.bool,
+  /** Toggle Tosafot */
+  onToggleTosafot: PropTypes.func,
+  /** Whether to show Maharsha (Talmud only) */
+  showMaharsha: PropTypes.bool,
+  /** Toggle Maharsha */
+  onToggleMaharsha: PropTypes.func,
+  /** Whether to show Ramban (Torah only) */
+  showRamban: PropTypes.bool,
+  /** Toggle Ramban */
+  onToggleRamban: PropTypes.func,
+  /** Navigate to a cross-reference */
+  onNavigateToRef: PropTypes.func
+};
+
+TorahReader.defaultProps = {
+  onkelos: [],
+  isTorahBook: false,
+  loading: false,
+  verseNotes: {},
+  showFrench: false,
+  showOnkelos: true,
+  showRashi: false,
+  showTosafot: false,
+  showMaharsha: false,
+  showRamban: false
 };
 
 export default React.memo(TorahReader);

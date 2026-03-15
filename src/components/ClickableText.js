@@ -31,39 +31,7 @@ import { scholarlyLookup, lookupJastrow, lookupWordSefaria } from '../services/s
 import { lookupAramaicWord } from '../services/babylonianDictionary';
 import { cleanHtml } from '../utils/sanitize';
 import { translateEnglishToFrench, quickTranslate } from '../services/englishToFrenchService';
-
-// =============================================================================
-// Constants & Configuration
-// =============================================================================
-
-const SOURCE_INFO = {
-  sefaria: { name: 'Sefaria', color: '#4f46e5' },
-  jastrow: { name: 'Jastrow', color: '#059669', year: '1903' },
-  bdb: { name: 'BDB', color: '#dc2626', year: '1906' },
-  strong: { name: "Strong's", color: '#d97706' },
-  "strong's": { name: "Strong's", color: '#d97706' },
-  klein: { name: 'Klein', color: '#7c3aed', year: '1987' },
-  steinsaltz: { name: 'Steinsaltz', color: '#0891b2', year: '1989' },
-  gesenius: { name: 'Gesenius', color: '#be185d', year: '1910' },
-  halot: { name: 'HALOT', color: '#0d9488', year: '2000' },
-  twot: { name: 'TWOT', color: '#ea580c', year: '1980' },
-  bolls: { name: 'Bolls.life', color: '#8b5cf6', year: '2020' },
-  'bolls.life': { name: 'Bolls.life', color: '#8b5cf6', year: '2020' },
-  'even-shoshan': { name: 'Even-Shoshan', color: '#f59e0b', year: '1969' },
-  // New online API sources
-  wiktionary: { name: 'Wiktionary', color: '#3b82f6', year: '2024' },
-  'wiktionary (en)': { name: 'Wiktionary', color: '#3b82f6', year: '2024' },
-  morfix: { name: 'Morfix', color: '#10b981', year: '2024' },
-  pealim: { name: 'Pealim', color: '#f97316', year: '2024' },
-  milog: { name: 'Milog', color: '#6366f1', year: '2024' },
-  openscriptures: { name: 'OpenScriptures', color: '#14b8a6', year: '2020' },
-  step: { name: 'STEP Bible', color: '#8b5cf6', year: '2021' },
-  'step bible': { name: 'STEP Bible', color: '#8b5cf6', year: '2021' },
-  // Fallback sources
-  babylonian: { name: 'Dictionary', color: '#6b7280' },
-  local: { name: 'Dictionary', color: '#6b7280' },
-  lexicon: { name: 'Lexicon', color: '#6366f1' }
-};
+import { getSourceStyle } from '../constants/dictionarySources';
 
 // =============================================================================
 // Lookup Functions
@@ -599,22 +567,6 @@ const cleanDefinition = (text) => {
   }
 
   return cleaned;
-};
-
-/**
- * Get source badge style with color from SOURCE_INFO
- */
-const getSourceStyle = (sourceName) => {
-  if (!sourceName) return {};
-  const key = sourceName.toLowerCase();
-  const info = SOURCE_INFO[key];
-  if (info?.color) {
-    return {
-      backgroundColor: info.color,
-      color: '#fff'
-    };
-  }
-  return {};
 };
 
 // =============================================================================

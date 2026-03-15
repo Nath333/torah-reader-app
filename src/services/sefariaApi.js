@@ -378,7 +378,8 @@ export const getCommentary = async (bookName, chapterNumber, verseNumber) => {
         });
       }
       return results;
-    } catch {
+    } catch (error) {
+      console.warn(`Failed to fetch ${commentary} commentary:`, error.message);
       return [];
     }
   };
@@ -412,7 +413,8 @@ export const getRashi = async (ref) => {
         english: cleanHtml(englishTexts[i])
       })).filter(c => c.hebrew || c.english)
     };
-  } catch {
+  } catch (error) {
+    console.warn('Failed to fetch Rashi:', error.message);
     return null;
   }
 };
@@ -445,7 +447,8 @@ export const getOnkelos = async (bookName, chapterNumber) => {
 
     textCache.set(cacheKey, result);
     return result;
-  } catch {
+  } catch (error) {
+    console.warn('Failed to fetch Onkelos:', error.message);
     return [];
   }
 };
@@ -524,7 +527,8 @@ export const getRelatedTexts = async (ref) => {
     }
 
     return related;
-  } catch {
+  } catch (error) {
+    console.warn('Failed to fetch related texts:', error.message);
     return { commentary: [], targum: [], midrash: [], halacha: [], parallels: [], connections: [] };
   }
 };
@@ -552,7 +556,8 @@ export const getRandomText = async (categories = []) => {
       book: data.book || (data.ref ? data.ref.split('.')[0].replace(/_/g, ' ') : ''),
       chapter: data.ref ? data.ref.match(/[.\s](\d+[ab]?)(?:[.:\s]|$)/)?.[1] || '' : ''
     };
-  } catch {
+  } catch (error) {
+    console.warn('Failed to fetch random text:', error.message);
     return null;
   }
 };
@@ -946,6 +951,7 @@ export const getIbnEzraForVerse = async (bookName, chapter, verse) => {
     commentaryCache.set(cacheKey, comments);
     return comments;
   } catch (error) {
+    console.warn('Failed to fetch Ibn Ezra:', error.message);
     return [];
   }
 };
@@ -979,6 +985,7 @@ export const getSfornoForVerse = async (bookName, chapter, verse) => {
     commentaryCache.set(cacheKey, comments);
     return comments;
   } catch (error) {
+    console.warn('Failed to fetch Sforno:', error.message);
     return [];
   }
 };

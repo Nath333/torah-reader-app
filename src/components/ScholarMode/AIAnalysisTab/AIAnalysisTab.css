@@ -1404,3 +1404,329 @@
   color: var(--text-secondary);
   font-style: italic;
 }
+
+/* Multi-chapter verse chips */
+.verse-chip.multi-chapter {
+  background: linear-gradient(135deg, var(--gold-a25), var(--gold-a15));
+  border-color: var(--gold-a40);
+}
+
+.verse-chip .chapter-badge {
+  font-weight: 700;
+  color: var(--gold-light);
+  margin-right: 2px;
+}
+
+/* Multi-page notice */
+.multi-page-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: var(--gold-a10);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.multi-page-notice .notice-icon {
+  font-size: 14px;
+}
+
+/* =============================================================================
+   Result Actions Bar - Export/Copy/Save
+   ============================================================================= */
+
+.result-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--gold-a15);
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid var(--gold-a30);
+  border-radius: 8px;
+  background: var(--gold-a10);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  background: var(--gold-a20);
+  border-color: var(--gold-a40);
+  transform: translateY(-1px);
+}
+
+.action-btn:active {
+  transform: translateY(0);
+}
+
+.action-btn span {
+  font-size: 14px;
+}
+
+.copy-btn:hover {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+.export-btn:hover {
+  border-color: var(--accent-green);
+  color: var(--accent-green);
+}
+
+.save-btn:hover {
+  border-color: var(--gold-primary);
+  color: var(--gold-light);
+}
+
+.save-success {
+  margin-left: 8px;
+  padding: 4px 12px;
+  background: rgba(126, 184, 138, 0.2);
+  border: 1px solid rgba(126, 184, 138, 0.4);
+  border-radius: 6px;
+  color: var(--accent-green);
+  font-size: 12px;
+  font-weight: 600;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Light mode overrides */
+@media (prefers-color-scheme: light) {
+  .result-actions {
+    border-bottom-color: #e5e7eb;
+  }
+
+  .action-btn {
+    border-color: #d1d5db;
+    background: #f9fafb;
+    color: #374151;
+  }
+
+  .action-btn:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+  }
+
+  .copy-btn:hover {
+    border-color: #3b82f6;
+    color: #2563eb;
+  }
+
+  .export-btn:hover {
+    border-color: #10b981;
+    color: #059669;
+  }
+
+  .save-btn:hover {
+    border-color: #c9a227;
+    color: #9a7b1c;
+  }
+
+  .save-success {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #059669;
+  }
+}
+
+/* =============================================================================
+   Analysis History Section
+   ============================================================================= */
+
+.history-section {
+  margin: 16px 0;
+  border-top: 1px solid var(--gold-a15);
+  padding-top: 12px;
+}
+
+.history-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--gold-a20);
+  border-radius: 8px;
+  background: var(--gold-a05);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.history-toggle:hover {
+  background: var(--gold-a10);
+  border-color: var(--gold-a30);
+  color: var(--text-primary);
+}
+
+.history-toggle.active {
+  background: var(--gold-a15);
+  border-color: var(--gold-a40);
+  color: var(--gold-light);
+}
+
+.history-list {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.history-empty {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-style: italic;
+  padding: 16px;
+  margin: 0;
+}
+
+.history-item {
+  padding: 12px;
+  background: var(--gold-a05);
+  border: 1px solid var(--gold-a15);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.history-item:hover {
+  background: var(--gold-a10);
+  border-color: var(--gold-a30);
+}
+
+.history-item-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.history-mode {
+  padding: 3px 8px;
+  background: var(--gold-a20);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gold-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.history-ref {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-family: var(--font-hebrew);
+}
+
+.history-delete {
+  margin-left: auto;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.history-item:hover .history-delete {
+  opacity: 1;
+}
+
+.history-delete:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.history-summary {
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.history-date {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Light mode overrides for history */
+@media (prefers-color-scheme: light) {
+  .history-section {
+    border-top-color: #e5e7eb;
+  }
+
+  .history-toggle {
+    border-color: #d1d5db;
+    background: #f9fafb;
+    color: #6b7280;
+  }
+
+  .history-toggle:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+    color: #374151;
+  }
+
+  .history-toggle.active {
+    background: #fef3c7;
+    border-color: #fcd34d;
+    color: #92400e;
+  }
+
+  .history-item {
+    background: #f9fafb;
+    border-color: #e5e7eb;
+  }
+
+  .history-item:hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+  }
+
+  .history-mode {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .history-ref {
+    color: #6b7280;
+  }
+
+  .history-summary {
+    color: #374151;
+  }
+
+  .history-date {
+    color: #9ca3af;
+  }
+
+  .history-empty {
+    color: #9ca3af;
+  }
+}

@@ -46,6 +46,15 @@ const TraditionalPageView = ({
     return 'reader';
   });
 
+  // Handle layout change - 'reader' goes back to modern view
+  const handleLayoutChange = (layoutId) => {
+    if (layoutId === 'reader') {
+      onClose?.();
+    } else {
+      setCurrentLayout(layoutId);
+    }
+  };
+
   // Prepare verses for AI analysis (all verses in chapter)
   const aiVerses = useMemo(() => {
     return verses.map(v => ({
@@ -210,6 +219,10 @@ const TraditionalPageView = ({
             showTranslation={showTranslation}
             onSaveWord={onSaveWord}
             hasWord={hasWord}
+            onPrevChapter={onPrevChapter}
+            onNextChapter={onNextChapter}
+            hasPrevChapter={hasPrevChapter}
+            hasNextChapter={hasNextChapter}
           />
         )}
 
@@ -223,6 +236,10 @@ const TraditionalPageView = ({
             showTranslation={showTranslation}
             onSaveWord={onSaveWord}
             hasWord={hasWord}
+            onPrevChapter={onPrevChapter}
+            onNextChapter={onNextChapter}
+            hasPrevChapter={hasPrevChapter}
+            hasNextChapter={hasNextChapter}
           />
         )}
       </div>
@@ -231,7 +248,7 @@ const TraditionalPageView = ({
       <StudyLayoutSelector
         textType={getTextType()}
         currentLayout={currentLayout}
-        onLayoutChange={setCurrentLayout}
+        onLayoutChange={handleLayoutChange}
         isOpen={showLayoutSelector}
         onClose={() => setShowLayoutSelector(false)}
         showTranslation={showTranslation}

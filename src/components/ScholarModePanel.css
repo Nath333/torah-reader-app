@@ -1556,7 +1556,7 @@
    AI Analysis Tab
 ============================================================================= */
 
-.ai-tab {
+.ai-analysis-tab {
   display: flex;
   flex-direction: column;
   gap: 16px;

@@ -75,16 +75,29 @@ const ScholarModePanel = ({
       return text;
     }
 
-    // Sort verses by chapter and verse number
+    // Sort verses by book, chapter, and verse number (supports multi-page)
     const sortedVerses = [...selectedVerses].sort((a, b) => {
+      if (a.book !== b.book) return a.book.localeCompare(b.book);
       if (a.chapter !== b.chapter) return a.chapter - b.chapter;
       return a.verse - b.verse;
     });
 
+    // Group by book/chapter for better context
+    let lastBook = null;
+    let lastChapter = null;
+
     // Format each verse with its reference for AI context
-    return sortedVerses.map(v =>
-      `[${v.chapter}:${v.verse}] ${v.hebrewText}`
-    ).join('\n');
+    return sortedVerses.map(v => {
+      let prefix = '';
+      // Add book/chapter header when it changes (multi-page support)
+      if (v.book !== lastBook || v.chapter !== lastChapter) {
+        if (lastBook !== null) prefix = '\n'; // Add spacing between sections
+        prefix += `--- ${v.book} ${v.chapter} ---\n`;
+        lastBook = v.book;
+        lastChapter = v.chapter;
+      }
+      return `${prefix}[${v.chapter}:${v.verse}] ${v.hebrewText}`;
+    }).join('\n');
   }, [isMultiVerse, selectedVerses, text]);
 
   // Generate proper multi-verse reference string (e.g., "Genesis.1:1-5" or "Genesis.1:1,3,5")
@@ -130,13 +143,14 @@ const ScholarModePanel = ({
     return parts.join('; ');
   }, [isMultiVerse, selectedVerses, reference]);
 
-  // Aggregate Rashi commentary for multi-verse mode
+  // Aggregate Rashi commentary for multi-verse mode (supports multi-page)
   const aggregatedRashiText = useMemo(() => {
     if (!isMultiVerse) return rashiText;
     if (!rashiDataMap || !selectedVerses || selectedVerses.length === 0) return rashiText;
 
     const parts = [];
     const sortedVerses = [...selectedVerses].sort((a, b) => {
+      if (a.book !== b.book) return a.book.localeCompare(b.book);
       if (a.chapter !== b.chapter) return a.chapter - b.chapter;
       return a.verse - b.verse;
     });
@@ -148,11 +162,11 @@ const ScholarModePanel = ({
         if (Array.isArray(rashiComments)) {
           rashiComments.forEach(comment => {
             if (comment?.hebrew) {
-              parts.push(`[${v.chapter}:${v.verse}] ${comment.hebrew}`);
+              parts.push(`[${v.book} ${v.chapter}:${v.verse}] ${comment.hebrew}`);
             }
           });
         } else if (rashiComments.hebrew) {
-          parts.push(`[${v.chapter}:${v.verse}] ${rashiComments.hebrew}`);
+          parts.push(`[${v.book} ${v.chapter}:${v.verse}] ${rashiComments.hebrew}`);
         }
       }
     });
@@ -160,34 +174,38 @@ const ScholarModePanel = ({
     return parts.length > 0 ? parts.join('\n\n') : rashiText;
   }, [isMultiVerse, selectedVerses, rashiDataMap, rashiText]);
 
-  // Aggregate Onkelos for multi-verse mode
+  // Aggregate Onkelos for multi-verse mode (note: Onkelos map is per-chapter, keyed by verse number)
   const aggregatedOnkelosText = useMemo(() => {
     if (!isMultiVerse) return onkelosText;
     if (!onkelosDataMap || !selectedVerses || selectedVerses.length === 0) return onkelosText;
 
     const parts = [];
     const sortedVerses = [...selectedVerses].sort((a, b) => {
+      if (a.book !== b.book) return a.book.localeCompare(b.book);
       if (a.chapter !== b.chapter) return a.chapter - b.chapter;
       return a.verse - b.verse;
     });
 
+    // Note: Onkelos data is currently loaded per-chapter, so multi-chapter selection
+    // will only have Onkelos for the currently displayed chapter
     sortedVerses.forEach(v => {
       const onkelos = onkelosDataMap[v.verse];
       if (onkelos?.targetText) {
-        parts.push(`[${v.chapter}:${v.verse}] ${onkelos.targetText}`);
+        parts.push(`[${v.book} ${v.chapter}:${v.verse}] ${onkelos.targetText}`);
       }
     });
 
     return parts.length > 0 ? parts.join('\n') : onkelosText;
   }, [isMultiVerse, selectedVerses, onkelosDataMap, onkelosText]);
 
-  // Aggregate Ramban for multi-verse mode
+  // Aggregate Ramban for multi-verse mode (supports multi-page)
   const aggregatedRambanText = useMemo(() => {
     if (!isMultiVerse) return rambanText;
     if (!rambanDataMap || !selectedVerses || selectedVerses.length === 0) return rambanText;
 
     const parts = [];
     const sortedVerses = [...selectedVerses].sort((a, b) => {
+      if (a.book !== b.book) return a.book.localeCompare(b.book);
       if (a.chapter !== b.chapter) return a.chapter - b.chapter;
       return a.verse - b.verse;
     });
@@ -199,11 +217,11 @@ const ScholarModePanel = ({
         if (Array.isArray(rambanComments)) {
           rambanComments.forEach(comment => {
             if (comment?.hebrew) {
-              parts.push(`[${v.chapter}:${v.verse}] ${comment.hebrew}`);
+              parts.push(`[${v.book} ${v.chapter}:${v.verse}] ${comment.hebrew}`);
             }
           });
         } else if (rambanComments.hebrew) {
-          parts.push(`[${v.chapter}:${v.verse}] ${rambanComments.hebrew}`);
+          parts.push(`[${v.book} ${v.chapter}:${v.verse}] ${rambanComments.hebrew}`);
         }
       }
     });
@@ -235,13 +253,14 @@ const ScholarModePanel = ({
     return isTalmud && text ? getFlowDiagram(text) : null;
   }, [text, isTalmud]);
 
+  // Entity detection for all text types (Torah includes biblical figures, places)
   const entities = useMemo(() => {
-    return isTalmud && text ? detectEntities(text) : null;
-  }, [text, isTalmud]);
+    return text ? detectEntities(text) : null;
+  }, [text]);
 
   const entityStats = useMemo(() => {
-    return isTalmud && text ? getEntityStatistics(text) : null;
-  }, [text, isTalmud]);
+    return text ? getEntityStatistics(text) : null;
+  }, [text]);
 
   // Fetch scholarly data when reference changes
   useEffect(() => {
@@ -283,18 +302,22 @@ const ScholarModePanel = ({
 
   // Dynamic tab configuration based on text type
   const tabs = useMemo(() => {
+    // Check if we have any entities to show (for badge)
+    const hasEntities = entityStats?.totalEntities > 0;
+
     const baseTabs = [
       { id: 'ai', label: isTalmud ? 'AI Study' : 'Study', icon: '🧠', badge: 0, alwaysShow: true },
       { id: 'lexicon', label: 'Lexicon', icon: '📖', badge: 0, alwaysShow: true },
       { id: 'commentary', label: 'Commentary', icon: '📚', badge: scholarlyData?.summary?.commentaryCount || 0, alwaysShow: true },
       { id: 'topics', label: 'Topics', icon: '🏷️', badge: scholarlyData?.topics?.length || 0, alwaysShow: true },
-      { id: 'crossrefs', label: 'References', icon: '🔗', badge: scholarlyData?.summary?.crossRefCount || 0, alwaysShow: true }
+      { id: 'crossrefs', label: 'References', icon: '🔗', badge: scholarlyData?.summary?.crossRefCount || 0, alwaysShow: true },
+      // Entities tab now available for all text types
+      { id: 'entities', label: isTalmud ? 'Entities' : 'Figures', icon: '👤', badge: entityStats?.totalEntities || 0, alwaysShow: hasEntities }
     ];
 
     const talmudTabs = [
       { id: 'discourse', label: 'Flow', icon: '📊', badge: discourseAnalysis?.statistics?.totalPatterns || 0, textTypes: ['talmud'] },
       { id: 'tzurathadaf', label: 'צורת הדף', icon: '📜', badge: 0, textTypes: ['talmud'] },
-      { id: 'entities', label: 'Entities', icon: '👤', badge: entityStats?.totalEntities || 0, textTypes: ['talmud'] },
       { id: 'abbreviations', label: 'א״ב', icon: '📝', badge: 0, textTypes: ['talmud'] }
     ];
 
@@ -302,13 +325,14 @@ const ScholarModePanel = ({
     if (isTalmud) {
       return [
         talmudTabs[0], // Flow first for Talmud
-        ...baseTabs,
+        ...baseTabs.filter(t => t.id !== 'entities'), // Base tabs without entities (we'll add it with Talmud tabs)
+        { id: 'entities', label: 'Entities', icon: '👤', badge: entityStats?.totalEntities || 0 },
         ...talmudTabs.slice(1)
       ];
     }
 
-    // For Torah: show base tabs only
-    return baseTabs;
+    // For Torah: show base tabs (includes entities if there are any)
+    return baseTabs.filter(t => t.alwaysShow !== false || t.badge > 0);
   }, [isTalmud, scholarlyData, discourseAnalysis, entityStats]);
 
   // Get panel title based on context
@@ -419,6 +443,15 @@ const ScholarModePanel = ({
               />
             )}
 
+            {/* Entities Tab - Available for all text types */}
+            {activeTab === 'entities' && (
+              <EntitiesTab
+                entities={entities}
+                statistics={entityStats}
+                textType={detectedTextType}
+              />
+            )}
+
             {/* Talmud-specific tabs */}
             {isTalmud && (
               <>
@@ -432,10 +465,6 @@ const ScholarModePanel = ({
 
                 {activeTab === 'tzurathadaf' && (
                   <TzuratHaDafTab text={text} reference={reference} />
-                )}
-
-                {activeTab === 'entities' && (
-                  <EntitiesTab entities={entities} statistics={entityStats} />
                 )}
 
                 {activeTab === 'abbreviations' && (

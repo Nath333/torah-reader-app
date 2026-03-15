@@ -54,6 +54,7 @@ export function SettingsProvider({ children, darkMode, toggleDarkMode }) {
     showTraditionalView,
 
     // Setters
+    setShowFrench,
     setTradition,
     setCommentaryPosition,
     setFontSize,
@@ -72,7 +73,7 @@ export function SettingsProvider({ children, darkMode, toggleDarkMode }) {
     darkMode, toggleDarkMode,
     showFrench, showOnkelos, showRashi, showTosafot, showMaharsha, showRamban, tradition,
     focusMode, sidebarCollapsed, commentaryPosition, fontSize, showTraditionalView,
-    setTradition, setCommentaryPosition, setFontSize,
+    setShowFrench, setTradition, setCommentaryPosition, setFontSize,
     toggleFrench, toggleOnkelos, toggleRashi, toggleTosafot, toggleMaharsha, toggleRamban,
     toggleFocusMode, toggleSidebar, toggleTraditionalView
   ]);

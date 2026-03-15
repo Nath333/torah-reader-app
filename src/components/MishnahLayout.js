@@ -103,6 +103,11 @@ const MishnahLayout = ({
   showTranslation = false,
   onSaveWord,
   hasWord,
+  // Navigation props
+  onPrevChapter,
+  onNextChapter,
+  hasPrevChapter = true,
+  hasNextChapter = true,
 }) => {
   const [bartenuraData, setBartenuraData] = useState([]);
   const [tosafotYomTovData, setTosafotYomTovData] = useState([]);
@@ -261,6 +266,19 @@ const MishnahLayout = ({
 
         {/* Page Header */}
         <header className="ml-header">
+          {onPrevChapter && (
+            <button
+              className="ml-nav-btn ml-nav-prev"
+              onClick={onPrevChapter}
+              disabled={!hasPrevChapter}
+              title="Previous chapter"
+              aria-label="Previous chapter"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+            </button>
+          )}
           <div className="ml-header-seder">סדר {tractateInfo.seder}</div>
           <div className="ml-header-center">
             <h1 className="ml-tractate" dir="rtl">מסכת {tractateInfo.tractate}</h1>
@@ -270,6 +288,19 @@ const MishnahLayout = ({
             </div>
           </div>
           <div className="ml-header-badge">משנה</div>
+          {onNextChapter && (
+            <button
+              className="ml-nav-btn ml-nav-next"
+              onClick={onNextChapter}
+              disabled={!hasNextChapter}
+              title="Next chapter"
+              aria-label="Next chapter"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </button>
+          )}
         </header>
 
         {/* Mishnah Text Section */}

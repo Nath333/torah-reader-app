@@ -1,0 +1,236 @@
+/* =============================================================================
+   Floating Action Button - Mobile Quick Access
+   ============================================================================= */
+
+.fab-container {
+  position: fixed;
+  bottom: var(--space-6);
+  right: var(--space-6);
+  z-index: var(--z-fixed);
+  display: none; /* Hidden by default, shown on mobile */
+}
+
+/* Show on mobile */
+@media (max-width: 768px) {
+  .fab-container {
+    display: block;
+  }
+}
+
+/* Backdrop */
+.fab-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  z-index: -1;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Main FAB Button */
+.fab-main {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%);
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 4px 12px var(--primary-glow),
+    0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 10;
+}
+
+.fab-main svg {
+  width: 24px;
+  height: 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fab-main .fab-icon-menu {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+.fab-main .fab-icon-close {
+  position: absolute;
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+}
+
+.fab-main.active .fab-icon-menu {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.5);
+}
+
+.fab-main.active .fab-icon-close {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+.fab-main:hover {
+  transform: scale(1.05);
+  box-shadow:
+    0 6px 20px var(--primary-glow),
+    0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.fab-main:active {
+  transform: scale(0.95);
+}
+
+.fab-main.active {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Action Buttons Container */
+.fab-actions {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-3);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fab-container.expanded .fab-actions {
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Individual Action Button */
+.fab-action {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  color: var(--text-primary);
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(20px);
+  opacity: 0;
+  white-space: nowrap;
+}
+
+.fab-container.expanded .fab-action {
+  transform: translateX(0);
+  opacity: 1;
+  transition-delay: calc(var(--index) * 50ms);
+}
+
+.fab-action svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.fab-action-label {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.fab-action:hover {
+  transform: translateX(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.fab-action:active {
+  transform: scale(0.98);
+}
+
+/* Color Variants */
+.fab-action-blue:hover {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.fab-action-purple:hover {
+  background: #7c3aed;
+  color: white;
+  border-color: #7c3aed;
+}
+
+.fab-action-teal:hover {
+  background: #0d9488;
+  color: white;
+  border-color: #0d9488;
+}
+
+.fab-action-amber:hover {
+  background: #d97706;
+  color: white;
+  border-color: #d97706;
+}
+
+.fab-action-rose:hover {
+  background: #e11d48;
+  color: white;
+  border-color: #e11d48;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 480px) {
+  .fab-container {
+    bottom: var(--space-4);
+    right: var(--space-4);
+  }
+
+  .fab-main {
+    width: 52px;
+    height: 52px;
+  }
+
+  .fab-action {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .fab-action svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .fab-action-label {
+    font-size: 13px;
+  }
+}
+
+/* Account for bottom navigation on mobile */
+@media (max-width: 768px) {
+  .fab-container {
+    bottom: calc(60px + var(--space-4)); /* Above bottom nav */
+  }
+}
+
+/* Dark Mode */
+.app.dark-mode .fab-action {
+  background: var(--bg-elevated);
+  border-color: var(--border);
+}
+
+.app.dark-mode .fab-backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}

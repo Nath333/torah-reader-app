@@ -258,6 +258,10 @@ function App() {
             onSaveWord={handleSaveWord}
             hasWord={study.hasWord}
             onClose={goToReader}
+            onPrevChapter={torah.prevChapter}
+            onNextChapter={torah.nextChapter}
+            hasPrevChapter={torah.chapter > 1}
+            hasNextChapter={torah.chapter < (torah.chapters?.length || 1)}
           />
         );
       case 'study':

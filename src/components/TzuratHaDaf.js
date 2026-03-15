@@ -7,7 +7,7 @@ import { removeHtmlTags } from '../utils/sanitize';
 import { detectStructuralMarkers, TALMUDIC_PATTERNS } from '../services/discoursePatternService';
 import { processHebrewText, getDisplayModeLabel } from '../utils/hebrewUtils';
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import { findAbbreviations, expandAbbreviation } from '../services/talmudicAbbreviationsService';
+import { findAbbreviations } from '../services/talmudicAbbreviationsService';
 
 // Layout style options
 const LAYOUT_STYLES = {
@@ -63,12 +63,15 @@ const LAYOUT_STYLES = {
   }
 };
 
-// Hebrew tractate names mapping
+// Hebrew tractate names mapping - Complete Babylonian Talmud
 const HEBREW_MASECHET = {
+  // Seder Zeraim
   'Berakhot': 'ברכות',
+  // Seder Moed
   'Shabbat': 'שבת',
   'Eruvin': 'עירובין',
   'Pesachim': 'פסחים',
+  'Shekalim': 'שקלים',  // Jerusalem Talmud included in Vilna Shas
   'Yoma': 'יומא',
   'Sukkah': 'סוכה',
   'Beitzah': 'ביצה',
@@ -77,6 +80,7 @@ const HEBREW_MASECHET = {
   'Megillah': 'מגילה',
   'Moed Katan': 'מועד קטן',
   'Chagigah': 'חגיגה',
+  // Seder Nashim
   'Yevamot': 'יבמות',
   'Ketubot': 'כתובות',
   'Nedarim': 'נדרים',
@@ -84,14 +88,18 @@ const HEBREW_MASECHET = {
   'Sotah': 'סוטה',
   'Gittin': 'גיטין',
   'Kiddushin': 'קידושין',
+  // Seder Nezikin
   'Bava Kamma': 'בבא קמא',
   'Bava Metzia': 'בבא מציעא',
   'Bava Batra': 'בבא בתרא',
   'Sanhedrin': 'סנהדרין',
   'Makkot': 'מכות',
   'Shevuot': 'שבועות',
+  'Eduyot': 'עדיות',      // No Gemara, but included for reference
   'Avodah Zarah': 'עבודה זרה',
+  'Avot': 'אבות',          // Pirkei Avot
   'Horayot': 'הוריות',
+  // Seder Kodshim
   'Zevachim': 'זבחים',
   'Menachot': 'מנחות',
   'Chullin': 'חולין',
@@ -100,7 +108,10 @@ const HEBREW_MASECHET = {
   'Temurah': 'תמורה',
   'Keritot': 'כריתות',
   'Meilah': 'מעילה',
+  'Kinnim': 'קנים',        // Short tractate
   'Tamid': 'תמיד',
+  'Middot': 'מדות',        // No Gemara, architectural
+  // Seder Tohorot
   'Niddah': 'נדה'
 };
 
@@ -426,6 +437,12 @@ const TzuratHaDaf = ({
     return renderWithDiscourseMarkers(gemaraText);
   }, [gemaraText, showDiscourseMarkers, renderWithDiscourseMarkers]);
 
+  // Memoized abbreviation-highlighted Gemara
+  const abbreviatedGemara = useMemo(() => {
+    if (!showAbbreviations || !gemaraText) return null;
+    return renderWithAbbreviations(gemaraText);
+  }, [gemaraText, showAbbreviations, renderWithAbbreviations]);
+
   if (loading) {
     return (
       <div className="tzurat-hadaf loading">
@@ -454,6 +471,25 @@ const TzuratHaDaf = ({
     >
       {/* Paper texture overlay */}
       <div className="paper-texture" aria-hidden="true" />
+
+      {/* Abbreviation popup tooltip */}
+      {hoveredAbbrev && (
+        <div
+          className="daf-abbrev-popup"
+          style={{
+            left: '50%',
+            top: '30%',
+            transform: 'translateX(-50%)',
+          }}
+        >
+          <div className="daf-abbrev-header">
+            <span className="daf-abbrev-original">{hoveredAbbrev.abbreviation}</span>
+            <span className="daf-abbrev-type">{hoveredAbbrev.type}</span>
+          </div>
+          <div className="daf-abbrev-expansion">{hoveredAbbrev.expansion}</div>
+          <div className="daf-abbrev-english">{hoveredAbbrev.english}</div>
+        </div>
+      )}
 
       {/* Page Controls */}
       <div className="daf-page-controls">
@@ -793,10 +829,14 @@ const TzuratHaDaf = ({
                 ))}
               </div>
             )}
-            {/* Gemara text with or without discourse markers */}
+            {/* Gemara text with discourse markers, abbreviations, or plain */}
             {showDiscourseMarkers && highlightedGemara ? (
               <div className="daf-gemara-text daf-gemara-with-markers">
                 {highlightedGemara}
+              </div>
+            ) : showAbbreviations && abbreviatedGemara ? (
+              <div className="daf-gemara-text daf-gemara-with-abbreviations">
+                {abbreviatedGemara}
               </div>
             ) : enableClickableText ? (
               <ClickableHebrewText

@@ -58,11 +58,43 @@
 /* === PAGE HEADER === */
 .ml-header {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: auto 1fr auto 1fr auto;
   align-items: center;
   padding: 1.5rem 2rem;
   background: linear-gradient(180deg, #e8e0d0 0%, var(--ml-parchment) 100%);
   border-bottom: 3px double var(--ml-blue);
+  gap: 1rem;
+}
+
+/* Navigation buttons */
+.ml-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--ml-parchment-dark);
+  border: 2px solid var(--ml-blue);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--ml-blue);
+}
+
+.ml-nav-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.ml-nav-btn:hover:not(:disabled) {
+  background: var(--ml-blue);
+  color: white;
+  transform: scale(1.1);
+}
+
+.ml-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
 .ml-header-seder {

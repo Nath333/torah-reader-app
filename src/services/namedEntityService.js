@@ -543,41 +543,130 @@ export function getTeacherChain(rabbiName) {
 export const BIBLICAL_FIGURES = {
   // Patriarchs and Matriarchs
   'אברהם': { name: 'Abraham', category: 'patriarch' },
+  'אברם': { name: 'Abram', category: 'patriarch' },
   'יצחק': { name: 'Isaac', category: 'patriarch' },
   'יעקב': { name: 'Jacob', category: 'patriarch' },
+  'ישראל': { name: 'Israel (Jacob)', category: 'patriarch' },
   'שרה': { name: 'Sarah', category: 'matriarch' },
+  'שרי': { name: 'Sarai', category: 'matriarch' },
   'רבקה': { name: 'Rebecca', category: 'matriarch' },
   'רחל': { name: 'Rachel', category: 'matriarch' },
   'לאה': { name: 'Leah', category: 'matriarch' },
+  'בלהה': { name: 'Bilhah', category: 'matriarch' },
+  'זלפה': { name: 'Zilpah', category: 'matriarch' },
 
-  // Moses and Siblings
+  // The 12 Tribes / Sons of Jacob
+  'ראובן': { name: 'Reuben', category: 'tribe' },
+  'שמעון': { name: 'Simeon', category: 'tribe' },
+  'לוי': { name: 'Levi', category: 'tribe' },
+  'יהודה': { name: 'Judah', category: 'tribe' },
+  'יששכר': { name: 'Issachar', category: 'tribe' },
+  'זבולון': { name: 'Zebulun', category: 'tribe' },
+  'דן': { name: 'Dan', category: 'tribe' },
+  'נפתלי': { name: 'Naphtali', category: 'tribe' },
+  'גד': { name: 'Gad', category: 'tribe' },
+  'אשר': { name: 'Asher', category: 'tribe' },
+  'יוסף': { name: 'Joseph', category: 'tribe' },
+  'בנימין': { name: 'Benjamin', category: 'tribe' },
+  'מנשה': { name: 'Manasseh', category: 'tribe' },
+  'אפרים': { name: 'Ephraim', category: 'tribe' },
+
+  // Moses and Family
   'משה': { name: 'Moses', category: 'prophet' },
   'משה רבינו': { name: 'Moses our Teacher', category: 'prophet' },
   'אהרן': { name: 'Aaron', category: 'priest' },
   'מרים': { name: 'Miriam', category: 'prophet' },
+  'יתרו': { name: 'Jethro', category: 'leader' },
+  'ציפורה': { name: 'Zipporah', category: 'matriarch' },
+  'קרח': { name: 'Korach', category: 'figure' },
+  'פנחס': { name: 'Phinehas', category: 'priest' },
+  'אלעזר': { name: 'Eleazar', category: 'priest' },
+  'יהושע': { name: 'Joshua', category: 'leader' },
+  'כלב': { name: 'Caleb', category: 'leader' },
+  'בלעם': { name: 'Balaam', category: 'prophet' },
+  'בלק': { name: 'Balak', category: 'king' },
 
-  // Judges and Kings
+  // Genesis Figures
+  'אדם': { name: 'Adam', category: 'primordial' },
+  'חוה': { name: 'Eve', category: 'primordial' },
+  'קין': { name: 'Cain', category: 'primordial' },
+  'הבל': { name: 'Abel', category: 'primordial' },
+  'שת': { name: 'Seth', category: 'primordial' },
+  'חנוך': { name: 'Enoch', category: 'primordial' },
+  'מתושלח': { name: 'Methuselah', category: 'primordial' },
+  'למך': { name: 'Lemech', category: 'primordial' },
+  'נח': { name: 'Noah', category: 'primordial' },
+  'שם': { name: 'Shem', category: 'primordial' },
+  'חם': { name: 'Ham', category: 'primordial' },
+  'יפת': { name: 'Japheth', category: 'primordial' },
+  'נמרוד': { name: 'Nimrod', category: 'king' },
+  'תרח': { name: 'Terah', category: 'figure' },
+  'לוט': { name: 'Lot', category: 'figure' },
+  'מלכיצדק': { name: 'Melchizedek', category: 'priest' },
+  'הגר': { name: 'Hagar', category: 'figure' },
+  'ישמעאל': { name: 'Ishmael', category: 'figure' },
+  'עשו': { name: 'Esau', category: 'figure' },
+  'לבן': { name: 'Laban', category: 'figure' },
+  'דינה': { name: 'Dinah', category: 'figure' },
+  'תמר': { name: 'Tamar', category: 'figure' },
+  'פוטיפר': { name: 'Potiphar', category: 'figure' },
+  'פרעה': { name: 'Pharaoh', category: 'king' },
+  'אסנת': { name: 'Asenath', category: 'figure' },
+
+  // Judges
+  'עתניאל': { name: 'Othniel', category: 'judge' },
+  'אהוד': { name: 'Ehud', category: 'judge' },
+  'דבורה': { name: 'Deborah', category: 'judge' },
+  'גדעון': { name: 'Gideon', category: 'judge' },
+  'יפתח': { name: 'Jephthah', category: 'judge' },
+  'שמשון': { name: 'Samson', category: 'judge' },
+
+  // Kings
   'דוד': { name: 'David', category: 'king' },
   'דוד המלך': { name: 'King David', category: 'king' },
   'שלמה': { name: 'Solomon', category: 'king' },
   'שלמה המלך': { name: 'King Solomon', category: 'king' },
   'שאול': { name: 'Saul', category: 'king' },
-  'שמואל': { name: 'Samuel', category: 'prophet' },
-  'שמואל הנביא': { name: 'Samuel the Prophet', category: 'prophet' },
+  'רחבעם': { name: 'Rehoboam', category: 'king' },
+  'ירבעם': { name: 'Jeroboam', category: 'king' },
+  'אחאב': { name: 'Ahab', category: 'king' },
+  'יהושפט': { name: 'Jehoshaphat', category: 'king' },
+  'חזקיהו': { name: 'Hezekiah', category: 'king' },
+  'יאשיהו': { name: 'Josiah', category: 'king' },
 
   // Prophets
+  'שמואל': { name: 'Samuel', category: 'prophet' },
+  'שמואל הנביא': { name: 'Samuel the Prophet', category: 'prophet' },
   'אליהו': { name: 'Elijah', category: 'prophet' },
+  'אליהו הנביא': { name: 'Elijah the Prophet', category: 'prophet' },
   'אלישע': { name: 'Elisha', category: 'prophet' },
   'ישעיהו': { name: 'Isaiah', category: 'prophet' },
   'ירמיהו': { name: 'Jeremiah', category: 'prophet' },
   'יחזקאל': { name: 'Ezekiel', category: 'prophet' },
+  'הושע': { name: 'Hosea', category: 'prophet' },
+  'יואל': { name: 'Joel', category: 'prophet' },
+  'עמוס': { name: 'Amos', category: 'prophet' },
+  'עובדיה': { name: 'Obadiah', category: 'prophet' },
+  'יונה': { name: 'Jonah', category: 'prophet' },
+  'מיכה': { name: 'Micah', category: 'prophet' },
+  'נחום': { name: 'Nahum', category: 'prophet' },
+  'חבקוק': { name: 'Habakkuk', category: 'prophet' },
+  'צפניה': { name: 'Zephaniah', category: 'prophet' },
+  'חגי': { name: 'Haggai', category: 'prophet' },
+  'זכריה': { name: 'Zechariah', category: 'prophet' },
+  'מלאכי': { name: 'Malachi', category: 'prophet' },
+  'נתן': { name: 'Nathan', category: 'prophet' },
 
-  // Other Notable Figures
-  'אדם': { name: 'Adam', category: 'primordial' },
-  'חוה': { name: 'Eve', category: 'primordial' },
-  'נח': { name: 'Noah', category: 'primordial' },
-  'יוסף': { name: 'Joseph', category: 'patriarch' },
-  'יהושע': { name: 'Joshua', category: 'leader' }
+  // Writings Figures
+  'איוב': { name: 'Job', category: 'figure' },
+  'רות': { name: 'Ruth', category: 'figure' },
+  'בועז': { name: 'Boaz', category: 'figure' },
+  'אסתר': { name: 'Esther', category: 'figure' },
+  'מרדכי': { name: 'Mordecai', category: 'figure' },
+  'המן': { name: 'Haman', category: 'figure' },
+  'עזרא': { name: 'Ezra', category: 'leader' },
+  'נחמיה': { name: 'Nehemiah', category: 'leader' },
+  'דניאל': { name: 'Daniel', category: 'prophet' }
 };
 
 // =============================================================================
@@ -585,22 +674,93 @@ export const BIBLICAL_FIGURES = {
 // =============================================================================
 
 export const PLACES = {
+  // Holy Places
   'ירושלים': { name: 'Jerusalem', type: 'city', significance: 'holy' },
   'ציון': { name: 'Zion', type: 'place', significance: 'holy' },
   'בית המקדש': { name: 'Temple', type: 'building', significance: 'holy' },
   'מקדש': { name: 'Temple', type: 'building', significance: 'holy' },
+  'הר המוריה': { name: 'Mount Moriah', type: 'mountain', significance: 'holy' },
+  'הר סיני': { name: 'Mount Sinai', type: 'mountain', significance: 'holy' },
+  'סיני': { name: 'Sinai', type: 'mountain', significance: 'holy' },
+  'חורב': { name: 'Horeb', type: 'mountain', significance: 'holy' },
 
-  'בבל': { name: 'Babylonia', type: 'region' },
-  'ארץ ישראל': { name: 'Land of Israel', type: 'country' },
-  'מצרים': { name: 'Egypt', type: 'country' },
+  // Genesis Locations
+  'גן עדן': { name: 'Garden of Eden', type: 'place', significance: 'biblical' },
+  'עדן': { name: 'Eden', type: 'place', significance: 'biblical' },
+  'אור כשדים': { name: 'Ur of the Chaldees', type: 'city', significance: 'biblical' },
+  'חרן': { name: 'Haran', type: 'city', significance: 'biblical' },
+  'כנען': { name: 'Canaan', type: 'region', significance: 'biblical' },
+  'ארץ כנען': { name: 'Land of Canaan', type: 'region', significance: 'biblical' },
+  'שכם': { name: 'Shechem', type: 'city', significance: 'biblical' },
+  'בית אל': { name: 'Bethel', type: 'city', significance: 'biblical' },
+  'חברון': { name: 'Hebron', type: 'city', significance: 'biblical' },
+  'ממרא': { name: 'Mamre', type: 'place', significance: 'biblical' },
+  'סדום': { name: 'Sodom', type: 'city', significance: 'biblical' },
+  'עמורה': { name: 'Gomorrah', type: 'city', significance: 'biblical' },
+  'באר שבע': { name: 'Beersheba', type: 'city', significance: 'biblical' },
+  'גרר': { name: 'Gerar', type: 'city', significance: 'biblical' },
+  'פדן ארם': { name: 'Paddan-aram', type: 'region', significance: 'biblical' },
+  'גלעד': { name: 'Gilead', type: 'region', significance: 'biblical' },
+  'גשן': { name: 'Goshen', type: 'region', significance: 'biblical' },
+  'מכפלה': { name: 'Machpelah', type: 'place', significance: 'burial' },
+
+  // Countries
+  'מצרים': { name: 'Egypt', type: 'country', significance: 'biblical' },
+  'ארץ ישראל': { name: 'Land of Israel', type: 'country', significance: 'holy' },
+  'בבל': { name: 'Babylonia', type: 'region', significance: 'historical' },
+  'אשור': { name: 'Assyria', type: 'country', significance: 'historical' },
+  'פרס': { name: 'Persia', type: 'country', significance: 'historical' },
+  'מדי': { name: 'Media', type: 'country', significance: 'historical' },
+  'מואב': { name: 'Moab', type: 'country', significance: 'biblical' },
+  'אדום': { name: 'Edom', type: 'country', significance: 'biblical' },
+  'עמון': { name: 'Ammon', type: 'country', significance: 'biblical' },
+  'פלשת': { name: 'Philistia', type: 'country', significance: 'biblical' },
+  'מדין': { name: 'Midian', type: 'region', significance: 'biblical' },
+
+  // Exodus/Wilderness Locations
+  'ים סוף': { name: 'Red Sea', type: 'water', significance: 'biblical' },
+  'מדבר סיני': { name: 'Wilderness of Sinai', type: 'desert', significance: 'biblical' },
+  'קדש': { name: 'Kadesh', type: 'place', significance: 'biblical' },
+  'קדש ברנע': { name: 'Kadesh Barnea', type: 'place', significance: 'biblical' },
+  'מרה': { name: 'Marah', type: 'place', significance: 'biblical' },
+  'אלים': { name: 'Elim', type: 'place', significance: 'biblical' },
+  'רפידים': { name: 'Rephidim', type: 'place', significance: 'biblical' },
+
+  // Conquest/Settlement Locations
+  'יריחו': { name: 'Jericho', type: 'city', significance: 'biblical' },
+  'עי': { name: 'Ai', type: 'city', significance: 'biblical' },
+  'הר נבו': { name: 'Mount Nebo', type: 'mountain', significance: 'biblical' },
+  'ירדן': { name: 'Jordan', type: 'river', significance: 'biblical' },
+  'הירדן': { name: 'The Jordan', type: 'river', significance: 'biblical' },
+  'בשן': { name: 'Bashan', type: 'region', significance: 'biblical' },
+  'חשבון': { name: 'Heshbon', type: 'city', significance: 'biblical' },
+
+  // Later Biblical Locations
+  'שילה': { name: 'Shiloh', type: 'city', significance: 'holy' },
+  'בית לחם': { name: 'Bethlehem', type: 'city', significance: 'biblical' },
+  'שומרון': { name: 'Samaria', type: 'city', significance: 'biblical' },
+  'הר הכרמל': { name: 'Mount Carmel', type: 'mountain', significance: 'biblical' },
+  'הר תבור': { name: 'Mount Tabor', type: 'mountain', significance: 'biblical' },
+
+  // Rivers and Waters
+  'פרת': { name: 'Euphrates', type: 'river', significance: 'biblical' },
+  'נהר פרת': { name: 'Euphrates River', type: 'river', significance: 'biblical' },
+  'חדקל': { name: 'Tigris', type: 'river', significance: 'biblical' },
+  'נילוס': { name: 'Nile', type: 'river', significance: 'biblical' },
+  'יאור': { name: 'Nile (River)', type: 'river', significance: 'biblical' },
+  'ים המלח': { name: 'Dead Sea', type: 'water', significance: 'biblical' },
+  'ים כנרת': { name: 'Sea of Galilee', type: 'water', significance: 'biblical' },
+  'הים הגדול': { name: 'Mediterranean Sea', type: 'water', significance: 'biblical' },
 
   // Talmudic Academies
   'פומבדיתא': { name: 'Pumbedita', type: 'academy', significance: 'talmudic' },
   'סורא': { name: 'Sura', type: 'academy', significance: 'talmudic' },
   'נהרדעא': { name: 'Nehardea', type: 'academy', significance: 'talmudic' },
   'יבנה': { name: 'Yavneh', type: 'academy', significance: 'mishnaic' },
-  'טבריה': { name: 'Tiberias', type: 'city' },
-  'צפורי': { name: 'Tzippori', type: 'city' }
+  'טבריה': { name: 'Tiberias', type: 'city', significance: 'talmudic' },
+  'צפורי': { name: 'Tzippori', type: 'city', significance: 'talmudic' },
+  'לוד': { name: 'Lod/Lydda', type: 'city', significance: 'talmudic' },
+  'קיסרי': { name: 'Caesarea', type: 'city', significance: 'talmudic' }
 };
 
 // =============================================================================

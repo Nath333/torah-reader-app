@@ -190,11 +190,8 @@ const StudyDashboard = ({
   const todayProgress = getTodayProgress();
 
   const handleEndSession = useCallback(() => {
-    const session = endSession();
-    if (session) {
-      // Could show a summary modal here
-      console.log('Session ended:', session);
-    }
+    endSession();
+    // Session data available if needed for summary modal
   }, [endSession]);
 
   const handleDailySelect = useCallback((item) => {
