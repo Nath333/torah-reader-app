@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunktorah_reader_app=self.webpackChunktorah_reader_app||[]).push([[661],{4661(e,a,r){r.d(a,{createPacketServices:()=>p.$});var p=r(566);r(6472)}}]);
