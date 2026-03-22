@@ -776,6 +776,59 @@ export const getSfornoForVerse = async (book, chapter, verse) => {
 
 export const clearSfornoCache = () => caches.sforno.clear();
 
+/**
+ * Batch fetch ALL Sforno comments for an entire chapter
+ * @param {string} book - Book name
+ * @param {number|string} chapter - Chapter number
+ * @returns {Promise<Map<number, Array>>} Map of verse -> comments
+ */
+export const getSfornoForChapter = async (book, chapter) => {
+  if (!isSfornoAvailable(book)) {
+    return new Map();
+  }
+
+  const cacheKey = `sforno-chapter:${book}:${chapter}`;
+
+  // Check if request is already in progress (deduplication)
+  if (pendingChapterRequests.has(cacheKey)) {
+    log.verbose(`Sforno: Reusing pending chapter request for ${book} ${chapter}`);
+    return pendingChapterRequests.get(cacheKey);
+  }
+
+  // Create the fetch promise
+  const fetchPromise = (async () => {
+    try {
+      log.verbose(`Sforno: Batch loading chapter ${book} ${chapter}`);
+
+      // Fetch entire chapter at once (no verse parameter)
+      const result = await getSforno(book, chapter, null);
+
+      // Organize comments by verse number
+      const verseMap = new Map();
+      if (result?.comments) {
+        for (const comment of result.comments) {
+          const verseNum = comment.verse || 1;
+          if (!verseMap.has(verseNum)) {
+            verseMap.set(verseNum, []);
+          }
+          verseMap.get(verseNum).push(comment);
+        }
+      }
+
+      log.verbose(`Sforno: Loaded ${result?.comments?.length || 0} comments for ${verseMap.size} verses`);
+      return verseMap;
+    } catch (error) {
+      log.error(`Sforno: Failed to batch load chapter ${book} ${chapter}:`, error);
+      return new Map();
+    } finally {
+      pendingChapterRequests.delete(cacheKey);
+    }
+  })();
+
+  pendingChapterRequests.set(cacheKey, fetchPromise);
+  return fetchPromise;
+};
+
 // Radak
 export const isRadakAvailable = (book) =>
   TORAH_BOOKS.includes(book) || NEVIIM_BOOKS.includes(book) || KETUVIM_BOOKS.includes(book);

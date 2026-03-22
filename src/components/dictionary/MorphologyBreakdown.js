@@ -12,6 +12,7 @@ import { computeVerbTranslation, extractAramaicRoot, detectHebrewBinyan } from '
 import { getRootInfo, getRelatedRoots } from '../../data/rootDatabase';
 import { createCard, getCard } from '../../services/srsService';
 import ConjugationTable from './ConjugationTable';
+import EtymologyChain from './EtymologyChain';
 import './MorphologyBreakdown.css';
 
 /**
@@ -464,6 +465,9 @@ const MorphologyBreakdown = ({
 
       {/* PRO SCHOLAR: Related words from same root */}
       <RelatedWordsSection root={extractedRoot} rootInfo={rootInfo} />
+
+      {/* PRO SCHOLAR: Etymology chain visualization */}
+      <EtymologyChain root={extractedRoot} rootInfo={rootInfo} />
     </div>
   );
 };

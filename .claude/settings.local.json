@@ -117,7 +117,8 @@
       "Bash(if exist build rmdir /s /q build)",
       "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npm run build:*)",
       "Bash(gzip:*)",
-      "Bash(git restore:*)"
+      "Bash(git restore:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nRefactor codebase architecture with modular component structure\n\nReorganize components into domain-specific directories \\(ai-tutor, analysis,\ncommentary, core, dictionary, layout, navigation, scholar-mode, settings,\nshared, study, visualization\\). Add new services for AI tutoring, dictionary\nlookup, morphology analysis, and scholarly features. Introduce new contexts\nand hooks for improved state management.\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
     ]
   }
 }
