@@ -1,0 +1,408 @@
+/**
+ * Text Layers CSS
+ * Visual differentiation for different types of Jewish texts
+ * Steinsaltz-inspired color coding system
+ */
+
+/* ============================================================================
+   CSS Variables for Text Layers
+   ============================================================================ */
+:root {
+  /* Mishna/Torah - Gold/Amber tones */
+  --text-mishna-bg: rgba(251, 191, 36, 0.12);
+  --text-mishna-border: #f59e0b;
+  --text-mishna-color: #92400e;
+
+  /* Gemara (Aramaic) - Indigo tones */
+  --text-gemara-bg: rgba(99, 102, 241, 0.06);
+  --text-gemara-border: #6366f1;
+  --text-gemara-color: inherit;
+
+  /* Translation - Blue tones */
+  --text-translation-bg: rgba(59, 130, 246, 0.08);
+  --text-translation-border: #3b82f6;
+  --text-translation-color: #1e40af;
+
+  /* Explanation/Commentary - Gray tones */
+  --text-explanation-bg: rgba(107, 114, 128, 0.08);
+  --text-explanation-border: #9ca3af;
+  --text-explanation-color: #4b5563;
+
+  /* Halacha - Purple tones */
+  --text-halacha-bg: rgba(139, 92, 246, 0.1);
+  --text-halacha-border: #8b5cf6;
+  --text-halacha-color: #5b21b6;
+
+  /* Rashi Script - Warm brown */
+  --text-rashi-bg: rgba(180, 83, 9, 0.06);
+  --text-rashi-border: #b45309;
+  --text-rashi-color: #78350f;
+
+  /* Tosafot - Green tones */
+  --text-tosafot-bg: rgba(16, 185, 129, 0.08);
+  --text-tosafot-border: #10b981;
+  --text-tosafot-color: #065f46;
+}
+
+/* Dark mode overrides */
+[data-theme="dark"],
+.dark-mode {
+  --text-mishna-bg: rgba(251, 191, 36, 0.15);
+  --text-mishna-color: #fcd34d;
+
+  --text-gemara-bg: rgba(99, 102, 241, 0.12);
+  --text-gemara-color: #c7d2fe;
+
+  --text-translation-bg: rgba(59, 130, 246, 0.12);
+  --text-translation-color: #93c5fd;
+
+  --text-explanation-bg: rgba(107, 114, 128, 0.12);
+  --text-explanation-color: #d1d5db;
+
+  --text-halacha-bg: rgba(139, 92, 246, 0.15);
+  --text-halacha-color: #c4b5fd;
+
+  --text-rashi-bg: rgba(180, 83, 9, 0.12);
+  --text-rashi-color: #fcd34d;
+
+  --text-tosafot-bg: rgba(16, 185, 129, 0.12);
+  --text-tosafot-color: #6ee7b7;
+}
+
+/* ============================================================================
+   Base Text Layer Styles
+   ============================================================================ */
+.text-layer {
+  position: relative;
+  padding: 8px 12px;
+  margin: 6px 0;
+  border-radius: 6px;
+  line-height: 1.9;
+  transition: all 0.2s ease;
+}
+
+.text-layer::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 4px 0 0 4px;
+}
+
+/* Hover effect for all layers */
+.text-layer:hover {
+  transform: translateX(-2px);
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================================================
+   Mishna Text Layer
+   ============================================================================ */
+.text-layer--mishna,
+.text-mishna {
+  background: var(--text-mishna-bg);
+  color: var(--text-mishna-color);
+  font-weight: 500;
+  font-family: 'Frank Ruhl Libre', 'David Libre', serif;
+}
+
+.text-layer--mishna::before,
+.text-mishna::before {
+  background: var(--text-mishna-border);
+}
+
+/* Mishna marker */
+.text-layer--mishna .layer-marker,
+.text-mishna .layer-marker {
+  background: var(--text-mishna-border);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.75em;
+  margin-left: 8px;
+}
+
+/* ============================================================================
+   Gemara Text Layer
+   ============================================================================ */
+.text-layer--gemara,
+.text-gemara {
+  background: var(--text-gemara-bg);
+  color: var(--text-gemara-color);
+  font-family: 'Frank Ruhl Libre', 'David Libre', serif;
+}
+
+.text-layer--gemara::before,
+.text-gemara::before {
+  background: var(--text-gemara-border);
+  width: 3px;
+}
+
+/* ============================================================================
+   Translation Text Layer
+   ============================================================================ */
+.text-layer--translation,
+.text-translation {
+  background: var(--text-translation-bg);
+  color: var(--text-translation-color);
+  direction: ltr;
+  text-align: left;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 0.95em;
+}
+
+.text-layer--translation::before,
+.text-translation::before {
+  background: var(--text-translation-border);
+  width: 3px;
+}
+
+/* ============================================================================
+   Explanation Text Layer
+   ============================================================================ */
+.text-layer--explanation,
+.text-explanation {
+  background: var(--text-explanation-bg);
+  color: var(--text-explanation-color);
+  font-style: italic;
+  font-size: 0.92em;
+  border-left: 3px solid var(--text-explanation-border);
+}
+
+.text-layer--explanation::before,
+.text-explanation::before {
+  display: none;
+}
+
+/* ============================================================================
+   Halacha Text Layer
+   ============================================================================ */
+.text-layer--halacha,
+.text-halacha {
+  background: var(--text-halacha-bg);
+  color: var(--text-halacha-color);
+  font-weight: 600;
+}
+
+.text-layer--halacha::before,
+.text-halacha::before {
+  background: var(--text-halacha-border);
+  width: 5px;
+}
+
+/* Halacha emphasis */
+.text-layer--halacha strong,
+.text-halacha strong {
+  color: var(--text-halacha-border);
+}
+
+/* ============================================================================
+   Rashi Script Layer
+   ============================================================================ */
+.text-layer--rashi,
+.text-rashi {
+  background: var(--text-rashi-bg);
+  color: var(--text-rashi-color);
+  font-family: 'Rashi', 'Frank Ruhl Libre', serif;
+  font-size: 0.9em;
+  line-height: 1.7;
+}
+
+.text-layer--rashi::before,
+.text-rashi::before {
+  background: var(--text-rashi-border);
+  width: 3px;
+}
+
+/* ============================================================================
+   Tosafot Layer
+   ============================================================================ */
+.text-layer--tosafot,
+.text-tosafot {
+  background: var(--text-tosafot-bg);
+  color: var(--text-tosafot-color);
+  font-family: 'Frank Ruhl Libre', 'David Libre', serif;
+  font-size: 0.9em;
+}
+
+.text-layer--tosafot::before,
+.text-tosafot::before {
+  background: var(--text-tosafot-border);
+  width: 3px;
+}
+
+/* ============================================================================
+   Inline Annotations within Text Layers
+   ============================================================================ */
+.text-layer .annotated-word {
+  transition: background 0.2s ease;
+}
+
+.text-layer .annotated-word .annotation-trigger:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ============================================================================
+   Layer Labels/Headers
+   ============================================================================ */
+.layer-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.8;
+}
+
+.layer-icon {
+  font-size: 1em;
+}
+
+/* ============================================================================
+   Multi-Layer Container (Tzurat HaDaf style)
+   ============================================================================ */
+.text-layers-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.text-layers-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.text-layers-grid .text-rashi {
+  grid-column: 1;
+}
+
+.text-layers-grid .text-gemara,
+.text-layers-grid .text-mishna {
+  grid-column: 2;
+}
+
+.text-layers-grid .text-tosafot {
+  grid-column: 3;
+}
+
+/* ============================================================================
+   Source Attribution
+   ============================================================================ */
+.text-source {
+  font-size: 0.75em;
+  color: var(--text-muted, #888);
+  margin-top: 4px;
+  text-align: left;
+  direction: ltr;
+}
+
+.text-source::before {
+  content: "—";
+  margin-right: 4px;
+}
+
+/* ============================================================================
+   Verse Numbers / Reference Markers
+   ============================================================================ */
+.verse-marker {
+  display: inline-block;
+  font-size: 0.7em;
+  font-weight: 700;
+  color: var(--accent-color, #6366f1);
+  background: rgba(99, 102, 241, 0.1);
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-left: 4px;
+  vertical-align: super;
+}
+
+.daf-marker {
+  font-size: 0.8em;
+  color: var(--text-secondary, #666);
+  font-weight: 600;
+}
+
+/* ============================================================================
+   Collapsible Layers
+   ============================================================================ */
+.text-layer.collapsed {
+  max-height: 2.5em;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.text-layer.collapsed::after {
+  content: '...';
+  position: absolute;
+  right: 12px;
+  bottom: 4px;
+  background: inherit;
+  padding-left: 8px;
+}
+
+.text-layer.collapsed:hover::after {
+  content: 'הרחב ▼';
+  font-size: 0.8em;
+}
+
+/* ============================================================================
+   Print Styles
+   ============================================================================ */
+@media print {
+  .text-layer {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    border-left-width: 2px !important;
+    box-shadow: none !important;
+  }
+
+  .text-layer::before {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .text-layer:hover {
+    transform: none;
+  }
+}
+
+/* ============================================================================
+   Mobile Responsive
+   ============================================================================ */
+@media (max-width: 768px) {
+  .text-layer {
+    padding: 6px 10px;
+    margin: 4px 0;
+    font-size: 0.95em;
+  }
+
+  .text-layers-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .text-layers-grid .text-rashi,
+  .text-layers-grid .text-gemara,
+  .text-layers-grid .text-mishna,
+  .text-layers-grid .text-tosafot {
+    grid-column: 1;
+  }
+}
+
+/* ============================================================================
+   High Contrast Mode
+   ============================================================================ */
+@media (prefers-contrast: high) {
+  .text-layer {
+    border: 2px solid currentColor;
+  }
+
+  .text-layer::before {
+    width: 6px;
+  }
+}

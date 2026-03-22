@@ -6,8 +6,12 @@
 
 import { createCache } from '../utils/cache';
 import { cleanHtml } from '../utils/sanitize';
+import { fetchWithFallback } from '../utils/http';
 
-const SEFARIA_BASE = 'https://www.sefaria.org/api';
+// Use local proxy in development to avoid CORS issues
+const SEFARIA_BASE = process.env.NODE_ENV === 'development'
+  ? '/sefaria-api'
+  : 'https://www.sefaria.org/api';
 const DICTA_NAKDAN_BASE = 'https://nakdan-4-0.loadbalancer.dicta.org.il';
 
 // Cache for scholarly data (longer TTL for reference data)
@@ -55,8 +59,8 @@ const safeJsonParse = async (response) => {
   try {
     const text = await response.text();
     return JSON.parse(text);
-  } catch (e) {
-    console.warn('JSON parse failed:', e.message);
+  } catch {
+    // Silent fail - invalid JSON is expected for some responses
     return null;
   }
 };
@@ -115,8 +119,8 @@ export async function getScholarlyData(ref) {
 
     scholarlyCache.set(cacheKey, result);
     return result;
-  } catch (error) {
-    console.error('Error fetching scholarly data:', error);
+  } catch {
+    // Silent fail - CORS or network errors expected in dev mode
     return null;
   }
 }
@@ -127,14 +131,11 @@ export async function getScholarlyData(ref) {
  */
 async function fetchRelatedTexts(ref) {
   try {
-    const response = await fetch(`${SEFARIA_BASE}/related/${ref}`, {
-      signal: AbortSignal.timeout(10000)
-    });
-
-    if (!response.ok) return null;
-    return await safeJsonParse(response);
-  } catch (error) {
-    console.warn('Related texts fetch failed:', error.message);
+    return await fetchWithFallback(
+      `${SEFARIA_BASE}/related/${ref}`,
+      { timeout: 10000 }
+    );
+  } catch {
     return null;
   }
 }
@@ -145,13 +146,10 @@ async function fetchRelatedTexts(ref) {
  */
 async function fetchTopicsForRef(ref) {
   try {
-    const response = await fetch(`${SEFARIA_BASE}/ref-topic-links/${ref}`, {
-      signal: AbortSignal.timeout(10000)
-    });
-
-    if (!response.ok) return [];
-
-    const data = await safeJsonParse(response);
+    const data = await fetchWithFallback(
+      `${SEFARIA_BASE}/ref-topic-links/${ref}`,
+      { timeout: 10000 }
+    );
     if (!Array.isArray(data)) return [];
 
     return data.map(item => ({
@@ -160,8 +158,8 @@ async function fetchTopicsForRef(ref) {
       description: cleanHtml(item.description || ''),
       category: item.toTopic || item.category || 'General'
     }));
-  } catch (error) {
-    console.warn('Topics fetch failed:', error.message);
+  } catch {
+    // Silent fail - CORS or timeout expected in dev mode
     return [];
   }
 }
@@ -172,15 +170,12 @@ async function fetchTopicsForRef(ref) {
  */
 async function fetchLinks(ref) {
   try {
-    const response = await fetch(`${SEFARIA_BASE}/links/${ref}`, {
-      signal: AbortSignal.timeout(10000)
-    });
-
-    if (!response.ok) return [];
-    const data = await safeJsonParse(response);
+    const data = await fetchWithFallback(
+      `${SEFARIA_BASE}/links/${ref}`,
+      { timeout: 10000 }
+    );
     return Array.isArray(data) ? data : [];
-  } catch (error) {
-    console.warn('Links fetch failed:', error.message);
+  } catch {
     return [];
   }
 }
@@ -350,13 +345,10 @@ export async function getTopicDetails(slug) {
   if (cached) return cached;
 
   try {
-    const response = await fetch(`${SEFARIA_BASE}/topics/${encodeURIComponent(slug)}`, {
-      signal: AbortSignal.timeout(10000)
-    });
-
-    if (!response.ok) return null;
-
-    const data = await safeJsonParse(response);
+    const data = await fetchWithFallback(
+      `${SEFARIA_BASE}/topics/${encodeURIComponent(slug)}`,
+      { timeout: 10000 }
+    );
     if (!data) return null;
 
     const result = {
@@ -391,13 +383,10 @@ export async function searchTopics(query) {
 
   try {
     // Sefaria uses /api/topic/completion for topic search/autocomplete
-    const response = await fetch(`${SEFARIA_BASE}/topic/completion/${encodeURIComponent(query)}`, {
-      signal: AbortSignal.timeout(10000)
-    });
-
-    if (!response.ok) return [];
-
-    const data = await safeJsonParse(response);
+    const data = await fetchWithFallback(
+      `${SEFARIA_BASE}/topic/completion/${encodeURIComponent(query)}`,
+      { timeout: 10000 }
+    );
 
     // Sefaria returns array of [slug, title, heTitle] arrays
     if (Array.isArray(data)) {
@@ -580,13 +569,10 @@ export async function getTextPreview(ref) {
 
   try {
     const normalizedRef = normalizeRef(ref);
-    const response = await fetch(`${SEFARIA_BASE}/texts/${normalizedRef}?context=0`, {
-      signal: AbortSignal.timeout(10000)
-    });
-
-    if (!response.ok) return null;
-
-    const data = await safeJsonParse(response);
+    const data = await fetchWithFallback(
+      `${SEFARIA_BASE}/texts/${normalizedRef}?context=0`,
+      { timeout: 10000 }
+    );
     if (!data) return null;
 
     return {

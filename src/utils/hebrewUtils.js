@@ -45,6 +45,22 @@ export const stripAllDiacritics = (text) => {
 };
 
 /**
+ * Clean a Hebrew word for dictionary lookup
+ * Removes diacritics AND non-Hebrew letters
+ * @param {string} word - Hebrew word to clean
+ * @returns {string} - Consonants only (Hebrew letters only)
+ */
+export const cleanHebrewWord = (word) => {
+  if (!word || typeof word !== 'string') return '';
+  return word
+    .replace(/[\u0591-\u05C7]/g, '') // Remove cantillation and vowels
+    .replace(/[^\u05D0-\u05EA]/g, ''); // Keep only Hebrew letters
+};
+
+// Alias used by some services
+export const stripNiqqud = stripVowels;
+
+/**
  * Process Hebrew text based on display options
  * @param {string} text - Hebrew text
  * @param {Object} options - Display options
@@ -103,14 +119,122 @@ export const getDisplayModeLabel = (showVowels, showCantillation) => {
   return 'כתיב חסר'; // Consonants only
 };
 
+// =============================================================================
+// Verse Statistics Functions
+// =============================================================================
+
+/**
+ * Count words in Hebrew text
+ * @param {string} text - Hebrew text
+ * @returns {number} - Word count
+ */
+export const countWords = (text) => {
+  if (!text || typeof text !== 'string') return 0;
+  // Remove HTML tags and split by whitespace
+  const cleanText = text.replace(/<[^>]*>/g, ' ').trim();
+  if (!cleanText) return 0;
+  return cleanText.split(/\s+/).filter(w => w.length > 0).length;
+};
+
+/**
+ * Count Hebrew letters (consonants only)
+ * @param {string} text - Hebrew text
+ * @returns {number} - Letter count (consonants)
+ */
+export const countLetters = (text) => {
+  if (!text || typeof text !== 'string') return 0;
+  // Keep only Hebrew consonants (U+05D0 to U+05EA)
+  const consonants = text.replace(/[^\u05D0-\u05EA]/g, '');
+  return consonants.length;
+};
+
+/**
+ * Count unique words in text
+ * @param {string} text - Hebrew text
+ * @returns {number} - Unique word count
+ */
+export const countUniqueWords = (text) => {
+  if (!text || typeof text !== 'string') return 0;
+  const cleanText = text.replace(/<[^>]*>/g, ' ').trim();
+  if (!cleanText) return 0;
+  const words = cleanText.split(/\s+/).filter(w => w.length > 0);
+  // Clean each word and get unique consonant forms
+  const uniqueWords = new Set(words.map(w => cleanHebrewWord(w)).filter(w => w.length > 0));
+  return uniqueWords.size;
+};
+
+/**
+ * Get comprehensive verse statistics
+ * @param {string} text - Hebrew verse text
+ * @returns {Object} - Statistics object
+ */
+export const getVerseStats = (text) => {
+  if (!text || typeof text !== 'string') {
+    return { words: 0, letters: 0, uniqueWords: 0, hasVowels: false, hasCantillation: false };
+  }
+
+  return {
+    words: countWords(text),
+    letters: countLetters(text),
+    uniqueWords: countUniqueWords(text),
+    hasVowels: hasVowels(text),
+    hasCantillation: hasCantillation(text)
+  };
+};
+
+/**
+ * Get chapter statistics (aggregate of verses)
+ * @param {Array} verses - Array of verse objects with hebrew property
+ * @returns {Object} - Chapter statistics
+ */
+export const getChapterStats = (verses) => {
+  if (!verses || !Array.isArray(verses)) {
+    return { totalWords: 0, totalLetters: 0, verseCount: 0, avgWordsPerVerse: 0 };
+  }
+
+  let totalWords = 0;
+  let totalLetters = 0;
+  const allWords = new Set();
+
+  verses.forEach(verse => {
+    const text = verse?.hebrew || verse?.he || '';
+    totalWords += countWords(text);
+    totalLetters += countLetters(text);
+
+    // Collect unique words
+    const cleanText = text.replace(/<[^>]*>/g, ' ').trim();
+    cleanText.split(/\s+/).forEach(w => {
+      const cleaned = cleanHebrewWord(w);
+      if (cleaned.length > 0) allWords.add(cleaned);
+    });
+  });
+
+  return {
+    verseCount: verses.length,
+    totalWords,
+    totalLetters,
+    uniqueWords: allWords.size,
+    avgWordsPerVerse: verses.length > 0 ? Math.round(totalWords / verses.length * 10) / 10 : 0,
+    avgLettersPerVerse: verses.length > 0 ? Math.round(totalLetters / verses.length * 10) / 10 : 0
+  };
+};
+
 const hebrewUtils = {
   stripCantillation,
   stripVowels,
   stripAllDiacritics,
+  stripNiqqud,
+  cleanHebrewWord,
   processHebrewText,
   hasVowels,
   hasCantillation,
-  getDisplayModeLabel
+  getDisplayModeLabel,
+  // Verse statistics
+  countWords,
+  countLetters,
+  countUniqueWords,
+  getVerseStats,
+  getChapterStats
 };
 
 export default hebrewUtils;

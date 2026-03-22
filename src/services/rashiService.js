@@ -8,6 +8,7 @@ export {
   getRashiOnTanach,
   getRashi,
   getRashiForVerse,
+  getRashiForChapter,
   clearRashiCache,
   rashiService as default
 } from './commentaryServiceFactory';

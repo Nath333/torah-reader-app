@@ -1,0 +1,254 @@
+/* =============================================================================
+   Study Mode Selector - Yeshiva Learning Modes
+   ============================================================================= */
+
+.study-mode-selector {
+  background: var(--bg-secondary, #f8f9fa);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.mode-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.mode-header h3 {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary, #666);
+  font-weight: 600;
+}
+
+.session-active {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  background: var(--success-light, #d4edda);
+  color: var(--success, #28a745);
+  border-radius: 10px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Mode Buttons */
+.mode-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.mode-button {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.75rem 0.5rem;
+  border: 2px solid var(--border-color, #ddd);
+  border-radius: 10px;
+  background: var(--bg-primary, white);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-button:hover {
+  border-color: var(--primary, #4a90d9);
+  transform: translateY(-2px);
+}
+
+.mode-button.active {
+  border-color: var(--primary, #4a90d9);
+  background: var(--primary-light, #e8f4fd);
+}
+
+.mode-button .mode-icon {
+  font-size: 1.5rem;
+}
+
+.mode-button .mode-name-hebrew {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary, #333);
+}
+
+.mode-button .mode-name-english {
+  font-size: 0.7rem;
+  color: var(--text-secondary, #666);
+}
+
+/* Mode Description */
+.mode-description {
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color, #eee);
+}
+
+.mode-description p {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #666);
+}
+
+.mode-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.feature-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  background: var(--bg-tertiary, #f0f0f0);
+}
+
+.feature-indicator.enabled {
+  color: var(--success, #28a745);
+}
+
+.feature-indicator.disabled {
+  color: var(--text-muted, #999);
+  opacity: 0.7;
+}
+
+.feature-indicator.highlight {
+  background: var(--warning-light, #fff3cd);
+  color: var(--warning-dark, #856404);
+}
+
+.feature-dot {
+  font-size: 0.6rem;
+}
+
+/* =============================================================================
+   Compact Mode (for header/toolbar)
+   ============================================================================= */
+
+.study-mode-compact {
+  position: relative;
+}
+
+.mode-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 20px;
+  background: var(--bg-primary, white);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.mode-chip:hover {
+  border-color: var(--primary, #4a90d9);
+  background: var(--primary-light, #e8f4fd);
+}
+
+.mode-chip.mode-iyun {
+  border-color: #6c5ce7;
+}
+
+.mode-chip.mode-bekiut {
+  border-color: #00b894;
+}
+
+.mode-chip.mode-chazara {
+  border-color: #fdcb6e;
+}
+
+.mode-chip .mode-icon {
+  font-size: 1rem;
+}
+
+.mode-chip .mode-name {
+  font-weight: 600;
+}
+
+/* Dropdown */
+.mode-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 200px;
+  background: var(--bg-primary, white);
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.mode-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.mode-option:hover {
+  background: var(--bg-secondary, #f8f9fa);
+}
+
+.mode-option.active {
+  background: var(--primary-light, #e8f4fd);
+}
+
+.mode-option .mode-icon {
+  font-size: 1.25rem;
+}
+
+.mode-option .mode-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.mode-option .mode-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary, #333);
+}
+
+.mode-option .mode-english {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #666);
+}
+
+/* Dark mode */
+[data-theme="dark"] .study-mode-selector {
+  background: var(--bg-secondary, #2d2d2d);
+}
+
+[data-theme="dark"] .mode-button {
+  background: var(--bg-tertiary, #3d3d3d);
+  border-color: var(--border-color, #444);
+}
+
+[data-theme="dark"] .mode-button.active {
+  background: var(--primary-dark, #2d5a87);
+}
+
+[data-theme="dark"] .mode-dropdown {
+  background: var(--bg-secondary, #2d2d2d);
+  border-color: var(--border-color, #444);
+}
+
+[data-theme="dark"] .mode-chip {
+  background: var(--bg-secondary, #2d2d2d);
+}

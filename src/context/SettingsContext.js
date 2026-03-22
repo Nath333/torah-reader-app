@@ -1,37 +1,88 @@
 import React, { createContext, useContext, useMemo, useCallback } from 'react';
 import useLocalStorage from '../hooks/useLocalStorage';
+import { useToggleSetting } from '../hooks/useToggleSetting';
 import { TRADITIONS } from '../services/pronunciationService';
+import { AI_PROVIDERS } from '../services/providers/aiProviderFactory';
 
 const SettingsContext = createContext(null);
 
+// Dictionary source priority presets
+export const DICT_PRIORITY_PRESETS = {
+  ACADEMIC: ['BDB', 'HALOT', 'Strong\'s', 'Klein', 'Jastrow'],
+  TALMUDIC: ['Jastrow', 'Steinsaltz', 'BDB', 'Strong\'s', 'Klein'],
+  PRACTICAL: ['Strong\'s', 'BDB', 'Jastrow', 'Klein', 'HALOT'],
+  ARAMAIC: ['Jastrow', 'CAL', 'BDB Aramaic', 'Steinsaltz', 'BDB']
+};
+
 export function SettingsProvider({ children, darkMode, toggleDarkMode }) {
-  // Display settings
-  const [showFrench, setShowFrench] = useLocalStorage('showFrenchTranslation', false);
-  const [showOnkelos, setShowOnkelos] = useLocalStorage('showOnkelosTranslation', true);
-  const [showRashi, setShowRashi] = useLocalStorage('showRashiCommentary', false);
-  const [showTosafot, setShowTosafot] = useLocalStorage('showTosafotCommentary', false);
-  const [showMaharsha, setShowMaharsha] = useLocalStorage('showMaharshaCommentary', false);
-  const [showRamban, setShowRamban] = useLocalStorage('showRambanCommentary', false);
+  // ============================================================================
+  // Display settings - using useToggleSetting for cleaner code
+  // ============================================================================
+  const [showFrench, toggleFrench, setShowFrench] = useToggleSetting('showFrenchTranslation', false);
+  const [showOnkelos, toggleOnkelos] = useToggleSetting('showOnkelosTranslation', true);
+  const [showRashi, toggleRashi, setShowRashi] = useToggleSetting('showRashiCommentary', false);
+
+  // Hebrew text display options (vowels/niqqud and cantillation/taamim)
+  const [showVowels, toggleVowels] = useToggleSetting('showHebrewVowels', true);
+  const [showCantillation, toggleCantillation] = useToggleSetting('showHebrewCantillation', true);
+  const [showTosafot, toggleTosafot, setShowTosafot] = useToggleSetting('showTosafotCommentary', false);
+  const [showMaharsha, toggleMaharsha, setShowMaharsha] = useToggleSetting('showMaharshaCommentary', false);
+  const [showSoncino, toggleSoncino] = useToggleSetting('showSoncinoTranslation', false);
+  const [showRamban, toggleRamban, setShowRamban] = useToggleSetting('showRambanCommentary', false);
+  const [showIbnEzra, toggleIbnEzra, setShowIbnEzra] = useToggleSetting('showIbnEzraCommentary', false);
+  const [showSforno, toggleSforno, setShowSforno] = useToggleSetting('showSfornoCommentary', false);
+
+  // Non-boolean settings (need useLocalStorage directly)
   const [tradition, setTradition] = useLocalStorage('pronunciationTradition', TRADITIONS.SEPHARDIC);
 
+  // ============================================================================
   // UI settings
-  const [focusMode, setFocusMode] = useLocalStorage('focusMode', false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useLocalStorage('sidebarCollapsed', false);
+  // ============================================================================
+  const [focusMode, toggleFocusMode] = useToggleSetting('focusMode', false);
+  const [sidebarCollapsed, toggleSidebar] = useToggleSetting('sidebarCollapsed', false);
+  const [showTraditionalView, toggleTraditionalView] = useToggleSetting('showTraditionalView', false);
+
+  // Non-boolean UI settings
   const [commentaryPosition, setCommentaryPosition] = useLocalStorage('commentaryPosition', 'split');
   const [fontSize, setFontSize] = useLocalStorage('fontSize', 'medium');
-  const [showTraditionalView, setShowTraditionalView] = useLocalStorage('showTraditionalView', false);
 
-  // Toggle functions - inline to satisfy ESLint
-  const toggleFrench = useCallback(() => setShowFrench(prev => !prev), [setShowFrench]);
-  const toggleOnkelos = useCallback(() => setShowOnkelos(prev => !prev), [setShowOnkelos]);
-  const toggleRashi = useCallback(() => setShowRashi(prev => !prev), [setShowRashi]);
-  const toggleTosafot = useCallback(() => setShowTosafot(prev => !prev), [setShowTosafot]);
-  const toggleMaharsha = useCallback(() => setShowMaharsha(prev => !prev), [setShowMaharsha]);
-  const toggleRamban = useCallback(() => setShowRamban(prev => !prev), [setShowRamban]);
-  const toggleFocusMode = useCallback(() => setFocusMode(prev => !prev), [setFocusMode]);
-  const toggleSidebar = useCallback(() => setSidebarCollapsed(prev => !prev), [setSidebarCollapsed]);
-  const toggleTraditionalView = useCallback(() => setShowTraditionalView(prev => !prev), [setShowTraditionalView]);
+  // ============================================================================
+  // AI Provider settings
+  // ============================================================================
+  const [showAiSettings, toggleAiSettings, setShowAiSettings] = useToggleSetting('showAiSettings', false);
 
+  // Non-boolean AI settings
+  const [aiProvider, setAiProvider] = useLocalStorage('ai_provider', AI_PROVIDERS.GROQ);
+  const [ollamaModel, setOllamaModel] = useLocalStorage('ollama_model', 'llama3.1:8b');
+
+  // ============================================================================
+  // Scholarly/Dictionary settings
+  // ============================================================================
+  const [showMorphology, , setShowMorphology] = useToggleSetting('showMorphology', true);
+  const [showStrongsNumber, , setShowStrongsNumber] = useToggleSetting('showStrongsNumber', true);
+  const [showEtymology, , setShowEtymology] = useToggleSetting('showEtymology', false);
+  const [showSourceBadges, , setShowSourceBadges] = useToggleSetting('showSourceBadges', true);
+  const [showInlineGlosses, toggleInlineGlosses, setShowInlineGlosses] = useToggleSetting('showInlineGlosses', false);
+
+  // Non-boolean scholarly settings
+  const [dictionaryPriority, setDictionaryPriority] = useLocalStorage('dictionaryPriority', 'ACADEMIC');
+
+  // ============================================================================
+  // Batch toggle for commentaries (convenience function)
+  // ============================================================================
+  const toggleAllCommentaries = useCallback((show) => {
+    // Set all commentaries to the desired state
+    setShowRashi(show);
+    setShowTosafot(show);
+    setShowMaharsha(show);
+    setShowRamban(show);
+    setShowIbnEzra(show);
+    setShowSforno(show);
+  }, [setShowRashi, setShowTosafot, setShowMaharsha, setShowRamban, setShowIbnEzra, setShowSforno]);
+
+  // ============================================================================
+  // Context value - memoized to prevent unnecessary re-renders
+  // ============================================================================
   const value = useMemo(() => ({
     // Dark mode (from props)
     darkMode,
@@ -43,8 +94,17 @@ export function SettingsProvider({ children, darkMode, toggleDarkMode }) {
     showRashi,
     showTosafot,
     showMaharsha,
+    showSoncino,
     showRamban,
+    showIbnEzra,
+    showSforno,
     tradition,
+
+    // Hebrew text display
+    showVowels,
+    showCantillation,
+    toggleVowels,
+    toggleCantillation,
 
     // UI settings
     focusMode,
@@ -65,17 +125,50 @@ export function SettingsProvider({ children, darkMode, toggleDarkMode }) {
     toggleRashi,
     toggleTosafot,
     toggleMaharsha,
+    toggleSoncino,
     toggleRamban,
+    toggleIbnEzra,
+    toggleSforno,
     toggleFocusMode,
     toggleSidebar,
-    toggleTraditionalView
+    toggleTraditionalView,
+    toggleAllCommentaries,
+
+    // AI Provider settings
+    aiProvider,
+    setAiProvider,
+    ollamaModel,
+    setOllamaModel,
+    showAiSettings,
+    setShowAiSettings,
+    toggleAiSettings,
+
+    // Scholarly/Dictionary settings
+    dictionaryPriority,
+    setDictionaryPriority,
+    showMorphology,
+    setShowMorphology,
+    showStrongsNumber,
+    setShowStrongsNumber,
+    showEtymology,
+    setShowEtymology,
+    showSourceBadges,
+    setShowSourceBadges,
+    showInlineGlosses,
+    setShowInlineGlosses,
+    toggleInlineGlosses
   }), [
     darkMode, toggleDarkMode,
-    showFrench, showOnkelos, showRashi, showTosafot, showMaharsha, showRamban, tradition,
+    showFrench, showOnkelos, showRashi, showTosafot, showMaharsha, showSoncino, showRamban, showIbnEzra, showSforno, tradition,
+    showVowels, showCantillation, toggleVowels, toggleCantillation,
     focusMode, sidebarCollapsed, commentaryPosition, fontSize, showTraditionalView,
     setShowFrench, setTradition, setCommentaryPosition, setFontSize,
-    toggleFrench, toggleOnkelos, toggleRashi, toggleTosafot, toggleMaharsha, toggleRamban,
-    toggleFocusMode, toggleSidebar, toggleTraditionalView
+    toggleFrench, toggleOnkelos, toggleRashi, toggleTosafot, toggleMaharsha, toggleSoncino, toggleRamban, toggleIbnEzra, toggleSforno,
+    toggleFocusMode, toggleSidebar, toggleTraditionalView, toggleAllCommentaries,
+    aiProvider, setAiProvider, ollamaModel, setOllamaModel, showAiSettings, setShowAiSettings, toggleAiSettings,
+    dictionaryPriority, setDictionaryPriority, showMorphology, setShowMorphology,
+    showStrongsNumber, setShowStrongsNumber, showEtymology, setShowEtymology, showSourceBadges, setShowSourceBadges,
+    showInlineGlosses, setShowInlineGlosses, toggleInlineGlosses
   ]);
 
   return (

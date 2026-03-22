@@ -1,0 +1,764 @@
+/* =============================================================================
+   Unified Card System - Professional Card Styles
+   Consolidates card patterns across the application
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   Base Card Styles
+   ----------------------------------------------------------------------------- */
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-border-radius);
+  box-shadow: var(--card-shadow), var(--card-inner-glow);
+  transition: var(--card-transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.card:hover {
+  border-color: var(--card-border-hover);
+  box-shadow: var(--card-shadow-hover), var(--card-inner-glow);
+  transform: translateY(-2px);
+}
+
+/* Card variants */
+.card--elevated {
+  box-shadow: var(--card-shadow-elevated), var(--card-inner-glow);
+}
+
+.card--flat {
+  box-shadow: none;
+  border-color: var(--border);
+}
+
+.card--glass {
+  background: var(--card-bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.card--popup {
+  box-shadow: var(--card-shadow-popup), var(--card-inner-glow);
+  z-index: var(--z-popover, 600);
+}
+
+.card--interactive {
+  cursor: pointer;
+}
+
+.card--interactive:active {
+  transform: translateY(0) scale(0.99);
+  transition-duration: 80ms;
+}
+
+/* Card sizes */
+.card--sm {
+  border-radius: var(--card-border-radius-sm);
+  padding: var(--card-padding-sm);
+}
+
+.card--lg {
+  border-radius: var(--card-border-radius-lg);
+  padding: var(--card-padding-lg);
+}
+
+/* -----------------------------------------------------------------------------
+   Card Header
+   ----------------------------------------------------------------------------- */
+
+.card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--card-padding-sm) var(--card-padding);
+  background: var(--card-header-bg);
+  border-bottom: 1px solid var(--card-divider);
+  margin: calc(var(--card-padding) * -1);
+  margin-bottom: var(--card-padding);
+  border-radius: var(--card-border-radius) var(--card-border-radius) 0 0;
+}
+
+.card__title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* -----------------------------------------------------------------------------
+   Card Body
+   ----------------------------------------------------------------------------- */
+
+.card__body {
+  padding: var(--card-padding);
+}
+
+.card__body--compact {
+  padding: var(--card-padding-sm);
+}
+
+/* -----------------------------------------------------------------------------
+   Card Footer
+   ----------------------------------------------------------------------------- */
+
+.card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--card-padding-sm) var(--card-padding);
+  background: var(--card-footer-bg);
+  border-top: 1px solid var(--card-divider);
+  margin: var(--card-padding) calc(var(--card-padding) * -1) calc(var(--card-padding) * -1);
+  border-radius: 0 0 var(--card-border-radius) var(--card-border-radius);
+}
+
+/* -----------------------------------------------------------------------------
+   Verse Card - For displaying verse content
+   ----------------------------------------------------------------------------- */
+
+.verse-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-border-radius);
+  padding: var(--card-padding);
+  box-shadow: var(--card-shadow), var(--card-inner-glow);
+  transition: var(--card-transition);
+  position: relative;
+}
+
+.verse-card::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: var(--card-padding);
+  bottom: var(--card-padding);
+  width: 3px;
+  background: var(--gradient-primary);
+  border-radius: 0 2px 2px 0;
+  opacity: 0;
+  transform: scaleY(0.6);
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+
+.verse-card:hover {
+  border-color: var(--primary-light);
+  box-shadow: var(--card-shadow-hover), var(--card-inner-glow);
+  transform: translateY(-2px);
+}
+
+.verse-card:hover::after {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+.verse-card__number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 8px;
+  margin-left: 12px;
+}
+
+.verse-card__text {
+  font-family: var(--font-hebrew);
+  font-size: var(--text-hebrew-lg);
+  line-height: var(--leading-hebrew);
+  color: var(--text-primary);
+  direction: rtl;
+}
+
+.verse-card__translation {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--card-divider);
+}
+
+/* -----------------------------------------------------------------------------
+   Word Lookup Card - For dictionary lookups and word definitions
+   ----------------------------------------------------------------------------- */
+
+.word-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-border-radius);
+  box-shadow: var(--card-shadow-popup), var(--card-inner-glow);
+  width: var(--word-card-width);
+  max-width: var(--word-card-max-width);
+  overflow: hidden;
+  animation: wordCardEnter 220ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes wordCardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.word-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--word-card-header-bg);
+  border-bottom: 1px solid var(--card-divider);
+}
+
+.word-card__word {
+  font-family: var(--font-ktav-merouba);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  direction: rtl;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+}
+
+.word-card__word--rashi {
+  font-family: var(--font-rashi);
+}
+
+.word-card__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text-muted);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 150ms ease;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.word-card__close:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--text-primary);
+  transform: scale(1.1);
+}
+
+/* Word card stats bar */
+.word-card__stats {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 16px;
+  background: var(--card-bg-subtle);
+  border-bottom: 1px solid var(--card-divider);
+}
+
+.word-card__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.word-card__badge--lang {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.word-card__badge--lang.hebrew {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.1));
+  color: #4f46e5;
+}
+
+.word-card__badge--lang.aramaic {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1));
+  color: #059669;
+}
+
+.word-card__badge--root {
+  background: rgba(124, 58, 237, 0.1);
+  color: #7c3aed;
+  direction: rtl;
+}
+
+.word-card__badge--pos {
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+}
+
+.word-card__badge--freq {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+}
+
+.word-card__badge--strong {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.word-card__badge--strong:hover {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+/* Word card body */
+.word-card__body {
+  padding: 14px 16px;
+}
+
+.word-card__sources {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.word-card__source {
+  padding: 10px 12px;
+  background: var(--card-bg-subtle);
+  border-radius: var(--card-border-radius-sm);
+  border: 1px solid transparent;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+
+.word-card__source:hover {
+  border-color: var(--card-border-hover);
+  background: var(--card-bg);
+}
+
+.word-card__source-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.word-card__source-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Source-specific colors */
+.word-card__source-badge[data-source="BDB"] {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+}
+
+.word-card__source-badge[data-source="Jastrow"] {
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  color: white;
+}
+
+.word-card__source-badge[data-source="Strong's"] {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.word-card__source-badge[data-source="HALOT"] {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+}
+
+.word-card__source-badge[data-source="Klein"] {
+  background: linear-gradient(135deg, #ec4899, #be185d);
+  color: white;
+}
+
+.word-card__source-badge[data-source="Sefaria"] {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: white;
+}
+
+.word-card__source-text {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.word-card__source-french {
+  font-size: 0.8rem;
+  color: var(--primary);
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--card-divider);
+}
+
+/* Word card footer */
+.word-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: var(--card-footer-bg);
+  border-top: 1px solid var(--card-divider);
+}
+
+.word-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.word-card__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 150ms ease;
+  font-size: 0.85rem;
+}
+
+.word-card__action:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+  transform: translateY(-1px);
+}
+
+.word-card__action--save.saved {
+  background: var(--success);
+  border-color: var(--success);
+  color: white;
+}
+
+/* -----------------------------------------------------------------------------
+   Commentary Card - For Rashi, Tosafot, etc.
+   ----------------------------------------------------------------------------- */
+
+.commentary-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-border-radius);
+  padding: 0;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+}
+
+.commentary-card__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--card-header-bg);
+  border-bottom: 1px solid var(--card-divider);
+}
+
+.commentary-card__icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-light);
+  color: var(--primary);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.commentary-card__title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.commentary-card__subtitle {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.commentary-card__body {
+  padding: 14px;
+}
+
+.commentary-card__text {
+  font-family: var(--font-rashi);
+  font-size: 1rem;
+  line-height: 1.9;
+  color: var(--text-primary);
+  direction: rtl;
+}
+
+/* Commentary card variants */
+.commentary-card--rashi .commentary-card__icon {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(139, 92, 246, 0.1));
+  color: #7c3aed;
+}
+
+.commentary-card--tosafot .commentary-card__icon {
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.15), rgba(16, 185, 129, 0.1));
+  color: #059669;
+}
+
+.commentary-card--ramban .commentary-card__icon {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.1));
+  color: #3b82f6;
+}
+
+/* -----------------------------------------------------------------------------
+   Info Card - For stats, tips, and information
+   ----------------------------------------------------------------------------- */
+
+.info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: var(--card-padding);
+  background: var(--card-bg-subtle);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-border-radius);
+}
+
+.info-card__icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-light);
+  color: var(--primary);
+  border-radius: 10px;
+  font-size: 1.2rem;
+}
+
+.info-card__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.info-card__title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.info-card__text {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Info card variants */
+.info-card--success .info-card__icon {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+}
+
+.info-card--warning .info-card__icon {
+  background: rgba(245, 158, 11, 0.12);
+  color: #d97706;
+}
+
+.info-card--error .info-card__icon {
+  background: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+}
+
+/* -----------------------------------------------------------------------------
+   Stats Card - For metrics and statistics display
+   ----------------------------------------------------------------------------- */
+
+.stats-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-border-radius);
+  padding: var(--card-padding);
+  box-shadow: var(--card-shadow);
+  text-align: center;
+}
+
+.stats-card__value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.stats-card__label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stats-card__trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 20px;
+}
+
+.stats-card__trend--up {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+}
+
+.stats-card__trend--down {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+}
+
+/* -----------------------------------------------------------------------------
+   List Item Card - For bookmarks, vocabulary, history items
+   ----------------------------------------------------------------------------- */
+
+.list-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: var(--card-padding-sm) var(--card-padding);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-border-radius-sm);
+  cursor: pointer;
+  transition: var(--card-transition);
+}
+
+.list-card:hover {
+  border-color: var(--card-border-hover);
+  box-shadow: var(--card-shadow-hover);
+  transform: translateY(-1px);
+}
+
+.list-card__icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-light);
+  color: var(--primary);
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.list-card__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.list-card__title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.list-card__subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.list-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+
+.list-card:hover .list-card__actions {
+  opacity: 1;
+}
+
+/* -----------------------------------------------------------------------------
+   Animations
+   ----------------------------------------------------------------------------- */
+
+@keyframes cardPulse {
+  0%, 100% {
+    box-shadow: var(--card-shadow);
+  }
+  50% {
+    box-shadow: var(--card-shadow-hover);
+  }
+}
+
+.card--loading {
+  animation: cardPulse 1.5s ease-in-out infinite;
+}
+
+/* Stagger animation for card lists */
+.card-list > .card,
+.card-list > .verse-card,
+.card-list > .list-card {
+  animation: cardListEnter 300ms ease backwards;
+}
+
+.card-list > *:nth-child(1) { animation-delay: 0ms; }
+.card-list > *:nth-child(2) { animation-delay: 50ms; }
+.card-list > *:nth-child(3) { animation-delay: 100ms; }
+.card-list > *:nth-child(4) { animation-delay: 150ms; }
+.card-list > *:nth-child(5) { animation-delay: 200ms; }
+
+@keyframes cardListEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,689 @@
+/* CantillationAnalysis.css - Taamei HaMikra visualization */
+
+.cantillation-analysis {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.cantillation-analysis.empty {
+  padding: 40px;
+  text-align: center;
+  color: #6b7280;
+}
+
+/* Header */
+.cant-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  color: white;
+}
+
+.cant-header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cant-header-title h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.cant-icon {
+  font-size: 1.3rem;
+}
+
+.cant-ref {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+}
+
+.cant-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.cant-tradition-toggle,
+.cant-view-toggle {
+  display: flex;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.tradition-btn,
+.view-btn {
+  padding: 4px 10px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-btn {
+  padding: 4px 8px;
+  font-size: 0.9rem;
+}
+
+.tradition-btn:hover,
+.view-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+
+.tradition-btn.active,
+.view-btn.active {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+  font-weight: 600;
+}
+
+/* Statistics Bar */
+.cant-stats {
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.cant-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.stat-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #7c3aed;
+}
+
+.stat-label {
+  font-size: 0.65rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Main Content */
+.cant-content {
+  padding: 16px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Hierarchy View */
+.cant-hierarchy-view {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hierarchy-verse {
+  padding: 12px;
+  background: #faf5ff;
+  border-radius: 8px;
+  border: 1px solid #ddd6fe;
+}
+
+.verse-hebrew {
+  font-family: 'Frank Ruhl Libre', 'SBL Hebrew', serif;
+  font-size: 1.2rem;
+  line-height: 2;
+  color: #1f2937;
+}
+
+.hierarchy-structure {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.hierarchy-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.hierarchy-tree {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hierarchy-level {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.level-bar {
+  height: 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.level-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--level-color);
+  min-width: 70px;
+}
+
+.level-marks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.level-mark {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.level-mark:hover {
+  background: #f3f4f6;
+  border-color: var(--level-color, #6b7280);
+}
+
+/* Primary Division */
+.hierarchy-division {
+  padding: 12px;
+  background: #fef3c7;
+  border-radius: 8px;
+  border: 1px solid #fcd34d;
+}
+
+.division-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #92400e;
+  margin-bottom: 10px;
+}
+
+.division-parts {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.division-half {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.half-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.half-count {
+  font-size: 0.65rem;
+  color: #6b7280;
+}
+
+.division-marker {
+  width: 40px;
+  height: 40px;
+  background: white;
+  border: 2px solid #f59e0b;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.marker-symbol {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 1.5rem;
+  color: #f59e0b;
+}
+
+/* Clause View */
+.cant-clause-view {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.clause-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border-left: 3px solid #7c3aed;
+}
+
+.clause-number {
+  width: 28px;
+  height: 28px;
+  background: #7c3aed;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.clause-content {
+  flex: 1;
+}
+
+.clause-text {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #1f2937;
+  margin-bottom: 6px;
+}
+
+.clause-pause {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pause-mark {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  background: #ddd6fe;
+  color: #7c3aed;
+  border-radius: 4px;
+}
+
+.pause-desc {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* All Marks View */
+.cant-marks-view {
+  padding: 8px 0;
+}
+
+.marks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.mark-card {
+  padding: 12px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  position: relative;
+}
+
+.mark-card:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.mark-card.active {
+  border-color: var(--mark-color, #7c3aed);
+  box-shadow: 0 0 0 2px var(--mark-color, #7c3aed);
+}
+
+.mark-card.disjunctive {
+  border-left: 3px solid #dc2626;
+}
+
+.mark-card.conjunctive {
+  border-left: 3px solid #3b82f6;
+}
+
+.mark-symbol {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 2rem;
+  color: var(--mark-color, #1f2937);
+  margin-bottom: 6px;
+}
+
+.mark-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 2px;
+}
+
+.mark-hebrew {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.mark-word {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 0.85rem;
+  color: #1f2937;
+  padding: 2px 6px;
+  background: #f3f4f6;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.mark-type-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 0.55rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+/* Mark Detail Panel */
+.cant-mark-detail {
+  margin-top: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+  border-radius: 10px;
+  border: 1px solid #ddd6fe;
+  position: relative;
+}
+
+.detail-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: #e5e7eb;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.detail-close:hover {
+  background: #d1d5db;
+  color: #374151;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #ddd6fe;
+}
+
+.detail-symbol {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 2.5rem;
+  color: #7c3aed;
+}
+
+.detail-names {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.detail-hebrew {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 1rem;
+  color: #6b7280;
+}
+
+.detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.detail-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  min-width: 100px;
+  flex-shrink: 0;
+}
+
+.detail-value {
+  font-size: 0.8rem;
+  color: #374151;
+}
+
+.detail-value.type-disjunctive {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.detail-value.type-conjunctive {
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+.detail-value.hebrew {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 1rem;
+}
+
+.rare-notice {
+  background: #fef2f2;
+  padding: 8px;
+  border-radius: 6px;
+  margin-top: 8px;
+}
+
+.rare-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: white;
+  background: #dc2626;
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-right: 8px;
+}
+
+.rare-count {
+  font-size: 0.75rem;
+  color: #dc2626;
+}
+
+/* Legend */
+.cant-legend {
+  padding: 10px 16px;
+  background: #f8fafc;
+  border-top: 1px solid #e5e7eb;
+}
+
+.legend-title {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.legend-items {
+  display: flex;
+  gap: 16px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legend-dot.disjunctive {
+  background: #dc2626;
+}
+
+.legend-dot.conjunctive {
+  background: #3b82f6;
+}
+
+.legend-label {
+  font-size: 0.7rem;
+  color: #6b7280;
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .cantillation-analysis {
+    background: #1f2937;
+    border-color: #374151;
+  }
+
+  .cant-stats {
+    background: #111827;
+    border-bottom-color: #374151;
+  }
+
+  .stat-label {
+    color: #9ca3af;
+  }
+
+  .hierarchy-verse {
+    background: #292524;
+    border-color: #7c3aed;
+  }
+
+  .verse-hebrew {
+    color: #f3f4f6;
+  }
+
+  .hierarchy-structure,
+  .clause-item,
+  .mark-card {
+    background: #111827;
+    border-color: #374151;
+  }
+
+  .hierarchy-title,
+  .half-label,
+  .mark-name,
+  .detail-name {
+    color: #e5e7eb;
+  }
+
+  .level-mark {
+    background: #374151;
+    border-color: #4b5563;
+    color: #e5e7eb;
+  }
+
+  .hierarchy-division {
+    background: #451a03;
+    border-color: #78350f;
+  }
+
+  .clause-text,
+  .mark-word,
+  .detail-value {
+    color: #f3f4f6;
+  }
+
+  .mark-word {
+    background: #374151;
+  }
+
+  .cant-mark-detail {
+    background: linear-gradient(135deg, #2d1f3d 0%, #3b2d4d 100%);
+    border-color: #6d28d9;
+  }
+
+  .detail-close {
+    background: #374151;
+    color: #9ca3af;
+  }
+
+  .detail-header {
+    border-bottom-color: #4b5563;
+  }
+
+  .cant-legend {
+    background: #111827;
+    border-top-color: #374151;
+  }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .cant-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .cant-controls {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .marks-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .detail-row {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .detail-label {
+    min-width: auto;
+  }
+}

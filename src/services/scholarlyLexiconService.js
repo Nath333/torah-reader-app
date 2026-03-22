@@ -6,8 +6,671 @@
 
 import { createCache } from '../utils/cache';
 import { cleanHtml } from '../utils/sanitize';
+import { fetchWithFallback } from '../utils/http';
+import { cleanHebrewWord } from '../utils/hebrewUtils';
+import { analyzeWord as analyzeGrammar, extractRoot as extractGrammarRoot } from './grammarAnalysisService';
+import { createLogger } from '../utils/debug';
+// Import halachic overrides for context-specific translations
+import { HALACHIC_OVERRIDE } from '../utils/commentaryUtils';
+// Import shared morphology constants for prefix/suffix handling
+import {
+  HEBREW_PREFIXES_ORDERED,
+  HEBREW_SUFFIXES_ORDERED
+} from '../constants/morphology';
 
-const SEFARIA_BASE = 'https://www.sefaria.org/api';
+const log = createLogger('ScholarlyLexicon');
+
+// =============================================================================
+// LOCAL DICTIONARY DATA (Offline-First)
+// Combined: ~42,000 entries for instant lookups without API calls
+// - Jastrow: 25,224 entries (Aramaic/Rabbinic Hebrew - Talmud, Midrash)
+// - BDB: 8,050 Strong's numbers / 6,000 unique words (Biblical Hebrew)
+// - Strong's: 8,674 Strong's numbers / 6,242 unique words (Concordance)
+// Sources: openscriptures/strongs (CC-BY-SA), eliranwong/unabridged-BDB (PD)
+// =============================================================================
+
+// Local dictionary state
+const localDictionaries = {
+  jastrow: { data: null, loading: false, promise: null, count: 0 },
+  bdb: { data: null, loading: false, promise: null, count: 0 },
+  strongs: { data: null, loading: false, promise: null, count: 0 }
+};
+
+// Track preload status
+let preloadStarted = false;
+let preloadComplete = false;
+
+/**
+ * Load a local dictionary file
+ * @param {string} name - Dictionary name (jastrow, bdb, strongs)
+ * @param {string} filename - JSON filename
+ * @param {function} parser - Optional parser for data structure
+ */
+const loadLocalDictionary = async (name, filename, parser = null) => {
+  const dict = localDictionaries[name];
+  if (dict.data) return dict.data;
+  if (dict.loading) return dict.promise;
+
+  dict.loading = true;
+  dict.promise = (async () => {
+    try {
+      const response = await fetch(`${process.env.PUBLIC_URL || ''}/data/${filename}`);
+      if (response.ok) {
+        const raw = await response.json();
+        dict.data = parser ? parser(raw) : raw;
+        dict.count = Object.keys(dict.data).length;
+        log.debug(`${name}: Loaded ${dict.count} local entries`);
+      }
+    } catch (e) {
+      log.warn(`${name}: Could not load local dictionary:`, e.message);
+    }
+    dict.loading = false;
+    return dict.data;
+  })();
+
+  return dict.promise;
+};
+
+/**
+ * Load local Jastrow dictionary (Aramaic/Rabbinic Hebrew)
+ * 25,224 entries - best for Talmud, Midrash, Targumim
+ */
+const loadLocalJastrow = () => loadLocalDictionary('jastrow', 'jastrowComplete.json');
+
+/**
+ * Load local BDB dictionary (Brown-Driver-Briggs)
+ * 8,050 Strong's numbers / 6,000 unique words - best for Biblical Hebrew
+ * Source: eliranwong/unabridged-BDB-Hebrew-lexicon (Public Domain)
+ */
+const loadLocalBDB = () => loadLocalDictionary('bdb', 'bdbComplete.json',
+  (raw) => raw.byWord || raw
+);
+
+/**
+ * Load local Strong's dictionary
+ * 8,674 Strong's numbers / 6,242 unique words - Strong's Concordance
+ * Source: openscriptures/strongs (CC-BY-SA)
+ */
+const loadLocalStrongs = () => loadLocalDictionary('strongs', 'strongsComplete.json',
+  (raw) => raw.byWord || raw
+);
+
+/**
+ * Preload ALL local dictionaries at app startup
+ * Call this early in app initialization for instant lookups
+ * @returns {Promise<object>} Stats about loaded dictionaries
+ */
+export const preloadDictionaries = async () => {
+  if (preloadComplete) {
+    return getDictionaryStats();
+  }
+
+  if (preloadStarted) {
+    // Wait for existing preload to complete
+    await Promise.all([
+      localDictionaries.jastrow.promise,
+      localDictionaries.bdb.promise,
+      localDictionaries.strongs.promise
+    ].filter(Boolean));
+    return getDictionaryStats();
+  }
+
+  preloadStarted = true;
+  log.debug('Preloading local dictionaries...');
+
+  const startTime = Date.now();
+
+  // Load all dictionaries in parallel
+  await Promise.all([
+    loadLocalJastrow(),
+    loadLocalBDB(),
+    loadLocalStrongs()
+  ]);
+
+  preloadComplete = true;
+  const loadTime = Date.now() - startTime;
+  const stats = getDictionaryStats();
+
+  log.debug(`Dictionaries preloaded in ${loadTime}ms: ${stats.totalEntries} total entries`);
+
+  return stats;
+};
+
+/**
+ * Get statistics about loaded dictionaries
+ */
+export const getDictionaryStats = () => ({
+  jastrow: { loaded: !!localDictionaries.jastrow.data, entries: localDictionaries.jastrow.count },
+  bdb: { loaded: !!localDictionaries.bdb.data, entries: localDictionaries.bdb.count },
+  strongs: { loaded: !!localDictionaries.strongs.data, entries: localDictionaries.strongs.count },
+  totalEntries: localDictionaries.jastrow.count + localDictionaries.bdb.count + localDictionaries.strongs.count,
+  preloadComplete
+});
+
+// cleanWordForLookup - use cleanHebrewWord from ../utils/hebrewUtils
+const cleanWordForLookup = cleanHebrewWord;
+
+// Use shared morphology constants for prefix/suffix analysis
+// HEBREW_PREFIXES_ORDERED and HEBREW_SUFFIXES_ORDERED imported from morphology.js
+
+/**
+ * Extract cross-reference target from Jastrow definition
+ * Examples: "v. נוֹמִי" → "נומי", "= שַׁבָּת" → "שבת"
+ * @param {string} definition - Raw Jastrow definition
+ * @returns {string|null} - Target word (without vowels) or null
+ */
+const extractJastrowCrossRef = (definition) => {
+  if (!definition || typeof definition !== 'string') return null;
+
+  // Pattern: "v. [Hebrew word]" or "= [Hebrew word]" or ", v. [word]"
+  // The Hebrew word may have vowel points
+  const patterns = [
+    /\bv\.\s*([\u0590-\u05FF\u05B0-\u05C7]+)/i,  // v. נוֹמִי
+    /^=\s*([\u0590-\u05FF\u05B0-\u05C7]+)/,       // = שַׁבָּת
+    /^same\s+as\s+([\u0590-\u05FF\u05B0-\u05C7]+)/i,
+  ];
+
+  for (const pattern of patterns) {
+    const match = definition.match(pattern);
+    if (match && match[1]) {
+      // Strip vowel points (nikud) to get plain consonants
+      return match[1].replace(/[\u05B0-\u05C7]/g, '');
+    }
+  }
+  return null;
+};
+
+/**
+ * Lookup word in local Jastrow dictionary with scholarly morphological analysis
+ * Handles prefixes, suffixes, final letters, verb patterns (binyanim)
+ * NOW FOLLOWS CROSS-REFERENCES: "v. נוֹמִי" → looks up נומי
+ * @param {string} word - Hebrew/Aramaic word
+ * @returns {object|null} - Local Jastrow entry with morphological match info
+ */
+const lookupLocalJastrow = async (word, _depth = 0) => {
+  // Prevent infinite recursion on cross-references
+  if (_depth > 3) return null;
+
+  const data = await loadLocalJastrow();
+  if (!data) return null;
+
+  const cleaned = cleanWordForLookup(word);
+  if (!cleaned || cleaned.length < 2) return null;
+
+  // Normalize final letters (sofit → regular form)
+  const normalizeFinals = (w) => w
+    .replace(/ם/g, 'מ')
+    .replace(/ן/g, 'נ')
+    .replace(/ץ/g, 'צ')
+    .replace(/ף/g, 'פ')
+    .replace(/ך/g, 'כ');
+
+  // Try to find entry in dictionary with normalization
+  const tryLookup = (form) => {
+    if (!form || form.length < 2) return null;
+    if (data[form]) return { entry: data[form], matchedForm: form };
+    const normalized = normalizeFinals(form);
+    if (normalized !== form && data[normalized]) {
+      return { entry: data[normalized], matchedForm: normalized };
+    }
+    return null;
+  };
+
+  // Helper: Check if entry is a cross-reference and follow it
+  const followCrossRefIfNeeded = async (entry, matchedForm, matchType) => {
+    if (!entry || !entry.definition) return null;
+
+    // Check if definition is a cross-reference
+    const targetWord = extractJastrowCrossRef(entry.definition);
+    if (targetWord && targetWord !== cleaned && targetWord !== matchedForm) {
+      // Recursively look up the target word
+      const resolved = await lookupLocalJastrow(targetWord, _depth + 1);
+      if (resolved && resolved.definition) {
+        return {
+          ...resolved,
+          _originalWord: word,
+          _crossRefFrom: matchedForm,
+          _crossRefTo: targetWord,
+          _matchType: matchType + '-crossref'
+        };
+      }
+    }
+
+    // Not a cross-reference, return original
+    return { ...entry, _matchedForm: matchedForm, _matchType: matchType };
+  };
+
+  // 1. Direct lookup (exact match)
+  let result = tryLookup(cleaned);
+  if (result) {
+    const resolved = await followCrossRefIfNeeded(result.entry, result.matchedForm, 'exact');
+    if (resolved) return resolved;
+  }
+
+  // 2. Try stripping prefixes (ו, ה, ב, ל, מ, כ, ש, etc.)
+  for (const prefix of HEBREW_PREFIXES_ORDERED) {
+    if (cleaned.startsWith(prefix) && cleaned.length > prefix.length + 1) {
+      const stem = cleaned.slice(prefix.length);
+      result = tryLookup(stem);
+      if (result) {
+        return {
+          ...result.entry,
+          _matchedForm: result.matchedForm,
+          _strippedPrefix: prefix,
+          _matchType: 'prefix-stripped'
+        };
+      }
+    }
+  }
+
+  // 3. Try stripping suffixes (ים, ות, ין, etc.)
+  for (const suffix of HEBREW_SUFFIXES_ORDERED) {
+    if (cleaned.endsWith(suffix) && cleaned.length > suffix.length + 2) {
+      const stem = cleaned.slice(0, -suffix.length);
+      result = tryLookup(stem);
+      if (result) {
+        return {
+          ...result.entry,
+          _matchedForm: result.matchedForm,
+          _strippedSuffix: suffix,
+          _matchType: 'suffix-stripped'
+        };
+      }
+      // For feminine plural (ות), try singular with ה
+      if (suffix === 'ות') {
+        result = tryLookup(stem + 'ה');
+        if (result) {
+          return {
+            ...result.entry,
+            _matchedForm: result.matchedForm,
+            _strippedSuffix: suffix,
+            _matchType: 'plural-to-singular'
+          };
+        }
+      }
+    }
+  }
+
+  // 4. Try stripping BOTH prefix AND suffix
+  for (const prefix of HEBREW_PREFIXES_ORDERED) {
+    if (cleaned.startsWith(prefix) && cleaned.length > prefix.length + 2) {
+      const afterPrefix = cleaned.slice(prefix.length);
+      for (const suffix of HEBREW_SUFFIXES_ORDERED) {
+        if (afterPrefix.endsWith(suffix) && afterPrefix.length > suffix.length + 2) {
+          const stem = afterPrefix.slice(0, -suffix.length);
+          result = tryLookup(stem);
+          if (result) {
+            return {
+              ...result.entry,
+              _matchedForm: result.matchedForm,
+              _strippedPrefix: prefix,
+              _strippedSuffix: suffix,
+              _matchType: 'prefix-suffix-stripped'
+            };
+          }
+        }
+      }
+    }
+  }
+
+  // 5. Verb pattern (binyan) analysis
+  // Nif'al pattern: נשמר → שמר (passive/reflexive)
+  if (cleaned.startsWith('נ') && cleaned.length >= 4) {
+    result = tryLookup(cleaned.slice(1));
+    if (result) {
+      return { ...result.entry, _matchedForm: result.matchedForm, _matchType: 'nifal-root' };
+    }
+  }
+
+  // Hif'il pattern: הגדיל → גדל (causative)
+  if (cleaned.startsWith('ה') && cleaned.length >= 4) {
+    const withoutHeh = cleaned.slice(1);
+    result = tryLookup(withoutHeh);
+    if (result) {
+      return { ...result.entry, _matchedForm: result.matchedForm, _matchType: 'hifil-stripped' };
+    }
+    // Remove internal yod: הגדיל → גדל
+    if (withoutHeh.length >= 4 && withoutHeh[1] === 'י') {
+      const root = withoutHeh[0] + withoutHeh.slice(2);
+      result = tryLookup(root);
+      if (result) {
+        return { ...result.entry, _matchedForm: result.matchedForm, _matchType: 'hifil-root' };
+      }
+    }
+  }
+
+  // Hitpa'el pattern: התגדל → גדל (reflexive)
+  if (cleaned.startsWith('הת') && cleaned.length >= 5) {
+    result = tryLookup(cleaned.slice(2));
+    if (result) {
+      return { ...result.entry, _matchedForm: result.matchedForm, _matchType: 'hitpael-root' };
+    }
+  }
+
+  // Pi'el doubled middle letter: גדל → גידל (intensive)
+  if (cleaned.length >= 4 && cleaned[1] === 'י') {
+    const root = cleaned[0] + cleaned.slice(2);
+    result = tryLookup(root);
+    if (result) {
+      return { ...result.entry, _matchedForm: result.matchedForm, _matchType: 'piel-root' };
+    }
+  }
+
+  return null;
+};
+
+/**
+ * Lookup word in local BDB dictionary (Brown-Driver-Briggs)
+ * Best for Biblical Hebrew - scholarly definitions with references
+ * @param {string} word - Hebrew word
+ * @returns {object|null} - BDB entry or null
+ */
+const lookupLocalBDB = async (word) => {
+  const data = await loadLocalBDB();
+  if (!data) return null;
+
+  const cleaned = cleanWordForLookup(word);
+  if (!cleaned || cleaned.length < 2) return null;
+
+  // Normalize final letters
+  const normalizeFinals = (w) => w
+    .replace(/ם/g, 'מ').replace(/ן/g, 'נ')
+    .replace(/ץ/g, 'צ').replace(/ף/g, 'פ').replace(/ך/g, 'כ');
+
+  const tryLookup = (form) => {
+    if (!form || form.length < 2) return null;
+    if (data[form]) return data[form];
+    const normalized = normalizeFinals(form);
+    if (normalized !== form && data[normalized]) return data[normalized];
+    return null;
+  };
+
+  // Direct lookup
+  let result = tryLookup(cleaned);
+  if (result) {
+    return {
+      ...result,
+      source: 'BDB',
+      _matchType: 'exact'
+    };
+  }
+
+  // Try stripping common prefixes
+  for (const prefix of ['ו', 'ה', 'ב', 'ל', 'מ', 'כ']) {
+    if (cleaned.startsWith(prefix) && cleaned.length > prefix.length + 1) {
+      result = tryLookup(cleaned.slice(prefix.length));
+      if (result) {
+        return { ...result, source: 'BDB', _matchType: 'prefix-stripped', _strippedPrefix: prefix };
+      }
+    }
+  }
+
+  return null;
+};
+
+/**
+ * Lookup word in local Strong's dictionary
+ * Returns Strong's number and concise definition
+ * @param {string} word - Hebrew word
+ * @returns {object|null} - Strong's entry or null
+ */
+const lookupLocalStrongs = async (word) => {
+  const data = await loadLocalStrongs();
+  if (!data) return null;
+
+  const cleaned = cleanWordForLookup(word);
+  if (!cleaned || cleaned.length < 2) return null;
+
+  // Normalize final letters
+  const normalizeFinals = (w) => w
+    .replace(/ם/g, 'מ').replace(/ן/g, 'נ')
+    .replace(/ץ/g, 'צ').replace(/ף/g, 'פ').replace(/ך/g, 'כ');
+
+  const tryLookup = (form) => {
+    if (!form || form.length < 2) return null;
+    if (data[form]) return data[form];
+    const normalized = normalizeFinals(form);
+    if (normalized !== form && data[normalized]) return data[normalized];
+    return null;
+  };
+
+  // Direct lookup
+  let result = tryLookup(cleaned);
+  if (result) {
+    return {
+      ...result,
+      source: "Strong's",
+      _matchType: 'exact'
+    };
+  }
+
+  // Try stripping common prefixes
+  for (const prefix of ['ו', 'ה', 'ב', 'ל', 'מ', 'כ']) {
+    if (cleaned.startsWith(prefix) && cleaned.length > prefix.length + 1) {
+      result = tryLookup(cleaned.slice(prefix.length));
+      if (result) {
+        return { ...result, source: "Strong's", _matchType: 'prefix-stripped', _strippedPrefix: prefix };
+      }
+    }
+  }
+
+  return null;
+};
+
+/**
+ * UNIFIED LOCAL LOOKUP - Searches ALL local dictionaries
+ * Priority: Jastrow (Aramaic) → BDB (Biblical) → Strong's (concordance)
+ * Returns first match with source attribution
+ * @param {string} word - Hebrew/Aramaic word
+ * @returns {Promise<object|null>} Combined result from best matching dictionary
+ */
+// Patterns for cross-reference-only definitions that aren't actual definitions
+const CROSS_REF_PATTERNS = [
+  /^\s*\(?preced\.?\)?\.?\s*$/i,             // "preced.)" = see preceding
+  /^\s*\(?foll\.?\)?\.?\s*$/i,               // "foll.)" = see following
+  /^\s*\(?see\s+preced\.?\)?\.?\s*$/i,       // "see preced."
+  /^\s*\(?see\s+foll\.?\)?\.?\s*$/i,         // "see foll."
+  /^\s*\(?v\.\s*\w+\.?\)?\.?\s*$/i,          // "v. word" = see word
+  /^\s*\(?ib\.?\)?\.?\s*$/i,                 // "ib." = ibidem
+  /^\s*\(?same\.?\)?\.?\s*$/i,               // "same."
+  /^\s*\(?id\.?\)?\.?\s*$/i,                 // "id." = idem
+  /^\s*\)?\s*$/,                              // Just orphan parenthesis
+  /^\s*[[\]()]+\s*$/,                          // Just brackets/parens
+];
+
+/**
+ * Check if a definition is just a cross-reference (not a real definition)
+ */
+const isCrossReferenceOnly = (text) => {
+  if (!text || typeof text !== 'string') return true;
+  const trimmed = text.trim();
+  if (trimmed.length < 3) return true;
+  return CROSS_REF_PATTERNS.some(pattern => pattern.test(trimmed));
+};
+
+export const lookupLocalDictionaries = async (word) => {
+  if (!word || word.length < 2) return null;
+
+  // Ensure dictionaries are loaded (parallel load if not already)
+  await Promise.all([loadLocalJastrow(), loadLocalBDB(), loadLocalStrongs()]);
+
+  // Collect all results, then pick the best one
+  const results = [];
+
+  // Try Jastrow (good for Talmudic/Aramaic content)
+  const jastrowResult = await lookupLocalJastrow(word);
+  if (jastrowResult && jastrowResult.definition && !isCrossReferenceOnly(jastrowResult.definition)) {
+    results.push({
+      word,
+      definition: jastrowResult.definition,
+      lemma: jastrowResult.lemma || jastrowResult.key,
+      pos: jastrowResult.pos,
+      isAramaic: jastrowResult.isAramaic,
+      source: 'Jastrow',
+      sourceFullName: "Jastrow's Dictionary of Targumim, Talmud and Midrashic Literature",
+      _matchType: jastrowResult._matchType,
+      _matchedForm: jastrowResult._matchedForm,
+      _local: true,
+      _priority: jastrowResult._matchType === 'exact' ? 1 : 2
+    });
+  }
+
+  // Try BDB (best for Biblical Hebrew)
+  const bdbResult = await lookupLocalBDB(word);
+  if (bdbResult && (bdbResult.definition || bdbResult.fullDef) && !isCrossReferenceOnly(bdbResult.definition || bdbResult.fullDef)) {
+    results.push({
+      word,
+      definition: bdbResult.definition || bdbResult.fullDef,
+      lemma: bdbResult.lemma || bdbResult.key,
+      pos: bdbResult.pos,
+      strongs: bdbResult.strongs,
+      source: 'BDB',
+      sourceFullName: 'Brown-Driver-Briggs Hebrew and English Lexicon',
+      _matchType: bdbResult._matchType,
+      _local: true,
+      _priority: bdbResult._matchType === 'exact' ? 0 : 1 // BDB gets priority for Biblical Hebrew
+    });
+  }
+
+  // Try Strong's (good for concordance lookups)
+  const strongsResult = await lookupLocalStrongs(word);
+  if (strongsResult && (strongsResult.definition || strongsResult.gloss) && !isCrossReferenceOnly(strongsResult.definition || strongsResult.gloss)) {
+    results.push({
+      word,
+      definition: strongsResult.definition || strongsResult.gloss,
+      lemma: strongsResult.lemma || strongsResult.key,
+      pos: strongsResult.pos,
+      strongs: strongsResult.strongs,
+      transliteration: strongsResult.xlit,
+      etymology: strongsResult.etymology,
+      source: "Strong's",
+      sourceFullName: "Strong's Exhaustive Concordance",
+      _matchType: strongsResult._matchType,
+      _local: true,
+      _priority: strongsResult._matchType === 'exact' ? 1 : 2
+    });
+  }
+
+  // Return the best result (lowest priority number = best)
+  if (results.length === 0) return null;
+  results.sort((a, b) => a._priority - b._priority);
+  return results[0];
+};
+
+/**
+ * Lookup ALL local dictionaries and return ALL results (not just the best)
+ * Used to provide comprehensive multi-source data for scholarly apps
+ * Enhanced: Also tries Aramaic variants for Talmudic context
+ * @param {string} word - Hebrew/Aramaic word
+ * @returns {Promise<object>} Object with jastrow, bdb, strongs, jastrowAlt (Aramaic variant)
+ */
+const lookupAllLocalDictionaries = async (word) => {
+  const results = { jastrow: null, bdb: null, strongs: null, jastrowAlt: null };
+
+  // Common Aramaic suffixes to try for Hebrew words (Talmudic Aramaic forms)
+  const ARAMAIC_SUFFIXES = ['א', 'תא', 'ותא', 'יא'];
+
+  // Try Jastrow
+  try {
+    const jastrowResult = await lookupLocalJastrow(word);
+    if (jastrowResult && jastrowResult.definition && !isCrossReferenceOnly(jastrowResult.definition)) {
+      results.jastrow = {
+        headword: jastrowResult.lemma || jastrowResult._matchedForm || word,
+        parent_lexicon: 'Jastrow Dictionary',
+        content: jastrowResult.definition,
+        short_definition: jastrowResult.definition,
+        _isLocal: true,
+        _ref: jastrowResult.ref,
+        _matchType: jastrowResult._matchType,
+        // Copy morphological metadata for strictHeadwordFilter
+        _strippedPrefix: jastrowResult._strippedPrefix,
+        _strippedSuffix: jastrowResult._strippedSuffix,
+        _matchedForm: jastrowResult._matchedForm
+      };
+
+      // If the Hebrew definition seems limited (e.g., "poverty" for רשות),
+      // also try Aramaic variants which may have richer Talmudic meanings
+      // Examples: רשות → רשותא (domain), מלאכה → מלאכתא (labor)
+      for (const suffix of ARAMAIC_SUFFIXES) {
+        const aramaicForm = word + suffix;
+        const altResult = await lookupLocalJastrow(aramaicForm);
+        if (altResult && altResult.definition &&
+            altResult.definition !== jastrowResult.definition &&
+            !isCrossReferenceOnly(altResult.definition)) {
+          results.jastrowAlt = {
+            headword: altResult.lemma || altResult._matchedForm || aramaicForm,
+            parent_lexicon: 'Jastrow (Aramaic)',
+            content: altResult.definition,
+            short_definition: altResult.definition,
+            _isLocal: true,
+            _ref: altResult.ref,
+            _matchType: 'aramaic-variant',
+            _hebrewForm: word
+          };
+          break; // Found a good Aramaic variant
+        }
+      }
+    }
+  } catch (e) { /* silent */ }
+
+  // Try BDB
+  try {
+    const bdbResult = await lookupLocalBDB(word);
+    if (bdbResult && (bdbResult.definition || bdbResult.fullDef) && !isCrossReferenceOnly(bdbResult.definition || bdbResult.fullDef)) {
+      results.bdb = {
+        headword: bdbResult.lemma || word,
+        parent_lexicon: 'BDB',
+        content: bdbResult.definition || bdbResult.fullDef,
+        short_definition: bdbResult.definition || bdbResult.fullDef,
+        strong_number: bdbResult.strongs,
+        _isLocal: true,
+        _matchType: bdbResult._matchType
+      };
+    }
+  } catch (e) { /* silent */ }
+
+  // Try Strong's
+  try {
+    const strongsResult = await lookupLocalStrongs(word);
+    if (strongsResult && (strongsResult.definition || strongsResult.gloss) && !isCrossReferenceOnly(strongsResult.definition || strongsResult.gloss)) {
+      results.strongs = {
+        headword: strongsResult.lemma || word,
+        parent_lexicon: "Strong's",
+        content: strongsResult.definition || strongsResult.gloss,
+        short_definition: strongsResult.definition || strongsResult.gloss,
+        strong_number: strongsResult.strongs,
+        transliteration: strongsResult.xlit,
+        _isLocal: true,
+        _matchType: strongsResult._matchType
+      };
+    }
+  } catch (e) { /* silent */ }
+
+  return results;
+};
+
+// Environment check
+const IS_DEV = process.env.NODE_ENV === 'development';
+
+// Use local proxy in development to avoid CORS issues
+const SEFARIA_BASE = IS_DEV
+  ? '/sefaria-api'
+  : 'https://www.sefaria.org/api';
+
+// CAL (Comprehensive Aramaic Lexicon) configuration
+// Development: local proxy | Production: CORS proxy via allorigins.win
+const CAL_DIRECT_URL = 'https://cal.huc.edu';
+const CAL_CORS_PROXY = 'https://api.allorigins.win/get?url=';
+
+/**
+ * Build CAL URL with CORS proxy support for production
+ */
+const buildCALUrl = (endpoint) => {
+  if (IS_DEV) {
+    return `/cal-api${endpoint}`;
+  }
+  return `${CAL_CORS_PROXY}${encodeURIComponent(`${CAL_DIRECT_URL}${endpoint}`)}`;
+};
 
 /**
  * Clean definition text - removes HTML, scholarly notation, and normalizes
@@ -56,6 +719,16 @@ const cleanDefinitionText = (text) => {
 
   // Remove common scholarly notation patterns
   cleaned = cleaned
+    // Remove Jastrow language cross-reference notations (empty references to other dictionaries)
+    .replace(/^\s*\(b\.?\s*h\.?\)\s*$/gi, '')  // Whole text is just "(b. h.)"
+    .replace(/\(b\.?\s*h\.?\)/gi, '')           // (b. h.) or (b.h.) = biblical Hebrew reference
+    .replace(/\(a\.?\s*h\.?\)/gi, '')           // (a. h.) = Aramaic/Hebrew
+    .replace(/\(m\.?\s*h\.?\)/gi, '')           // (M. H.) = Mishnaic Hebrew
+    .replace(/\(n\.?\s*h\.?\)/gi, '')           // (N. H.) = New Hebrew
+    .replace(/\(nh\.?\)/gi, '')                 // (NH) = New Hebrew variant
+    .replace(/\(bh\.?\)/gi, '')                 // (BH) = Biblical Hebrew variant
+    .replace(/\(mh\.?\)/gi, '')                 // (MH) = Mishnaic Hebrew variant
+    .replace(/\(ch\.?\)/gi, '')                 // (CH) = Chaldean/late Aramaic
     .replace(/\(a hapax legomenon[^)]*\)/gi, '')
     .replace(/\(occurring[^)]*\)/gi, '')
     .replace(/\(in the c\. st\.[^)]*\)/gi, '')
@@ -67,6 +740,7 @@ const cleanDefinitionText = (text) => {
     .replace(/\(pl\.[^)]*\)/gi, '')
     .replace(/\(comp\.[^)]*\)/gi, '')
     .replace(/\(cmp\.[^)]*\)/gi, '')
+    .replace(/\(v\.[^)]*\)/gi, '')              // (v. ...) = see/verse reference
     .replace(/\[[^\]]*\]/g, '') // Remove bracketed references
     // Clean up punctuation issues
     .replace(/,\s*,/g, ',')
@@ -84,12 +758,45 @@ const cleanDefinitionText = (text) => {
     return '';
   }
 
+  // Filter out non-definition metadata phrases
+  const metadataPhrases = [
+    'with more detail',
+    'see entry',
+    'see also',
+    'compare',
+    'note:',
+    'note that',
+    'for more',
+    'details in',
+    'fuller treatment',
+    'see above',
+    'see below',
+    'cf. above',
+    'cf. below',
+    'as above',
+    'as below',
+  ];
+  const lowerCleaned = cleaned.toLowerCase();
+  for (const phrase of metadataPhrases) {
+    if (lowerCleaned === phrase || lowerCleaned.startsWith(phrase + ' ') ||
+        (lowerCleaned.length < 25 && lowerCleaned.includes(phrase))) {
+      return '';
+    }
+  }
+
   return cleaned;
 };
 
 /**
  * Extract the actual English meaning from Jastrow/scholarly definition
- * Handles complex scholarly notation to find the real definition
+ * IMPROVED: Properly extracts numbered senses and stops at examples
+ *
+ * Jastrow format example:
+ *   "רָשׁוּת I  1 poverty. Midr. Till. to Ps. XXIV יש... 2 power, authority. Ned. X, 2..."
+ *
+ * We want: "poverty; power, authority; dominion; permission"
+ * NOT example text like "but his reputation is not in harmony..."
+ *
  * @param {string} text - Raw Jastrow definition text
  * @returns {string|null} - Extracted meaning or null
  */
@@ -99,37 +806,142 @@ const extractJastrowMeaning = (text) => {
   // First clean HTML
   let cleaned = cleanHtml(text);
 
-  // Jastrow often starts with grammatical info then meaning
-  // Pattern: "m. (= ...) meaning" or "f. meaning" or "ch. same, meaning"
+  // === STEP 1: Remove Hebrew headword at start ===
+  cleaned = cleaned.replace(/^[\u0590-\u05FF]+\s*[IVX]*\s*/, '');
 
-  // Try to extract meaning after common patterns
-  const patterns = [
-    // After grammatical markers: "m. meaning" or "f. meaning"
-    /^(?:[mfn]\.|ch\.|cmp\.|comp\.|adj\.|v\.|subst\.)\s*(?:\([^)]*\)\s*)*(.+)/i,
-    // After "same as" or "=" patterns
-    /(?:same\s+as|=)\s*[\u0590-\u05FF]+[,.]?\s*(.+)/i,
-    // After numbered sense: "1) meaning"
-    /^\d+[.)]\s*(.+)/,
-    // Just get first substantial English phrase
-    /([a-zA-Z][a-zA-Z\s,'-]{5,})/
-  ];
+  // === STEP 2: Extract NUMBERED SENSES (1, 2, 3...) ===
+  // Jastrow uses "1 definition. Reference... 2 definition. Reference..."
+  const numberedSensePattern = /\b(\d)\s+([a-zA-Z][a-zA-Z\s,;'()-]{2,}?)(?=\.\s*[A-Z]|\.\s*[\u0590-\u05FF]|\.\s*\d|\s*$)/g;
+  const senses = [];
+  let match;
 
-  for (const pattern of patterns) {
-    const match = cleaned.match(pattern);
-    if (match && match[1]) {
-      const extracted = cleanDefinitionText(match[1]);
-      if (extracted && extracted.length >= 3) {
-        return extracted;
+  while ((match = numberedSensePattern.exec(cleaned)) !== null) {
+    // match[1] is sense number, match[2] is the definition text
+    let senseText = match[2].trim();
+
+    // Stop at first Talmudic reference (indicates example, not definition)
+    // Patterns: "Midr.", "Targ.", "Y. ", "B. ", tractate names, etc.
+    const refPatterns = [
+      /\b(?:Midr|Targ|Yalk|Tosef|Mekh|Sifr[ae]|Cant|Gen|Ex|Lev|Num|Deut|Pes|Ber|Shab|Sabb|Sanh|Ned|Yoma|Meg|Erub|Kidd|Ḥull?|Ḥag|Bets?|Makhsh|Mak)\.\s/i,
+      /\b[YB]\.\s*[A-Z]/,           // Y. Ber., B. Kam., etc.
+      /\bR\.\s+s\.\s/,              // R. s. = Midrash Rabbah section
+      /\s+[IVXLCDM]+[,\s]/,         // Roman numerals (references)
+      /\s+\d+[a-dᵃᵇᶜᵈ]/,             // Folio references (22a, 15b)
+    ];
+
+    for (const refPattern of refPatterns) {
+      const refMatch = senseText.search(refPattern);
+      if (refMatch > 3) {
+        senseText = senseText.substring(0, refMatch).trim();
       }
+    }
+
+    // Clean trailing punctuation
+    senseText = senseText.replace(/[,;.\s]+$/, '').trim();
+
+    if (senseText && senseText.length >= 3 && /[a-zA-Z]{3,}/.test(senseText)) {
+      senses.push(senseText);
     }
   }
 
-  // Fallback: clean the whole text
-  return cleanDefinitionText(cleaned) || null;
+  // If we found numbered senses, join them
+  if (senses.length > 0) {
+    return senses.slice(0, 4).join('; '); // Max 4 senses for brevity
+  }
+
+  // === STEP 3: Fallback - Extract definition before first reference ===
+  // Remove grammatical markers first
+  cleaned = cleaned
+    .replace(/^[mfn]\.\s*/i, '')
+    .replace(/^ch\.\s*/i, '')
+    .replace(/^adj\.\s*/i, '')
+    .replace(/^subst\.\s*/i, '')
+    .replace(/^v\.\s*/i, '')
+    .replace(/^\([^)]*\)\s*/, '');
+
+  // Stop at first Talmudic reference
+  const firstRefPatterns = [
+    /\.\s*(?:Midr|Targ|Yalk|Tosef|Gen|Ex|Lev|Num|Deut|Ps|Isa|Jer|Cant|Koh)\.\s/i,
+    /\.\s*[YB]\.\s*[A-Z]/,
+    /\.\s*[\u0590-\u05FF]/,  // Hebrew text (examples)
+    /\.\s*\d+[a-dᵃᵇᶜᵈ]/,     // Folio refs
+  ];
+
+  for (const refPat of firstRefPatterns) {
+    const idx = cleaned.search(refPat);
+    if (idx > 3) {
+      cleaned = cleaned.substring(0, idx + 1); // Include the period
+      break;
+    }
+  }
+
+  // Extract English words
+  const englishMatch = cleaned.match(/([a-zA-Z][a-zA-Z\s,;'()-]{3,})/);
+  if (englishMatch) {
+    const extracted = englishMatch[1].replace(/[,;.\s]+$/, '').trim();
+    if (extracted.length >= 3 && !isGarbageText(extracted)) {
+      return extracted;
+    }
+  }
+
+  return null;
+};
+
+/**
+ * Check if text is garbage/meaningless fragments
+ * @param {string} text - Text to check
+ * @returns {boolean} - True if text is garbage
+ */
+const isGarbageText = (text) => {
+  if (!text) return true;
+
+  const cleaned = text.trim().toLowerCase();
+
+  // Too short
+  if (cleaned.length < 3) return true;
+
+  // Just punctuation or numbers
+  if (/^[\d\s.,;:!?-]+$/.test(cleaned)) return true;
+
+  // Just single letters or abbreviations repeated
+  if (/^([a-z]\.?\s*)+$/i.test(cleaned)) return true;
+
+  // Contains "..." suggesting incomplete/fragmented
+  if (cleaned.includes('...')) return true;
+
+  // Mostly Hebrew characters (shouldn't be in English definition)
+  const hebrewChars = (cleaned.match(/[\u0590-\u05FF]/g) || []).length;
+  const englishChars = (cleaned.match(/[a-zA-Z]/g) || []).length;
+  if (hebrewChars > englishChars && hebrewChars > 3) return true;
+
+  // Reference-only text
+  if (/^(see|cf\.|compare|v\.|note)/i.test(cleaned)) return true;
+
+  return false;
 };
 
 // Cache for scholarly lookups (longer TTL for academic data)
 const scholarlyCache = createCache({ ttl: 48 * 60 * 60 * 1000, maxSize: 1000 }); // 48 hours
+
+// =============================================================================
+// CACHE VERSIONING - Automatically invalidates old cached results
+// =============================================================================
+// In DEVELOPMENT: Auto-renews on every npm start (fresh lookups for testing)
+// In PRODUCTION: Uses manual version (increment when logic changes)
+//
+// Version History:
+// v7: Stronger prefix penalty (0.8), higher threshold (0.6), stricter matching
+// v6: Pure algorithmic matching - LCS + edit distance + prefix penalty, no hardcoded rules
+// v5: EXTRA strict Klein validation - explicit headword length check at result building
+// v4: STRICT validation - reject entries without headword, extract from content
+// v3: Strict trilateral root matching (בר vs ברא), isValidHeadwordMatch
+// v2: Added headword filtering
+// v1: Initial implementation
+// =============================================================================
+const CACHE_VERSION_MANUAL = 'v7';
+const CACHE_VERSION = process.env.NODE_ENV === 'development'
+  ? `dev-${Date.now()}` // Auto-renew on every app start in development
+  : CACHE_VERSION_MANUAL;
 
 // =============================================================================
 // SCHOLARLY SOURCES CONFIGURATION
@@ -255,6 +1067,17 @@ export const SCHOLARLY_SOURCES = {
     description: 'Open source Bible study tools with Strong\'s definitions',
     type: 'digital',
     language: 'Hebrew'
+  },
+  CAL: {
+    id: 'cal',
+    name: 'CAL',
+    fullName: 'Comprehensive Aramaic Lexicon',
+    abbreviation: 'CAL',
+    year: 1986,
+    description: 'Premier academic Aramaic dictionary covering Targum, Talmud, and all Aramaic dialects',
+    type: 'aramaic',
+    language: 'Aramaic',
+    url: 'https://cal.huc.edu'
   }
   // NOTE: Modern Hebrew sources (Morfix, Pealim, Wiktionary, Milog, OpenScriptures) removed
   // Focus on scholarly Biblical/Talmudic sources only
@@ -454,33 +1277,82 @@ const VERB_TENSES = {
 // WORD CLEANING UTILITIES
 // =============================================================================
 
-const cleanWord = (word) => {
-  if (!word || typeof word !== 'string') return '';
-  return word
-    .replace(/[\u0591-\u05AF]/g, '')  // Remove cantillation (te'amim)
-    .replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '') // Remove vowel points (nikud)
-    .replace(/[^\u05D0-\u05EA]/g, '') // Keep only Hebrew letters
-    .trim();
-};
+// cleanWord - use cleanHebrewWord from ../utils/hebrewUtils
+const cleanWord = cleanHebrewWord;
+
+/**
+ * Extract root using the enhanced grammar analysis service
+ * Falls back to simple extraction if grammar service returns uncertain result
+ */
+// Common Hebrew/Aramaic 3-letter roots that should NOT have their first letter stripped
+// Even though the first letter matches a common prefix (ש, ב, ל, מ, כ, etc.)
+const PROTECTED_ROOTS = new Set([
+  'שבת', // Sabbath/rest - ש is NOT a prefix
+  'שמר', // guard
+  'שמע', // hear
+  'שלח', // send
+  'שאל', // ask
+  'שכב', // lie down
+  'שכח', // forget
+  'שפט', // judge
+  'שבר', // break
+  'שוב', // return
+  'שים', // put/place
+  'שיר', // sing
+  'שנא', // hate
+  'שקל', // weigh
+  'בטח', // trust - ב is NOT a prefix
+  'בין', // understand
+  'בנה', // build
+  'בקש', // seek
+  'ברא', // create
+  'ברך', // bless
+  'לקח', // take - ל is NOT a prefix
+  'למד', // learn
+  'לבש', // wear
+  'מלך', // reign - מ is NOT a prefix
+  'מצא', // find
+  'מות', // die
+  'מלא', // fill
+  'כתב', // write - כ is NOT a prefix
+  'כרת', // cut
+  'דבר', // speak - ד is NOT a prefix
+  'הלך', // walk - ה is NOT a prefix (in this root)
+]);
 
 const extractRoot = (word) => {
   const cleaned = cleanWord(word);
+  if (!cleaned || cleaned.length < 2) return cleaned;
+
+  // Use the improved grammar service for root extraction
+  const grammarResult = extractGrammarRoot(word);
+  if (grammarResult?.root && !grammarResult.uncertain) {
+    return grammarResult.root;
+  }
+
+  // Fallback: simple heuristic if grammar service returns uncertain
   if (cleaned.length <= 3) return cleaned;
 
-  // Simple root extraction - remove common prefixes/suffixes
+  // Check if this is a protected root (don't strip prefixes from these)
+  if (PROTECTED_ROOTS.has(cleaned)) return cleaned;
+
   let root = cleaned;
 
   // Remove common prefixes
-  const prefixes = ['וי', 'הת', 'ה', 'ו', 'ל', 'ב', 'מ', 'כ', 'ש'];
+  const prefixes = ['וי', 'הת', 'ה', 'ו', 'ל', 'ב', 'מ', 'כ', 'ש', 'ד'];
   for (const prefix of prefixes) {
     if (root.startsWith(prefix) && root.length > prefix.length + 2) {
-      root = root.slice(prefix.length);
-      break;
+      const potentialRoot = root.slice(prefix.length);
+      // Don't strip if the result is a protected root
+      if (!PROTECTED_ROOTS.has(potentialRoot)) {
+        root = potentialRoot;
+        break;
+      }
     }
   }
 
-  // Remove common suffixes
-  const suffixes = ['ים', 'ות', 'תי', 'נו', 'תם', 'ה', 'ו'];
+  // Remove common suffixes (including Aramaic)
+  const suffixes = ['ים', 'ות', 'ין', 'יא', 'תא', 'תי', 'נו', 'תם', 'ה', 'ו'];
   for (const suffix of suffixes) {
     if (root.endsWith(suffix) && root.length > suffix.length + 2) {
       root = root.slice(0, -suffix.length);
@@ -489,6 +1361,77 @@ const extractRoot = (word) => {
   }
 
   return root.length >= 2 && root.length <= 4 ? root : cleaned.slice(0, 3);
+};
+
+/**
+ * Transliterate Hebrew to scholarly Latin script
+ * Uses standard academic transliteration (SBL/ALA-LC style)
+ */
+const transliterateHebrew = (word) => {
+  if (!word || typeof word !== 'string') return '';
+
+  // Hebrew consonant to Latin transliteration map (SBL academic style)
+  const consonantMap = {
+    'א': 'ʾ', 'ב': 'b', 'ג': 'g', 'ד': 'd', 'ה': 'h',
+    'ו': 'w', 'ז': 'z', 'ח': 'ḥ', 'ט': 'ṭ', 'י': 'y',
+    'כ': 'k', 'ך': 'k', 'ל': 'l', 'מ': 'm', 'ם': 'm',
+    'נ': 'n', 'ן': 'n', 'ס': 's', 'ע': 'ʿ', 'פ': 'p',
+    'ף': 'p', 'צ': 'ṣ', 'ץ': 'ṣ', 'ק': 'q', 'ר': 'r',
+    'שׁ': 'š', 'שׂ': 'ś', 'ש': 'š', 'ת': 't'
+  };
+
+  // Vowel points (nikud) to vowel transliteration
+  const vowelMap = {
+    '\u05B0': 'ə',  // sheva
+    '\u05B1': 'ĕ',  // hataf segol
+    '\u05B2': 'ă',  // hataf patah
+    '\u05B3': 'ŏ',  // hataf qamats
+    '\u05B4': 'i',  // hiriq
+    '\u05B5': 'ē',  // tsere
+    '\u05B6': 'e',  // segol
+    '\u05B7': 'a',  // patah
+    '\u05B8': 'ā',  // qamats
+    '\u05B9': 'ō',  // holam
+    '\u05BA': 'ō',  // holam haser
+    '\u05BB': 'u',  // qubuts
+    '\u05BC': '',   // dagesh (handled separately)
+  };
+
+  let result = '';
+  const chars = [...word];
+
+  for (let i = 0; i < chars.length; i++) {
+    const char = chars[i];
+
+    // Check for shin/sin dots
+    if (char === 'ש') {
+      const next = chars[i + 1];
+      if (next === '\u05C1') { // shin dot
+        result += 'š';
+        i++;
+        continue;
+      } else if (next === '\u05C2') { // sin dot
+        result += 'ś';
+        i++;
+        continue;
+      }
+    }
+
+    // Consonant
+    if (consonantMap[char]) {
+      result += consonantMap[char];
+    }
+    // Vowel
+    else if (vowelMap[char] !== undefined) {
+      result += vowelMap[char];
+    }
+    // Skip cantillation marks
+    else if (char.charCodeAt(0) >= 0x0591 && char.charCodeAt(0) <= 0x05AF) {
+      continue;
+    }
+  }
+
+  return result || cleanWord(word).split('').map(c => consonantMap[c] || c).join('');
 };
 
 // =============================================================================
@@ -503,11 +1446,11 @@ const fetchSefariaLexicon = async (word) => {
   if (!cleaned || cleaned.length < 2) return null;
 
   try {
-    const response = await fetch(`${SEFARIA_BASE}/words/${encodeURIComponent(cleaned)}`);
-    if (!response.ok) return null;
-    return await response.json();
-  } catch (error) {
-    console.warn('Sefaria lexicon fetch failed:', error.message);
+    return await fetchWithFallback(
+      `${SEFARIA_BASE}/words/${encodeURIComponent(cleaned)}`,
+      { timeout: 8000 }
+    );
+  } catch {
     return null;
   }
 };
@@ -520,29 +1463,29 @@ const fetchSefariaWordAlternative = async (word) => {
   const cleaned = cleanWord(word);
   if (!cleaned || cleaned.length < 2) return null;
 
-  // Try the lexicon lookup API
+  // Try the lexicon lookup API (suppress 404s - expected for most words)
   try {
-    const response = await fetch(`${SEFARIA_BASE}/lexicon/${encodeURIComponent(cleaned)}`);
-    if (response.ok) {
-      const data = await response.json();
-      if (data && (Array.isArray(data) ? data.length > 0 : Object.keys(data).length > 0)) {
-        return Array.isArray(data) ? data : [data];
-      }
+    const data = await fetchWithFallback(
+      `${SEFARIA_BASE}/lexicon/${encodeURIComponent(cleaned)}`,
+      { timeout: 6000 }
+    );
+    if (data && (Array.isArray(data) ? data.length > 0 : Object.keys(data).length > 0)) {
+      return Array.isArray(data) ? data : [data];
     }
-  } catch (error) {
-    // Silent fallback
+  } catch {
+    // Silent fallback - 404/503/timeout are expected
   }
 
   // Try Steinsaltz dictionary specifically for Aramaic
   try {
-    const response = await fetch(`${SEFARIA_BASE}/words/${encodeURIComponent(cleaned)}?lookup_ref=Steinsaltz`);
-    if (response.ok) {
-      const data = await response.json();
-      if (data && Array.isArray(data) && data.length > 0) {
-        return data;
-      }
+    const data = await fetchWithFallback(
+      `${SEFARIA_BASE}/words/${encodeURIComponent(cleaned)}?lookup_ref=Steinsaltz`,
+      { timeout: 6000 }
+    );
+    if (data && Array.isArray(data) && data.length > 0) {
+      return data;
     }
-  } catch (error) {
+  } catch {
     // Silent fallback
   }
 
@@ -553,23 +1496,18 @@ const fetchSefariaWordAlternative = async (word) => {
  * Fetch from Bolls.life Bible Dictionary API (BDB/Thayer's)
  * Additional online source for Hebrew-English translations
  * API: https://bolls.life/dictionary-definition/BDBT/{word}/
+ * Note: Uses CORS proxy fallback since bolls.life doesn't support CORS
  */
 const fetchBollsLifeDefinition = async (word) => {
   const cleaned = cleanWord(word);
   if (!cleaned || cleaned.length < 2) return null;
 
   try {
-    const response = await fetch(
+    // Use fetchWithFallback which has built-in CORS proxy support
+    const data = await fetchWithFallback(
       `https://bolls.life/dictionary-definition/BDBT/${encodeURIComponent(cleaned)}/`,
-      {
-        headers: { 'Accept': 'application/json' },
-        signal: AbortSignal.timeout(8000)
-      }
+      { timeout: 8000 }
     );
-
-    if (!response.ok) return null;
-
-    const data = await response.json();
 
     // Bolls.life returns dictionary entries
     if (data && (data.definition || data.meaning || data.definitions)) {
@@ -587,7 +1525,7 @@ const fetchBollsLifeDefinition = async (word) => {
 
     return null;
   } catch (error) {
-    // Silent fallback - Bolls.life may not have all words
+    // Silent fallback - Bolls.life may not have all words or CORS proxy may fail
     return null;
   }
 };
@@ -632,26 +1570,336 @@ const fetchStepBibleDefinition = async (strongNumber) => {
   }
 };
 
+/**
+ * Fetch CAL data with CORS proxy handling for production
+ * @param {string} endpoint - CAL API endpoint
+ * @returns {Promise<string|null>} HTML response or null
+ */
+const fetchCALData = async (endpoint) => {
+  const url = buildCALUrl(endpoint);
+
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'Accept': IS_DEV ? 'text/html' : 'application/json'
+      },
+      signal: AbortSignal.timeout(IS_DEV ? 10000 : 15000)
+    });
+
+    if (!response.ok) return null;
+
+    if (IS_DEV) {
+      // Development: direct HTML response
+      return await response.text();
+    } else {
+      // Production: CORS proxy wraps response in JSON with 'contents' field
+      const data = await response.json();
+      return data.contents || '';
+    }
+  } catch (error) {
+    if (IS_DEV) {
+      log.warn('CAL fetch error:', error.message);
+    }
+    return null;
+  }
+};
+
+/**
+ * Fetch from CAL (Comprehensive Aramaic Lexicon)
+ * Premier academic Aramaic dictionary - covers Targum, Talmud, all Aramaic dialects
+ * Works in both development (local proxy) and production (CORS proxy)
+ * @param {string} word - Aramaic word to look up
+ * @returns {Promise<object|null>} CAL definition data
+ */
+const fetchCALDefinition = async (word) => {
+  const cleaned = cleanWord(word);
+  if (!cleaned || cleaned.length < 2) return null;
+
+  try {
+    // CAL uses URL-encoded Hebrew/Aramaic text directly in the query
+    const endpoint = `/oneentry.php?lemma=${encodeURIComponent(cleaned)}&cession=S1`;
+    const response = await fetchCALData(endpoint);
+
+    // CAL returns HTML - extract definition data
+    if (response && typeof response === 'string') {
+      const result = parseCALResponse(response, cleaned);
+      if (result) {
+        return result;
+      }
+    }
+
+    // Try alternative search with root form
+    const root = extractRoot(cleaned);
+    if (root && root !== cleaned) {
+      const rootEndpoint = `/oneentry.php?lemma=${encodeURIComponent(root)}&cession=S1`;
+      const rootResponse = await fetchCALData(rootEndpoint);
+
+      if (rootResponse && typeof rootResponse === 'string') {
+        return parseCALResponse(rootResponse, root);
+      }
+    }
+
+    return null;
+  } catch (error) {
+    // Silent fail - CAL may not be accessible or word not found
+    return null;
+  }
+};
+
+/**
+ * Parse CAL HTML response to extract definition data
+ * CAL returns HTML with structured dictionary entries
+ */
+const parseCALResponse = (html, word) => {
+  if (!html || typeof html !== 'string') return null;
+
+  try {
+    // Check for error responses from CAL
+    if (html.includes('BAD LEMMA') ||
+        html.includes('No entry found') ||
+        html.includes('Error') ||
+        html.includes('not found') ||
+        html.length < 100) {
+      return null; // Invalid response
+    }
+
+    // Extract definition from CAL's HTML structure
+    // CAL uses specific classes and patterns for their entries
+
+    const definitions = [];
+    let headword = word;
+    let etymology = null;
+    let dialect = null;
+    let partOfSpeech = null;
+
+    // Extract headword (usually in <span class="lemma"> or similar)
+    const headwordMatch = html.match(/<span[^>]*class="[^"]*lemma[^"]*"[^>]*>([^<]+)</i);
+    if (headwordMatch) {
+      headword = headwordMatch[1].trim();
+    }
+
+    // Extract definition text - CAL often uses <span class="definition"> or plain text after headword
+    const defMatches = html.matchAll(/<span[^>]*class="[^"]*(?:definition|meaning|gloss)[^"]*"[^>]*>([^<]+)</gi);
+    for (const match of defMatches) {
+      const def = cleanDefinitionText(match[1]);
+      if (def && def.length > 2) {
+        definitions.push({ text: def });
+      }
+    }
+
+    // Try alternative pattern - look for English text after Aramaic lemma
+    if (definitions.length === 0) {
+      // Look for pattern: Aramaic word followed by English definition
+      const textBlocks = html.match(/>\s*([A-Za-z][A-Za-z\s,.'()-]{10,})\s*</g);
+      if (textBlocks) {
+        for (const block of textBlocks.slice(0, 5)) { // Take first 5 matches max
+          const cleaned = cleanDefinitionText(block.replace(/[<>]/g, ''));
+          if (cleaned && cleaned.length > 5 && /^[A-Za-z]/.test(cleaned)) {
+            definitions.push({ text: cleaned });
+          }
+        }
+      }
+    }
+
+    // Extract dialect info (Jewish Babylonian Aramaic, Palestinian Aramaic, etc.)
+    const dialectMatch = html.match(/(?:JBA|CPA|JPA|OA|Syr|Sam|Mand|QA)/i);
+    if (dialectMatch) {
+      const dialectCodes = {
+        'JBA': 'Jewish Babylonian Aramaic (Talmud Bavli)',
+        'CPA': 'Christian Palestinian Aramaic',
+        'JPA': 'Jewish Palestinian Aramaic (Talmud Yerushalmi)',
+        'OA': 'Official Aramaic',
+        'Syr': 'Syriac',
+        'Sam': 'Samaritan Aramaic',
+        'Mand': 'Mandaic',
+        'QA': 'Qumran Aramaic'
+      };
+      dialect = dialectCodes[dialectMatch[0].toUpperCase()] || dialectMatch[0];
+    }
+
+    // Extract part of speech
+    const posMatch = html.match(/\b(noun|verb|adj(?:ective)?|adv(?:erb)?|prep(?:osition)?|conj(?:unction)?|particle)\b/i);
+    if (posMatch) {
+      partOfSpeech = posMatch[1].toLowerCase();
+    }
+
+    // Extract etymology/cognates
+    const etymMatch = html.match(/(?:cognate|related|from|cf\.|compare)[^<]+/i);
+    if (etymMatch) {
+      etymology = cleanDefinitionText(etymMatch[0]);
+    }
+
+    if (definitions.length === 0) {
+      return null;
+    }
+
+    return {
+      source: 'CAL',
+      fullName: 'Comprehensive Aramaic Lexicon',
+      headword,
+      definitions,
+      dialect,
+      partOfSpeech,
+      etymology,
+      language: 'Aramaic',
+      url: `https://cal.huc.edu/oneentry.php?lemma=${encodeURIComponent(word)}`
+    };
+  } catch (error) {
+    return null;
+  }
+};
+
 // =============================================================================
 // NOTE: Modern Hebrew sources (Morfix, Pealim, Wiktionary, Milog) removed
 // This service focuses on scholarly Biblical/Talmudic sources:
-// BDB, Jastrow, Strong's, HALOT, Klein, Gesenius, TWOT, Steinsaltz, STEP Bible
+// BDB, Jastrow, Strong's, HALOT, Klein, Gesenius, TWOT, Steinsaltz, STEP Bible, CAL
 // =============================================================================
+
+/**
+ * SMART headword filtering - algorithmic string matching
+ * Uses normalized edit distance with position-aware scoring
+ */
+const filterByHeadwordMatch = (data, searchedWord) => {
+  if (!data || !Array.isArray(data) || !searchedWord) return data || [];
+
+  const search = cleanWord(searchedWord);
+  if (!search) return data;
+
+  // Levenshtein distance
+  const editDist = (a, b) => {
+    const m = Array(b.length + 1).fill(null).map(() => Array(a.length + 1).fill(null));
+    for (let i = 0; i <= a.length; i++) m[0][i] = i;
+    for (let j = 0; j <= b.length; j++) m[j][0] = j;
+    for (let j = 1; j <= b.length; j++) {
+      for (let i = 1; i <= a.length; i++) {
+        m[j][i] = Math.min(m[j][i-1] + 1, m[j-1][i] + 1, m[j-1][i-1] + (a[i-1] === b[j-1] ? 0 : 1));
+      }
+    }
+    return m[b.length][a.length];
+  };
+
+  // Longest Common Subsequence length
+  const lcsLength = (a, b) => {
+    const m = Array(b.length + 1).fill(null).map(() => Array(a.length + 1).fill(0));
+    for (let i = 1; i <= a.length; i++) {
+      for (let j = 1; j <= b.length; j++) {
+        m[j][i] = a[i-1] === b[j-1] ? m[j-1][i-1] + 1 : Math.max(m[j][i-1], m[j-1][i]);
+      }
+    }
+    return m[b.length][a.length];
+  };
+
+  // Score each entry
+  const scored = data.map(entry => {
+    const head = cleanWord(entry.headword || entry.word || entry.term || '');
+    if (!head) return { entry, score: 0 };
+
+    // Perfect match
+    if (head === search) return { entry, score: 1, head };
+
+    const maxLen = Math.max(search.length, head.length);
+    const minLen = Math.min(search.length, head.length);
+
+    // Core metrics
+    const dist = editDist(search, head);
+    const lcs = lcsLength(search, head);
+
+    // Normalized scores (0-1)
+    const editSim = 1 - dist / maxLen;           // How few edits needed?
+    const lcsRatio = lcs / maxLen;               // How much sequence preserved?
+    const lenRatio = minLen / maxLen;            // How similar in length?
+
+    // Combined score with emphasis on LCS (preserves character order)
+    let score = (editSim * 0.35) + (lcsRatio * 0.45) + (lenRatio * 0.2);
+
+    // Penalize when search is longer and head is strict prefix
+    // (search has extra chars that might be meaningful root letters)
+    if (search.startsWith(head) && head.length < search.length) {
+      const extraRatio = (search.length - head.length) / search.length;
+      score *= (1 - extraRatio * 0.8); // Strong penalty for prefix matches
+    }
+
+    return { entry, score, head };
+  });
+
+  // Sort by score
+  scored.sort((a, b) => b.score - a.score);
+
+  // Dynamic threshold: 70% of best score, minimum 0.5
+  const maxScore = scored[0]?.score || 0;
+  const threshold = Math.max(0.6, maxScore * 0.75);
+
+  return scored.filter(s => s.score >= threshold).map(s => s.entry);
+};
 
 /**
  * Parse lexicon entries by source
  * Handles all Sefaria lexicon naming conventions
  */
-const parseBySource = (data) => {
+const parseBySource = (data, searchedWord = null) => {
   if (!data || !Array.isArray(data)) {
     return { bdb: [], jastrow: [], strong: [], klein: [], steinsaltz: [], sefaria: [], halot: [], gesenius: [], twot: [], other: [] };
   }
+
+  // Clean the searched word for validation
+  const cleanedSearch = searchedWord ? cleanWord(searchedWord) : null;
+  const searchLen = cleanedSearch ? cleanedSearch.length : 0;
+
+  // Filter entries to prefer exact headword matches
+  const filteredData = searchedWord ? filterByHeadwordMatch(data, searchedWord) : data;
+
+  /**
+   * Algorithmic headword validation using LCS similarity
+   */
+  const isValidHeadwordMatch = (entry) => {
+    if (!cleanedSearch || searchLen < 2) return true;
+
+    // Extract headword from entry
+    let head = cleanWord(entry.headword || entry.word || entry.term || entry.form || '');
+
+    // Try content if no headword
+    if (!head && entry.content) {
+      const str = typeof entry.content === 'string' ? entry.content : JSON.stringify(entry.content);
+      const match = str.match(/[\u05D0-\u05EA]{2,}/);
+      if (match) head = cleanWord(match[0]);
+    }
+
+    if (!head) return false; // No headword = reject
+
+    if (head === cleanedSearch) return true; // Exact match
+
+    // LCS-based similarity check
+    const lcs = (a, b) => {
+      const m = Array(b.length + 1).fill(null).map(() => Array(a.length + 1).fill(0));
+      for (let i = 1; i <= a.length; i++) {
+        for (let j = 1; j <= b.length; j++) {
+          m[j][i] = a[i-1] === b[j-1] ? m[j-1][i-1] + 1 : Math.max(m[j][i-1], m[j-1][i]);
+        }
+      }
+      return m[b.length][a.length];
+    };
+
+    const maxLen = Math.max(searchLen, head.length);
+    const lcsRatio = lcs(cleanedSearch, head) / maxLen;
+    const lenRatio = Math.min(searchLen, head.length) / maxLen;
+
+    // Combined similarity score
+    let score = (lcsRatio * 0.6) + (lenRatio * 0.4);
+
+    // Penalize if search is longer and head is prefix (stronger penalty)
+    if (cleanedSearch.startsWith(head) && head.length < searchLen) {
+      score *= (1 - ((searchLen - head.length) / searchLen) * 0.8);
+    }
+
+    return score >= 0.6; // Minimum 60% similarity required
+  };
 
   const bySource = {
     bdb: [],
     jastrow: [],
     strong: [],
     klein: [],
+    kleinRelated: [], // Related words for Klein (looser filter) - scholarly transparency
     steinsaltz: [],
     sefaria: [],
     halot: [],
@@ -660,57 +1908,92 @@ const parseBySource = (data) => {
     other: []
   };
 
+  // FIRST PASS: Categorize unfiltered Klein entries for "related word" feature
+  // This allows us to show Klein entries even when they're for similar but different words
   for (const entry of data) {
     const lexicon = (entry.parent_lexicon || '').toLowerCase();
+    if (lexicon.includes('klein') || lexicon.includes('etymolog')) {
+      bySource.kleinRelated.push(entry);
+    }
+  }
+
+  for (const entry of filteredData) {
+    // CRITICAL: Skip entries with mismatched headwords
+    if (!isValidHeadwordMatch(entry)) {
+      continue; // Skip this entry - wrong word!
+    }
+
+    const lexicon = (entry.parent_lexicon || '').toLowerCase();
+    let matched = false;
+
+    // Handle combined sources first (e.g., "BDB Augmented Strong")
+    // These should be added to MULTIPLE categories
+
+    // Check for Strong's number - if present, always add to Strong's
+    if (lexicon.includes('strong') || entry.strong_number) {
+      bySource.strong.push(entry);
+      matched = true;
+    }
 
     // BDB - Brown-Driver-Briggs (various naming formats)
     if (lexicon.includes('bdb') || lexicon.includes('brown') ||
         lexicon.includes('driver') || lexicon.includes('briggs') ||
-        lexicon.includes('hebrew and english lexicon')) {
+        lexicon.includes('hebrew and english lexicon') ||
+        lexicon.includes('augmented')) {
       bySource.bdb.push(entry);
+      matched = true;
     }
+
     // Jastrow - Aramaic/Talmudic dictionary
-    else if (lexicon.includes('jastrow')) {
+    if (lexicon.includes('jastrow')) {
       bySource.jastrow.push(entry);
+      matched = true;
     }
-    // Steinsaltz - Modern Talmud translation
-    else if (lexicon.includes('steinsaltz') || lexicon.includes('koren')) {
-      bySource.steinsaltz.push(entry);
-    }
-    // HALOT - Hebrew and Aramaic Lexicon of the Old Testament
-    else if (lexicon.includes('halot') || lexicon.includes('hebrew and aramaic lexicon')) {
-      bySource.halot.push(entry);
-    }
-    // Gesenius - Hebrew Grammar and Lexicon
-    else if (lexicon.includes('gesenius') || lexicon.includes('gkc')) {
-      bySource.gesenius.push(entry);
-    }
-    // TWOT - Theological Wordbook of the Old Testament
-    else if (lexicon.includes('twot') || lexicon.includes('theological wordbook')) {
-      bySource.twot.push(entry);
-    }
-    // Strong's Concordance (various formats including "BDB Augmented Strong")
-    else if (lexicon.includes('strong')) {
-      // If it's "BDB Augmented Strong", also add to BDB
-      if (lexicon.includes('bdb') || lexicon.includes('augmented')) {
-        bySource.bdb.push(entry);
-      }
-      bySource.strong.push(entry);
-    }
+
     // Klein's Etymological Dictionary
-    else if (lexicon.includes('klein') || lexicon.includes('etymolog')) {
+    if (lexicon.includes('klein') || lexicon.includes('etymolog')) {
       bySource.klein.push(entry);
+      matched = true;
     }
+
+    // Steinsaltz - Modern Talmud translation
+    if (lexicon.includes('steinsaltz') || lexicon.includes('koren')) {
+      bySource.steinsaltz.push(entry);
+      matched = true;
+    }
+
+    // HALOT - Hebrew and Aramaic Lexicon of the Old Testament
+    if (lexicon.includes('halot') || lexicon.includes('hebrew and aramaic lexicon')) {
+      bySource.halot.push(entry);
+      matched = true;
+    }
+
+    // Gesenius - Hebrew Grammar and Lexicon
+    if (lexicon.includes('gesenius') || lexicon.includes('gkc')) {
+      bySource.gesenius.push(entry);
+      matched = true;
+    }
+
+    // TWOT - Theological Wordbook of the Old Testament
+    if (lexicon.includes('twot') || lexicon.includes('theological wordbook')) {
+      bySource.twot.push(entry);
+      matched = true;
+    }
+
     // Sefaria's own lexicon
-    else if (lexicon.includes('sefaria')) {
+    if (lexicon.includes('sefaria')) {
       bySource.sefaria.push(entry);
+      matched = true;
     }
-    // Targum/Talmud/Midrash sources (likely Aramaic)
-    else if (lexicon.includes('targum') || lexicon.includes('talmud') || lexicon.includes('midrash')) {
+
+    // Targum/Talmud/Midrash sources (likely Aramaic) - add to Jastrow if not already there
+    if (!matched && (lexicon.includes('targum') || lexicon.includes('talmud') || lexicon.includes('midrash'))) {
       bySource.jastrow.push(entry);
+      matched = true;
     }
-    // Other sources
-    else {
+
+    // Other sources - fallback
+    if (!matched) {
       bySource.other.push(entry);
     }
   }
@@ -719,10 +2002,162 @@ const parseBySource = (data) => {
 };
 
 /**
+ * Prioritize and FILTER Jastrow entries based on alignment with BDB definitions
+ * When multiple Jastrow entries exist (e.g., ברא = "create" vs "son" vs "outside"),
+ * ONLY return entries whose definitions align with BDB, filtering out homographs
+ * @param {Array} jastrowEntries - All Jastrow entries
+ * @param {Array} bdbEntries - BDB entries for cross-reference
+ * @returns {Array} - Filtered Jastrow entries matching BDB meaning
+ */
+const prioritizeJastrowEntries = (jastrowEntries, bdbEntries) => {
+  if (!jastrowEntries || jastrowEntries.length <= 1) return jastrowEntries;
+  if (!bdbEntries || bdbEntries.length === 0) return jastrowEntries;
+
+  // Extract BDB definition keywords for matching (key semantic words)
+  const bdbKeywords = new Set();
+  const bdbRoots = new Set(); // Root concepts like "create", "make", "form"
+  for (const entry of bdbEntries) {
+    const defs = extractDefinitions(entry, false);
+    for (const def of defs) {
+      if (def.text) {
+        const text = def.text.toLowerCase();
+        // Extract significant words (3+ letters, not common words)
+        const words = text.split(/\s+/);
+        for (const word of words) {
+          const cleaned = word.replace(/[^a-z]/g, '');
+          if (cleaned.length >= 3 && !['the', 'and', 'for', 'with', 'from', 'that', 'this'].includes(cleaned)) {
+            bdbKeywords.add(cleaned);
+            // Extract root forms (remove -ing, -ed, -s, etc.)
+            const root = cleaned.replace(/(ing|ed|es|s|ly|tion|ness)$/, '');
+            if (root.length >= 3) bdbRoots.add(root);
+          }
+        }
+      }
+    }
+  }
+
+  if (bdbKeywords.size === 0) return jastrowEntries;
+
+  // Score each Jastrow entry based on keyword matches with BDB
+  const scored = jastrowEntries.map(entry => {
+    const defs = extractDefinitions(entry, true);
+    let score = 0;
+    let hasDirectMatch = false;
+
+    for (const def of defs) {
+      if (def.text) {
+        const text = def.text.toLowerCase();
+        const words = text.split(/\s+/);
+        for (const word of words) {
+          const cleaned = word.replace(/[^a-z]/g, '');
+          // Direct keyword match
+          if (bdbKeywords.has(cleaned)) {
+            score += 15;
+            hasDirectMatch = true;
+          }
+          // Root match (create/creation, form/forming)
+          const root = cleaned.replace(/(ing|ed|es|s|ly|tion|ness)$/, '');
+          if (root.length >= 3 && bdbRoots.has(root)) {
+            score += 12;
+            hasDirectMatch = true;
+          }
+          // Partial match
+          for (const keyword of bdbKeywords) {
+            if (cleaned.length >= 4 && keyword.length >= 4) {
+              if (cleaned.startsWith(keyword.slice(0, 4)) || keyword.startsWith(cleaned.slice(0, 4))) {
+                score += 5;
+              }
+            }
+          }
+        }
+      }
+    }
+    return { entry, score, hasDirectMatch };
+  });
+
+  // FILTER: Only keep entries with keyword matches (score > 0)
+  // This removes homographs like "son" when BDB says "create"
+  const matched = scored.filter(s => s.score > 0 && s.hasDirectMatch);
+
+  // If we have matches, use them; otherwise fall back to all entries
+  const filtered = matched.length > 0 ? matched : scored;
+
+  // Sort by score (highest first)
+  filtered.sort((a, b) => b.score - a.score);
+
+  return filtered.map(s => s.entry);
+};
+
+/**
+ * Extract numbered definition senses from BDB-style definitions
+ * Parses patterns like "1) meaning 2) meaning" or "1. meaning 2. meaning"
+ * Also extracts semantic categories from parenthetical notes
+ * @param {string} text - Raw definition text
+ * @returns {Array<object>} - Array of { senseNum, text, semanticField }
+ */
+const parseNumberedSenses = (text) => {
+  if (!text || typeof text !== 'string') return [];
+
+  const senses = [];
+  // Match patterns: "1)" "1." "1:" or "(1)" followed by text
+  const sensePattern = /(?:^|\s)(?:\(?\d+[.):\]]\)?)\s*([^0-9(][^)]+?)(?=(?:\s+\(?\d+[.):\]]\)?|$))/gi;
+
+  // Also try to detect semantic categories in parentheses: "(of God)" "(literal)" etc.
+  const semanticPattern = /\(([^)]{2,30})\)/g;
+
+  let match;
+  let senseNum = 1;
+
+  // Try numbered pattern first
+  const text2 = ' ' + text; // Ensure patterns at start match
+  while ((match = sensePattern.exec(text2)) !== null) {
+    let senseText = cleanDefinitionText(match[1]);
+    if (senseText && senseText.length >= 2) {
+      // Extract semantic field from parenthetical notes
+      let semanticField = null;
+      const semMatch = senseText.match(semanticPattern);
+      if (semMatch) {
+        const potential = semMatch[0].slice(1, -1).toLowerCase();
+        // Check if it's a semantic category (not a reference)
+        const semanticKeywords = ['lit', 'fig', 'of god', 'divine', 'human', 'physical', 'moral',
+          'abstract', 'concrete', 'transitive', 'intransitive', 'causative', 'reflexive'];
+        if (semanticKeywords.some(k => potential.includes(k))) {
+          semanticField = potential;
+        }
+      }
+
+      senses.push({
+        senseNum: senseNum++,
+        text: senseText,
+        semanticField: semanticField
+      });
+    }
+  }
+
+  // If no numbered senses found, try splitting by semicolon for multiple meanings
+  if (senses.length === 0) {
+    const parts = text.split(/;\s*/);
+    for (const part of parts) {
+      const cleaned = cleanDefinitionText(part);
+      if (cleaned && cleaned.length >= 2) {
+        senses.push({
+          senseNum: senseNum++,
+          text: cleaned,
+          semanticField: null
+        });
+      }
+    }
+  }
+
+  return senses;
+};
+
+/**
  * Extract definitions from entry content
  * Handles all Sefaria lexicon entry formats
  * Cleans HTML and scholarly notation from all definitions
  * Uses special extraction for Jastrow entries
+ * Enhanced with numbered sense extraction for scholarly display
  * @param {object} entry - Lexicon entry
  * @param {boolean} isJastrow - Whether this is a Jastrow entry (requires special handling)
  */
@@ -730,6 +2165,9 @@ const extractDefinitions = (entry, isJastrow = false) => {
   const definitions = [];
 
   if (!entry) return definitions;
+
+  // Track sense numbers for BDB-style enumeration
+  let globalSenseNum = 1;
 
   /**
    * Add a definition if it's valid and not a duplicate
@@ -743,70 +2181,126 @@ const extractDefinitions = (entry, isJastrow = false) => {
     // Skip if already exists (check first 40 chars for dedup)
     const normalized = cleaned.toLowerCase().slice(0, 40);
     if (definitions.find(d => d.text.toLowerCase().slice(0, 40) === normalized)) return;
-    definitions.push({ text: cleaned, ...extras });
+
+    // Assign sense number if not provided
+    const senseNum = extras.senseNum || globalSenseNum++;
+
+    definitions.push({
+      text: cleaned,
+      senseNum,
+      ...extras
+    });
   };
 
   // First check for short_definition (quick summary) - often the cleanest
   if (entry.short_definition) {
     const shortDef = cleanDefinitionText(entry.short_definition);
     if (shortDef && shortDef.length >= 3) {
-      definitions.push({ text: shortDef, isShort: true });
+      definitions.push({ text: shortDef, isShort: true, senseNum: 0 }); // 0 = summary
     }
   }
 
   // Handle structured content with senses (BDB Augmented Strong format)
   if (entry.content?.senses) {
+    let senseIdx = 1;
     for (const sense of entry.content.senses) {
       if (sense.definition) {
         addDefinition(sense.definition, {
+          senseNum: senseIdx,
           grammar: sense.grammar || null,
-          notes: sense.notes || null
+          notes: sense.notes || null,
+          semanticField: sense.semantic_field || sense.category || null
         });
+        senseIdx++;
       }
-      // Nested senses
+      // Nested senses (e.g., 1a, 1b)
       if (sense.senses) {
+        let subIdx = 0;
         for (const subSense of sense.senses) {
           if (subSense.definition) {
+            const subLabel = String.fromCharCode(97 + subIdx); // a, b, c...
             addDefinition(subSense.definition, {
+              senseNum: senseIdx - 1, // Same parent sense
+              subSense: subLabel,
               grammar: subSense.grammar || null,
               notes: subSense.notes || null,
               isSubsense: true
             });
+            subIdx++;
           }
         }
       }
     }
+    globalSenseNum = senseIdx;
   }
 
-  // Handle direct definition field
+  // Handle direct definition field - try to extract numbered senses
   if (entry.definition) {
     const defText = typeof entry.definition === 'string'
       ? entry.definition
       : JSON.stringify(entry.definition);
-    addDefinition(defText);
+
+    // Try to parse numbered senses from definition text
+    const numberedSenses = parseNumberedSenses(defText);
+    if (numberedSenses.length > 1) {
+      // Multiple senses found - add each with proper numbering
+      for (const sense of numberedSenses) {
+        addDefinition(sense.text, {
+          senseNum: sense.senseNum,
+          semanticField: sense.semanticField
+        });
+      }
+    } else {
+      // Single definition
+      addDefinition(defText);
+    }
   }
 
   // Handle string content (HTML) - common in Jastrow entries
   if (typeof entry.content === 'string') {
-    addDefinition(entry.content, { raw: true });
+    // Try to extract numbered senses from HTML content
+    const numberedSenses = parseNumberedSenses(entry.content);
+    if (numberedSenses.length > 1) {
+      for (const sense of numberedSenses) {
+        addDefinition(sense.text, {
+          senseNum: sense.senseNum,
+          semanticField: sense.semanticField,
+          raw: true
+        });
+      }
+    } else {
+      addDefinition(entry.content, { raw: true });
+    }
   }
 
   // Handle 'definitions' array if present
   if (Array.isArray(entry.definitions)) {
     for (const def of entry.definitions) {
       const defText = typeof def === 'string' ? def : def?.text;
-      addDefinition(defText);
+      const senseNum = typeof def === 'object' ? def?.sense_number : undefined;
+      addDefinition(defText, senseNum ? { senseNum } : {});
     }
   }
 
   // Handle BDB/Jastrow specific fields
   if (entry.BDB) {
-    addDefinition(entry.BDB, { source: 'BDB' });
+    const numberedSenses = parseNumberedSenses(entry.BDB);
+    if (numberedSenses.length > 1) {
+      for (const sense of numberedSenses) {
+        addDefinition(sense.text, {
+          source: 'BDB',
+          senseNum: sense.senseNum,
+          semanticField: sense.semanticField
+        });
+      }
+    } else {
+      addDefinition(entry.BDB, { source: 'BDB' });
+    }
   }
   if (entry.Jastrow) {
     const jastrowDef = extractJastrowMeaning(entry.Jastrow);
     if (jastrowDef) {
-      definitions.push({ text: jastrowDef, source: 'Jastrow' });
+      definitions.push({ text: jastrowDef, source: 'Jastrow', senseNum: globalSenseNum++ });
     }
   }
 
@@ -958,6 +2452,31 @@ const generateWordForms = (word) => {
     }
   }
 
+  // Step 7: Try ADDING common endings for incomplete forms
+  // This helps Aramaic words like "יציא" match dictionary entries like "יציאה"
+  // Only for words that might be truncated (3-5 letters, not already ending with common suffix)
+  if (word.length >= 3 && word.length <= 6) {
+    const commonEndings = [
+      'ה',   // Feminine singular (יציא → יציאה)
+      'א',   // Aramaic definite (מלכ → מלכא)
+      'תא',  // Aramaic definite feminine
+      'ת',   // Feminine construct
+    ];
+
+    // Don't add endings if word already ends with them
+    for (const ending of commonEndings) {
+      if (!word.endsWith(ending)) {
+        forms.add(word + ending);
+      }
+    }
+
+    // For words ending in א (Aramaic definite), also try ה variant
+    // יציא → יציאה (the ה ending is often the dictionary form)
+    if (word.endsWith('א') && !word.endsWith('תא')) {
+      forms.add(word.slice(0, -1) + 'ה');
+    }
+  }
+
   return Array.from(forms);
 };
 
@@ -971,9 +2490,32 @@ export const scholarlyLookup = async (word) => {
   const cleaned = cleanWord(word);
   if (!cleaned || cleaned.length < 2) return null;
 
-  const cacheKey = `scholarly:${cleaned}`;
+  const cacheKey = `scholarly:${CACHE_VERSION}:${cleaned}`;
   const cached = scholarlyCache.get(cacheKey);
   if (cached) return cached;
+
+  // ==========================================================================
+  // HALACHIC OVERRIDE: Check context-specific translations FIRST
+  // This ensures words like השבת → "the Shabbat" (not "intermission")
+  // NOTE: We no longer short-circuit here - we continue to fetch scholarly sources
+  // and add the halachic override as a "recommended" source alongside them
+  // ==========================================================================
+  let halachicOverride = null;
+  if (HALACHIC_OVERRIDE[cleaned]) {
+    halachicOverride = {
+      source: { name: 'Halachic', fullName: 'Halachic Context (recommended for Talmud study)' },
+      headword: cleaned,
+      definitions: [{ text: HALACHIC_OVERRIDE[cleaned], recommended: true }],
+      _isOverride: true,
+      recommended: true
+    };
+  }
+
+  // ==========================================================================
+  // LOCAL-FIRST: Get ALL local dictionaries (36k+ entries) for comprehensive data
+  // These will be merged with API results to provide multiple scholarly sources
+  // ==========================================================================
+  const allLocalResults = await lookupAllLocalDictionaries(cleaned);
 
   // Generate word forms to try
   const wordForms = generateWordForms(cleaned);
@@ -1003,7 +2545,161 @@ export const scholarlyLookup = async (word) => {
     }
   }
 
-  const bySource = parseBySource(sefariaData);
+  // Parse entries by source, filtering by headword match to get accurate definitions
+  const bySource = parseBySource(sefariaData, matchedForm);
+
+  // Always try local Jastrow (25,000+ entries with morphological analysis)
+  // Local is faster and handles prefixes/suffixes better than API
+  try {
+    const localEntry = await lookupLocalJastrow(cleaned);
+    if (localEntry) {
+      // Build morphological analysis note
+      let morphNote = '';
+      if (localEntry._strippedPrefix) {
+        const prefixMeanings = {
+          'ו': 'and', 'ה': 'the', 'ב': 'in', 'ל': 'to', 'מ': 'from', 'כ': 'like', 'ש': 'that',
+          'וה': 'and the', 'וב': 'and in', 'ול': 'and to', 'ומ': 'and from',
+          'שה': 'that the', 'כש': 'when'
+        };
+        const prefixMeaning = prefixMeanings[localEntry._strippedPrefix] || localEntry._strippedPrefix;
+        morphNote += `[${prefixMeaning} + `;
+      }
+      if (localEntry._strippedSuffix) {
+        const suffixMeanings = {
+          'ים': 'pl.masc', 'ות': 'pl.fem', 'ין': 'pl.Aram', 'י': 'my', 'ך': 'your',
+          'הם': 'their', 'נו': 'our'
+        };
+        morphNote += morphNote ? '' : '[';
+        morphNote += `${localEntry._matchedForm} + ${suffixMeanings[localEntry._strippedSuffix] || localEntry._strippedSuffix}]`;
+      } else if (morphNote) {
+        morphNote += `${localEntry._matchedForm}]`;
+      }
+
+      // Add to results - prioritize local if API also returned results
+      const localFormatted = {
+        headword: localEntry.lemma || localEntry._matchedForm || cleaned,
+        parent_lexicon: 'Jastrow Dictionary',
+        content: localEntry.definition,
+        short_definition: localEntry.definition,
+        _isLocal: true,
+        _ref: localEntry.ref,
+        _matchType: localEntry._matchType,
+        _morphNote: morphNote || null,
+        _matchedForm: localEntry._matchedForm,
+        // Copy morphological metadata so strictHeadwordFilter accepts these
+        _strippedPrefix: localEntry._strippedPrefix,
+        _strippedSuffix: localEntry._strippedSuffix
+      };
+
+      // If API didn't find Jastrow, use local
+      if (bySource.jastrow.length === 0) {
+        bySource.jastrow.push(localFormatted);
+      } else {
+        // API found something - check if local found a better/different match
+        const apiHeadwords = bySource.jastrow.map(e => cleanWordForLookup(e.headword || ''));
+        const localHeadword = cleanWordForLookup(localEntry._matchedForm || '');
+        if (!apiHeadwords.includes(localHeadword)) {
+          // Local found a different entry - add it
+          bySource.jastrow.unshift(localFormatted);
+        }
+      }
+    }
+  } catch (e) { /* silent */ }
+
+  // ==========================================================================
+  // ADD ALL LOCAL DICTIONARY RESULTS (BDB, Strong's) for comprehensive scholarly data
+  // This ensures users see multiple sources even when API is limited
+  // ==========================================================================
+
+  // Add local BDB if API didn't find it
+  if (allLocalResults?.bdb && bySource.bdb.length === 0) {
+    bySource.bdb.push(allLocalResults.bdb);
+  }
+
+  // Add local Strong's if API didn't find it
+  if (allLocalResults?.strongs && bySource.strong.length === 0) {
+    bySource.strong.push(allLocalResults.strongs);
+  }
+
+  // Also add local Jastrow from allLocalResults if not already added
+  if (allLocalResults?.jastrow && bySource.jastrow.length === 0) {
+    bySource.jastrow.push(allLocalResults.jastrow);
+  }
+
+  // Add Aramaic variant from Jastrow if found (e.g., רשות → רשותא = domain)
+  // This provides the Talmudic meaning alongside the Hebrew meaning
+  if (allLocalResults?.jastrowAlt) {
+    // Add as a separate Jastrow entry with Aramaic context
+    bySource.jastrow.push(allLocalResults.jastrowAlt);
+  }
+
+  /**
+   * SMART headword filter - LCS + edit distance with prefix penalty
+   */
+  const strictHeadwordFilter = (entries) => {
+    if (!entries || entries.length === 0) return [];
+
+    // Edit distance
+    const editDist = (a, b) => {
+      const m = Array(b.length + 1).fill(null).map(() => Array(a.length + 1).fill(null));
+      for (let i = 0; i <= a.length; i++) m[0][i] = i;
+      for (let j = 0; j <= b.length; j++) m[j][0] = j;
+      for (let j = 1; j <= b.length; j++) {
+        for (let i = 1; i <= a.length; i++) {
+          m[j][i] = Math.min(m[j][i-1] + 1, m[j-1][i] + 1, m[j-1][i-1] + (a[i-1] === b[j-1] ? 0 : 1));
+        }
+      }
+      return m[b.length][a.length];
+    };
+
+    // LCS length (preserves character order)
+    const lcs = (a, b) => {
+      const m = Array(b.length + 1).fill(null).map(() => Array(a.length + 1).fill(0));
+      for (let i = 1; i <= a.length; i++) {
+        for (let j = 1; j <= b.length; j++) {
+          m[j][i] = a[i-1] === b[j-1] ? m[j-1][i-1] + 1 : Math.max(m[j][i-1], m[j-1][i]);
+        }
+      }
+      return m[b.length][a.length];
+    };
+
+    const scored = entries.map(entry => {
+      const head = cleanWord(entry.headword || entry.word || entry.term || '');
+      if (!head) return { entry, score: 0 };
+      if (head === cleaned) return { entry, score: 1 };
+
+      // MORPHOLOGICAL MATCH: Local entries with suffix/prefix stripping should pass
+      // These are INTENTIONAL matches (e.g., הוצאות → הוצא via suffix strip)
+      if (entry._strippedSuffix || entry._strippedPrefix || entry._isLocal) {
+        return { entry, score: 0.95 }; // High score - valid morphological match
+      }
+
+      const maxLen = Math.max(cleaned.length, head.length);
+      const minLen = Math.min(cleaned.length, head.length);
+
+      // Core metrics
+      const editSim = 1 - editDist(cleaned, head) / maxLen;
+      const lcsRatio = lcs(cleaned, head) / maxLen;
+      const lenRatio = minLen / maxLen;
+
+      // Combined score emphasizing LCS
+      let score = (editSim * 0.35) + (lcsRatio * 0.45) + (lenRatio * 0.2);
+
+      // PENALTY: If search is longer and head is prefix, reduce score strongly
+      // BUT skip for entries with _matchedForm (already verified morphologically)
+      if (cleaned.startsWith(head) && head.length < cleaned.length && !entry._matchedForm) {
+        const extraRatio = (cleaned.length - head.length) / cleaned.length;
+        score *= (1 - extraRatio * 0.8); // Strong penalty
+      }
+
+      return { entry, score };
+    });
+
+    const maxScore = Math.max(...scored.map(s => s.score), 0);
+    const threshold = Math.max(0.6, maxScore * 0.75); // Higher thresholds
+
+    return scored.filter(s => s.score >= threshold).sort((a, b) => b.score - a.score).map(s => s.entry);
+  };
 
   // Try Bolls.life API as additional source (if no BDB results from Sefaria)
   let bollsResult = null;
@@ -1025,85 +2721,329 @@ export const scholarlyLookup = async (word) => {
     } catch (e) { /* silent */ }
   }
 
-  // Check if we have scholarly results
-  const hasResults = bySource.bdb.length > 0 || bySource.jastrow.length > 0 ||
+  // Try CAL (Comprehensive Aramaic Lexicon) for Aramaic words
+  // CAL is the premier academic Aramaic dictionary - essential for Talmud/Targum study
+  let calResult = null;
+  // Always try CAL for Aramaic lookups, or if Jastrow had results (indicates Aramaic)
+  if (bySource.jastrow.length > 0 || bySource.steinsaltz?.length > 0) {
+    try {
+      calResult = await fetchCALDefinition(cleaned);
+    } catch (e) { /* silent */ }
+  }
+
+  // Check if we have scholarly results (include halachic override)
+  const hasResults = halachicOverride ||
+                     bySource.bdb.length > 0 || bySource.jastrow.length > 0 ||
                      bySource.strong.length > 0 || bySource.klein.length > 0 ||
                      bySource.steinsaltz?.length > 0 || bySource.sefaria?.length > 0 ||
                      bySource.halot?.length > 0 || bySource.gesenius?.length > 0 ||
                      bySource.twot?.length > 0 || (bollsResult && bollsResult.definition) ||
-                     (stepBibleResult && stepBibleResult.definition);
+                     (stepBibleResult && stepBibleResult.definition) ||
+                     (calResult && calResult.definitions?.length > 0);
 
   // Build comprehensive result
   const result = {
     word: word,
     cleaned: cleaned,
+    transliteration: transliterateHebrew(word), // Scholarly Latin script
     matchedForm: hasResults || bySource.other?.length > 0 ? matchedForm : null,
     root: extractRoot(cleaned),
     timestamp: Date.now(),
 
-    // Dictionary entries by source
+    // Dictionary entries by source - ALL use strictHeadwordFilter for safety
     sources: {
-      bdb: bySource.bdb.length > 0 ? {
-        source: SCHOLARLY_SOURCES.BDB,
-        headword: bySource.bdb[0]?.headword || cleaned,
-        definitions: bySource.bdb.flatMap(extractDefinitions),
-        morphology: bySource.bdb[0]?.content?.morphology || null,
-        strongNumber: bySource.bdb[0]?.strong_number || null
-      } : null,
+      // Halachic override (if applicable) - recommended for Talmud study context
+      halachic: halachicOverride || null,
 
-      jastrow: bySource.jastrow.length > 0 ? {
-        source: SCHOLARLY_SOURCES.JASTROW,
-        headword: bySource.jastrow[0]?.headword || cleaned,
-        definitions: bySource.jastrow.flatMap(entry => extractDefinitions(entry, true)), // true = isJastrow
-        language: 'Aramaic'
-      } : null,
+      bdb: (() => {
+        const valid = strictHeadwordFilter(bySource.bdb);
+        if (valid.length > 0) {
+          return {
+            source: SCHOLARLY_SOURCES.BDB,
+            headword: valid[0]?.headword || cleaned,
+            definitions: valid.flatMap(extractDefinitions),
+            morphology: valid[0]?.content?.morphology || null,
+            strongNumber: valid[0]?.strong_number || null
+          };
+        }
+        // FALLBACK: Use local BDB if API results were filtered out
+        if (allLocalResults?.bdb) {
+          const localDef = extractJastrowMeaning(allLocalResults.bdb.content) ||
+                           allLocalResults.bdb.short_definition;
+          if (localDef) {
+            return {
+              source: SCHOLARLY_SOURCES.BDB,
+              headword: allLocalResults.bdb.headword || cleaned,
+              definitions: [{ text: localDef }],
+              _isLocal: true
+            };
+          }
+        }
+        return null;
+      })(),
 
-      strong: bySource.strong.length > 0 ? {
-        source: SCHOLARLY_SOURCES.STRONG,
-        strongNumber: bySource.strong[0]?.strong_number || null,
-        headword: bySource.strong[0]?.headword || cleaned,
-        definitions: bySource.strong.flatMap(extractDefinitions)
-      } : null,
+      jastrow: (() => {
+        const valid = strictHeadwordFilter(bySource.jastrow);
+        if (valid.length > 0) {
+          // Prioritize Jastrow entries that align with BDB definitions
+          const prioritizedJastrow = prioritizeJastrowEntries(valid, bySource.bdb);
+          return {
+            source: SCHOLARLY_SOURCES.JASTROW,
+            headword: prioritizedJastrow[0]?.headword || cleaned,
+            definitions: prioritizedJastrow.flatMap(entry => extractDefinitions(entry, true)),
+            language: 'Aramaic'
+          };
+        }
+        // FALLBACK: Use local Jastrow if API results were filtered out
+        if (allLocalResults?.jastrow) {
+          const localDef = extractJastrowMeaning(allLocalResults.jastrow.content) ||
+                           allLocalResults.jastrow.short_definition;
+          if (localDef) {
+            return {
+              source: SCHOLARLY_SOURCES.JASTROW,
+              headword: allLocalResults.jastrow.headword || cleaned,
+              definitions: [{ text: localDef }],
+              language: 'Aramaic',
+              _isLocal: true
+            };
+          }
+        }
+        // Also try Aramaic variant
+        if (allLocalResults?.jastrowAlt) {
+          const altDef = extractJastrowMeaning(allLocalResults.jastrowAlt.content) ||
+                         allLocalResults.jastrowAlt.short_definition;
+          if (altDef) {
+            return {
+              source: SCHOLARLY_SOURCES.JASTROW,
+              headword: allLocalResults.jastrowAlt.headword || cleaned,
+              definitions: [{ text: altDef }],
+              language: 'Aramaic',
+              _isLocal: true,
+              _isAramaicVariant: true
+            };
+          }
+        }
+        return null;
+      })(),
 
-      klein: bySource.klein.length > 0 ? {
-        source: SCHOLARLY_SOURCES.KLEIN,
-        definitions: bySource.klein.flatMap(extractDefinitions),
-        etymology: bySource.klein[0]?.etymology || null
-      } : null,
+      strong: (() => {
+        const valid = strictHeadwordFilter(bySource.strong);
+        if (valid.length > 0) {
+          return {
+            source: SCHOLARLY_SOURCES.STRONG,
+            strongNumber: valid[0]?.strong_number || null,
+            headword: valid[0]?.headword || cleaned,
+            definitions: valid.flatMap(extractDefinitions)
+          };
+        }
+        // FALLBACK: Use local Strong's if API results were filtered out
+        if (allLocalResults?.strongs) {
+          const localDef = allLocalResults.strongs.short_definition ||
+                           allLocalResults.strongs.content;
+          if (localDef) {
+            return {
+              source: SCHOLARLY_SOURCES.STRONG,
+              strongNumber: allLocalResults.strongs.strong_number || null,
+              headword: allLocalResults.strongs.headword || cleaned,
+              definitions: [{ text: localDef }],
+              _isLocal: true
+            };
+          }
+        }
+        return null;
+      })(),
 
-      steinsaltz: bySource.steinsaltz?.length > 0 ? {
-        source: SCHOLARLY_SOURCES.STEINSALTZ,
-        headword: bySource.steinsaltz[0]?.headword || cleaned,
-        definitions: bySource.steinsaltz.flatMap(entry => extractDefinitions(entry, true)), // true = isJastrow (similar format)
-        language: 'Aramaic'
-      } : null,
+      // Klein - Show entry with clear headword indication for scholarly transparency
+      klein: (() => {
+        // First try strict match
+        const valid = strictHeadwordFilter(bySource.klein);
+        if (valid.length > 0) {
+          // SEMANTIC DISAMBIGUATION: When multiple Klein entries pass (e.g., בְּרָא and בָּרָא both → ברא)
+          // Use BDB/Jastrow definitions + known roots to prefer the one with matching meaning
+          let bestEntry = valid[0];
+          let bestScore = -1; // Start negative so first entry with ANY match wins
 
-      sefaria: bySource.sefaria?.length > 0 ? {
-        source: SCHOLARLY_SOURCES.SEFARIA,
-        headword: bySource.sefaria[0]?.headword || cleaned,
-        definitions: bySource.sefaria.flatMap(extractDefinitions)
-      } : null,
+          // Collect reference keywords from BDB + Jastrow + cognate patterns
+          const refKeywords = new Set();
+
+          // From BDB
+          for (const bdbEntry of (bySource.bdb || [])) {
+            const defs = extractDefinitions(bdbEntry);
+            for (const def of defs) {
+              if (def.text) {
+                const words = def.text.toLowerCase().split(/[^a-z]+/);
+                for (const word of words) {
+                  if (word.length >= 3 && !['the', 'and', 'for', 'with', 'from', 'its', 'are', 'was', 'has', 'had'].includes(word)) {
+                    refKeywords.add(word);
+                  }
+                }
+              }
+            }
+          }
+
+          // From Jastrow
+          for (const jEntry of (bySource.jastrow || [])) {
+            const defs = extractDefinitions(jEntry, true);
+            for (const def of defs) {
+              if (def.text) {
+                const words = def.text.toLowerCase().split(/[^a-z]+/);
+                for (const word of words) {
+                  if (word.length >= 3 && !['the', 'and', 'for', 'with', 'from', 'its', 'are', 'was', 'has', 'had'].includes(word)) {
+                    refKeywords.add(word);
+                  }
+                }
+              }
+            }
+          }
+
+          // From COGNATE_PATTERNS (our curated Hebrew root meanings)
+          const cognateData = COGNATE_PATTERNS[cleaned];
+          if (cognateData?.meaning) {
+            const words = cognateData.meaning.toLowerCase().split(/[^a-z]+/);
+            for (const word of words) {
+              if (word.length >= 3) {
+                refKeywords.add(word);
+              }
+            }
+          }
+
+          // Score Klein entries by keyword match with reference sources
+          for (const entry of valid) {
+            const defs = extractDefinitions(entry);
+            let score = 0;
+            for (const def of defs) {
+              if (def.text) {
+                const words = def.text.toLowerCase().split(/[^a-z]+/);
+                for (const word of words) {
+                  // Exact keyword match
+                  if (refKeywords.has(word)) {
+                    score += 15;
+                  }
+                  // Partial/stem match (e.g., "create" matches "creation")
+                  for (const kw of refKeywords) {
+                    if (word.length >= 4 && kw.length >= 4) {
+                      if (word.startsWith(kw.slice(0, 4)) || kw.startsWith(word.slice(0, 4))) {
+                        score += 5;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            if (score > bestScore) {
+              bestScore = score;
+              bestEntry = entry;
+            }
+          }
+
+          return {
+            source: SCHOLARLY_SOURCES.KLEIN,
+            headword: bestEntry?.headword || cleaned,
+            definitions: [bestEntry].flatMap(extractDefinitions),
+            etymology: bestEntry?.etymology || null,
+            isExactMatch: true
+          };
+        }
+        // If no strict match but Klein has entries from strict filter, show them
+        if (bySource.klein.length > 0) {
+          const entry = bySource.klein[0];
+          const entryHead = cleanWord(entry.headword || entry.word || entry.term || '');
+          return {
+            source: SCHOLARLY_SOURCES.KLEIN,
+            headword: entryHead || cleaned,
+            definitions: bySource.klein.flatMap(extractDefinitions),
+            etymology: entry.etymology || null,
+            isExactMatch: false,
+            searchedWord: cleaned
+          };
+        }
+        // SCHOLARLY FEATURE: If no strict match, show related word entries from Klein
+        // This helps scholars see what Klein HAS even if it's a different but related word
+        // (e.g., searching ברא shows Klein's entry for בר with clear indication)
+        if (bySource.kleinRelated?.length > 0) {
+          const entry = bySource.kleinRelated[0];
+          const entryHead = cleanWord(entry.headword || entry.word || entry.term || '');
+          // Only show if there's a reasonable relationship (at least 50% LCS match)
+          const lcs = (a, b) => {
+            const m = Array(b.length + 1).fill(null).map(() => Array(a.length + 1).fill(0));
+            for (let i = 1; i <= a.length; i++) {
+              for (let j = 1; j <= b.length; j++) {
+                m[j][i] = a[i-1] === b[j-1] ? m[j-1][i-1] + 1 : Math.max(m[j][i-1], m[j-1][i]);
+              }
+            }
+            return m[b.length][a.length];
+          };
+          const maxLen = Math.max(cleaned.length, entryHead.length);
+          const lcsScore = lcs(cleaned, entryHead) / maxLen;
+
+          // Show if at least 50% character overlap (looser than strict filter)
+          if (lcsScore >= 0.5 && entryHead !== cleaned) {
+            return {
+              source: SCHOLARLY_SOURCES.KLEIN,
+              headword: entryHead,
+              definitions: [bySource.kleinRelated[0]].flatMap(extractDefinitions),
+              etymology: entry.etymology || null,
+              isExactMatch: false,
+              searchedWord: cleaned // So UI can show "שורש קרוב: בר" (searched: ברא)
+            };
+          }
+        }
+        return null;
+      })(),
+
+      steinsaltz: (() => {
+        const valid = strictHeadwordFilter(bySource.steinsaltz || []);
+        if (valid.length === 0) return null;
+        return {
+          source: SCHOLARLY_SOURCES.STEINSALTZ,
+          headword: valid[0]?.headword || cleaned,
+          definitions: valid.flatMap(entry => extractDefinitions(entry, true)),
+          language: 'Aramaic'
+        };
+      })(),
+
+      sefaria: (() => {
+        const valid = strictHeadwordFilter(bySource.sefaria || []);
+        if (valid.length === 0) return null;
+        return {
+          source: SCHOLARLY_SOURCES.SEFARIA,
+          headword: valid[0]?.headword || cleaned,
+          definitions: valid.flatMap(extractDefinitions)
+        };
+      })(),
 
       // HALOT - Hebrew and Aramaic Lexicon of the Old Testament
-      halot: bySource.halot?.length > 0 ? {
-        source: SCHOLARLY_SOURCES.HALOT,
-        headword: bySource.halot[0]?.headword || cleaned,
-        definitions: bySource.halot.flatMap(extractDefinitions)
-      } : null,
+      halot: (() => {
+        const valid = strictHeadwordFilter(bySource.halot || []);
+        if (valid.length === 0) return null;
+        return {
+          source: SCHOLARLY_SOURCES.HALOT,
+          headword: valid[0]?.headword || cleaned,
+          definitions: valid.flatMap(extractDefinitions)
+        };
+      })(),
 
       // Gesenius - Classical Hebrew Grammar & Lexicon
-      gesenius: bySource.gesenius?.length > 0 ? {
-        source: SCHOLARLY_SOURCES.GESENIUS,
-        headword: bySource.gesenius[0]?.headword || cleaned,
-        definitions: bySource.gesenius.flatMap(extractDefinitions)
-      } : null,
+      gesenius: (() => {
+        const valid = strictHeadwordFilter(bySource.gesenius || []);
+        if (valid.length === 0) return null;
+        return {
+          source: SCHOLARLY_SOURCES.GESENIUS,
+          headword: valid[0]?.headword || cleaned,
+          definitions: valid.flatMap(extractDefinitions)
+        };
+      })(),
 
       // TWOT - Theological Wordbook of the Old Testament
-      twot: bySource.twot?.length > 0 ? {
-        source: SCHOLARLY_SOURCES.TWOT,
-        headword: bySource.twot[0]?.headword || cleaned,
-        definitions: bySource.twot.flatMap(extractDefinitions)
-      } : null,
+      twot: (() => {
+        const valid = strictHeadwordFilter(bySource.twot || []);
+        if (valid.length === 0) return null;
+        return {
+          source: SCHOLARLY_SOURCES.TWOT,
+          headword: valid[0]?.headword || cleaned,
+          definitions: valid.flatMap(extractDefinitions)
+        };
+      })(),
 
       // Bolls.life BDB API (additional online source)
       bolls: bollsResult ? {
@@ -1126,6 +3066,18 @@ export const scholarlyLookup = async (word) => {
         transliteration: stepBibleResult.transliteration || null
       } : null,
 
+      // CAL - Comprehensive Aramaic Lexicon (premier Aramaic dictionary for Talmud/Targum)
+      cal: calResult ? {
+        source: SCHOLARLY_SOURCES.CAL,
+        headword: calResult.headword || cleaned,
+        definitions: calResult.definitions || [],
+        dialect: calResult.dialect || null,
+        partOfSpeech: calResult.partOfSpeech || null,
+        etymology: calResult.etymology || null,
+        language: 'Aramaic',
+        url: calResult.url || null
+      } : null,
+
       // Include other sources (miscellaneous lexicons)
       other: bySource.other?.length > 0 ? bySource.other.map(entry => ({
         lexicon: entry.parent_lexicon || 'Unknown',
@@ -1140,16 +3092,25 @@ export const scholarlyLookup = async (word) => {
     // Grammar info
     grammar: getGrammarInfo(cleaned, bySource),
 
-    // Summary for display
+    // Summary for display (pass original word for Talmudic abbreviation detection)
     primaryDefinition: getPrimaryDefinition(bySource, bollsResult, {
-      step: stepBibleResult
-    }),
+      step: stepBibleResult,
+      cal: calResult
+    }, word),
 
-    // Detected language
-    language: bySource.jastrow.length > 0 || bySource.steinsaltz?.length > 0 ? 'Aramaic' : 'Hebrew',
+    // Detected language - be more precise about Aramaic detection
+    // Only CAL is a strong Aramaic indicator; Jastrow covers BOTH Hebrew and Aramaic
+    // BDB is specifically Biblical Hebrew, so if BDB has results, prefer Hebrew
+    language: calResult ? 'Aramaic' :
+              bySource.bdb.length > 0 || bySource.strong.length > 0 ? 'Hebrew' :
+              bySource.jastrow.length > 0 && bySource.jastrow[0]?.language === 'Aramaic' ? 'Aramaic' :
+              'Hebrew',
 
     // Raw data for debugging (can be removed in production)
-    _rawEntryCount: sefariaData?.length || 0
+    _rawEntryCount: sefariaData?.length || 0,
+
+    // Flag if halachic override was applied
+    _halachicOverride: !!halachicOverride
   };
 
   scholarlyCache.set(cacheKey, result);
@@ -1285,10 +3246,99 @@ const getGrammarInfo = (word, bySource) => {
     else if (morphLower.includes('3rd') || morphLower.includes('third')) info.person = '3rd';
   }
 
+  // Enhance with grammar analysis service (root extraction, prefix analysis)
+  try {
+    const grammarAnalysis = analyzeGrammar(word);
+    if (grammarAnalysis) {
+      // Add root information
+      if (grammarAnalysis.root && !info.root) {
+        info.root = grammarAnalysis.root;
+        info.rootInfo = grammarAnalysis.rootInfo || null;
+      }
+      // Add prefix breakdown
+      if (grammarAnalysis.prefixes && grammarAnalysis.prefixes.length > 0) {
+        info.prefixes = grammarAnalysis.prefixes;
+        info.prefixBreakdown = grammarAnalysis.prefixes
+          .map(p => `${p.letter} (${p.meaning})`)
+          .join(' + ');
+      }
+      // Fill in missing part of speech
+      if (!info.partOfSpeech && grammarAnalysis.partOfSpeech?.name) {
+        info.partOfSpeech = grammarAnalysis.partOfSpeech.name.toLowerCase();
+      }
+      // Add binyan from analysis if not already detected
+      if (!info.binyan && grammarAnalysis.binyan?.name) {
+        info.binyan = grammarAnalysis.binyan.name;
+      }
+      // Add tense from analysis if not already detected
+      if (!info.tense && grammarAnalysis.tense?.name) {
+        info.tense = grammarAnalysis.tense.name;
+      }
+    }
+  } catch (e) { /* silent */ }
+
   // Return null if no useful info found
-  if (!info.partOfSpeech && !info.binyan && !info.morphology) return null;
+  if (!info.partOfSpeech && !info.binyan && !info.morphology && !info.root && !info.prefixes) return null;
+
+  // Add full binyan info from BINYAN_INFO
+  if (info.binyan) {
+    // Map English binyan names to Hebrew keys
+    const binyanMap = {
+      'Qal': 'קל',
+      'Niphal': 'נפעל',
+      'Piel': 'פיעל',
+      'Pual': 'פועל',
+      'Hiphil': 'הפעיל',
+      'Hophal': 'הופעל',
+      'Hitpael': 'התפעל'
+    };
+    const hebrewKey = binyanMap[info.binyan];
+    if (hebrewKey && BINYAN_INFO[hebrewKey]) {
+      info.binyanInfo = {
+        hebrew: hebrewKey,
+        ...BINYAN_INFO[hebrewKey]
+      };
+    }
+  }
+
+  // Build form description (e.g., "Qal perfect 3ms")
+  const formParts = [];
+  if (info.binyan) formParts.push(info.binyan);
+  if (info.tense) formParts.push(info.tense.toLowerCase());
+  if (info.person) formParts.push(info.person.replace('st', '').replace('nd', '').replace('rd', ''));
+  if (info.gender) formParts.push(info.gender === 'masculine' ? 'm' : 'f');
+  if (info.number) formParts.push(info.number === 'singular' ? 's' : info.number === 'plural' ? 'p' : 'd');
+  info.formDescription = formParts.length > 1 ? formParts.join(' ') : null;
 
   return info;
+};
+
+/**
+ * Check if a definition appears to be a proper name (Biblical person/place)
+ * These should be deprioritized when common noun definitions exist
+ */
+const isProperNameDefinition = (defText) => {
+  if (!defText) return false;
+  const text = defText.toLowerCase();
+  // Patterns indicating proper names: "X = Y", "meaning of name", genealogies
+  return (
+    /^\s*\w+\s*=\s*["']/.test(text) ||  // "Mattenai = "gift of..."
+    /gift of (god|jehovah|the lord)/i.test(text) ||
+    /son of|father of|brother of/i.test(text) ||
+    /proper name|proper noun/i.test(text) ||
+    /a (levite|priest|king|prophet|judge)/i.test(text)
+  );
+};
+
+/**
+ * Check if word is a Talmudic/Rabbinic abbreviation
+ * These often end with ׳ (geresh) or " (gershayim)
+ */
+const isTalmudicAbbreviation = (word) => {
+  if (!word) return false;
+  // Common Talmudic abbreviation markers
+  return /[׳"'״]$/.test(word) || // Ends with geresh/gershayim/apostrophe
+         /^(מתני|גמ|ר|רב|דר|תנ|ברי|וכו|עכ״ל|ע״ש|וגו)/i.test(word); // Common abbrev prefixes
 };
 
 /**
@@ -1296,24 +3346,55 @@ const getGrammarInfo = (word, bySource) => {
  * @param {object} bySource - Dictionary entries organized by source
  * @param {object} bollsResult - Optional Bolls.life API result
  * @param {object} additionalResults - Optional additional API results (wiktionary, morfix, pealim)
+ * @param {string} originalWord - Original word being looked up (for abbreviation detection)
  */
-const getPrimaryDefinition = (bySource, bollsResult = null, additionalResults = {}) => {
-  // Prefer BDB for biblical Hebrew (most scholarly)
-  if (bySource.bdb?.length > 0) {
-    const defs = extractDefinitions(bySource.bdb[0]);
+const getPrimaryDefinition = (bySource, bollsResult = null, additionalResults = {}, originalWord = '') => {
+  // Check if this is a Talmudic abbreviation - prioritize Jastrow
+  const isTalmudic = isTalmudicAbbreviation(originalWord);
+
+  // For Talmudic abbreviations, check Jastrow FIRST
+  if (isTalmudic && bySource.jastrow?.length > 0) {
+    const defs = extractDefinitions(bySource.jastrow[0], true);
     if (defs.length > 0) {
-      // Prefer non-short definitions if available
       const fullDef = defs.find(d => !d.isShort);
       return fullDef?.text || defs[0].text;
     }
   }
 
-  // Then Strong's (widely used)
+  // Check BDB - but skip if it's a proper name and we have Jastrow alternative
+  if (bySource.bdb?.length > 0) {
+    const defs = extractDefinitions(bySource.bdb[0]);
+    if (defs.length > 0) {
+      const fullDef = defs.find(d => !d.isShort);
+      const defText = fullDef?.text || defs[0].text;
+      // Skip proper name definitions if Jastrow has a common noun definition
+      if (isProperNameDefinition(defText) && bySource.jastrow?.length > 0) {
+        const jastrowDefs = extractDefinitions(bySource.jastrow[0], true);
+        if (jastrowDefs.length > 0 && !isProperNameDefinition(jastrowDefs[0]?.text)) {
+          // Use Jastrow instead
+          const jFullDef = jastrowDefs.find(d => !d.isShort);
+          return jFullDef?.text || jastrowDefs[0].text;
+        }
+      }
+      return defText;
+    }
+  }
+
+  // Then Strong's - same proper name check
   if (bySource.strong?.length > 0) {
     const defs = extractDefinitions(bySource.strong[0]);
     if (defs.length > 0) {
       const fullDef = defs.find(d => !d.isShort);
-      return fullDef?.text || defs[0].text;
+      const defText = fullDef?.text || defs[0].text;
+      // Skip proper name definitions if Jastrow has a common noun definition
+      if (isProperNameDefinition(defText) && bySource.jastrow?.length > 0) {
+        const jastrowDefs = extractDefinitions(bySource.jastrow[0], true);
+        if (jastrowDefs.length > 0 && !isProperNameDefinition(jastrowDefs[0]?.text)) {
+          const jFullDef = jastrowDefs.find(d => !d.isShort);
+          return jFullDef?.text || jastrowDefs[0].text;
+        }
+      }
+      return defText;
     }
   }
 
@@ -1324,6 +3405,11 @@ const getPrimaryDefinition = (bySource, bollsResult = null, additionalResults = 
       const fullDef = defs.find(d => !d.isShort);
       return fullDef?.text || defs[0].text;
     }
+  }
+
+  // Then CAL (Comprehensive Aramaic Lexicon) - premier Aramaic dictionary
+  if (additionalResults.cal?.definitions?.length > 0) {
+    return additionalResults.cal.definitions[0]?.text || additionalResults.cal.definitions[0];
   }
 
   // Then Bolls.life (additional online BDB source)
@@ -1410,6 +3496,108 @@ export const getAllBinyanim = () => BINYAN_INFO;
 export const getVerbTenses = () => VERB_TENSES;
 
 /**
+ * Get biblical usage context for a word
+ * Returns frequency, first occurrence, and usage notes
+ * @param {string} word - Hebrew word
+ * @returns {Promise<object>} Usage context with frequency, first occurrence, notes
+ */
+export const getBiblicalUsageContext = async (word) => {
+  const cleaned = cleanWord(word);
+  if (!cleaned || cleaned.length < 2) return null;
+
+  try {
+    // Search for first occurrence in Tanakh
+    const response = await fetchWithFallback(
+      `${SEFARIA_BASE}/search-wrapper?q=${encodeURIComponent(cleaned)}&type=text&size=5&filters[]=Tanakh`,
+      { timeout: 8000 }
+    );
+
+    if (!response) return null;
+
+    const total = response.total || 0;
+    const hits = response.hits || [];
+
+    // Get first occurrence
+    let firstOccurrence = null;
+    if (hits.length > 0) {
+      // Sort by book order (Genesis first)
+      const bookOrder = ['Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy',
+        'Joshua', 'Judges', 'Samuel', 'Kings', 'Isaiah', 'Jeremiah', 'Ezekiel',
+        'Hosea', 'Joel', 'Amos', 'Obadiah', 'Jonah', 'Micah', 'Nahum', 'Habakkuk',
+        'Zephaniah', 'Haggai', 'Zechariah', 'Malachi', 'Psalms', 'Proverbs', 'Job',
+        'Song of Songs', 'Ruth', 'Lamentations', 'Ecclesiastes', 'Esther',
+        'Daniel', 'Ezra', 'Nehemiah', 'Chronicles'];
+
+      const sorted = [...hits].sort((a, b) => {
+        const bookA = (a.categories?.[1] || '').split(' ')[0];
+        const bookB = (b.categories?.[1] || '').split(' ')[0];
+        const orderA = bookOrder.indexOf(bookA);
+        const orderB = bookOrder.indexOf(bookB);
+        return (orderA === -1 ? 100 : orderA) - (orderB === -1 ? 100 : orderB);
+      });
+
+      const first = sorted[0];
+      firstOccurrence = {
+        ref: first.ref,
+        heRef: first.heRef,
+        book: first.categories?.[1] || '',
+        text: (first.text || '').replace(/<[^>]*>/g, '').slice(0, 150)
+      };
+    }
+
+    // Determine frequency category
+    let frequencyCategory = null;
+    let frequencyNote = null;
+    if (total === 0) {
+      frequencyCategory = 'not_found';
+      frequencyNote = 'Not found in Tanakh';
+    } else if (total === 1) {
+      frequencyCategory = 'hapax';
+      frequencyNote = 'Hapax legomenon (occurs only once)';
+    } else if (total < 5) {
+      frequencyCategory = 'rare';
+      frequencyNote = `Rare word (${total} occurrences)`;
+    } else if (total < 20) {
+      frequencyCategory = 'uncommon';
+      frequencyNote = `Uncommon (${total} occurrences)`;
+    } else if (total < 100) {
+      frequencyCategory = 'common';
+      frequencyNote = `Common (${total} occurrences)`;
+    } else {
+      frequencyCategory = 'very_common';
+      frequencyNote = `Very common (${total}+ occurrences)`;
+    }
+
+    // Get usage context from COGNATE_PATTERNS if available
+    const root = extractRoot(cleaned);
+    const cognateData = COGNATE_PATTERNS[root];
+    let usageContext = null;
+    if (cognateData?.meaning) {
+      usageContext = cognateData.meaning;
+    }
+
+    return {
+      word: cleaned,
+      root: root,
+      frequency: {
+        total,
+        category: frequencyCategory,
+        note: frequencyNote
+      },
+      firstOccurrence,
+      usageContext,
+      // Mark special theological terms
+      isTheologicalTerm: cognateData?.cognates?.some(c =>
+        c.toLowerCase().includes('unique') || c.toLowerCase().includes('theological')
+      ) || false
+    };
+  } catch (error) {
+    log.warn('Biblical usage context lookup failed:', error);
+    return null;
+  }
+};
+
+/**
  * Search for word in biblical concordance
  */
 export const searchConcordance = async (word, limit = 20) => {
@@ -1436,7 +3624,7 @@ export const searchConcordance = async (word, limit = 20) => {
       }))
     };
   } catch (error) {
-    console.error('Concordance search failed:', error);
+    log.error('Concordance search failed:', error);
     return { results: [], total: 0 };
   }
 };
@@ -1559,8 +3747,8 @@ export const lookupWordSefaria = async (word) => {
       strongNumber: entry.strong_number || null,
       sources: entry.parent_lexicon ? [entry.parent_lexicon] : []
     };
-  } catch (error) {
-    console.warn('Simple Sefaria lookup failed:', error.message);
+  } catch {
+    // Silent fail - expected for many words
     return null;
   }
 };
@@ -1575,12 +3763,32 @@ export const lookupJastrow = async (word) => {
   const cleaned = cleanWord(word);
   if (!cleaned || cleaned.length < 2) return null;
 
+  // Try local dictionary first (fast, offline-capable)
   try {
-    // Use Jastrow-specific lookup
-    const response = await fetch(`${SEFARIA_BASE}/words/${encodeURIComponent(cleaned)}?lookup_ref=Jastrow`);
-    if (!response.ok) return null;
+    const localEntry = await lookupLocalJastrow(word);
+    if (localEntry) {
+      const cleanedDef = extractJastrowMeaning(localEntry.definition) ||
+                         cleanDefinitionText(localEntry.definition);
+      return {
+        word: cleaned,
+        headword: localEntry.lemma || cleaned,
+        definitions: cleanedDef ? [cleanedDef] : [],
+        shortDefinition: cleanedDef,
+        language: localEntry.isAramaic ? 'Aramaic' : 'Hebrew',
+        source: 'Jastrow (local)',
+        ref: localEntry.ref
+      };
+    }
+  } catch (e) {
+    // Continue to API fallback
+  }
 
-    const data = await response.json();
+  // Fall back to Sefaria API
+  try {
+    const data = await fetchWithFallback(
+      `${SEFARIA_BASE}/words/${encodeURIComponent(cleaned)}?lookup_ref=Jastrow`,
+      { timeout: 8000 }
+    );
     if (!data || !Array.isArray(data) || data.length === 0) return null;
 
     // Filter for Jastrow entries
@@ -1598,10 +3806,10 @@ export const lookupJastrow = async (word) => {
     if (entry.content?.senses) {
       for (const sense of entry.content.senses) {
         if (sense.definition) {
-          const cleaned = extractJastrowMeaning(sense.definition);
-          if (cleaned) {
-            definitions.push(cleaned);
-            if (!shortDefinition) shortDefinition = cleaned;
+          const cleanedDef = extractJastrowMeaning(sense.definition);
+          if (cleanedDef) {
+            definitions.push(cleanedDef);
+            if (!shortDefinition) shortDefinition = cleanedDef;
           }
         }
       }
@@ -1620,8 +3828,8 @@ export const lookupJastrow = async (word) => {
       language: 'Aramaic',
       source: 'Jastrow'
     };
-  } catch (error) {
-    console.warn('Jastrow lookup failed:', error.message);
+  } catch {
+    // Silent fail - expected for many words
     return null;
   }
 };
@@ -1637,18 +3845,64 @@ export const getSimpleTranslation = async (word) => {
   return result?.shortDefinition || result?.definitions?.[0] || null;
 };
 
+/**
+ * Simple CAL-specific lookup for Aramaic words
+ * Direct access to Comprehensive Aramaic Lexicon
+ * @param {string} word - Aramaic word to look up
+ * @returns {Promise<object|null>} - CAL entry
+ */
+export const lookupCAL = async (word) => {
+  return fetchCALDefinition(word);
+};
+
 // =============================================================================
 // EXPORT
 // =============================================================================
+
+/**
+ * Clear the scholarly cache - useful for debugging or forcing fresh lookups
+ * Can be called from browser console: window.clearScholarlyCache()
+ */
+export const clearScholarlyCache = () => {
+  scholarlyCache.clear();
+  log.info('Cache cleared. Fresh lookups will be made.');
+};
+
+/**
+ * Preload local Jastrow dictionary for instant Aramaic lookups
+ * Call at app startup to avoid delay on first Aramaic word hover
+ * @returns {Promise<boolean>} - True if loaded successfully
+ */
+export const preloadJastrow = async () => {
+  try {
+    const data = await loadLocalJastrow();
+    return !!data;
+  } catch (e) {
+    log.warn('Jastrow preload failed:', e.message);
+    return false;
+  }
+};
+
+// Expose to window for debugging (development only)
+if (typeof window !== 'undefined') {
+  window.clearScholarlyCache = clearScholarlyCache;
+  window.SCHOLARLY_CACHE_VERSION = CACHE_VERSION;
+}
 
 const scholarlyLexiconService = {
   // Main lookup
   scholarlyLookup,
   batchScholarlyLookup,
 
+  // LOCAL DICTIONARIES (Offline-first - Priority 1)
+  preloadDictionaries,      // Call at app startup for instant lookups
+  getDictionaryStats,       // Check what's loaded
+  lookupLocalDictionaries,  // Unified local lookup (Jastrow + BDB + Strong's)
+
   // Simple lookups (backward compatible with sefariaLexiconService)
   lookupWordSefaria,
   lookupJastrow,
+  lookupCAL,
   getSimpleTranslation,
 
   // Etymology & cognates
@@ -1674,7 +3928,13 @@ const scholarlyLexiconService = {
 
   // Utils
   cleanWord,
-  extractRoot
+  extractRoot,
+
+  // Cache management
+  clearScholarlyCache,
+
+  // Preloading (legacy - use preloadDictionaries instead)
+  preloadJastrow
 };
 
 export default scholarlyLexiconService;

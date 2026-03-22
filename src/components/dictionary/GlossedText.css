@@ -1,0 +1,540 @@
+/* =============================================================================
+   GlossedText - Inline Word Glossing Styles
+   ============================================================================= */
+
+/* Wrapper with stats bar */
+.glossed-text-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.glossed-text {
+  direction: rtl;
+  text-align: right;
+  line-height: 3.2;
+  font-family: var(--font-hebrew, 'David Libre', 'Frank Ruhl Libre', serif);
+  font-size: 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 0.4rem;
+  padding: 1rem;
+}
+
+.glossed-text.aramaic {
+  font-family: var(--font-hebrew, 'David Libre', serif);
+}
+
+/* Stats bar - Enhanced with progress bar */
+.glossed-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 14px;
+  background: linear-gradient(to bottom, var(--bg-subtle, #f1f5f9), var(--bg-elevated, #f8fafc));
+  border-top: 1px solid var(--border, #e2e8f0);
+}
+
+/* Progress bar container */
+.glossed-progress-bar {
+  position: relative;
+  height: 6px;
+  background: var(--border, #e2e8f0);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.glossed-progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #10b981, #059669);
+  transition: width 0.5s ease-out;
+  position: relative;
+}
+
+.glossed-progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 20px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3));
+}
+
+/* Stats row */
+.glossed-stats-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.7rem;
+  color: var(--text-muted, #94a3b8);
+}
+
+.glossed-stats-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.glossed-stats-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.glossed-stats .stat-coverage {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--accent-emerald, #059669);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.glossed-stats .stat-coverage .coverage-icon {
+  font-size: 0.9rem;
+}
+
+.glossed-stats .stat-count {
+  color: var(--text-secondary, #64748b);
+  font-size: 0.68rem;
+  padding: 2px 8px;
+  background: var(--bg-elevated, white);
+  border-radius: 10px;
+  border: 1px solid var(--border, #e2e8f0);
+}
+
+/* PRO SCHOLAR: Multi-source indicator */
+.glossed-stats .stat-multi-source {
+  color: var(--accent-purple, #7c3aed);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  background: rgba(124, 58, 237, 0.08);
+  border-radius: 10px;
+  font-size: 0.68rem;
+}
+
+/* PRO SCHOLAR: Quality tier indicators */
+.glossed-stats .stat-quality {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.glossed-stats .tier-gold-indicator {
+  color: var(--gold-text, #92400e);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.68rem;
+}
+
+.glossed-stats .tier-silver-indicator {
+  color: var(--silver-text, #6b7280);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.68rem;
+}
+
+/* Ruby annotation base */
+.glossed-text ruby {
+  ruby-position: under;
+  ruby-align: center;
+  cursor: pointer;
+  padding: 0.25rem 0.35rem;
+  border-radius: 6px;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+/* Ruby annotation text (gloss) */
+.glossed-text rt {
+  font-size: 0.5em;
+  font-family: var(--font-sans, 'Inter', sans-serif);
+  font-weight: 500;
+  color: var(--text-muted);
+  direction: ltr;
+  text-align: center;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  max-width: 120px;
+  white-space: normal;
+  word-wrap: break-word;
+  display: block;
+}
+
+/* Ruby parentheses fallback (hidden in modern browsers) */
+.glossed-text rp {
+  display: none;
+}
+
+/* Hover state */
+.glossed-text ruby:hover {
+  background: var(--primary-light, #f0eeff);
+  transform: translateY(-1px);
+}
+
+.glossed-text ruby:hover rt {
+  color: var(--primary, #5b4cdb);
+}
+
+/* Focus state for keyboard navigation */
+.glossed-text ruby:focus {
+  outline: 2px solid var(--primary, #5b4cdb);
+  outline-offset: 2px;
+  background: var(--primary-light, #f0eeff);
+}
+
+/* Active/selected state */
+.glossed-text ruby.active {
+  background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+  color: white;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.glossed-text ruby.active rt {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Click feedback animation */
+.glossed-text ruby:active {
+  transform: scale(0.95);
+  transition: transform 0.05s ease;
+}
+
+/* Lookup animation - pulses when word is being looked up */
+@keyframes wordLookupPulse {
+  0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5); }
+  50% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+}
+
+.glossed-text ruby.looking-up {
+  animation: wordLookupPulse 0.6s ease-out;
+  background: var(--primary-light, #f0eeff);
+}
+
+/* No gloss available */
+.glossed-text ruby.no-gloss rt {
+  color: var(--text-muted);
+  opacity: 0.4;
+}
+
+.glossed-text rt.empty {
+  opacity: 0.3;
+}
+
+/* Root indicator */
+.glossed-text .root-indicator {
+  display: block;
+  font-size: 0.8em;
+  color: var(--accent-purple, #7c3aed);
+  font-family: var(--font-hebrew);
+  opacity: 0.7;
+}
+
+/* =============================================================================
+   PRO SCHOLAR: Source Count Badge & Tier Indicators
+   ============================================================================= */
+
+/* Source count badge (shows number of scholarly sources) */
+.glossed-text .source-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6em;
+  font-weight: 700;
+  background: var(--accent-purple, #7c3aed);
+  color: white;
+  border-radius: 50%;
+  width: 1.3em;
+  height: 1.3em;
+  margin-left: 2px;
+  vertical-align: super;
+  line-height: 1;
+}
+
+/* Tier-based styling for words */
+.glossed-text ruby.tier-gold {
+  border-bottom: 2px solid var(--gold, #fbbf24);
+}
+
+.glossed-text ruby.tier-gold rt {
+  color: var(--gold-text, #92400e);
+}
+
+.glossed-text ruby.tier-silver {
+  border-bottom: 2px solid var(--silver, #9ca3af);
+}
+
+.glossed-text ruby.tier-silver rt {
+  color: var(--silver-text, #4b5563);
+}
+
+.glossed-text ruby.tier-bronze {
+  border-bottom: 1px dashed var(--bronze, #cd7f32);
+}
+
+/* Aramaic indicator */
+.glossed-text ruby.aramaic::before {
+  content: 'ארמ';
+  position: absolute;
+  top: -0.8em;
+  right: 0;
+  font-size: 0.4em;
+  color: var(--accent-purple, #7c3aed);
+  opacity: 0.6;
+}
+
+/* =============================================================================
+   PRO SCHOLAR v3: Confidence Indicators
+   ============================================================================= */
+
+/* Confidence badge (shows for medium/low confidence) */
+.glossed-text .confidence-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7em;
+  margin-left: 2px;
+  vertical-align: super;
+}
+
+.glossed-text .confidence-badge.confidence-high {
+  color: #10b981;
+}
+
+.glossed-text .confidence-badge.confidence-medium {
+  color: #f59e0b;
+}
+
+.glossed-text .confidence-badge.confidence-low {
+  color: #ef4444;
+}
+
+.glossed-text .confidence-badge.confidence-very-low {
+  color: #dc2626;
+}
+
+/* Confidence-based word styling */
+.glossed-text ruby.confidence-high {
+  /* High confidence - default styling, no extra indicator needed */
+}
+
+.glossed-text ruby.confidence-medium {
+  border-left: 2px solid #f59e0b;
+}
+
+.glossed-text ruby.confidence-low rt {
+  font-style: italic;
+  opacity: 0.85;
+}
+
+.glossed-text ruby.confidence-very-low rt {
+  font-style: italic;
+  opacity: 0.7;
+}
+
+/* =============================================================================
+   PRO SCHOLAR v3: Grammar Indicator (Verb)
+   ============================================================================= */
+
+/* Grammar indicator badge (shows פ for verb) */
+.glossed-text .grammar-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.55em;
+  font-weight: 700;
+  background: var(--accent-teal, #14b8a6);
+  color: white;
+  border-radius: 3px;
+  padding: 0 3px;
+  margin-left: 3px;
+  font-family: var(--font-hebrew);
+  vertical-align: super;
+}
+
+/* Word with grammar info */
+.glossed-text ruby.has-grammar {
+  position: relative;
+}
+
+.glossed-text ruby.has-grammar::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-teal, #14b8a6), transparent);
+  border-radius: 1px;
+}
+
+/* Source-based coloring */
+.glossed-text ruby[data-source="bdb"] rt {
+  color: var(--accent-blue, #3b82f6);
+}
+
+.glossed-text ruby[data-source="jastrow"] rt {
+  color: var(--accent-emerald, #059669);
+}
+
+.glossed-text ruby[data-source="strong"] rt,
+.glossed-text ruby[data-source="strongs"] rt {
+  color: var(--accent-amber, #d97706);
+}
+
+.glossed-text ruby[data-source="sefaria"] rt {
+  color: var(--accent-purple, #7c3aed);
+}
+
+/* =============================================================================
+   Dark Mode
+   ============================================================================= */
+
+.dark-mode .glossed-text {
+  color: var(--text-primary-dark, #f1f5f9);
+}
+
+.dark-mode .glossed-text rt {
+  color: var(--text-muted-dark, #94a3b8);
+}
+
+.dark-mode .glossed-text ruby:hover {
+  background: rgba(91, 76, 219, 0.2);
+}
+
+.dark-mode .glossed-text ruby:hover rt {
+  color: var(--primary-light, #a5b4fc);
+}
+
+.dark-mode .glossed-text ruby[data-source="bdb"] rt {
+  color: #60a5fa;
+}
+
+.dark-mode .glossed-text ruby[data-source="jastrow"] rt {
+  color: #34d399;
+}
+
+.dark-mode .glossed-text ruby[data-source="strong"] rt,
+.dark-mode .glossed-text ruby[data-source="strongs"] rt {
+  color: #fbbf24;
+}
+
+.dark-mode .glossed-text ruby[data-source="sefaria"] rt {
+  color: #a78bfa;
+}
+
+.dark-mode .glossed-stats {
+  background: var(--bg-subtle-dark, #1e293b);
+  border-color: var(--border-dark, #334155);
+}
+
+.dark-mode .glossed-stats .stat-coverage {
+  color: #34d399;
+}
+
+.dark-mode .glossed-stats .stat-multi-source {
+  color: #a78bfa;
+}
+
+.dark-mode .glossed-stats .tier-gold-indicator {
+  color: #fbbf24;
+}
+
+.dark-mode .glossed-stats .tier-silver-indicator {
+  color: #9ca3af;
+}
+
+.dark-mode .glossed-text ruby.tier-gold {
+  border-bottom-color: #fbbf24;
+}
+
+.dark-mode .glossed-text ruby.tier-gold rt {
+  color: #fbbf24;
+}
+
+.dark-mode .glossed-text ruby.tier-silver {
+  border-bottom-color: #9ca3af;
+}
+
+.dark-mode .glossed-text ruby.tier-silver rt {
+  color: #d1d5db;
+}
+
+.dark-mode .glossed-text .source-count-badge {
+  background: #8b5cf6;
+}
+
+.dark-mode .glossed-text ruby.active {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+}
+
+/* PRO SCHOLAR v3: Dark mode confidence & grammar */
+.dark-mode .glossed-text .confidence-badge.confidence-high {
+  color: #34d399;
+}
+
+.dark-mode .glossed-text .confidence-badge.confidence-medium {
+  color: #fbbf24;
+}
+
+.dark-mode .glossed-text .confidence-badge.confidence-low {
+  color: #f87171;
+}
+
+.dark-mode .glossed-text ruby.confidence-medium {
+  border-left-color: #fbbf24;
+}
+
+.dark-mode .glossed-text .grammar-indicator {
+  background: #0d9488;
+}
+
+.dark-mode .glossed-text ruby.has-grammar::after {
+  background: linear-gradient(90deg, #0d9488, transparent);
+}
+
+/* =============================================================================
+   Responsive Design
+   ============================================================================= */
+
+@media (max-width: 768px) {
+  .glossed-text {
+    font-size: 1.1rem;
+    line-height: 2.8;
+    gap: 0.4rem 0.3rem;
+    padding: 0.75rem;
+  }
+
+  .glossed-text rt {
+    font-size: 0.48em;
+    max-width: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .glossed-text {
+    font-size: 1rem;
+    line-height: 2.6;
+    gap: 0.3rem 0.2rem;
+  }
+
+  .glossed-text rt {
+    font-size: 0.45em;
+    max-width: 80px;
+  }
+
+  .glossed-stats {
+    font-size: 0.65rem;
+    padding: 4px 8px;
+    gap: 8px;
+  }
+}

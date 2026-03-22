@@ -1,20 +1,148 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { getSefarimCategories, getChapters, getVerses, getParshas, isTorahBook, isTalmudBook, isMishnahBook, getOnkelos } from '../services/sefariaApi';
 
 const TorahContext = createContext(null);
 
+// Storage key for reading position persistence
+const POSITION_STORAGE_KEY = 'torah-reader-position';
+
+/**
+ * Check if a chapter reference is valid for a book type
+ * Talmud uses daf refs like "2a", "73b"; Torah/Tanach use numbers like "1", "2"
+ */
+const isChapterValidForBook = (book, chapter) => {
+  if (!chapter) return true; // Empty chapter will be fetched fresh
+  const isTalmud = isTalmudBook(book);
+  const isDafRef = /^\d+[ab]$/.test(chapter); // Matches "2a", "73b", etc.
+  // Daf refs are only valid for Talmud, numeric chapters for non-Talmud
+  return isTalmud ? isDafRef : !isDafRef;
+};
+
+/**
+ * Load saved reading position from localStorage
+ */
+const loadSavedPosition = () => {
+  try {
+    const saved = localStorage.getItem(POSITION_STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      const book = parsed.book || 'Genesis';
+      let chapter = parsed.chapter || '';
+
+      // Validate chapter is compatible with book type
+      // If not, reset chapter to be fetched fresh
+      if (chapter && !isChapterValidForBook(book, chapter)) {
+        console.warn(`Saved chapter "${chapter}" is incompatible with book "${book}", resetting`);
+        chapter = '';
+      }
+
+      return {
+        category: parsed.category || 'torah',
+        book,
+        chapter,
+        selectedVerse: parsed.selectedVerse || null
+      };
+    }
+  } catch (e) {
+    console.warn('Failed to load saved position:', e);
+  }
+  return { category: 'torah', book: 'Genesis', chapter: '', selectedVerse: null };
+};
+
+/**
+ * Save reading position to localStorage
+ */
+const savePosition = (category, book, chapter, selectedVerse) => {
+  try {
+    localStorage.setItem(POSITION_STORAGE_KEY, JSON.stringify({
+      category,
+      book,
+      chapter,
+      selectedVerse,
+      timestamp: Date.now()
+    }));
+  } catch (e) {
+    console.warn('Failed to save position:', e);
+  }
+};
+
+/**
+ * Retry a function with exponential backoff
+ * @param {Function} fn - Async function to retry
+ * @param {Object} options - Retry options
+ * @param {number} options.maxRetries - Max retry attempts (default: 3)
+ * @param {number} options.baseDelay - Base delay in ms (default: 1000)
+ * @param {Function} options.shouldRetry - Function to determine if error is retryable
+ * @param {AbortSignal} options.signal - AbortSignal to cancel retries
+ * @returns {Promise} Result of successful function call
+ */
+const retryWithBackoff = async (fn, options = {}) => {
+  const {
+    maxRetries = 3,
+    baseDelay = 1000,
+    shouldRetry = () => true,
+    signal = null
+  } = options;
+
+  let lastError;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    // Check if cancelled
+    if (signal?.aborted) {
+      throw new DOMException('Aborted', 'AbortError');
+    }
+
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error;
+
+      // Don't retry if cancelled or not retryable
+      if (error.name === 'AbortError' || !shouldRetry(error)) {
+        throw error;
+      }
+
+      // Don't delay after last attempt
+      if (attempt < maxRetries) {
+        const delay = baseDelay * Math.pow(2, attempt);
+        await new Promise((resolve, reject) => {
+          const timeoutId = setTimeout(resolve, delay);
+          if (signal) {
+            signal.addEventListener('abort', () => {
+              clearTimeout(timeoutId);
+              reject(new DOMException('Aborted', 'AbortError'));
+            }, { once: true });
+          }
+        });
+      }
+    }
+  }
+
+  throw lastError;
+};
+
 export function TorahProvider({ children }) {
+  // Load saved position on mount
+  const savedPosition = useMemo(() => loadSavedPosition(), []);
+
   const [categories] = useState(getSefarimCategories);
-  const [category, setCategory] = useState('torah');
-  const [book, setBook] = useState('Genesis');
-  const [chapter, setChapter] = useState('');
+  const [category, setCategory] = useState(savedPosition.category);
+  const [book, setBook] = useState(savedPosition.book);
+  const [chapter, setChapter] = useState(savedPosition.chapter);
   const [chapters, setChapters] = useState([]);
   const [verses, setVerses] = useState([]);
   const [onkelos, setOnkelos] = useState([]);
   const [parshas, setParshas] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [selectedVerse, setSelectedVerse] = useState(null);
+  const [selectedVerse, setSelectedVerse] = useState(savedPosition.selectedVerse);
+
+  // Save position whenever it changes
+  useEffect(() => {
+    if (book && chapter) {
+      savePosition(category, book, chapter, selectedVerse);
+    }
+  }, [category, book, chapter, selectedVerse]);
 
   // Get current category books
   const currentBooks = useMemo(() => categories[category]?.books || [], [categories, category]);
@@ -24,65 +152,123 @@ export function TorahProvider({ children }) {
   const isCurrentTalmudBook = useMemo(() => isTalmudBook(book), [book]);
   const isCurrentMishnahBook = useMemo(() => isMishnahBook(book), [book]);
 
-  // Fetch chapters when book changes
+  // Abort controller refs for cleanup
+  const chapterAbortRef = useRef(null);
+  const verseAbortRef = useRef(null);
+
+  // Fetch chapters when book changes (with retry)
   useEffect(() => {
     if (!book) return;
 
-    let cancelled = false;
+    // Cancel any pending request
+    if (chapterAbortRef.current) {
+      chapterAbortRef.current.abort();
+    }
+
+    const abortController = new AbortController();
+    chapterAbortRef.current = abortController;
+
     const fetchData = async () => {
       setLoading(true);
       setError(null);
+
       try {
-        const [chapterList, parshaList] = await Promise.all([
-          getChapters(book),
-          isTorahBook(book) ? getParshas(book) : Promise.resolve([])
-        ]);
+        const [chapterList, parshaList] = await retryWithBackoff(
+          () => Promise.all([
+            getChapters(book),
+            isTorahBook(book) ? getParshas(book) : Promise.resolve([])
+          ]),
+          {
+            maxRetries: 3,
+            baseDelay: 1000,
+            signal: abortController.signal,
+            shouldRetry: (err) => {
+              // Retry network errors but not 4xx errors
+              const msg = err.message?.toLowerCase() || '';
+              return msg.includes('network') || msg.includes('timeout') || msg.includes('fetch');
+            }
+          }
+        );
 
-        if (cancelled) return;
-
-        setChapters(chapterList);
-        setParshas(parshaList);
-        setChapter(chapterList[0] || '');
+        if (!abortController.signal.aborted) {
+          setChapters(chapterList);
+          setParshas(parshaList);
+          setChapter(chapterList[0] || '');
+        }
       } catch (err) {
-        if (!cancelled) setError(err.message);
+        if (err.name !== 'AbortError' && !abortController.signal.aborted) {
+          setError(err.message);
+        }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!abortController.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchData();
-    return () => { cancelled = true; };
+
+    return () => {
+      abortController.abort();
+    };
   }, [book]);
 
-  // Fetch verses and Onkelos when chapter changes
+  // Fetch verses and Onkelos when chapter changes (with retry)
   useEffect(() => {
     if (!chapter || !book) return;
 
-    let cancelled = false;
+    // Cancel any pending request
+    if (verseAbortRef.current) {
+      verseAbortRef.current.abort();
+    }
+
+    const abortController = new AbortController();
+    verseAbortRef.current = abortController;
+
     const fetchData = async () => {
       setLoading(true);
       setError(null);
+
       try {
         const isTorah = isTorahBook(book);
-        const [verseList, onkelosList] = await Promise.all([
-          getVerses(book, chapter),
-          isTorah ? getOnkelos(book, chapter) : Promise.resolve([])
-        ]);
+        const [verseList, onkelosList] = await retryWithBackoff(
+          () => Promise.all([
+            getVerses(book, chapter),
+            isTorah ? getOnkelos(book, chapter) : Promise.resolve([])
+          ]),
+          {
+            maxRetries: 3,
+            baseDelay: 1000,
+            signal: abortController.signal,
+            shouldRetry: (err) => {
+              // Retry network errors but not 4xx errors
+              const msg = err.message?.toLowerCase() || '';
+              return msg.includes('network') || msg.includes('timeout') || msg.includes('fetch');
+            }
+          }
+        );
 
-        if (!cancelled) {
+        if (!abortController.signal.aborted) {
           setVerses(verseList);
           setOnkelos(onkelosList);
           setSelectedVerse(null);
         }
       } catch (err) {
-        if (!cancelled) setError(err.message);
+        if (err.name !== 'AbortError' && !abortController.signal.aborted) {
+          setError(err.message);
+        }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!abortController.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchData();
-    return () => { cancelled = true; };
+
+    return () => {
+      abortController.abort();
+    };
   }, [book, chapter]);
 
   // Change category and reset to first book

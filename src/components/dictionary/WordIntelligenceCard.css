@@ -1,0 +1,3367 @@
+/* =============================================================================
+   WordIntelligenceCard - Unified Pro Scholar Word Analysis
+   A single card that shows EVERYTHING about a Hebrew/Aramaic word
+   ============================================================================= */
+
+.word-intelligence-card {
+  background: var(--surface, #fff);
+  border: 1px solid var(--border-light, #e0e0e0);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  max-width: 480px;
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+}
+
+.word-intelligence-card.compact {
+  padding: 12px;
+  max-width: 360px;
+}
+
+/* =============================================================================
+   Loading & Error States
+   ============================================================================= */
+
+.word-intelligence-card.loading,
+.word-intelligence-card.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+}
+
+.wic-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-secondary, #666);
+}
+
+.wic-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-light, #e0e0e0);
+  border-top-color: var(--accent, #1976d2);
+  border-radius: 50%;
+  animation: wic-spin 0.8s linear infinite;
+}
+
+@keyframes wic-spin {
+  to { transform: rotate(360deg); }
+}
+
+.wic-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--error, #dc2626);
+}
+
+.error-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--error-bg, #fef2f2);
+  border-radius: 50%;
+  font-weight: bold;
+}
+
+/* =============================================================================
+   Header Section
+   ============================================================================= */
+
+.wic-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--accent, #1976d2);
+}
+
+.wic-word-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wic-word {
+  font-family: 'SBL Hebrew', 'Ezra SIL', 'Times New Roman', serif;
+  font-size: 2em;
+  font-weight: 600;
+  color: var(--text-primary, #1a1a1a);
+  line-height: 1.2;
+}
+
+.wic-root {
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  font-size: 0.9em;
+  color: var(--accent, #1976d2);
+  background: var(--accent-bg, #e3f2fd);
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.wic-close {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-elevated, #f5f5f5);
+  border: none;
+  border-radius: 50%;
+  font-size: 1.2em;
+  color: var(--text-muted, #888);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wic-close:hover {
+  background: var(--error-bg, #fef2f2);
+  color: var(--error, #dc2626);
+}
+
+/* =============================================================================
+   Domain Badge Row
+   ============================================================================= */
+
+.wic-domain-row {
+  margin-bottom: 12px;
+}
+
+.wic-domain-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: color-mix(in srgb, var(--domain-color, #6b7280) 15%, transparent);
+  border: 1px solid var(--domain-color, #6b7280);
+  border-radius: 16px;
+  font-size: 0.8em;
+}
+
+.domain-hebrew {
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  font-weight: 600;
+  color: var(--domain-color, #6b7280);
+}
+
+.domain-name {
+  color: var(--text-secondary, #555);
+}
+
+/* =============================================================================
+   Definitions Section
+   ============================================================================= */
+
+.wic-definitions {
+  margin-bottom: 16px;
+}
+
+.wic-definitions.empty {
+  padding: 12px;
+  text-align: center;
+  color: var(--text-muted, #888);
+  background: var(--surface-elevated, #f8f9fa);
+  border-radius: 8px;
+}
+
+.def-primary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+  border-radius: 8px;
+  border: 1px solid var(--border-light, #e0e0e0);
+}
+
+.def-content {
+  flex: 1;
+}
+
+.def-text {
+  font-size: 1.05em;
+  color: var(--text-primary, #1a1a1a);
+  line-height: 1.5;
+}
+
+.def-toggle {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px;
+  background: none;
+  border: 1px dashed var(--border-light, #d0d0d0);
+  border-radius: 6px;
+  color: var(--accent, #1976d2);
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.def-toggle:hover {
+  background: var(--accent-bg, #e3f2fd);
+  border-style: solid;
+}
+
+.def-alternatives {
+  margin-top: 8px;
+  padding: 8px;
+  background: var(--surface-elevated, #f8f9fa);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.def-alt {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  background: var(--surface, #fff);
+  border-radius: 6px;
+  border: 1px solid var(--border-light, #e8e8e8);
+}
+
+.def-alt .def-text {
+  font-size: 0.95em;
+  color: var(--text-secondary, #444);
+}
+
+/* =============================================================================
+   Source Badges
+   ============================================================================= */
+
+.wic-source-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.75em;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.wic-source-badge.compact {
+  padding: 2px 6px;
+  font-size: 0.7em;
+}
+
+.wic-source-badge.tier-gold {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 1px solid #f59e0b;
+  color: #92400e;
+}
+
+.wic-source-badge.tier-silver {
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  border: 1px solid #9ca3af;
+  color: #374151;
+}
+
+.wic-source-badge.tier-bronze {
+  background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+  border: 1px solid #f87171;
+  color: #7f1d1d;
+}
+
+.badge-icon {
+  font-size: 0.9em;
+}
+
+.badge-year {
+  font-size: 0.85em;
+  opacity: 0.8;
+}
+
+/* =============================================================================
+   Frequency Bar
+   ============================================================================= */
+
+.wic-frequency {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: var(--surface-elevated, #f8f9fa);
+  border-radius: 8px;
+}
+
+.freq-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.freq-label {
+  font-size: 0.8em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted, #666);
+}
+
+.freq-count {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.9em;
+  font-weight: 600;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.freq-bar-container {
+  height: 8px;
+  background: var(--border-light, #e0e0e0);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.freq-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.freq-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 0.75em;
+}
+
+.freq-band {
+  font-weight: 600;
+}
+
+.freq-percentile {
+  color: var(--text-muted, #888);
+}
+
+/* =============================================================================
+   Morphology Section
+   ============================================================================= */
+
+.wic-morphology {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: var(--surface-elevated, #f8f9fa);
+  border-radius: 8px;
+  border-left: 3px solid var(--accent, #1976d2);
+}
+
+.morph-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.morph-title {
+  font-size: 0.85em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted, #666);
+}
+
+.morph-confidence {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75em;
+  padding: 2px 6px;
+  background: var(--surface, #fff);
+  border-radius: 10px;
+  color: var(--accent, #1976d2);
+}
+
+.morph-breakdown {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.morph-part {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 6px;
+  min-width: 40px;
+}
+
+.morph-part.prefix {
+  background: var(--prefix-bg, #e3f2fd);
+  border: 1px solid var(--prefix-border, #90caf9);
+}
+
+.morph-part.root {
+  background: var(--root-bg, #fff3e0);
+  border: 2px solid var(--root-border, #ffb74d);
+}
+
+.morph-part.suffix {
+  background: var(--suffix-bg, #f3e5f5);
+  border: 1px solid var(--suffix-border, #ce93d8);
+}
+
+.morph-part .part-text {
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  font-size: 1.3em;
+  font-weight: 600;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.morph-part .part-label {
+  font-size: 0.65em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted, #888);
+  margin-top: 2px;
+}
+
+.morph-plus {
+  color: var(--text-muted, #999);
+  font-size: 1.2em;
+}
+
+.morph-pattern,
+.morph-computed {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-light, #e0e0e0);
+  font-size: 0.9em;
+}
+
+.pattern-label,
+.computed-label {
+  font-size: 0.8em;
+  font-weight: 600;
+  color: var(--text-muted, #666);
+}
+
+.pattern-value {
+  padding: 2px 8px;
+  background: #fef3c7;
+  border-radius: 4px;
+  color: #92400e;
+  font-weight: 500;
+}
+
+.computed-value {
+  font-style: italic;
+  color: var(--success, #16a34a);
+}
+
+/* =============================================================================
+   Etymology Section
+   ============================================================================= */
+
+.wic-etymology {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+  border-radius: 8px;
+  border: 1px solid #c4b5fd;
+}
+
+.ety-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.ety-icon {
+  font-size: 1.2em;
+  color: #7c3aed;
+}
+
+.ety-title {
+  font-size: 0.85em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #5b21b6;
+}
+
+.ety-proto,
+.ety-cognates {
+  margin-bottom: 8px;
+}
+
+.ety-label {
+  font-size: 0.8em;
+  font-weight: 600;
+  color: var(--text-muted, #666);
+  margin-right: 6px;
+}
+
+.ety-value {
+  font-style: italic;
+  color: var(--text-secondary, #444);
+}
+
+.cognate-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.cognate-item {
+  display: inline-flex;
+  gap: 4px;
+  padding: 2px 8px;
+  background: var(--surface, #fff);
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+
+.cognate-lang {
+  text-transform: capitalize;
+  color: var(--text-muted, #888);
+}
+
+.cognate-word {
+  font-style: italic;
+  color: var(--text-secondary, #555);
+}
+
+.ety-notes {
+  font-size: 0.85em;
+  font-style: italic;
+  color: #6b21a8;
+  padding-top: 8px;
+  border-top: 1px solid #ddd6fe;
+  margin-top: 8px;
+}
+
+/* =============================================================================
+   Related Words Section
+   ============================================================================= */
+
+.wic-related {
+  margin-bottom: 16px;
+}
+
+.related-group {
+  margin-bottom: 8px;
+}
+
+.related-label {
+  display: block;
+  font-size: 0.8em;
+  font-weight: 600;
+  color: var(--text-muted, #666);
+  margin-bottom: 6px;
+}
+
+.related-words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.related-word {
+  padding: 4px 10px;
+  background: var(--surface-elevated, #f5f5f5);
+  border: 1px solid var(--border-light, #e0e0e0);
+  border-radius: 16px;
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  font-size: 0.95em;
+  color: var(--accent, #1976d2);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.related-word:hover {
+  background: var(--accent-bg, #e3f2fd);
+  border-color: var(--accent, #1976d2);
+}
+
+.related-word.antonym {
+  color: var(--error, #dc2626);
+}
+
+.related-word.antonym:hover {
+  background: var(--error-bg, #fef2f2);
+  border-color: var(--error, #dc2626);
+}
+
+/* =============================================================================
+   SRS Section
+   ============================================================================= */
+
+.wic-srs {
+  margin-bottom: 16px;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.wic-srs.not-in-srs {
+  background: var(--surface-elevated, #f8f9fa);
+  border: 1px dashed var(--border-light, #d0d0d0);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.wic-srs.in-srs {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border: 1px solid #6ee7b7;
+}
+
+.wic-srs.in-srs.mastered {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-color: #fbbf24;
+}
+
+.wic-srs.in-srs.learning {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border-color: #60a5fa;
+}
+
+.srs-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--accent, #1976d2);
+  border: none;
+  border-radius: 20px;
+  color: white;
+  font-size: 0.9em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.srs-add-btn:hover:not(:disabled) {
+  background: var(--accent-dark, #1565c0);
+  transform: scale(1.02);
+}
+
+.srs-add-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.srs-hint {
+  font-size: 0.75em;
+  color: var(--text-muted, #888);
+}
+
+.srs-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.srs-icon {
+  font-size: 1.2em;
+}
+
+.srs-level {
+  font-size: 0.9em;
+  font-weight: 600;
+  text-transform: capitalize;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.srs-meta,
+.srs-stats {
+  display: flex;
+  gap: 16px;
+  font-size: 0.8em;
+  color: var(--text-secondary, #555);
+}
+
+.srs-stats {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* SRS Header with Review Toggle */
+.srs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.srs-review-btn {
+  padding: 4px 10px;
+  font-size: 0.75em;
+  background: var(--accent-bg, #e3f2fd);
+  color: var(--accent, #1976d2);
+  border: 1px solid var(--accent, #1976d2);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.srs-review-btn:hover {
+  background: var(--accent, #1976d2);
+  color: white;
+}
+
+/* Quick Review Rating Buttons */
+.srs-quick-review {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0;
+  padding: 8px;
+  background: var(--surface-elevated, #f8f9fa);
+  border-radius: 8px;
+}
+
+.review-label {
+  font-size: 0.75em;
+  color: var(--text-secondary, #666);
+  white-space: nowrap;
+}
+
+.review-btns {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.rbtn {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 6px;
+  font-size: 0.8em;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.rbtn:hover {
+  transform: scale(1.1);
+}
+
+/* SM-2 Quality Ratings: 0=forgot, 1=wrong, 2=hard, 3=ok, 4=easy, 5=perfect */
+.rbtn.q0 { background: #ef5350; color: white; }
+.rbtn.q1 { background: #ff7043; color: white; }
+.rbtn.q2 { background: #ffa726; color: white; }
+.rbtn.q3 { background: #66bb6a; color: white; }
+.rbtn.q4 { background: #42a5f5; color: white; }
+.rbtn.q5 { background: #ab47bc; color: white; }
+
+.rbtn.q0:hover { background: #c62828; }
+.rbtn.q1:hover { background: #e64a19; }
+.rbtn.q2:hover { background: #ef6c00; }
+.rbtn.q3:hover { background: #388e3c; }
+.rbtn.q4:hover { background: #1976d2; }
+.rbtn.q5:hover { background: #7b1fa2; }
+
+/* Success Feedback */
+.srs-feedback {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 0.75em;
+  color: #2e7d32;
+  background: #e8f5e9;
+  border-radius: 12px;
+  animation: feedbackPop 0.3s ease;
+}
+
+@keyframes feedbackPop {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* =============================================================================
+   Footer Actions
+   ============================================================================= */
+
+.wic-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-light, #e0e0e0);
+}
+
+.wic-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.wic-action {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: var(--surface-elevated, #f5f5f5);
+  border: 1px solid var(--border-light, #e0e0e0);
+  border-radius: 16px;
+  font-size: 0.8em;
+  color: var(--text-secondary, #555);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wic-action:hover {
+  background: var(--accent-bg, #e3f2fd);
+  border-color: var(--accent, #1976d2);
+  color: var(--accent, #1976d2);
+}
+
+.wic-source-info {
+  font-size: 0.75em;
+  color: var(--text-muted, #888);
+}
+
+/* =============================================================================
+   Dark Mode
+   ============================================================================= */
+
+@media (prefers-color-scheme: dark) {
+  .word-intelligence-card {
+    background: var(--surface-dark, #1e1e1e);
+    border-color: var(--border-dark, #333);
+  }
+
+  .wic-word,
+  .srs-level {
+    color: var(--text-primary-dark, #f0f0f0);
+  }
+
+  .def-primary {
+    background: linear-gradient(135deg, #2d2d2d 0%, #252525 100%);
+    border-color: var(--border-dark, #444);
+  }
+
+  .def-text {
+    color: var(--text-primary-dark, #e0e0e0);
+  }
+
+  .wic-frequency,
+  .wic-morphology {
+    background: var(--surface-elevated-dark, #2d2d2d);
+  }
+
+  .wic-etymology {
+    background: linear-gradient(135deg, #2d2a3d 0%, #312e41 100%);
+    border-color: #5b4b8a;
+  }
+
+  .ety-title,
+  .ety-notes {
+    color: #a78bfa;
+  }
+
+  .wic-srs.not-in-srs {
+    background: var(--surface-elevated-dark, #2d2d2d);
+    border-color: var(--border-dark, #444);
+  }
+
+  .srs-quick-review {
+    background: var(--surface-elevated-dark, #2d2d2d);
+  }
+
+  .srs-feedback {
+    background: #1b3a1f;
+    color: #81c784;
+  }
+
+  .srs-review-btn {
+    background: rgba(25, 118, 210, 0.2);
+    border-color: #42a5f5;
+    color: #64b5f6;
+  }
+
+  .srs-review-btn:hover {
+    background: #1976d2;
+    color: white;
+  }
+
+  .related-word {
+    background: var(--surface-dark, #252525);
+    border-color: var(--border-dark, #444);
+    color: #64b5f6;
+  }
+
+  .related-word:hover {
+    background: rgba(33, 150, 243, 0.15);
+  }
+
+  .morph-part.prefix {
+    background: rgba(33, 150, 243, 0.15);
+    border-color: rgba(33, 150, 243, 0.4);
+  }
+
+  .morph-part.root {
+    background: rgba(255, 152, 0, 0.15);
+    border-color: rgba(255, 152, 0, 0.5);
+  }
+
+  .morph-part.suffix {
+    background: rgba(156, 39, 176, 0.15);
+    border-color: rgba(156, 39, 176, 0.4);
+  }
+
+  .morph-part .part-text {
+    color: var(--text-primary-dark, #f0f0f0);
+  }
+}
+
+/* =============================================================================
+   Responsive
+   ============================================================================= */
+
+@media (max-width: 480px) {
+  .word-intelligence-card {
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  .wic-word {
+    font-size: 1.6em;
+  }
+
+  .morph-breakdown {
+    flex-direction: column;
+  }
+
+  .morph-plus {
+    transform: rotate(90deg);
+  }
+
+  .wic-srs.not-in-srs {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .srs-meta,
+  .srs-stats {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .wic-footer {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* =============================================================================
+   PRO SCHOLAR: Enhanced Header with Language & Meta
+   ============================================================================= */
+
+.wic-header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.wic-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wic-lang {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.75em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.wic-lang.hebrew {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+
+.wic-lang.aramaic {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
+/* =============================================================================
+   PRO SCHOLAR: Lookup Path Visualization
+   ============================================================================= */
+
+.wic-lookup-path {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 1px solid #86efac;
+  border-radius: 8px;
+}
+
+.wic-lookup-path.dictionary-hit {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border-color: #86efac;
+}
+
+.wic-lookup-path.pattern-analysis {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-color: #fcd34d;
+}
+
+.lookup-path-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.lookup-path-icon {
+  font-size: 1.1em;
+}
+
+.lookup-path-title {
+  font-size: 0.8em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted, #666);
+}
+
+.lookup-path-steps {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.path-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: var(--surface, #fff);
+  border-radius: 16px;
+  font-size: 0.8em;
+  border: 1px solid var(--border-light, #e0e0e0);
+}
+
+.path-step.active {
+  background: var(--accent, #1976d2);
+  color: white;
+  border-color: var(--accent, #1976d2);
+}
+
+.path-step.success {
+  background: #10b981;
+  color: white;
+  border-color: #10b981;
+}
+
+.path-step.fallback {
+  background: #f59e0b;
+  color: white;
+  border-color: #f59e0b;
+}
+
+.path-arrow {
+  color: var(--text-muted, #999);
+  font-size: 0.9em;
+}
+
+.path-step-icon {
+  font-size: 0.9em;
+}
+
+/* =============================================================================
+   PRO SCHOLAR: Source Category Badges
+   ============================================================================= */
+
+.source-category {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.75em;
+  font-weight: 500;
+}
+
+.source-category-icon {
+  font-size: 0.9em;
+}
+
+.source-category.dictionary {
+  background: rgba(37, 99, 235, 0.12);
+  color: #2563eb;
+  border: 1px solid rgba(37, 99, 235, 0.3);
+}
+
+.source-category.algorithm {
+  background: rgba(124, 58, 237, 0.12);
+  color: #7c3aed;
+  border: 1px solid rgba(124, 58, 237, 0.3);
+}
+
+.source-category.curated {
+  background: rgba(5, 150, 105, 0.12);
+  color: #059669;
+  border: 1px solid rgba(5, 150, 105, 0.3);
+}
+
+.source-category.cache {
+  background: rgba(107, 114, 128, 0.12);
+  color: #6b7280;
+  border: 1px solid rgba(107, 114, 128, 0.3);
+}
+
+/* =============================================================================
+   PRO SCHOLAR: Confidence Display with Factors
+   ============================================================================= */
+
+.wic-confidence {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light, #e0e0e0);
+}
+
+.wic-confidence.high {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border-color: #86efac;
+}
+
+.wic-confidence.medium {
+  background: linear-gradient(135deg, #fefce8 0%, #fef08a 100%);
+  border-color: #fde047;
+}
+
+.wic-confidence.low {
+  background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+  border-color: #fca5a5;
+}
+
+.confidence-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.confidence-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.confidence-icon {
+  font-size: 1.1em;
+}
+
+.confidence-score {
+  font-family: var(--font-mono, monospace);
+  font-size: 1.1em;
+  font-weight: 700;
+}
+
+.confidence-label {
+  font-size: 0.85em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.wic-confidence.high .confidence-score,
+.wic-confidence.high .confidence-label {
+  color: #15803d;
+}
+
+.wic-confidence.medium .confidence-score,
+.wic-confidence.medium .confidence-label {
+  color: #a16207;
+}
+
+.wic-confidence.low .confidence-score,
+.wic-confidence.low .confidence-label {
+  color: #b91c1c;
+}
+
+.confidence-toggle {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface, #fff);
+  border: 1px solid var(--border-light, #d0d0d0);
+  border-radius: 50%;
+  color: var(--text-muted, #888);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.confidence-toggle.expanded {
+  transform: rotate(180deg);
+}
+
+.confidence-factors {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-light, #e0e0e0);
+}
+
+.confidence-factors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.confidence-factor {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  background: var(--surface, #fff);
+  border-radius: 6px;
+  border: 1px solid var(--border-light, #e8e8e8);
+}
+
+.factor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.factor-name {
+  font-size: 0.75em;
+  font-weight: 600;
+  color: var(--text-muted, #666);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.factor-score {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8em;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 8px;
+}
+
+.factor-score.positive {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.factor-score.negative {
+  background: #fecaca;
+  color: #b91c1c;
+}
+
+.factor-score.neutral {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.factor-bar {
+  height: 4px;
+  background: var(--border-light, #e0e0e0);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.factor-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.factor-bar-fill.positive {
+  background: #22c55e;
+}
+
+.factor-bar-fill.negative {
+  background: #ef4444;
+}
+
+.factor-bar-fill.neutral {
+  background: #9ca3af;
+}
+
+/* =============================================================================
+   PRO SCHOLAR: Weak Verb Reconstruction
+   ============================================================================= */
+
+.wic-weak-verb {
+  margin-bottom: 12px;
+  padding: 12px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 1px solid #fbbf24;
+  border-radius: 8px;
+}
+
+.weak-verb-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.weak-verb-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #92400e;
+  color: white;
+  border-radius: 50%;
+  font-size: 0.9em;
+  font-weight: 700;
+}
+
+.weak-verb-title {
+  font-weight: 600;
+  color: #78350f;
+}
+
+.weak-verb-type {
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  font-size: 1.1em;
+  color: #92400e;
+  margin-left: 4px;
+}
+
+.weak-verb-explanation {
+  font-size: 0.9em;
+  color: #92400e;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.weak-verb-reconstruction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--surface, #fff);
+  border-radius: 6px;
+  border: 1px solid #fcd34d;
+}
+
+.reconstruction-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.reconstruction-hebrew {
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  font-size: 1.5em;
+  font-weight: 600;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.reconstruction-label {
+  font-size: 0.7em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted, #888);
+}
+
+.reconstruction-arrow {
+  font-size: 1.5em;
+  color: #f59e0b;
+}
+
+/* =============================================================================
+   PRO SCHOLAR: Verb Grammar Section
+   ============================================================================= */
+
+.wic-verb-grammar {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: var(--surface-elevated, #f8f9fa);
+  border-radius: 8px;
+  border: 1px solid var(--border-light, #e0e0e0);
+  border-left: 3px solid #7c3aed;
+}
+
+.grammar-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-light, #e0e0e0);
+}
+
+.grammar-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  color: white;
+  border-radius: 50%;
+  font-size: 0.9em;
+}
+
+.grammar-title {
+  font-weight: 600;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.grammar-confidence {
+  margin-left: auto;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75em;
+  padding: 2px 8px;
+  background: var(--surface, #fff);
+  border-radius: 10px;
+  color: var(--text-muted, #666);
+}
+
+.grammar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 10px;
+}
+
+.grammar-item {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 10px;
+  background: var(--surface, #fff);
+  border-radius: 6px;
+  border: 1px solid var(--border-light, #e8e8e8);
+}
+
+.grammar-item-label {
+  font-size: 0.7em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted, #888);
+  margin-bottom: 4px;
+}
+
+.grammar-item-value {
+  font-weight: 600;
+  color: var(--text-primary, #1a1a1a);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.grammar-item-hebrew {
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  color: #7c3aed;
+  font-size: 0.9em;
+}
+
+.grammar-item-desc {
+  font-size: 0.8em;
+  color: var(--text-secondary, #666);
+  margin-top: 2px;
+}
+
+.grammar-item.binyan {
+  border-left: 3px solid #f59e0b;
+}
+
+.grammar-item.tense {
+  border-left: 3px solid #10b981;
+}
+
+.grammar-item.person {
+  border-left: 3px solid #3b82f6;
+}
+
+.grammar-item.gender {
+  border-left: 3px solid #ec4899;
+}
+
+.grammar-item.number {
+  border-left: 3px solid #8b5cf6;
+}
+
+/* =============================================================================
+   PRO SCHOLAR: Enhanced Morphology Pattern Row
+   ============================================================================= */
+
+.morph-pattern-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-light, #e0e0e0);
+}
+
+.morph-pattern-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.8em;
+}
+
+.morph-pattern-badge.verb-pattern {
+  background: #fef3c7;
+  border: 1px solid #fbbf24;
+  color: #92400e;
+}
+
+.morph-pattern-badge.binyan {
+  background: #dbeafe;
+  border: 1px solid #60a5fa;
+  color: #1e40af;
+}
+
+.pattern-badge-name {
+  font-weight: 600;
+}
+
+.pattern-badge-hebrew {
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+}
+
+/* =============================================================================
+   PRO SCHOLAR: Enhanced Etymology with Frequency
+   ============================================================================= */
+
+.ety-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.ety-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ety-field-label {
+  font-size: 0.7em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted, #888);
+}
+
+.ety-field-value {
+  font-weight: 600;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.ety-frequency {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  background: var(--surface, #fff);
+  border-radius: 6px;
+  margin-top: 8px;
+}
+
+.freq-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85em;
+}
+
+.freq-icon {
+  font-size: 1em;
+  color: var(--accent, #1976d2);
+}
+
+.freq-number {
+  font-family: var(--font-mono, monospace);
+  font-weight: 600;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.freq-desc {
+  color: var(--text-muted, #888);
+}
+
+/* =============================================================================
+   Dark Mode: New Pro Scholar Components
+   ============================================================================= */
+
+@media (prefers-color-scheme: dark) {
+  .wic-lookup-path {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%);
+    border-color: rgba(16, 185, 129, 0.4);
+  }
+
+  .wic-lookup-path.pattern-analysis {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.1) 100%);
+    border-color: rgba(245, 158, 11, 0.4);
+  }
+
+  .path-step {
+    background: var(--surface-dark, #252525);
+    border-color: var(--border-dark, #444);
+    color: var(--text-primary-dark, #e0e0e0);
+  }
+
+  .wic-confidence {
+    border-color: var(--border-dark, #444);
+  }
+
+  .wic-confidence.high {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%);
+  }
+
+  .wic-confidence.medium {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.1) 100%);
+  }
+
+  .wic-confidence.low {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.1) 100%);
+  }
+
+  .confidence-factor {
+    background: var(--surface-dark, #252525);
+    border-color: var(--border-dark, #444);
+  }
+
+  .wic-weak-verb {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.1) 100%);
+    border-color: rgba(245, 158, 11, 0.4);
+  }
+
+  .weak-verb-title {
+    color: #fcd34d;
+  }
+
+  .weak-verb-explanation {
+    color: #fde68a;
+  }
+
+  .weak-verb-reconstruction {
+    background: var(--surface-dark, #252525);
+    border-color: rgba(245, 158, 11, 0.3);
+  }
+
+  .reconstruction-hebrew {
+    color: var(--text-primary-dark, #f0f0f0);
+  }
+
+  .wic-verb-grammar {
+    background: var(--surface-elevated-dark, #2d2d2d);
+    border-color: var(--border-dark, #444);
+    border-left-color: #7c3aed;
+  }
+
+  .grammar-item {
+    background: var(--surface-dark, #252525);
+    border-color: var(--border-dark, #444);
+  }
+
+  .grammar-item-value {
+    color: var(--text-primary-dark, #f0f0f0);
+  }
+
+  .ety-frequency {
+    background: var(--surface-dark, #252525);
+  }
+
+  .freq-number {
+    color: var(--text-primary-dark, #f0f0f0);
+  }
+
+  .wic-lang.hebrew {
+    background: rgba(59, 130, 246, 0.2);
+    color: #93c5fd;
+    border-color: rgba(59, 130, 246, 0.4);
+  }
+
+  .wic-lang.aramaic {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fcd34d;
+    border-color: rgba(245, 158, 11, 0.4);
+  }
+}
+
+/* =============================================================================
+   Responsive: New Pro Scholar Components
+   ============================================================================= */
+
+@media (max-width: 480px) {
+  .lookup-path-steps {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .path-arrow {
+    transform: rotate(90deg);
+    margin: 4px 0;
+  }
+
+  .confidence-factors-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .grammar-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .weak-verb-reconstruction {
+    flex-direction: column;
+  }
+
+  .reconstruction-arrow {
+    transform: rotate(90deg);
+  }
+
+  .wic-header-right {
+    align-items: flex-start;
+    margin-top: 8px;
+  }
+
+  .ety-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ety-frequency {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}
+
+/* =============================================================================
+   PRO SCHOLAR v3: CROSS-REFERENCES SECTION
+   ============================================================================= */
+
+.wic-cross-refs {
+  margin-top: 12px;
+  border: 1px solid var(--border-light, #e5e7eb);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cross-refs-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--surface-alt, #f9fafb);
+  border: none;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background 0.15s ease;
+}
+
+.cross-refs-toggle:hover {
+  background: var(--surface-hover, #f3f4f6);
+}
+
+.cross-refs-icon {
+  font-size: 1.1em;
+}
+
+.cross-refs-title {
+  flex: 1;
+  text-align: left;
+  font-weight: 500;
+}
+
+.cross-refs-count {
+  font-size: 0.85em;
+  padding: 2px 8px;
+  background: var(--primary-light, #dbeafe);
+  color: var(--primary, #2563eb);
+  border-radius: 10px;
+}
+
+.cross-refs-loading {
+  animation: pulse 1s infinite;
+}
+
+.cross-refs-arrow {
+  font-size: 0.8em;
+  transition: transform 0.2s ease;
+}
+
+.cross-refs-arrow.expanded {
+  transform: rotate(180deg);
+}
+
+.cross-refs-content {
+  padding: 12px;
+  border-top: 1px solid var(--border-light, #e5e7eb);
+  background: var(--surface, #fff);
+}
+
+.refs-group {
+  margin-bottom: 12px;
+}
+
+.refs-group:last-child {
+  margin-bottom: 0;
+}
+
+.refs-group-label {
+  display: block;
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--text-muted, #6b7280);
+  margin-bottom: 6px;
+}
+
+.refs-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ref-item {
+  padding: 4px 10px;
+  background: var(--surface-alt, #f3f4f6);
+  border: 1px solid var(--border-light, #e5e7eb);
+  border-radius: 6px;
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ref-item:hover {
+  background: var(--primary-light, #dbeafe);
+  border-color: var(--primary, #2563eb);
+  color: var(--primary-dark, #1d4ed8);
+}
+
+.refs-empty {
+  font-size: 0.9em;
+  color: var(--text-muted, #6b7280);
+  text-align: center;
+  padding: 16px;
+}
+
+/* =============================================================================
+   PRO SCHOLAR v3: AUDIO PRONUNCIATION
+   ============================================================================= */
+
+.wic-audio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.audio-play-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: var(--surface-alt, #f3f4f6);
+  border: 1px solid var(--border-light, #e5e7eb);
+  border-radius: 6px;
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.audio-play-btn:hover:not(:disabled) {
+  background: var(--primary-light, #dbeafe);
+  border-color: var(--primary, #2563eb);
+}
+
+.audio-play-btn.playing {
+  background: var(--primary, #2563eb);
+  color: white;
+  border-color: var(--primary, #2563eb);
+}
+
+.audio-play-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.audio-icon {
+  font-size: 1.1em;
+}
+
+.dialect-selector {
+  display: flex;
+  gap: 4px;
+}
+
+.dialect-btn {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid transparent;
+  background: var(--surface-alt, #f3f4f6);
+  border-radius: 6px;
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dialect-btn:hover {
+  background: var(--surface-hover, #e5e7eb);
+}
+
+.dialect-btn.active {
+  background: var(--primary-light, #dbeafe);
+  border-color: var(--primary, #2563eb);
+}
+
+/* =============================================================================
+   PRO SCHOLAR v3: KNOWLEDGE GRAPH MINI
+   ============================================================================= */
+
+.wic-graph-mini {
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--surface-alt, #f9fafb);
+  border-radius: 8px;
+  border: 1px solid var(--border-light, #e5e7eb);
+}
+
+.graph-mini-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.graph-mini-icon {
+  font-size: 1.1em;
+}
+
+.graph-mini-title {
+  flex: 1;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.graph-expand-btn {
+  padding: 4px 10px;
+  background: var(--primary, #2563eb);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8em;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.graph-expand-btn:hover {
+  background: var(--primary-dark, #1d4ed8);
+}
+
+.graph-mini-visual {
+  position: relative;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.graph-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--primary, #2563eb);
+  color: white;
+  border-radius: 12px;
+  z-index: 2;
+}
+
+.graph-center-word {
+  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
+  font-size: 1.2em;
+  font-weight: 600;
+}
+
+.graph-center-root {
+  font-size: 0.8em;
+  opacity: 0.8;
+}
+
+.graph-connections {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.graph-connection {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.85em;
+}
+
+.graph-connection.synonym {
+  color: #16a34a;
+}
+
+.graph-connection.antonym {
+  color: #dc2626;
+}
+
+.connection-line {
+  width: 2px;
+  height: 30px;
+  background: currentColor;
+  opacity: 0.3;
+}
+
+.connection-word {
+  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
+  background: var(--surface, #fff);
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid currentColor;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.connection-type {
+  font-size: 0.9em;
+  opacity: 0.7;
+}
+
+/* Position connections around center */
+.graph-connection:nth-child(1) { top: 0; left: 50%; transform: translateX(-50%); }
+.graph-connection:nth-child(2) { top: 50%; right: 0; transform: translateY(-50%); }
+.graph-connection:nth-child(3) { bottom: 0; left: 50%; transform: translateX(-50%); }
+.graph-connection:nth-child(4) { top: 50%; left: 0; transform: translateY(-50%); }
+
+/* =============================================================================
+   PRO SCHOLAR v3: QUICK EXPORT
+   ============================================================================= */
+
+.wic-export-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: var(--surface-alt, #f3f4f6);
+  border: 1px solid var(--border-light, #e5e7eb);
+  border-radius: 6px;
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.wic-export-btn:hover {
+  background: var(--surface-hover, #e5e7eb);
+}
+
+.wic-export-btn.copied {
+  background: #dcfce7;
+  border-color: #16a34a;
+  color: #16a34a;
+}
+
+.export-icon {
+  font-size: 1em;
+}
+
+/* =============================================================================
+   RESPONSIVE ADJUSTMENTS FOR NEW FEATURES
+   ============================================================================= */
+
+@media (max-width: 480px) {
+  .wic-audio {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .dialect-selector {
+    align-self: flex-end;
+  }
+
+  .graph-mini-visual {
+    min-height: 80px;
+  }
+
+  .graph-center {
+    padding: 8px 12px;
+    font-size: 0.9em;
+  }
+
+  .refs-list {
+    flex-direction: column;
+  }
+
+  .ref-item {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* =============================================================================
+   PRO SCHOLAR v3: QUICK REVIEW BUTTONS
+   ============================================================================= */
+
+.wic-quick-review {
+  margin: 12px 0;
+  padding: 12px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid var(--border-light, #e5e7eb);
+  border-radius: 10px;
+}
+
+.quick-review-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.quick-review-icon {
+  font-size: 1.1em;
+}
+
+.quick-review-title {
+  font-size: 0.9em;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+}
+
+.quick-review-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.review-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 16px;
+  background: var(--surface, #fff);
+  border: 2px solid var(--btn-color, #e5e7eb);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 65px;
+}
+
+.review-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--btn-color) 10%, white);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.review-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.review-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.review-btn.active {
+  background: var(--btn-color);
+  color: white;
+  transform: scale(1.05);
+}
+
+.review-btn-icon {
+  font-size: 1.3em;
+}
+
+.review-btn-label {
+  font-size: 0.75em;
+  font-weight: 500;
+  color: var(--text-secondary, #6b7280);
+}
+
+.review-btn.active .review-btn-label {
+  color: white;
+}
+
+.quick-review-feedback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  background: #f0fdf4;
+  border-radius: 8px;
+  animation: feedbackPulse 0.3s ease;
+}
+
+@keyframes feedbackPulse {
+  0% { transform: scale(0.95); opacity: 0; }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.feedback-icon {
+  font-size: 1.5em;
+}
+
+.feedback-message {
+  font-weight: 600;
+  color: #166534;
+}
+
+.wic-quick-review.compact .quick-review-buttons {
+  gap: 6px;
+}
+
+.wic-quick-review.compact .review-btn {
+  padding: 8px 12px;
+  min-width: 50px;
+}
+
+/* =============================================================================
+   PRO SCHOLAR v3: LEARNING INSIGHTS PANEL
+   ============================================================================= */
+
+.wic-learning-insights {
+  margin: 12px 0;
+  border: 1px solid var(--border-light, #e5e7eb);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.insights-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--surface-alt, #f9fafb);
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.insights-header:hover {
+  background: var(--surface-hover, #f3f4f6);
+}
+
+.insights-icon {
+  font-size: 1.1em;
+}
+
+.insights-title {
+  font-size: 0.9em;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+}
+
+.insights-toggle {
+  margin-left: auto;
+  font-size: 0.8em;
+  color: var(--text-muted, #9ca3af);
+  transition: transform 0.2s ease;
+}
+
+.insights-toggle.expanded {
+  transform: rotate(180deg);
+}
+
+.insights-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--surface, #fff);
+}
+
+.insight-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  background: color-mix(in srgb, var(--insight-color, #6b7280) 10%, white);
+  border: 1px solid color-mix(in srgb, var(--insight-color, #6b7280) 30%, white);
+  border-radius: 20px;
+  font-size: 0.8em;
+}
+
+.insight-badge .badge-icon {
+  font-size: 1em;
+}
+
+.insight-badge .badge-label {
+  font-weight: 500;
+  color: var(--text-primary, #1f2937);
+  text-transform: capitalize;
+}
+
+.insight-badge .badge-score {
+  font-weight: 600;
+  color: var(--insight-color, #6b7280);
+}
+
+.insight-badge.study-time {
+  --insight-color: #6366f1;
+}
+
+.insight-badge.cache {
+  --insight-color: #8b5cf6;
+}
+
+.insights-details {
+  padding: 12px 14px;
+  background: var(--surface-alt, #f9fafb);
+  border-top: 1px solid var(--border-light, #e5e7eb);
+}
+
+.insight-section {
+  margin-bottom: 12px;
+}
+
+.insight-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-label {
+  display: block;
+  font-size: 0.75em;
+  font-weight: 600;
+  color: var(--text-muted, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.factor-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.factor-pill {
+  padding: 4px 10px;
+  background: var(--surface, #fff);
+  border: 1px solid var(--border-light, #e5e7eb);
+  border-radius: 15px;
+  font-size: 0.8em;
+  color: var(--text-secondary, #4b5563);
+}
+
+.srs-progress {
+  display: flex;
+  gap: 16px;
+}
+
+.progress-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.progress-stat .stat-value {
+  font-size: 1.1em;
+  font-weight: 700;
+  color: var(--text-primary, #1f2937);
+}
+
+.progress-stat .stat-label {
+  font-size: 0.7em;
+  color: var(--text-muted, #6b7280);
+  text-transform: uppercase;
+}
+
+.time-breakdown {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.time-value {
+  font-size: 1.2em;
+  font-weight: 700;
+  color: var(--text-primary, #1f2937);
+}
+
+.time-hint {
+  font-size: 0.8em;
+  color: var(--text-muted, #6b7280);
+  font-style: italic;
+}
+
+/* =============================================================================
+   PRO SCHOLAR v3: HISTORY PANEL
+   ============================================================================= */
+
+.wic-history-panel {
+  margin: 12px 0;
+  padding: 10px;
+  background: var(--surface-alt, #f9fafb);
+  border-radius: 8px;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.history-icon {
+  font-size: 1em;
+}
+
+.history-title {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--text-secondary, #4b5563);
+}
+
+.history-clear-btn {
+  margin-left: auto;
+  padding: 2px 8px;
+  background: transparent;
+  border: 1px solid var(--border-light, #e5e7eb);
+  border-radius: 4px;
+  font-size: 0.7em;
+  color: var(--text-muted, #9ca3af);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.history-clear-btn:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+.history-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--surface, #fff);
+  border: 1px solid var(--border-light, #e5e7eb);
+  border-radius: 6px;
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.history-item:hover {
+  background: #eff6ff;
+  border-color: #93c5fd;
+}
+
+.history-word {
+  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
+  font-weight: 500;
+}
+
+.history-def {
+  font-size: 0.85em;
+  color: var(--text-muted, #9ca3af);
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-expand-btn {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 6px;
+  background: transparent;
+  border: none;
+  font-size: 0.8em;
+  color: var(--accent, #2563eb);
+  cursor: pointer;
+}
+
+.history-expand-btn:hover {
+  text-decoration: underline;
+}
+
+/* =============================================================================
+   PRO SCHOLAR v3: CROSS-REFS MINI
+   ============================================================================= */
+
+.wic-crossrefs-mini {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.crossrefs-label {
+  font-size: 0.8em;
+  color: var(--text-muted, #6b7280);
+}
+
+.crossrefs-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.crossref-tag {
+  padding: 3px 8px;
+  background: var(--surface-alt, #f9fafb);
+  border: 1px solid var(--border-light, #e5e7eb);
+  border-radius: 4px;
+  font-size: 0.85em;
+  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.crossref-tag.root {
+  background: #fef3c7;
+  border-color: #fcd34d;
+}
+
+.crossref-tag.root:hover {
+  background: #fde68a;
+}
+
+.crossref-tag.semantic {
+  background: #dbeafe;
+  border-color: #93c5fd;
+}
+
+.crossref-tag.semantic:hover {
+  background: #bfdbfe;
+}
+
+.crossref-more {
+  font-size: 0.8em;
+  color: var(--text-muted, #9ca3af);
+  font-style: italic;
+}
+
+/* =============================================================================
+   DARK MODE SUPPORT FOR NEW FEATURES
+   ============================================================================= */
+
+@media (prefers-color-scheme: dark) {
+  .wic-quick-review {
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    border-color: var(--border-dark, #374151);
+  }
+
+  .review-btn {
+    background: var(--surface-dark, #1f2937);
+    border-color: var(--btn-color, #374151);
+  }
+
+  .review-btn:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--btn-color) 20%, #1f2937);
+  }
+
+  .quick-review-feedback {
+    background: rgba(34, 197, 94, 0.15);
+  }
+
+  .feedback-message {
+    color: #4ade80;
+  }
+
+  .wic-learning-insights {
+    border-color: var(--border-dark, #374151);
+  }
+
+  .insights-header {
+    background: var(--surface-dark, #1f2937);
+  }
+
+  .insights-header:hover {
+    background: var(--surface-elevated-dark, #374151);
+  }
+
+  .insights-summary {
+    background: var(--surface-dark, #111827);
+  }
+
+  .insight-badge {
+    background: color-mix(in srgb, var(--insight-color, #6b7280) 15%, #1f2937);
+    border-color: color-mix(in srgb, var(--insight-color, #6b7280) 40%, #1f2937);
+  }
+
+  .insight-badge .badge-label {
+    color: var(--text-primary-dark, #f3f4f6);
+  }
+
+  .insights-details {
+    background: var(--surface-dark, #1f2937);
+    border-color: var(--border-dark, #374151);
+  }
+
+  .factor-pill {
+    background: var(--surface-elevated-dark, #374151);
+    border-color: var(--border-dark, #4b5563);
+    color: var(--text-primary-dark, #e5e7eb);
+  }
+
+  .progress-stat .stat-value {
+    color: var(--text-primary-dark, #f3f4f6);
+  }
+
+  .time-value {
+    color: var(--text-primary-dark, #f3f4f6);
+  }
+
+  .wic-history-panel {
+    background: var(--surface-dark, #1f2937);
+  }
+
+  .history-item {
+    background: var(--surface-elevated-dark, #374151);
+    border-color: var(--border-dark, #4b5563);
+  }
+
+  .history-item:hover {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: #3b82f6;
+  }
+
+  .crossref-tag {
+    background: var(--surface-dark, #1f2937);
+    border-color: var(--border-dark, #4b5563);
+  }
+
+  .crossref-tag.root {
+    background: rgba(251, 191, 36, 0.15);
+    border-color: rgba(251, 191, 36, 0.4);
+  }
+
+  .crossref-tag.semantic {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.4);
+  }
+}
+
+/* =============================================================================
+   RESPONSIVE FOR NEW FEATURES
+   ============================================================================= */
+
+@media (max-width: 480px) {
+  .quick-review-buttons {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .review-btn {
+    flex: 1 1 45%;
+    min-width: 0;
+  }
+
+  .srs-progress {
+    gap: 12px;
+    justify-content: space-around;
+  }
+
+  .insights-summary {
+    gap: 6px;
+  }
+
+  .insight-badge {
+    font-size: 0.75em;
+    padding: 4px 8px;
+  }
+
+  .history-def {
+    display: none;
+  }
+
+  .crossrefs-tags {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+}
+
+/* =============================================================================
+   PRO SCHOLAR v4: CANTILLATION MARKS DISPLAY
+   ============================================================================= */
+
+.wic-cantillation {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 1px solid #fbbf24;
+  border-radius: 8px;
+}
+
+.cant-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.cant-icon {
+  font-size: 1.2em;
+}
+
+.cant-title {
+  font-weight: 600;
+  color: #78350f;
+}
+
+.cant-count {
+  margin-left: auto;
+  font-size: 0.8em;
+  padding: 2px 8px;
+  background: rgba(120, 53, 15, 0.15);
+  border-radius: 10px;
+  color: #78350f;
+}
+
+.cant-marks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cant-mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--surface, #fff);
+  border-radius: 6px;
+  border-left: 3px solid #fbbf24;
+}
+
+.cant-mark.disjunctive {
+  border-left-color: #dc2626;
+}
+
+.cant-mark.conjunctive {
+  border-left-color: #16a34a;
+}
+
+.mark-symbol {
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  font-size: 1.8em;
+  color: var(--text-primary, #1a1a1a);
+  min-width: 40px;
+  text-align: center;
+}
+
+.mark-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mark-name {
+  font-weight: 600;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.mark-hebrew {
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  font-size: 0.9em;
+  color: var(--text-secondary, #666);
+}
+
+.mark-type-badge {
+  font-size: 0.75em;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.mark-type-badge.disjunctive {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.mark-type-badge.conjunctive {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+/* =============================================================================
+   PRO SCHOLAR v4: CONSTRUCT CHAIN ANALYSIS
+   ============================================================================= */
+
+.wic-construct-chain {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border: 1px solid #3b82f6;
+  border-radius: 8px;
+}
+
+.construct-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.construct-icon {
+  font-size: 1.2em;
+}
+
+.construct-title {
+  font-weight: 600;
+  color: #1e40af;
+}
+
+.construct-confidence {
+  margin-left: auto;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75em;
+  padding: 2px 8px;
+  background: var(--surface, #fff);
+  border-radius: 10px;
+  color: #1e40af;
+}
+
+.construct-known {
+  background: var(--surface, #fff);
+  padding: 12px;
+  border-radius: 6px;
+}
+
+.construct-parsed {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-light, #e0e0e0);
+}
+
+.parsed-hebrew {
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  font-size: 1.3em;
+  font-weight: 600;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.parsed-arrow {
+  color: #3b82f6;
+  font-weight: bold;
+}
+
+.parsed-english {
+  font-style: italic;
+  color: var(--text-secondary, #555);
+}
+
+.construct-parts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 12px;
+  margin-bottom: 10px;
+}
+
+.part-label {
+  font-size: 0.8em;
+  font-weight: 600;
+  color: var(--text-muted, #666);
+}
+
+.part-value {
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.construct-type {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.type-badge {
+  padding: 3px 10px;
+  background: #dbeafe;
+  color: #1e40af;
+  border-radius: 12px;
+  font-size: 0.8em;
+  font-weight: 500;
+}
+
+.semantic-function {
+  font-size: 0.85em;
+  color: var(--text-secondary, #666);
+  font-style: italic;
+}
+
+.construct-detected {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  background: var(--surface, #fff);
+  border-radius: 6px;
+  border-left: 3px solid #3b82f6;
+}
+
+.detected-text {
+  font-weight: 500;
+  color: #1e40af;
+}
+
+.possible-type,
+.detection-reason {
+  font-size: 0.85em;
+  color: var(--text-secondary, #666);
+}
+
+.construct-related {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-light, #e0e0e0);
+}
+
+.construct-related .related-label {
+  font-size: 0.8em;
+  font-weight: 600;
+  color: var(--text-muted, #666);
+  margin-bottom: 8px;
+}
+
+.construct-related .related-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.related-construct {
+  padding: 4px 12px;
+  background: #eff6ff;
+  border: 1px solid #93c5fd;
+  border-radius: 6px;
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.related-construct:hover {
+  background: #dbeafe;
+  border-color: #3b82f6;
+}
+
+/* =============================================================================
+   PRO SCHOLAR v4: MANUSCRIPT VARIANTS INDICATOR
+   ============================================================================= */
+
+.wic-variants {
+  margin-top: 12px;
+  border: 1px solid var(--border-light, #e5e7eb);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.wic-variants.significant {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.2);
+}
+
+.variants-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--surface-alt, #f9fafb);
+  border: none;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background 0.15s ease;
+}
+
+.variants-toggle:hover {
+  background: var(--surface-hover, #f3f4f6);
+}
+
+.variants-icon {
+  font-size: 1.1em;
+}
+
+.variants-title {
+  flex: 1;
+  text-align: left;
+  font-weight: 500;
+}
+
+.variants-count {
+  font-size: 0.85em;
+  padding: 2px 8px;
+  background: var(--surface, #fff);
+  border-radius: 10px;
+  color: var(--text-secondary, #666);
+}
+
+.variants-count.significant {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.variants-arrow {
+  font-size: 0.8em;
+  transition: transform 0.2s ease;
+}
+
+.variants-arrow.expanded {
+  transform: rotate(180deg);
+}
+
+.variants-content {
+  padding: 12px;
+  border-top: 1px solid var(--border-light, #e5e7eb);
+  background: var(--surface, #fff);
+}
+
+.variants-mt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.mt-label {
+  font-size: 0.8em;
+  font-weight: 600;
+  color: #166534;
+}
+
+.mt-text {
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  font-size: 1.1em;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.variants-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.variant-item {
+  padding: 10px;
+  background: var(--surface-alt, #f9fafb);
+  border: 1px solid var(--border-light, #e5e7eb);
+  border-radius: 6px;
+}
+
+.variant-item.major {
+  border-left: 3px solid #dc2626;
+}
+
+.variant-item.minor {
+  border-left: 3px solid #f59e0b;
+}
+
+.variant-item.orthographic {
+  border-left: 3px solid #6b7280;
+}
+
+.variant-source {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.source-abbrev {
+  font-weight: 700;
+  font-size: 0.9em;
+  padding: 2px 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.source-name {
+  font-size: 0.85em;
+  color: var(--text-secondary, #666);
+}
+
+.source-date {
+  font-size: 0.75em;
+  color: var(--text-muted, #888);
+  font-style: italic;
+}
+
+.variant-reading {
+  margin-bottom: 8px;
+}
+
+.reading-text {
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  font-size: 1.1em;
+  color: var(--text-primary, #1a1a1a);
+  padding: 4px 0;
+}
+
+.variant-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.significance-badge {
+  font-size: 0.75em;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.significance-badge.major {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.significance-badge.minor {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.significance-badge.orthographic {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.variant-notes {
+  font-size: 0.8em;
+  color: var(--text-muted, #666);
+  font-style: italic;
+}
+
+/* =============================================================================
+   PRO SCHOLAR v4: DIALECT HINT
+   ============================================================================= */
+
+.dialect-hint {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 12px;
+  background: #1f2937;
+  color: white;
+  border-radius: 6px;
+  font-size: 0.75em;
+  white-space: nowrap;
+  animation: hintFadeIn 0.2s ease;
+  z-index: 10;
+}
+
+.dialect-hint::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #1f2937;
+}
+
+@keyframes hintFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.wic-audio {
+  position: relative;
+}
+
+/* =============================================================================
+   DARK MODE: PRO SCHOLAR v4 COMPONENTS
+   ============================================================================= */
+
+@media (prefers-color-scheme: dark) {
+  .wic-cantillation {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(251, 191, 36, 0.1) 100%);
+    border-color: rgba(251, 191, 36, 0.4);
+  }
+
+  .cant-title,
+  .cant-count {
+    color: #fcd34d;
+  }
+
+  .cant-mark {
+    background: var(--surface-dark, #252525);
+  }
+
+  .mark-symbol,
+  .mark-name {
+    color: var(--text-primary-dark, #f0f0f0);
+  }
+
+  .wic-construct-chain {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%);
+    border-color: rgba(59, 130, 246, 0.4);
+  }
+
+  .construct-title,
+  .construct-confidence {
+    color: #93c5fd;
+  }
+
+  .construct-known,
+  .construct-detected {
+    background: var(--surface-dark, #252525);
+  }
+
+  .parsed-hebrew,
+  .part-value {
+    color: var(--text-primary-dark, #f0f0f0);
+  }
+
+  .type-badge {
+    background: rgba(59, 130, 246, 0.2);
+    color: #93c5fd;
+  }
+
+  .related-construct {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.4);
+    color: #93c5fd;
+  }
+
+  .wic-variants {
+    border-color: var(--border-dark, #374151);
+  }
+
+  .variants-toggle {
+    background: var(--surface-dark, #1f2937);
+  }
+
+  .variants-toggle:hover {
+    background: var(--surface-elevated-dark, #374151);
+  }
+
+  .variants-content {
+    background: var(--surface-dark, #111827);
+  }
+
+  .variants-mt {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.4);
+  }
+
+  .mt-label {
+    color: #4ade80;
+  }
+
+  .mt-text {
+    color: var(--text-primary-dark, #f0f0f0);
+  }
+
+  .variant-item {
+    background: var(--surface-elevated-dark, #1f2937);
+    border-color: var(--border-dark, #374151);
+  }
+
+  .source-abbrev {
+    background: var(--surface-dark, #374151);
+    color: var(--text-primary-dark, #f0f0f0);
+  }
+
+  .reading-text {
+    color: var(--text-primary-dark, #f0f0f0);
+  }
+}
+
+/* =============================================================================
+   RESPONSIVE: PRO SCHOLAR v4 COMPONENTS
+   ============================================================================= */
+
+@media (max-width: 480px) {
+  .cant-mark {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .mark-symbol {
+    min-width: 30px;
+    font-size: 1.4em;
+  }
+
+  .mark-type-badge {
+    width: 100%;
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  .construct-parsed {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .parsed-arrow {
+    transform: rotate(90deg);
+  }
+
+  .construct-parts {
+    grid-template-columns: 1fr;
+  }
+
+  .variants-mt {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .variant-source {
+    flex-wrap: wrap;
+  }
+
+  .dialect-hint {
+    font-size: 0.7em;
+    padding: 4px 8px;
+  }
+}

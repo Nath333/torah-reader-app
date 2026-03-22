@@ -1,0 +1,43 @@
+/**
+ * Styles Index - Main stylesheet that imports all style modules
+ * Usage: import './styles/index.css' in your app entry point
+ *
+ * STYLE CATALOG:
+ * ==============
+ * variables.css       - CSS custom properties (colors, fonts, spacing)
+ * animations.css      - Keyframe animations and transitions
+ * hebrew-typography.css - Hebrew font stacks and text rendering
+ * utilities.css       - Utility classes (flex, spacing, visibility)
+ *
+ * UI COMPONENTS:
+ * ui-components.css   - Buttons, inputs, badges, chips
+ * cards.css           - Card layouts and surfaces
+ * modal.css           - Modal dialogs and overlays
+ * shared-ui.css       - Shared component styles
+ * Toast.css           - Toast notifications
+ *
+ * SPECIALIZED:
+ * textLayers.css      - Text overlay layers (commentary, translation)
+ * scrollbars.css      - Custom scrollbar styling
+ * enhancements.css    - Text enhancements and highlights
+ * OzVeHadar.css       - Traditional page layout styles
+ */
+
+/* === Foundation === */
+@import './variables.css';
+@import './animations.css';
+@import './hebrew-typography.css';
+@import './utilities.css';
+
+/* === UI Components === */
+@import './ui-components.css';
+@import './cards.css';
+@import './modal.css';
+@import './shared-ui.css';
+@import './Toast.css';
+
+/* === Specialized === */
+@import './textLayers.css';
+@import './scrollbars.css';
+@import './enhancements.css';
+@import './OzVeHadar.css';

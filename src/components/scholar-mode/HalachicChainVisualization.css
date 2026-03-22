@@ -1,0 +1,403 @@
+/**
+ * HalachicChainVisualization Styles
+ * Visual chain of halachic transmission
+ */
+
+.halachic-chain-visualization {
+  padding: 16px;
+  background: var(--bg-secondary, rgba(0, 0, 0, 0.2));
+  border-radius: 12px;
+}
+
+.halachic-chain-visualization.compact {
+  padding: 12px;
+}
+
+/* Header */
+.chain-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.chain-header .header-icon {
+  font-size: 24px;
+}
+
+.chain-header .header-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary, #fff);
+}
+
+/* Summary */
+.chain-summary {
+  padding: 12px;
+  margin-bottom: 16px;
+  background: var(--gold-a10, rgba(212, 175, 55, 0.1));
+  border: 1px solid var(--gold-a30, rgba(212, 175, 55, 0.3));
+  border-radius: 8px;
+}
+
+.chain-summary p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-primary, #fff);
+  line-height: 1.5;
+}
+
+/* Visual Chain */
+.chain-visual {
+  position: relative;
+  padding: 20px 0;
+}
+
+.chain-line {
+  position: absolute;
+  left: 24px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(
+    to bottom,
+    #d4af37,
+    #8b5cf6,
+    #3b82f6,
+    #10b981,
+    #f59e0b
+  );
+  border-radius: 3px;
+  opacity: 0.5;
+}
+
+.chain-nodes {
+  position: relative;
+  z-index: 1;
+}
+
+.chain-connector {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+  font-size: 18px;
+  color: var(--text-secondary, #888);
+  margin-left: 16px;
+}
+
+/* Chain Node */
+.chain-node {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  margin-bottom: 12px;
+  background: var(--bg-tertiary, rgba(255, 255, 255, 0.03));
+  border: 2px solid var(--node-color, #888);
+  border-radius: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chain-node:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.chain-node.active {
+  background: color-mix(in srgb, var(--node-color) 10%, transparent);
+}
+
+.node-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.node-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.node-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.node-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--node-color, #fff);
+  font-family: 'SBL Hebrew', 'David', serif;
+}
+
+.node-sublabel {
+  font-size: 12px;
+  color: var(--text-secondary, #888);
+}
+
+.node-data {
+  font-size: 14px;
+}
+
+.node-text {
+  margin: 0;
+  color: var(--text-primary, #fff);
+  line-height: 1.5;
+}
+
+.node-location,
+.node-derivation,
+.node-ruling,
+.node-rema,
+.node-disputes,
+.node-mb,
+.node-modern {
+  margin-top: 8px;
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+}
+
+.location-icon {
+  margin-right: 6px;
+}
+
+.location-text {
+  color: var(--gold-primary, #d4af37);
+  font-weight: 500;
+}
+
+.derivation-label,
+.ruling-label,
+.rema-label,
+.disputes-label,
+.mb-label,
+.modern-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary, #888);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.derivation-text,
+.ruling-text,
+.disputes-text,
+.mb-text,
+.modern-text {
+  color: var(--text-primary, #fff);
+}
+
+.node-rema {
+  border-left: 3px solid #8b5cf6;
+}
+
+.rema-label {
+  color: #a78bfa;
+}
+
+/* Rishonim List */
+.rishonim-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rishon-item {
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  border-left: 3px solid #3b82f6;
+}
+
+.rishon-name {
+  font-weight: 600;
+  color: #60a5fa;
+}
+
+.rishon-location {
+  margin-left: 8px;
+  font-size: 12px;
+  color: var(--text-secondary, #888);
+}
+
+.rishon-ruling {
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  color: var(--text-primary, #fff);
+}
+
+/* Practical Application */
+.practical-section {
+  margin-top: 20px;
+  padding: 16px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 10px;
+}
+
+.practical-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.practical-icon {
+  font-size: 20px;
+}
+
+.practical-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #34d399;
+}
+
+.practical-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.practical-item {
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+}
+
+.practical-item.how,
+.practical-item.exceptions,
+.practical-item.mistakes {
+  grid-column: 1 / -1;
+}
+
+.practical-item.mistakes {
+  border-left: 3px solid #ef4444;
+}
+
+.practical-item .item-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #34d399;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.practical-item .item-text {
+  font-size: 14px;
+  color: var(--text-primary, #fff);
+}
+
+/* Machloket Section */
+.machloket-section {
+  margin-top: 20px;
+  padding: 14px;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 10px;
+}
+
+.machloket-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.machloket-icon {
+  font-size: 18px;
+}
+
+.machloket-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #a78bfa;
+}
+
+.machloket-topic {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: var(--text-primary, #fff);
+}
+
+.machloket-positions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.machloket-position {
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.pos-authority {
+  font-weight: 600;
+  color: #a78bfa;
+  margin-right: 6px;
+}
+
+.pos-view {
+  color: var(--text-primary, #fff);
+}
+
+.machloket-practice {
+  margin: 10px 0 0 0;
+  font-size: 13px;
+  color: var(--text-secondary, #aaa);
+}
+
+/* Spiritual Lesson */
+.spiritual-lesson {
+  margin-top: 20px;
+  padding: 14px;
+  background: var(--gold-a10, rgba(212, 175, 55, 0.1));
+  border: 1px solid var(--gold-a30, rgba(212, 175, 55, 0.3));
+  border-radius: 10px;
+}
+
+.spiritual-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.spiritual-icon {
+  font-size: 18px;
+}
+
+.spiritual-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gold-primary, #d4af37);
+}
+
+.spiritual-text {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-primary, #fff);
+  line-height: 1.6;
+  font-style: italic;
+}
+
+/* Empty State */
+.halachic-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--text-secondary, #888);
+}
+
+.halachic-empty .empty-icon {
+  font-size: 48px;
+  opacity: 0.5;
+  margin-bottom: 10px;
+}

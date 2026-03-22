@@ -1,171 +1,130 @@
-import { useState, useCallback, useMemo, useRef } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+/**
+ * App - Main Application Component
+ *
+ * Professional Torah study application with code splitting,
+ * error boundaries, and optimized performance.
+ */
+
+import { useCallback, useMemo, useEffect, lazy, Suspense, memo } from 'react';
 import './App.css';
-import { getReadPath, getSplitPath, getTraditionalPath, getVersionsPath } from './config/routes';
 
-// Components
-import TorahReader from './components/TorahReader';
-import SearchBar from './components/SearchBar';
-import SearchResults from './components/SearchResults';
-import Bookmarks from './components/Bookmarks';
-import SefarimSelector from './components/SefarimSelector';
-import DailyParsha from './components/DailyParsha';
-import ReadingHistory from './components/ReadingHistory';
-import KeyboardHelp from './components/KeyboardHelp';
-import VocabularyBank from './components/VocabularyBank';
-import PronunciationSettings from './components/PronunciationSettings';
-import AudioPlayer from './components/AudioPlayer';
-import DiscoverPanel from './components/DiscoverPanel';
-import TextVersions from './components/TextVersions';
-import ChapterHeader from './components/ChapterHeader';
-import ReadingStats from './components/ReadingStats';
-import Sidebar from './components/Sidebar';
-import SplitPaneView from './components/SplitPaneView';
-import FocusMode from './components/FocusMode';
-import ApiKeySettings from './components/ApiKeySettings';
-import WelcomeBanner from './components/WelcomeBanner';
-import TraditionalPageView from './components/TraditionalPageView';
-import StudyDashboard from './components/StudyDashboard';
-import QuickActions from './components/QuickActions';
-import Breadcrumb from './components/Breadcrumb';
-import FloatingActionButton from './components/FloatingActionButton';
+// Services
+import { initializePreload } from './services/dictionaryPreloader';
 
-// Context hooks
+// Context
 import { useTorah } from './context/TorahContext';
 import { useSettings } from './context/SettingsContext';
 import { useStudy } from './context/StudyContext';
 
-// Services & hooks
-import { searchTorah } from './services/sefariaApi';
-import { TRADITIONS } from './services/pronunciationService';
+// Hooks
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import useOnlineStatus from './hooks/useOnlineStatus';
 import useUrlState from './hooks/useUrlState';
+import useViewRouting from './hooks/useViewRouting';
+
+// Modal context (replaces useModals hook)
+import { useModals } from './context/ModalContext';
+
+// Components - Critical path (loaded immediately)
+import TorahReader from './components/core/TorahReader';
+import ErrorBoundary from './components/shared/ErrorBoundary';
+import LoadingSkeleton from './components/shared/LoadingSkeleton';
+import { MenuIcon, SearchIcon, GridIcon, FocusIcon, SunIcon, MoonIcon, OfflineIcon } from './components/shared/Icons';
+
+// Components - Shared (loaded immediately for header)
+import HeaderGreeting from './components/shared/HeaderGreeting';
+import ConnectivityIndicator from './components/shared/ConnectivityIndicator';
+import FriendlyError from './components/shared/FriendlyError';
+
+// Components - Navigation (loaded immediately)
+import Sidebar from './components/navigation/Sidebar';
+import QuickActions from './components/navigation/QuickActions';
+import Breadcrumb from './components/navigation/Breadcrumb';
+import FloatingActionButton from './components/navigation/FloatingActionButton';
+
+// =============================================================================
+// Lazy-loaded Components (Code Splitting for Performance)
+// =============================================================================
+
+// Study views - loaded on demand
+const Bookmarks = lazy(() => import('./components/shared/Bookmarks'));
+const ReadingHistory = lazy(() => import('./components/study/ReadingHistory'));
+const VocabularyBank = lazy(() => import('./components/study/VocabularyBank'));
+const StudyDashboard = lazy(() => import('./components/study/StudyDashboard'));
+
+// Layout views - loaded on demand
+const FocusMode = lazy(() => import('./components/layout/FocusMode'));
+const TraditionalPageView = lazy(() => import('./components/layout/TraditionalPageView'));
+
+// Navigation panels - loaded on demand
+const DiscoverPanel = lazy(() => import('./components/navigation/DiscoverPanel'));
+const SmartSearch = lazy(() => import('./components/navigation/SmartSearch'));
+
+// Analysis - loaded on demand
+const TextVersions = lazy(() => import('./components/analysis/TextVersions'));
+
+// Settings modals - loaded on demand
+const KeyboardHelp = lazy(() => import('./components/settings/KeyboardHelp'));
+const PronunciationSettings = lazy(() => import('./components/settings/PronunciationSettings'));
+const ApiKeySettings = lazy(() => import('./components/settings/ApiKeySettings'));
+const AudioPlayer = lazy(() => import('./components/shared/AudioPlayer'));
+
+// Study stats - loaded after main content
+const ReadingStats = lazy(() => import('./components/study/ReadingStats'));
+const ReadingProgressBar = lazy(() => import('./components/study/ReadingProgressBar'));
+
+// Dictionary modals - loaded on demand
+const WordIntelligenceModal = lazy(() => import('./components/dictionary/WordIntelligenceModal'));
+
+// =============================================================================
+// Loading Fallbacks for Lazy Components
+// =============================================================================
+
+const ViewLoadingFallback = memo(() => (
+  <div className="view-loading-container">
+    <LoadingSkeleton type="card" count={3} />
+  </div>
+));
+
+const ModalLoadingFallback = memo(() => (
+  <div className="modal-loading-container">
+    <LoadingSkeleton type="spinner" message={{ hebrew: 'טוען...', english: 'Loading...' }} />
+  </div>
+));
+
+const PanelLoadingFallback = memo(() => (
+  <LoadingSkeleton type="panel" count={5} />
+));
+
+// =============================================================================
+// Main App Component
+// =============================================================================
 
 function App() {
-  const searchBarRef = useRef(null);
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  // Get state from contexts
+  // Context
   const torah = useTorah();
   const settings = useSettings();
   const study = useStudy();
 
-  // Local hooks
+  // Hooks
   const isOnline = useOnlineStatus();
-
-  // URL sync
+  const { modals, handlers } = useModals();
+  const { view, setView, goToReader, toggleView } = useViewRouting(torah.book, torah.chapter);
   const { getShareLink } = useUrlState(torah.book, torah.chapter, torah.goTo);
 
-  // Derive view from URL path
-  const view = useMemo(() => {
-    const path = location.pathname;
-    if (path.startsWith('/search')) return 'search';
-    if (path.startsWith('/bookmarks')) return 'bookmarks';
-    if (path.startsWith('/history')) return 'history';
-    if (path.startsWith('/vocabulary')) return 'vocabulary';
-    if (path.startsWith('/discover')) return 'discover';
-    if (path.startsWith('/study')) return 'study';
-    if (path.startsWith('/versions')) return 'versions';
-    if (path.startsWith('/split')) return 'splitPane';
-    if (path.startsWith('/traditional')) return 'traditional';
-    return 'reader';
-  }, [location.pathname]);
+  // Initialize dictionary preloading on mount
+  useEffect(() => {
+    initializePreload();
+  }, []);
 
-  // Navigate to a specific view
-  const setView = useCallback((newViewOrFn) => {
-    const newView = typeof newViewOrFn === 'function' ? newViewOrFn(view) : newViewOrFn;
-
-    switch (newView) {
-      case 'search':
-        navigate('/search');
-        break;
-      case 'bookmarks':
-        navigate('/bookmarks');
-        break;
-      case 'history':
-        navigate('/history');
-        break;
-      case 'vocabulary':
-        navigate('/vocabulary');
-        break;
-      case 'discover':
-        navigate('/discover');
-        break;
-      case 'study':
-        navigate('/study');
-        break;
-      case 'versions':
-        navigate(getVersionsPath(torah.book, torah.chapter));
-        break;
-      case 'splitPane':
-        navigate(getSplitPath(torah.book, torah.chapter));
-        break;
-      case 'traditional':
-        navigate(getTraditionalPath(torah.book, torah.chapter));
-        break;
-      default:
-        navigate(getReadPath(torah.book, torah.chapter));
-    }
-  }, [navigate, view, torah.book, torah.chapter]);
-  const [searchResults, setSearchResults] = useState([]);
-  const [searchLoading, setSearchLoading] = useState(false);
-  const [searchError, setSearchError] = useState(null);
-  const [showHelp, setShowHelp] = useState(false);
-  const [showPronunciationSettings, setShowPronunciationSettings] = useState(false);
-  const [showAudioPlayer, setShowAudioPlayer] = useState(false);
-  const [showFocusMode, setShowFocusMode] = useState(false);
-  const [showAiSettings, setShowAiSettings] = useState(false);
-  const [selectedVerse, setSelectedVerse] = useState(null);
-
-  // Navigate to reader view
-  const goToReader = useCallback(() => {
-    navigate(getReadPath(torah.book, torah.chapter));
-  }, [navigate, torah.book, torah.chapter]);
-
-  // Keyboard shortcuts
-  const shortcuts = useMemo(() => [
-    { key: 'k', ctrl: true, handler: () => searchBarRef.current?.focus() },
-    { key: 'b', ctrl: true, handler: () => navigate(view === 'bookmarks' ? getReadPath(torah.book, torah.chapter) : '/bookmarks') },
-    { key: 'h', ctrl: true, handler: () => navigate(view === 'history' ? getReadPath(torah.book, torah.chapter) : '/history') },
-    { key: 'd', ctrl: true, handler: () => settings.toggleDarkMode?.() },
-    { key: 'f', ctrl: true, handler: () => setShowFocusMode(f => !f) },
-    { key: 'ArrowLeft', ctrl: true, handler: () => torah.prevChapter?.() },
-    { key: 'ArrowRight', ctrl: true, handler: () => torah.nextChapter?.() },
-    { key: '?', ctrl: false, shift: true, handler: () => setShowHelp(h => !h) },
-    { key: 'Escape', ctrl: false, handler: () => {
-      goToReader();
-      setShowHelp(false);
-      setShowPronunciationSettings(false);
-      setShowAudioPlayer(false);
-      setShowFocusMode(false);
-      setShowAiSettings(false);
-    }, preventDefault: false }
-  ], [settings, torah, navigate, view, goToReader]);
-  useKeyboardShortcuts(shortcuts);
-
-  // Handlers
-  const handleSearch = useCallback(async (query) => {
-    setSearchLoading(true);
-    setSearchError(null);
-    try {
-      const results = await searchTorah(query);
-      setSearchResults(results);
-      navigate('/search');
-    } catch {
-      setSearchError('Search failed');
-    } finally {
-      setSearchLoading(false);
-    }
-  }, [navigate]);
+  // =============================================================================
+  // Event Handlers
+  // =============================================================================
 
   const handleNavigate = useCallback((book, chapter) => {
     torah.goTo(book, chapter);
-    navigate(getReadPath(book, chapter));
-  }, [torah, navigate]);
+  }, [torah]);
 
-  // Bookmark handlers - delegate to StudyContext
   const handleBookmark = useCallback((verse) => {
     study.addBookmark(verse, torah.book, torah.chapter);
   }, [study, torah.book, torah.chapter]);
@@ -174,204 +133,244 @@ function App() {
     study.saveWord(word, english, french, torah.book, torah.chapter);
   }, [study, torah.book, torah.chapter]);
 
-  // Render content based on view
+  const handleSearchSelect = useCallback((result) => {
+    const match = result.ref?.match(/^(.+?)\s+(\d+):(\d+)/);
+    if (match) {
+      handleNavigate(match[1], parseInt(match[2]));
+    }
+    handlers.smartSearch.close();
+  }, [handleNavigate, handlers.smartSearch]);
+
+  // =============================================================================
+  // Keyboard Shortcuts
+  // =============================================================================
+
+  const shortcuts = useMemo(() => [
+    { key: 'b', ctrl: true, handler: () => toggleView('bookmarks') },
+    { key: 'h', ctrl: true, handler: () => toggleView('history') },
+    { key: 'd', ctrl: true, handler: () => settings.toggleDarkMode?.() },
+    { key: 'f', ctrl: true, handler: handlers.focus.toggle },
+    { key: 'ArrowLeft', ctrl: true, handler: () => torah.prevChapter?.() },
+    { key: 'ArrowRight', ctrl: true, handler: () => torah.nextChapter?.() },
+    { key: '?', ctrl: false, shift: true, handler: handlers.help.toggle },
+    { key: 'k', ctrl: true, handler: handlers.smartSearch.toggle },
+    {
+      key: 'Escape',
+      ctrl: false,
+      preventDefault: false,
+      handler: () => {
+        goToReader();
+        handlers.help.close();
+        handlers.pronunciation.close();
+        handlers.audio.close();
+        handlers.focus.close();
+        handlers.aiSettings.close();
+        handlers.smartSearch.close();
+      }
+    }
+  ], [settings, torah, handlers, toggleView, goToReader]);
+
+  useKeyboardShortcuts(shortcuts);
+
+  // =============================================================================
+  // View Content Renderer
+  // =============================================================================
+
   const content = useMemo(() => {
     switch (view) {
-      case 'search':
-        return (
-          <SearchResults
-            results={searchResults}
-            onSelectResult={(r) => handleNavigate(r.book, r.chapter)}
-            loading={searchLoading}
-            error={searchError}
-          />
-        );
       case 'bookmarks':
         return (
-          <Bookmarks
-            bookmarks={study.bookmarks}
-            onRemoveBookmark={study.removeBookmark}
-            onSelectBookmark={(b) => handleNavigate(b.book, b.chapter)}
-            onImportBookmarks={study.importBookmarks}
-          />
+          <Suspense fallback={<ViewLoadingFallback />}>
+            <ErrorBoundary name="Bookmarks">
+              <Bookmarks
+                bookmarks={study.bookmarks}
+                onRemoveBookmark={study.removeBookmark}
+                onSelectBookmark={(b) => handleNavigate(b.book, b.chapter)}
+                onImportBookmarks={study.importBookmarks}
+              />
+            </ErrorBoundary>
+          </Suspense>
         );
+
       case 'history':
         return (
-          <ReadingHistory
-            history={study.history}
-            onSelect={handleNavigate}
-            onClear={study.clearHistory}
-          />
+          <Suspense fallback={<ViewLoadingFallback />}>
+            <ErrorBoundary name="ReadingHistory">
+              <ReadingHistory
+                history={study.history}
+                onSelect={handleNavigate}
+                onClear={study.clearHistory}
+              />
+            </ErrorBoundary>
+          </Suspense>
         );
+
       case 'vocabulary':
         return (
-          <VocabularyBank
-            vocabulary={study.vocabulary}
-            onRemoveWord={study.removeWord}
-            onUpdateWord={study.updateWord}
-            onMarkReviewed={study.markReviewed}
-            onClear={study.clearVocabulary}
-            onExport={study.exportVocabulary}
-            onImport={study.importVocabulary}
-            getWordsForReview={study.getWordsForReview}
-            getStats={study.getStats}
-          />
+          <Suspense fallback={<ViewLoadingFallback />}>
+            <ErrorBoundary name="VocabularyBank">
+              <VocabularyBank
+                vocabulary={study.vocabulary}
+                onRemoveWord={study.removeWord}
+                onUpdateWord={study.updateWord}
+                onMarkReviewed={study.markReviewed}
+                onClear={study.clearVocabulary}
+                onExport={study.exportVocabulary}
+                onImport={study.importVocabulary}
+                getWordsForReview={study.getWordsForReview}
+                getStats={study.getStats}
+              />
+            </ErrorBoundary>
+          </Suspense>
         );
+
       case 'discover':
         return (
-          <DiscoverPanel
-            onNavigateToRef={handleNavigate}
-            onClose={goToReader}
-          />
+          <Suspense fallback={<PanelLoadingFallback />}>
+            <ErrorBoundary name="DiscoverPanel">
+              <DiscoverPanel onNavigateToRef={handleNavigate} onClose={goToReader} />
+            </ErrorBoundary>
+          </Suspense>
         );
+
       case 'versions':
         return (
-          <TextVersions
-            book={torah.book}
-            chapter={torah.chapter}
-            onClose={goToReader}
-          />
+          <Suspense fallback={<ViewLoadingFallback />}>
+            <ErrorBoundary name="TextVersions">
+              <TextVersions book={torah.book} chapter={torah.chapter} onClose={goToReader} />
+            </ErrorBoundary>
+          </Suspense>
         );
-      case 'splitPane':
-        return (
-          <SplitPaneView
-            verses={torah.verses}
-            selectedBook={torah.book}
-            selectedChapter={torah.chapter}
-            selectedVerse={selectedVerse}
-            onSelectVerse={setSelectedVerse}
-            showOnkelos={settings.showOnkelos}
-            onkelos={torah.onkelos}
-            isTalmud={torah.isTalmudBook}
-          />
-        );
+
       case 'traditional':
         return (
-          <TraditionalPageView
-            verses={torah.verses}
-            onkelos={torah.onkelos}
-            selectedBook={torah.book}
-            selectedChapter={torah.chapter}
-            isTorahBook={torah.isTorahBook}
-            isTalmud={torah.isTalmudBook}
-            isMishnah={torah.isMishnahBook}
-            enableClickableText={true}
-            showTranslation={settings.showFrench || false}
-            onToggleTranslation={(show) => settings.setShowFrench?.(show)}
-            onSaveWord={handleSaveWord}
-            hasWord={study.hasWord}
-            onClose={goToReader}
-            onPrevChapter={torah.prevChapter}
-            onNextChapter={torah.nextChapter}
-            hasPrevChapter={torah.chapter > 1}
-            hasNextChapter={torah.chapter < (torah.chapters?.length || 1)}
-          />
+          <Suspense fallback={<ViewLoadingFallback />}>
+            <ErrorBoundary name="TraditionalPageView">
+              <TraditionalPageView
+                verses={torah.verses}
+                onkelos={torah.onkelos}
+                selectedBook={torah.book}
+                selectedChapter={torah.chapter}
+                isTorahBook={torah.isTorahBook}
+                isTalmud={torah.isTalmudBook}
+                isMishnah={torah.isMishnahBook}
+                enableClickableText={true}
+                showTranslation={settings.showFrench || false}
+                onToggleTranslation={(show) => settings.setShowFrench?.(show)}
+                onSaveWord={handleSaveWord}
+                hasWord={study.hasWord}
+                onClose={goToReader}
+                onPrevChapter={torah.prevChapter}
+                onNextChapter={torah.nextChapter}
+                hasPrevChapter={torah.chapters?.indexOf(torah.chapter) > 0}
+                hasNextChapter={torah.chapters?.indexOf(torah.chapter) < (torah.chapters?.length - 1)}
+              />
+            </ErrorBoundary>
+          </Suspense>
         );
+
       case 'study':
         return (
-          <StudyDashboard
-            onNavigateToText={(ref) => {
-              // Parse reference like "Genesis 1" or "Berakhot 2a"
-              const parts = ref.split(' ');
-              const book = parts.slice(0, -1).join(' ');
-              const chapter = parts[parts.length - 1];
-              handleNavigate(book, parseInt(chapter) || chapter);
-            }}
-            onOpenVocabulary={() => setView('vocabulary')}
-            onOpenBookmarks={() => setView('bookmarks')}
-            onOpenNotes={() => setView('reader')}
-          />
+          <Suspense fallback={<ViewLoadingFallback />}>
+            <ErrorBoundary name="StudyDashboard">
+              <StudyDashboard
+                onNavigateToText={(ref) => {
+                  const parts = ref.split(' ');
+                  const book = parts.slice(0, -1).join(' ');
+                  const chapter = parts[parts.length - 1];
+                  handleNavigate(book, parseInt(chapter) || chapter);
+                }}
+                onOpenVocabulary={() => setView('vocabulary')}
+                onOpenBookmarks={() => setView('bookmarks')}
+                onOpenNotes={() => setView('reader')}
+              />
+            </ErrorBoundary>
+          </Suspense>
         );
+
       default:
-        return (
-          <>
-            <SefarimSelector
-              categories={torah.categories}
-              selectedCategory={torah.category}
-              onCategoryChange={torah.setCategory}
+        return torah.error ? (
+          <FriendlyError
+            type={
+              torah.error.includes('network') || torah.error.includes('fetch') ? 'network' :
+              torah.error.includes('not found') ? 'notFound' :
+              torah.error.includes('timeout') ? 'timeout' : 'generic'
+            }
+            message={torah.error}
+            onRetry={() => torah.goTo(torah.book, torah.chapter)}
+            onGoHome={() => handleNavigate('Genesis', 1)}
+          />
+        ) : (
+          <ErrorBoundary name="TorahReader">
+            <TorahReader
+              verses={torah.verses}
+              onkelos={torah.onkelos}
+              loading={torah.loading}
+              onBookmarkVerse={handleBookmark}
               selectedBook={torah.book}
-              onBookChange={torah.setBook}
-              chapters={torah.chapters}
               selectedChapter={torah.chapter}
-              onChapterChange={torah.setChapter}
+              isTorahBook={torah.isTorahBook}
+              getShareLink={getShareLink}
+              verseNotes={study.verseNotes}
+              onSaveWord={handleSaveWord}
+              hasWord={study.hasWord}
+              onNavigateToRef={handleNavigate}
+              onPrevChapter={torah.prevChapter}
+              onNextChapter={torah.nextChapter}
+              totalChapters={torah.chapters?.length}
             />
-            {torah.error ? (
-              <div className="error-message">Error: {torah.error}</div>
-            ) : (
-              <>
-                <ChapterHeader
-                  book={torah.book}
-                  chapter={torah.chapter}
-                  totalChapters={torah.chapters?.length}
-                  verseCount={torah.verses?.length || 0}
-                  onPrevChapter={torah.prevChapter}
-                  onNextChapter={torah.nextChapter}
-                  onNavigateToRef={handleNavigate}
-                />
-                <TorahReader
-                  verses={torah.verses}
-                  onkelos={torah.onkelos}
-                  loading={torah.loading}
-                  onBookmarkVerse={handleBookmark}
-                  selectedBook={torah.book}
-                  selectedChapter={torah.chapter}
-                  isTorahBook={torah.isTorahBook}
-                  getShareLink={getShareLink}
-                  verseNotes={study.verseNotes}
-                  onSaveWord={handleSaveWord}
-                  hasWord={study.hasWord}
-                  showFrench={settings.showFrench}
-                  onToggleFrench={settings.toggleFrench}
-                  showOnkelos={settings.showOnkelos}
-                  onToggleOnkelos={settings.toggleOnkelos}
-                  showRashi={settings.showRashi}
-                  onToggleRashi={settings.toggleRashi}
-                  showTosafot={settings.showTosafot}
-                  onToggleTosafot={settings.toggleTosafot}
-                  showMaharsha={settings.showMaharsha}
-                  onToggleMaharsha={settings.toggleMaharsha}
-                  showRamban={settings.showRamban}
-                  onToggleRamban={settings.toggleRamban}
-                  onNavigateToRef={handleNavigate}
-                />
-                <ReadingStats
-                  book={torah.book}
-                  chapter={torah.chapter}
-                  totalChapters={torah.chapters?.length}
-                  verseCount={torah.verses?.length || 0}
-                  readingHistory={study.history}
-                />
-              </>
-            )}
-          </>
+            <Suspense fallback={null}>
+              <ReadingStats
+                book={torah.book}
+                chapter={torah.chapter}
+                totalChapters={torah.chapters?.length}
+                verseCount={torah.verses?.length || 0}
+                readingHistory={study.history}
+              />
+            </Suspense>
+          </ErrorBoundary>
         );
     }
-  }, [view, searchResults, searchLoading, searchError, handleNavigate,
-      study, torah, handleBookmark, getShareLink, handleSaveWord,
-      settings, selectedVerse, goToReader, setView]);
+  }, [view, study, torah, settings, handleNavigate, handleBookmark, handleSaveWord, getShareLink, goToReader, setView]);
+
+  // =============================================================================
+  // Render
+  // =============================================================================
+
+  const appClassName = [
+    'app',
+    settings.darkMode && 'dark-mode',
+    settings.sidebarCollapsed && 'sidebar-collapsed'
+  ].filter(Boolean).join(' ');
 
   return (
-    <div className={`app ${settings.darkMode ? 'dark-mode' : ''} ${settings.sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-      {/* Skip to main content link for accessibility */}
+    <div className={appClassName}>
+      {/* Accessibility: Skip Link */}
       <a href="#main-content" className="skip-to-content">
         Skip to main content
       </a>
 
       {/* Focus Mode Overlay */}
-      <FocusMode
-        verses={torah.verses}
-        onkelos={torah.onkelos}
-        selectedBook={torah.book}
-        selectedChapter={torah.chapter}
-        showOnkelos={settings.showOnkelos}
-        isActive={showFocusMode}
-        onClose={() => setShowFocusMode(false)}
-        onPrevChapter={torah.prevChapter}
-        onNextChapter={torah.nextChapter}
-        onBookmarkVerse={handleBookmark}
-      />
+      {modals.focus && (
+        <Suspense fallback={<ModalLoadingFallback />}>
+          <ErrorBoundary name="FocusMode">
+            <FocusMode
+              verses={torah.verses}
+              onkelos={torah.onkelos}
+              selectedBook={torah.book}
+              selectedChapter={torah.chapter}
+              showOnkelos={settings.showOnkelos}
+              isActive={modals.focus}
+              onClose={handlers.focus.close}
+              onPrevChapter={torah.prevChapter}
+              onNextChapter={torah.nextChapter}
+              onBookmarkVerse={handleBookmark}
+            />
+          </ErrorBoundary>
+        </Suspense>
+      )}
 
-      {/* Sidebar Navigation */}
+      {/* Sidebar */}
       <Sidebar
         categories={torah.categories}
         selectedCategory={torah.category}
@@ -389,13 +388,24 @@ function App() {
         onOpenVocabulary={() => setView('vocabulary')}
       />
 
-      {/* Main Content Area */}
+      {/* Main Content */}
       <main id="main-content" className="app-main" role="main">
+        {/* Progress Bar */}
+        {view === 'reader' && (
+          <Suspense fallback={null}>
+            <ReadingProgressBar
+              currentVerse={torah.selectedVerse || 0}
+              totalVerses={torah.verses?.length || 0}
+              book={torah.book}
+              chapter={torah.chapter}
+            />
+          </Suspense>
+        )}
+
+        {/* Offline Banner */}
         {!isOnline && (
           <div className="offline-banner">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0119 12.55M5 12.55a10.94 10.94 0 015.17-2.39M10.71 5.05A16 16 0 0122.58 9M1.42 9a15.91 15.91 0 014.7-2.88M8.53 16.11a6 6 0 016.95 0M12 20h.01" />
-            </svg>
+            <OfflineIcon size={16} />
             You are offline - some features may be limited
           </div>
         )}
@@ -403,137 +413,84 @@ function App() {
         {/* Header */}
         <header className="app-header">
           <div className="header-brand">
-            <button className="sidebar-toggle-btn" onClick={settings.toggleSidebar} title="Toggle sidebar" aria-label="Toggle sidebar">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                <path d="M3 12h18M3 6h18M3 18h18" />
-              </svg>
+            <button
+              className="sidebar-toggle-btn"
+              onClick={settings.toggleSidebar}
+              title="Toggle sidebar"
+              aria-label="Toggle sidebar"
+            >
+              <MenuIcon />
             </button>
             <h1>Sefarim Reader</h1>
-            <span className="header-subtitle" lang="he">{torah.isTalmudBook ? 'גמרא' : 'תנ״ך'}</span>
           </div>
 
+          <div className="header-spacer" />
+          <HeaderGreeting />
+
+          {/* Search Button */}
+          <button
+            className="smart-search-btn"
+            onClick={handlers.smartSearch.open}
+            title="Smart Search (Ctrl+K)"
+          >
+            <SearchIcon />
+            <span className="search-label">Search...</span>
+            <kbd className="search-kbd">⌘K</kbd>
+          </button>
+
+          <ConnectivityIndicator compact />
+          <div className="header-spacer" />
+
+          {/* Toolbar */}
           <div className="header-toolbar">
-            {/* Primary Actions */}
             <div className="toolbar-group primary">
               <button
-                onClick={() => setView(v => v === 'splitPane' ? 'reader' : 'splitPane')}
-                className={`toolbar-btn ${view === 'splitPane' ? 'active' : ''}`}
-                title="Split View: Text + Commentary"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="3" width="18" height="18" rx="2" />
-                  <line x1="12" y1="3" x2="12" y2="21" />
-                </svg>
-                <span className="btn-label">Split</span>
-              </button>
-              <button
-                onClick={() => setView(v => v === 'traditional' ? 'reader' : 'traditional')}
+                onClick={() => toggleView('traditional')}
                 className={`toolbar-btn ${view === 'traditional' ? 'active' : ''}`}
-                title="Traditional Page Layout (Tzurat HaDaf / Mikraot Gedolot)"
+                title="Traditional Page Layout"
               >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="3" width="18" height="18" rx="2" />
-                  <line x1="3" y1="9" x2="21" y2="9" />
-                  <line x1="9" y1="9" x2="9" y2="21" />
-                  <line x1="15" y1="9" x2="15" y2="21" />
-                </svg>
+                <GridIcon />
                 <span className="btn-label">צורת הדף</span>
               </button>
               <button
-                onClick={() => setShowFocusMode(true)}
+                onClick={handlers.focus.open}
                 className="toolbar-btn"
                 title="Focus Mode (Ctrl+F)"
               >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-                </svg>
+                <FocusIcon />
                 <span className="btn-label">Focus</span>
               </button>
             </div>
 
             <div className="toolbar-divider" />
 
-            {/* Quick Actions Dropdown - Consolidates secondary actions */}
             <QuickActions
-              onOpenDiscover={() => setView(v => v === 'discover' ? 'reader' : 'discover')}
-              onOpenVersions={() => setView(v => v === 'versions' ? 'reader' : 'versions')}
-              onOpenAudio={() => setShowAudioPlayer(true)}
-              onOpenVocabulary={() => setView(v => v === 'vocabulary' ? 'reader' : 'vocabulary')}
-              onOpenStudy={() => setView(v => v === 'study' ? 'reader' : 'study')}
-              onOpenBookmarks={() => setView(v => v === 'bookmarks' ? 'reader' : 'bookmarks')}
-              onOpenHistory={() => setView(v => v === 'history' ? 'reader' : 'history')}
-              onOpenHelp={() => setShowHelp(true)}
+              onOpenDiscover={() => toggleView('discover')}
+              onOpenVersions={() => toggleView('versions')}
+              onOpenVocabulary={() => toggleView('vocabulary')}
+              onOpenBookmarks={() => toggleView('bookmarks')}
+              onOpenHistory={() => toggleView('history')}
               vocabularyCount={study.vocabulary.length}
               isDiscoverActive={view === 'discover'}
               isVersionsActive={view === 'versions'}
               isVocabularyActive={view === 'vocabulary'}
-              isStudyActive={view === 'study'}
+              currentTradition={settings.tradition}
             />
 
             <div className="toolbar-divider" />
 
-            {/* Settings */}
-            <div className="toolbar-group settings">
-              <button
-                onClick={() => setShowPronunciationSettings(true)}
-                className="toolbar-btn pronunciation"
-                title="Pronunciation Settings"
-              >
-                <span className="hebrew-label">{settings.tradition === TRADITIONS.ASHKENAZIC ? 'אשכנז' : 'ספרד'}</span>
-              </button>
-              <button
-                onClick={() => setShowAiSettings(true)}
-                className="toolbar-btn ai-settings"
-                title="AI Summary Settings (Configure Groq API)"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
-                  <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-              </button>
-              <button
-                onClick={settings.toggleDarkMode}
-                className="toolbar-btn icon-only theme-toggle"
-                aria-label="Toggle dark mode"
-                title={settings.darkMode ? 'Light Mode' : 'Dark Mode'}
-              >
-                {settings.darkMode ? (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="5" />
-                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-                  </svg>
-                ) : (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
-                  </svg>
-                )}
-              </button>
-              <button
-                onClick={() => setShowHelp(true)}
-                className="toolbar-btn icon-only help-btn"
-                aria-label="Help"
-                title="Keyboard Shortcuts (?)"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
-                  <line x1="12" y1="17" x2="12.01" y2="17" />
-                </svg>
-              </button>
-            </div>
+            <button
+              onClick={settings.toggleDarkMode}
+              className="toolbar-btn icon-only theme-toggle"
+              aria-label="Toggle dark mode"
+              title={settings.darkMode ? 'Light Mode (Ctrl+D)' : 'Dark Mode (Ctrl+D)'}
+            >
+              {settings.darkMode ? <SunIcon /> : <MoonIcon />}
+            </button>
           </div>
         </header>
 
-        {/* Reading Progress Bar */}
-        {torah.verses.length > 0 && view === 'reader' && (
-          <div className="reading-progress-container">
-            <div
-              className="reading-progress-bar"
-              style={{ width: `${(torah.chapter / (torah.chapters?.length || 1)) * 100}%` }}
-            />
-          </div>
-        )}
-
-        {/* Breadcrumb Navigation */}
+        {/* Breadcrumb */}
         {view === 'reader' && torah.book && (
           <div className="breadcrumb-wrapper">
             <Breadcrumb
@@ -548,62 +505,77 @@ function App() {
           </div>
         )}
 
-        {/* Main Content */}
-        <div className="main-content">
-          {/* Welcome Banner - only show on reader view */}
-          {view === 'reader' && (
-            <WelcomeBanner
-              continueReading={study.history.length > 0 ? {
-                book: study.history[0]?.book,
-                chapter: study.history[0]?.chapter,
-                onClick: () => handleNavigate(study.history[0]?.book, study.history[0]?.chapter)
-              } : null}
-            />
-          )}
-
-          <div className="content-header">
-            <DailyParsha onNavigate={handleNavigate} tradition={settings.tradition} />
-            <SearchBar ref={searchBarRef} onSearch={handleSearch} loading={searchLoading} />
-          </div>
-          {content}
-        </div>
+        {/* Content */}
+        <div className="main-content">{content}</div>
       </main>
 
-      {/* Floating Action Button for Mobile */}
+      {/* Mobile FAB */}
       <FloatingActionButton
-        onFocusMode={() => setShowFocusMode(true)}
-        onSplitView={() => setView(v => v === 'splitPane' ? 'reader' : 'splitPane')}
-        onTraditional={() => setView(v => v === 'traditional' ? 'reader' : 'traditional')}
-        onBookmark={() => setView(v => v === 'bookmarks' ? 'reader' : 'bookmarks')}
-        onSearch={() => searchBarRef.current?.focus()}
+        onTraditional={() => toggleView('traditional')}
+        onBookmark={() => toggleView('bookmarks')}
         isVisible={view === 'reader'}
       />
 
-      {/* Modals */}
-      <KeyboardHelp isOpen={showHelp} onClose={() => setShowHelp(false)} />
+      {/* Modals - Lazy loaded for performance */}
+      {modals.help && (
+        <Suspense fallback={<ModalLoadingFallback />}>
+          <KeyboardHelp isOpen={modals.help} onClose={handlers.help.close} />
+        </Suspense>
+      )}
 
-      <PronunciationSettings
-        currentTradition={settings.tradition}
-        onTraditionChange={settings.setTradition}
-        isOpen={showPronunciationSettings}
-        onClose={() => setShowPronunciationSettings(false)}
-      />
+      {modals.pronunciation && (
+        <Suspense fallback={<ModalLoadingFallback />}>
+          <PronunciationSettings
+            currentTradition={settings.tradition}
+            onTraditionChange={settings.setTradition}
+            isOpen={modals.pronunciation}
+            onClose={handlers.pronunciation.close}
+          />
+        </Suspense>
+      )}
 
-      <AudioPlayer
-        verses={torah.verses}
-        selectedBook={torah.book}
-        selectedChapter={torah.chapter}
-        isOpen={showAudioPlayer}
-        onClose={() => setShowAudioPlayer(false)}
-      />
+      {modals.audio && (
+        <Suspense fallback={<ModalLoadingFallback />}>
+          <AudioPlayer
+            verses={torah.verses}
+            selectedBook={torah.book}
+            selectedChapter={torah.chapter}
+            isOpen={modals.audio}
+            onClose={handlers.audio.close}
+          />
+        </Suspense>
+      )}
 
-      {/* AI Settings Modal */}
-      {showAiSettings && (
-        <div className="api-key-modal-overlay" onClick={() => setShowAiSettings(false)}>
-          <div onClick={(e) => e.stopPropagation()}>
-            <ApiKeySettings onClose={() => setShowAiSettings(false)} />
+      {modals.aiSettings && (
+        <Suspense fallback={<ModalLoadingFallback />}>
+          <div className="api-key-modal-overlay" onClick={handlers.aiSettings.close}>
+            <div onClick={(e) => e.stopPropagation()}>
+              <ApiKeySettings onClose={handlers.aiSettings.close} />
+            </div>
           </div>
-        </div>
+        </Suspense>
+      )}
+
+      {modals.smartSearch && (
+        <Suspense fallback={<ModalLoadingFallback />}>
+          <div className="smart-search-modal-overlay" onClick={handlers.smartSearch.close}>
+            <div className="smart-search-modal" onClick={(e) => e.stopPropagation()}>
+              <SmartSearch
+                onSelectVerse={handleSearchSelect}
+                onClose={handlers.smartSearch.close}
+                placeholder="Search Torah verses naturally..."
+                showHistory={true}
+              />
+            </div>
+          </div>
+        </Suspense>
+      )}
+
+      {/* Word Intelligence Modal - globally available */}
+      {modals.wordDetail && (
+        <Suspense fallback={<ModalLoadingFallback />}>
+          <WordIntelligenceModal />
+        </Suspense>
       )}
     </div>
   );

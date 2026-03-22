@@ -1,0 +1,835 @@
+/**
+ * Study Analytics Dashboard Styles - PRO SCHOLAR v3
+ */
+
+/* =============================================================================
+   DASHBOARD CONTAINER
+   ============================================================================= */
+
+.analytics-dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.analytics-dashboard.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 1rem;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* =============================================================================
+   HEADER
+   ============================================================================= */
+
+.analytics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.analytics-header h2 {
+  margin: 0;
+  font-size: 1.75rem;
+  color: #1f2937;
+}
+
+.header-subtitle {
+  margin: 0.25rem 0 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.header-controls {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.time-range-select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background: white;
+  cursor: pointer;
+}
+
+.close-btn {
+  padding: 0.25rem 0.5rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #6b7280;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.close-btn:hover {
+  background: #f3f4f6;
+  color: #1f2937;
+}
+
+/* =============================================================================
+   STATS ROW
+   ============================================================================= */
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.analytics-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.analytics-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+}
+
+.analytics-stat-primary::before { background: #3b82f6; }
+.analytics-stat-success::before { background: #22c55e; }
+.analytics-stat-warning::before { background: #f59e0b; }
+.analytics-stat-danger::before { background: #ef4444; }
+.analytics-stat-info::before { background: #06b6d4; }
+
+.stat-icon {
+  font-size: 2rem;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.stat-subvalue {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: 0.125rem;
+}
+
+.stat-trend {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.stat-trend.positive {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.stat-trend.negative {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.stat-trend.neutral {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+/* =============================================================================
+   SECTIONS
+   ============================================================================= */
+
+.analytics-section {
+  background: white;
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.analytics-section h3 {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* =============================================================================
+   LEVEL SECTION
+   ============================================================================= */
+
+.level-section {
+  display: flex;
+  justify-content: center;
+}
+
+.level-card {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.5rem 2rem;
+}
+
+.level-info {
+  text-align: left;
+}
+
+.level-current {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.level-hebrew {
+  font-family: 'SBL Hebrew', 'David', serif;
+  font-size: 1.25rem;
+  color: #6b7280;
+}
+
+.level-next {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  margin-top: 0.25rem;
+}
+
+/* =============================================================================
+   GRID LAYOUT
+   ============================================================================= */
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 900px) {
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.analytics-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* =============================================================================
+   PROGRESS RING
+   ============================================================================= */
+
+.progress-ring {
+  transform: rotate(-90deg);
+}
+
+.progress-ring-bg {
+  fill: none;
+  stroke: #e5e7eb;
+}
+
+.progress-ring-fill {
+  fill: none;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+.progress-ring-text {
+  font-size: 14px;
+  font-weight: 700;
+  fill: #1f2937;
+  transform: rotate(90deg);
+  transform-origin: center;
+}
+
+/* =============================================================================
+   STREAK CALENDAR
+   ============================================================================= */
+
+.streak-calendar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.calendar-labels {
+  display: none;
+  font-size: 0.625rem;
+  color: #9ca3af;
+  gap: 2px;
+}
+
+.calendar-grid {
+  display: flex;
+  gap: 3px;
+}
+
+.calendar-week {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.calendar-day {
+  width: 12px;
+  height: 12px;
+  background: #ebedf0;
+  border-radius: 2px;
+  transition: background-color 0.2s;
+}
+
+.calendar-day.studied {
+  background: #22c55e;
+}
+
+.calendar-day:hover {
+  opacity: 0.8;
+}
+
+/* =============================================================================
+   ROOT FAMILY PROGRESS
+   ============================================================================= */
+
+.root-coverage-summary {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.root-family-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.root-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.root-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+}
+
+.root-name {
+  font-family: 'SBL Hebrew', 'David', serif;
+  font-weight: 600;
+}
+
+.root-count {
+  color: #6b7280;
+}
+
+.root-bar {
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.root-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #10b981);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+/* =============================================================================
+   TIME PERFORMANCE
+   ============================================================================= */
+
+.time-performance-chart {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 120px;
+  padding: 1rem 0;
+}
+
+.time-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.time-bar-container {
+  width: 40px;
+  height: 80px;
+  background: #f3f4f6;
+  border-radius: 4px;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.time-bar {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.5s ease;
+}
+
+.time-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.time-sessions {
+  font-size: 0.625rem;
+  color: #9ca3af;
+}
+
+.best-time-tip {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #fef3c7;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: #92400e;
+  text-align: center;
+}
+
+/* =============================================================================
+   MILESTONES
+   ============================================================================= */
+
+.milestones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+
+.milestone-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.milestone-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.milestone-card.completed {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+}
+
+.milestone-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.milestone-content {
+  width: 100%;
+}
+
+.milestone-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.milestone-hebrew {
+  font-family: 'SBL Hebrew', 'David', serif;
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.125rem;
+}
+
+.milestone-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  margin-top: 0.5rem;
+  overflow: hidden;
+}
+
+.milestone-progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+
+.milestone-status {
+  font-size: 0.625rem;
+  color: #6b7280;
+  margin-top: 0.375rem;
+}
+
+/* =============================================================================
+   WEAK AREAS
+   ============================================================================= */
+
+.weak-areas-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  background: #f0fdf4;
+  border-radius: 8px;
+  color: #15803d;
+}
+
+.empty-icon {
+  font-size: 1.25rem;
+}
+
+.weak-areas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.weak-area-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: #fef2f2;
+}
+
+.weak-area-item.severity-high {
+  background: #fef2f2;
+  border-left: 3px solid #ef4444;
+}
+
+.weak-area-item.severity-medium {
+  background: #fffbeb;
+  border-left: 3px solid #f59e0b;
+}
+
+.weak-area-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.weak-area-content {
+  flex: 1;
+}
+
+.weak-area-name {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #1f2937;
+}
+
+.weak-area-recommendation {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.125rem;
+}
+
+/* =============================================================================
+   STUDY FOCUS
+   ============================================================================= */
+
+.focus-section {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+}
+
+.focus-card {
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+}
+
+.focus-area {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #1e40af;
+  margin-bottom: 0.5rem;
+}
+
+.focus-reason {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.75rem;
+}
+
+.focus-actions {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.focus-actions li {
+  margin-bottom: 0.25rem;
+}
+
+/* =============================================================================
+   NETWORK STATS
+   ============================================================================= */
+
+.network-stats {
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+}
+
+.network-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.network-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #8b5cf6;
+}
+
+.network-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* =============================================================================
+   SRS SUMMARY
+   ============================================================================= */
+
+.srs-summary {
+  margin-top: 1rem;
+}
+
+.srs-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 1rem;
+}
+
+.srs-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.srs-stat-icon {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.srs-stat-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.srs-stat-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+/* =============================================================================
+   MINI BAR CHART
+   ============================================================================= */
+
+.mini-bar-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 100px;
+  gap: 0.5rem;
+}
+
+.bar-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.bar-fill {
+  width: 100%;
+  max-width: 30px;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.5s ease;
+}
+
+.bar-label {
+  font-size: 0.625rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+/* =============================================================================
+   DARK MODE
+   ============================================================================= */
+
+.dark-mode .analytics-dashboard,
+.dark .analytics-dashboard {
+  background: #111827;
+}
+
+.dark-mode .analytics-header,
+.dark .analytics-header {
+  border-bottom-color: #374151;
+}
+
+.dark-mode .analytics-header h2,
+.dark .analytics-header h2 {
+  color: #f9fafb;
+}
+
+.dark-mode .analytics-section,
+.dark .analytics-section,
+.dark-mode .analytics-stat-card,
+.dark .analytics-stat-card {
+  background: #1f2937;
+}
+
+.dark-mode .analytics-section h3,
+.dark .analytics-section h3,
+.dark-mode .stat-value,
+.dark .stat-value,
+.dark-mode .milestone-title,
+.dark .milestone-title,
+.dark-mode .root-name,
+.dark .root-name {
+  color: #f9fafb;
+}
+
+.dark-mode .stat-label,
+.dark .stat-label,
+.dark-mode .stat-subvalue,
+.dark .stat-subvalue {
+  color: #9ca3af;
+}
+
+.dark-mode .calendar-day,
+.dark .calendar-day {
+  background: #374151;
+}
+
+.dark-mode .root-bar,
+.dark .root-bar,
+.dark-mode .milestone-progress-bar,
+.dark .milestone-progress-bar {
+  background: #374151;
+}
+
+.dark-mode .milestone-card,
+.dark .milestone-card,
+.dark-mode .srs-stat,
+.dark .srs-stat {
+  background: #374151;
+}
+
+.dark-mode .focus-section,
+.dark .focus-section {
+  background: linear-gradient(135deg, #1e3a5f, #1e40af);
+}
+
+.dark-mode .focus-card,
+.dark .focus-card {
+  background: #1f2937;
+}
+
+.dark-mode .progress-ring-text,
+.dark .progress-ring-text {
+  fill: #f9fafb;
+}
+
+.dark-mode .level-current,
+.dark .level-current {
+  color: #f9fafb;
+}
+
+/* =============================================================================
+   RESPONSIVE
+   ============================================================================= */
+
+@media (max-width: 600px) {
+  .analytics-dashboard {
+    padding: 1rem;
+  }
+
+  .stats-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .analytics-stat-card {
+    padding: 1rem;
+  }
+
+  .stat-value {
+    font-size: 1.25rem;
+  }
+
+  .level-card {
+    flex-direction: column;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .milestones-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .srs-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

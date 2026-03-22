@@ -3,7 +3,7 @@
    Centralized design system values
    ============================================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Crimson+Pro:wght@400;500;600&family=David+Libre:wght@400;500;600;700&family=Frank+Ruhl+Libre:wght@300;400;500;700&family=Noto+Sans+Hebrew:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Crimson+Pro:wght@400;500;600&family=David+Libre:wght@400;500;600;700&family=Frank+Ruhl+Libre:wght@300;400;500;700&family=Noto+Sans+Hebrew:wght@400;500;600;700&family=Noto+Rashi+Hebrew:wght@400;500;600;700&display=swap');
 
 :root {
   /* -------------------------------------------------------------------------
@@ -101,13 +101,13 @@
   --space-16: 64px;
   --space-20: 80px;
 
-  /* Legacy spacing aliases (for compatibility) */
-  --space-xs: 6px;
-  --space-sm: 12px;
-  --space-md: 20px;
-  --space-lg: 32px;
-  --space-xl: 48px;
-  --space-2xl: 64px;
+  /* Semantic spacing scale (clean rhythm) */
+  --space-xs: 4px;    /* 0.25rem - tight gaps */
+  --space-sm: 8px;    /* 0.5rem - small gaps */
+  --space-md: 16px;   /* 1rem - standard spacing */
+  --space-lg: 24px;   /* 1.5rem - section spacing */
+  --space-xl: 32px;   /* 2rem - large spacing */
+  --space-2xl: 48px;  /* 3rem - page sections */
 
   /* -------------------------------------------------------------------------
      Border Radius
@@ -119,6 +119,12 @@
   --radius-xl: 18px;
   --radius-2xl: 24px;
   --radius-full: 9999px;
+
+  /* Button-specific radius */
+  --btn-radius: 8px;
+  --btn-radius-sm: 6px;
+  --btn-radius-lg: 12px;
+  --btn-radius-full: 9999px;
 
   /* -------------------------------------------------------------------------
      Transitions & Easing
@@ -153,10 +159,18 @@
      ------------------------------------------------------------------------- */
   --font-hebrew: 'David Libre', 'Frank Ruhl Libre', 'SBL Hebrew', 'David', serif;
   --font-hebrew-modern: 'Noto Sans Hebrew', 'Frank Ruhl Libre', sans-serif;
-  --font-torah: 'David Libre', 'Frank Ruhl Libre', 'Times New Roman', serif;
-  --font-rashi: 'Rashi', 'David Libre', serif; /* For Rashi script commentary */
+  --font-torah: 'David Libre', 'Frank Ruhl Libre', 'Times New Roman', serif; /* כתב מרובע - Square script */
+  --font-ktav-merouba: 'David Libre', 'Frank Ruhl Libre', 'SBL Hebrew', 'Ezra SIL', serif; /* Square script for Torah/verses */
+  --font-rashi: 'Noto Rashi Hebrew', 'Rashi', 'Frank Ruhl Libre', serif; /* כתב רש"י - Rashi script */
+  --font-tosafot: 'Noto Rashi Hebrew', 'Frank Ruhl Libre', serif; /* Tosafot also uses Rashi script */
   --font-gemara: 'Frank Ruhl Libre', 'David Libre', serif;
-  --font-commentary: 'Frank Ruhl Libre', 'David Libre', serif;
+  --font-commentary: 'Frank Ruhl Libre', 'David Libre', serif; /* General commentary - square script */
+
+  /* Font Weights */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
 
   /* -------------------------------------------------------------------------
      Traditional Sefarim Colors (Printed Book Aesthetic)
@@ -179,14 +193,15 @@
   --sefer-gold-dm: #c4a054;
   --sefer-border-dm: #4a4035;
 
-  --text-xs: 11px;
-  --text-sm: 13px;
-  --text-base: 15px;
-  --text-md: 16px;
-  --text-lg: 18px;
-  --text-xl: 20px;
-  --text-2xl: 24px;
-  --text-3xl: 30px;
+  /* Simplified text scale (4 primary sizes for clarity) */
+  --text-xs: 12px;    /* 0.75rem - labels, badges, hints */
+  --text-sm: 14px;    /* 0.875rem - secondary text, captions */
+  --text-base: 16px;  /* 1rem - body text, primary content */
+  --text-md: 16px;    /* alias for --text-base */
+  --text-lg: 18px;    /* 1.125rem - subheadings */
+  --text-xl: 20px;    /* 1.25rem - section headings */
+  --text-2xl: 24px;   /* 1.5rem - page titles */
+  --text-3xl: 30px;   /* 1.875rem - large displays */
 
   /* Hebrew text sizes (larger for readability) */
   --text-hebrew-sm: 1rem;
@@ -269,6 +284,71 @@
   --gradient-border: linear-gradient(135deg, var(--border) 0%, var(--primary-light) 100%);
   --gradient-border-active: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%);
 
+  /* -------------------------------------------------------------------------
+     Unified Card System - Professional Card Design Tokens
+     ------------------------------------------------------------------------- */
+  /* Card backgrounds */
+  --card-bg: #ffffff;
+  --card-bg-elevated: #ffffff;
+  --card-bg-subtle: rgba(248, 250, 252, 0.95);
+  --card-bg-glass: rgba(255, 255, 255, 0.85);
+
+  /* Card borders */
+  --card-border: rgba(226, 232, 240, 0.8);
+  --card-border-hover: rgba(203, 213, 225, 0.9);
+  --card-border-active: var(--primary);
+  --card-border-radius: 12px;
+  --card-border-radius-sm: 8px;
+  --card-border-radius-lg: 16px;
+
+  /* Card shadows - Refined multi-layer shadows */
+  --card-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.02),
+    0 2px 4px rgba(0, 0, 0, 0.02),
+    0 4px 8px rgba(0, 0, 0, 0.02),
+    0 8px 16px rgba(0, 0, 0, 0.02);
+  --card-shadow-hover:
+    0 2px 4px rgba(0, 0, 0, 0.02),
+    0 4px 8px rgba(0, 0, 0, 0.03),
+    0 8px 16px rgba(0, 0, 0, 0.04),
+    0 16px 32px rgba(0, 0, 0, 0.04);
+  --card-shadow-elevated:
+    0 4px 8px rgba(0, 0, 0, 0.03),
+    0 8px 16px rgba(0, 0, 0, 0.04),
+    0 16px 32px rgba(0, 0, 0, 0.05),
+    0 32px 48px rgba(0, 0, 0, 0.04);
+  --card-shadow-popup:
+    0 8px 16px rgba(0, 0, 0, 0.06),
+    0 16px 32px rgba(0, 0, 0, 0.08),
+    0 32px 64px rgba(0, 0, 0, 0.06);
+
+  /* Card inner glow for premium feel */
+  --card-inner-glow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  --card-inner-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.02);
+
+  /* Card padding scale */
+  --card-padding-xs: 8px;
+  --card-padding-sm: 12px;
+  --card-padding: 16px;
+  --card-padding-lg: 20px;
+  --card-padding-xl: 24px;
+
+  /* Card header/footer */
+  --card-header-bg: rgba(248, 250, 252, 0.6);
+  --card-footer-bg: rgba(248, 250, 252, 0.4);
+  --card-divider: rgba(226, 232, 240, 0.6);
+
+  /* Card transitions */
+  --card-transition:
+    transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 200ms ease,
+    border-color 150ms ease;
+
+  /* Word lookup card specific */
+  --word-card-width: 320px;
+  --word-card-max-width: 400px;
+  --word-card-header-bg: linear-gradient(135deg, rgba(91, 76, 219, 0.06) 0%, rgba(124, 58, 237, 0.03) 100%);
+
   /* Noise texture overlay (use as background-image) */
   --noise-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
 }
@@ -326,4 +406,33 @@
   --gradient-mesh: radial-gradient(at 40% 20%, rgba(129, 140, 248, 0.15) 0px, transparent 50%),
                    radial-gradient(at 80% 0%, rgba(167, 139, 250, 0.12) 0px, transparent 50%),
                    radial-gradient(at 0% 50%, rgba(20, 184, 166, 0.1) 0px, transparent 50%);
+
+  /* Card system for dark mode */
+  --card-bg: #1e293b;
+  --card-bg-elevated: #263447;
+  --card-bg-subtle: rgba(30, 41, 59, 0.95);
+  --card-bg-glass: rgba(30, 41, 59, 0.85);
+  --card-border: rgba(51, 65, 85, 0.8);
+  --card-border-hover: rgba(71, 85, 105, 0.9);
+  --card-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.15),
+    0 4px 8px rgba(0, 0, 0, 0.12),
+    0 8px 16px rgba(0, 0, 0, 0.1);
+  --card-shadow-hover:
+    0 4px 8px rgba(0, 0, 0, 0.18),
+    0 8px 16px rgba(0, 0, 0, 0.15),
+    0 16px 32px rgba(0, 0, 0, 0.12);
+  --card-shadow-elevated:
+    0 8px 16px rgba(0, 0, 0, 0.2),
+    0 16px 32px rgba(0, 0, 0, 0.18),
+    0 32px 48px rgba(0, 0, 0, 0.15);
+  --card-shadow-popup:
+    0 12px 24px rgba(0, 0, 0, 0.25),
+    0 24px 48px rgba(0, 0, 0, 0.2);
+  --card-inner-glow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --card-inner-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+  --card-header-bg: rgba(30, 41, 59, 0.8);
+  --card-footer-bg: rgba(30, 41, 59, 0.6);
+  --card-divider: rgba(51, 65, 85, 0.6);
+  --word-card-header-bg: linear-gradient(135deg, rgba(129, 140, 248, 0.1) 0%, rgba(167, 139, 250, 0.05) 100%);
 }

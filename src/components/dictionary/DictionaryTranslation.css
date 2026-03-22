@@ -1,0 +1,349 @@
+/**
+ * DictionaryTranslation - Pro Scholar Glossary Styles
+ * Clean, professional UI for Torah/Talmud study
+ */
+
+.dictionary-translation.scholar-glossary {
+  margin-top: var(--space-2);
+  padding: var(--space-4);
+  background: linear-gradient(to bottom, var(--bg-secondary), var(--bg-primary));
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Header */
+.scholar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+  padding-bottom: var(--space-2);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.scholar-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.coverage-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  color: white;
+}
+
+.coverage-badge.high { background: #059669; }
+.coverage-badge.med { background: #d97706; }
+.coverage-badge.low { background: #dc2626; }
+
+/* Sources bar */
+.scholar-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: var(--space-2);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.source-with-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.src-count {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+/* Source badges - Pro Scholar styling */
+.scholar-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.scholar-source:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
+}
+
+.scholar-source.small {
+  font-size: 0.6rem;
+  padding: 2px 5px;
+}
+
+.scholar-source .rel-icon {
+  font-size: 0.6rem;
+}
+
+/* Gold tier (academic standard) - prominent styling */
+.scholar-source.gold {
+  box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.4), 0 1px 3px rgba(0, 0, 0, 0.15);
+  font-weight: 700;
+}
+
+/* Year display in badge */
+.scholar-source .src-year {
+  opacity: 0.85;
+  font-size: 0.55rem;
+  font-weight: 500;
+}
+
+/* Glossary entries - Clean scholarly layout */
+.scholar-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  max-height: 400px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+}
+
+.scholar-entries::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scholar-entries::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+.glossary-entry {
+  border-radius: var(--radius-sm);
+  background: var(--bg-primary);
+  transition: background 0.15s, box-shadow 0.15s;
+  border-left: 3px solid transparent;
+}
+
+.glossary-entry:hover {
+  background: rgba(79, 70, 229, 0.05);
+  border-left-color: rgba(79, 70, 229, 0.3);
+}
+
+.glossary-entry.clickable:hover {
+  background: rgba(79, 70, 229, 0.08);
+  cursor: pointer;
+}
+
+.glossary-entry.clickable .gl-more {
+  transition: transform 0.15s ease, background 0.15s;
+}
+
+.glossary-entry.clickable:hover .gl-more {
+  transform: scale(1.05);
+  background: var(--primary-dark, #4338ca);
+}
+
+.glossary-entry.no-trans {
+  opacity: 0.4;
+  border-left-color: rgba(220, 38, 38, 0.3);
+}
+
+.glossary-entry.expanded {
+  background: rgba(79, 70, 229, 0.06);
+  border-left-color: var(--primary);
+  box-shadow: inset 0 0 0 1px rgba(79, 70, 229, 0.1);
+}
+
+.gl-main {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.gl-word {
+  font-family: var(--font-hebrew);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 60px;
+}
+
+.gl-morph {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Tag badges (type, abbrev) */
+.gl-tag {
+  font-size: 0.6rem;
+  padding: 2px 5px;
+  border-radius: 3px;
+  background: #6366f1;
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.gl-tag.abbrev {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+.gl-type {
+  font-size: 0.6rem;
+  padding: 2px 5px;
+  border-radius: 3px;
+  background: #6366f1;
+  color: white;
+  font-weight: 600;
+}
+
+.gl-type.abbrev {
+  background: #8b5cf6;
+}
+
+.gl-arrow {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.gl-def {
+  flex: 1;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.gl-dash {
+  color: var(--text-muted);
+}
+
+.gl-none {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.gl-more {
+  font-size: 0.7rem;
+  background: var(--primary);
+  color: white;
+  padding: 1px 5px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* Alternatives (expanded) */
+.gl-alternatives {
+  padding: 4px 10px 8px 75px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-top: 1px dashed var(--border-color);
+  margin-top: 4px;
+}
+
+.gl-alt {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.85rem;
+}
+
+.gl-alt-def {
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+/* Strong's number badge */
+.gl-strong {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: #059669;
+  background: rgba(5, 150, 105, 0.1);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-family: monospace;
+}
+
+/* Root word indicator */
+.gl-root-tag {
+  font-size: 0.55rem;
+  color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.1);
+  padding: 1px 4px;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+
+/* Academic source highlight */
+.gl-alt.academic {
+  background: rgba(79, 70, 229, 0.05);
+  border-radius: 4px;
+  padding: 4px 6px;
+  margin: 0 -6px;
+}
+
+/* Tip */
+.scholar-tip {
+  margin-top: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: rgba(99, 102, 241, 0.05);
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* Sources label styling */
+.sources-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Alternative header */
+.gl-alt-header {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2);
+  padding-bottom: var(--space-1);
+  border-bottom: 1px dashed var(--border-color);
+}
+
+/* Dark mode */
+.app.dark-mode .glossary-entry {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.app.dark-mode .glossary-entry:hover {
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.app.dark-mode .glossary-entry.expanded {
+  background: rgba(99, 102, 241, 0.15);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .gl-main {
+    flex-wrap: wrap;
+  }
+
+  .gl-alternatives {
+    padding-left: 10px;
+  }
+}

@@ -1,0 +1,726 @@
+/* =============================================================================
+   MasteryTracker - Understanding Level Tracking
+   Gamified learning progress with visual feedback
+============================================================================= */
+
+/* =============================================================================
+   Mastery Level Buttons
+============================================================================= */
+
+.mastery-level-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 2px solid #e2e8f0;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+}
+
+.mastery-level-btn:hover {
+  border-color: var(--level-color);
+  background: color-mix(in srgb, var(--level-color) 10%, white);
+  transform: translateY(-1px);
+}
+
+.mastery-level-btn.active {
+  border-color: var(--level-color);
+  background: var(--level-color);
+  color: white;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--level-color) 40%, transparent);
+}
+
+.mastery-level-btn.compact {
+  padding: 4px 8px;
+  font-size: 0.75rem;
+}
+
+.mastery-level-btn.compact .level-name {
+  display: none;
+}
+
+.level-icon {
+  font-size: 1rem;
+}
+
+.level-name {
+  font-weight: 500;
+}
+
+/* =============================================================================
+   Progress Bar
+============================================================================= */
+
+.mastery-progress {
+  width: 100%;
+}
+
+.mastery-progress.tiny {
+  --bar-height: 4px;
+}
+
+.mastery-progress.small {
+  --bar-height: 6px;
+}
+
+.mastery-progress.medium {
+  --bar-height: 10px;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.progress-label {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.progress-value {
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.progress-track {
+  position: relative;
+  height: var(--bar-height, 10px);
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.progress-markers {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+}
+
+.progress-marker {
+  position: absolute;
+  width: 3px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.5);
+  transform: translateX(-50%);
+}
+
+.progress-marker.reached {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+/* =============================================================================
+   Verse Mastery Card
+============================================================================= */
+
+.verse-mastery-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid var(--card-accent, #94a3b8);
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+}
+
+.verse-mastery-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.verse-ref {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.mastery-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: white;
+}
+
+.verse-text {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #1e293b;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.mastery-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.level-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* =============================================================================
+   Quick Mastery Selector
+============================================================================= */
+
+.quick-mastery {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+
+.quick-mastery.compact {
+  flex-direction: row;
+  align-items: center;
+}
+
+.quick-controls {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  padding: 3px;
+}
+
+.quick-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  color: #64748b;
+}
+
+.quick-btn:hover:not(:disabled) {
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.quick-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.quick-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.quick-btn.increment:hover:not(:disabled) {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.quick-btn.decrement:hover:not(:disabled) {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.quick-level {
+  width: 32px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.quick-level.celebrating {
+  animation: celebrate-bounce 0.5s ease;
+}
+
+@keyframes celebrate-bounce {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.3) rotate(-5deg); }
+  50% { transform: scale(1.4) rotate(5deg); }
+  75% { transform: scale(1.2) rotate(-3deg); }
+}
+
+/* Celebration toast */
+.mastery-celebration {
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 12px;
+  white-space: nowrap;
+  animation: celebration-float 1.5s ease forwards;
+  pointer-events: none;
+  z-index: 10;
+}
+
+@keyframes celebration-float {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px) scale(0.8);
+  }
+  15% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1.1);
+  }
+  30% {
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-5px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-15px);
+  }
+}
+
+/* =============================================================================
+   Chapter Mastery Overview
+============================================================================= */
+
+.chapter-mastery-overview {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  padding: 16px;
+}
+
+.overview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.overview-header h4 {
+  margin: 0;
+  font-size: 1rem;
+  color: #1e293b;
+}
+
+.coverage {
+  font-size: 0.8rem;
+  color: #64748b;
+  padding: 4px 10px;
+  background: #f1f5f9;
+  border-radius: 20px;
+}
+
+.overview-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.stat {
+  flex: 1;
+  text-align: center;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* =============================================================================
+   Mastery Dashboard
+============================================================================= */
+
+.mastery-dashboard {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  padding: 20px;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.dashboard-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #1e293b;
+}
+
+.dashboard-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  text-align: center;
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.stat-card.primary {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  border-color: transparent;
+}
+
+.stat-card.primary .stat-number,
+.stat-card.primary .stat-title {
+  color: white;
+}
+
+.stat-number {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.stat-title {
+  font-size: 0.7rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+/* Level Distribution */
+.level-distribution {
+  margin-bottom: 24px;
+}
+
+.level-distribution h4 {
+  margin: 0 0 12px;
+  font-size: 0.85rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.distribution-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dist-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dist-icon {
+  font-size: 1rem;
+  width: 24px;
+  text-align: center;
+}
+
+.dist-name {
+  width: 70px;
+  font-size: 0.8rem;
+  color: #475569;
+}
+
+.dist-bar-container {
+  flex: 1;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.dist-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.dist-count {
+  width: 30px;
+  text-align: right;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+/* Due for Review */
+.due-for-review {
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.due-for-review h4 {
+  margin: 0 0 12px;
+  font-size: 0.9rem;
+  color: #92400e;
+}
+
+.due-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.due-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: white;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.due-icon {
+  font-size: 1rem;
+}
+
+.due-ref {
+  color: #334155;
+  font-family: 'Frank Ruhl Libre', serif;
+}
+
+.due-more {
+  font-size: 0.8rem;
+  color: #92400e;
+  text-align: center;
+  padding: 8px;
+}
+
+/* Export Modal */
+.export-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  max-width: 500px;
+  width: 90%;
+}
+
+.export-textarea {
+  width: 100%;
+  height: 200px;
+  font-family: monospace;
+  font-size: 0.8rem;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  resize: vertical;
+  margin-bottom: 12px;
+}
+
+/* =============================================================================
+   Dark Mode
+============================================================================= */
+
+@media (prefers-color-scheme: dark) {
+  .mastery-level-btn {
+    background: #334155;
+    border-color: #475569;
+    color: #e2e8f0;
+  }
+
+  .mastery-level-btn:hover {
+    background: color-mix(in srgb, var(--level-color) 20%, #334155);
+  }
+
+  .progress-track {
+    background: #334155;
+  }
+
+  .verse-mastery-card {
+    background: #1e293b;
+    border-color: #334155;
+  }
+
+  .verse-ref,
+  .verse-text {
+    color: #f1f5f9;
+  }
+
+  .verse-text {
+    background: #0f172a;
+  }
+
+  .quick-btn {
+    background: #334155;
+    border-color: #475569;
+    color: #e2e8f0;
+  }
+
+  .quick-btn:hover:not(:disabled) {
+    background: #475569;
+  }
+
+  .chapter-mastery-overview,
+  .mastery-dashboard {
+    background: #1e293b;
+    border-color: #334155;
+  }
+
+  .overview-header h4,
+  .dashboard-header h3 {
+    color: #f1f5f9;
+  }
+
+  .coverage {
+    background: #334155;
+    color: #94a3b8;
+  }
+
+  .stat,
+  .stat-card {
+    background: #0f172a;
+    border-color: #334155;
+  }
+
+  .stat-value,
+  .stat-number {
+    color: #f1f5f9;
+  }
+
+  .dist-bar-container {
+    background: #334155;
+  }
+
+  .due-for-review {
+    background: #422006;
+    border-color: #f59e0b;
+  }
+
+  .due-for-review h4 {
+    color: #fcd34d;
+  }
+
+  .due-item {
+    background: #1e293b;
+  }
+
+  .due-ref {
+    color: #e2e8f0;
+  }
+
+  .due-more {
+    color: #fcd34d;
+  }
+
+  .export-modal {
+    background: #1e293b;
+  }
+
+  .export-textarea {
+    background: #0f172a;
+    border-color: #334155;
+    color: #e2e8f0;
+  }
+}
+
+/* =============================================================================
+   Responsive
+============================================================================= */
+
+@media (max-width: 640px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .overview-stats {
+    flex-direction: column;
+  }
+
+  .dist-name {
+    width: 50px;
+    font-size: 0.7rem;
+  }
+}

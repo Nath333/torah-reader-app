@@ -1,0 +1,528 @@
+/* =============================================================================
+   KushyaTracker - Question Tracking System Styles
+   ============================================================================= */
+
+.kushya-tracker {
+  background: var(--bg-primary, white);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Header Bar */
+.kushya-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: linear-gradient(135deg, #e67e22, #f39c12);
+  color: white;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.header-title h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.open-count {
+  padding: 0.2rem 0.6rem;
+  background: rgba(255,255,255,0.2);
+  border-radius: 12px;
+  font-size: 0.75rem;
+}
+
+.add-kushya-btn {
+  padding: 0.5rem 1rem;
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-kushya-btn:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+/* Add Form */
+.add-kushya-form {
+  padding: 1rem;
+  background: var(--bg-secondary, #f8f9fa);
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+}
+
+.add-kushya-form textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  resize: vertical;
+  margin-bottom: 0.75rem;
+  font-family: inherit;
+}
+
+.add-kushya-form textarea:focus {
+  outline: none;
+  border-color: #e67e22;
+}
+
+.form-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.priority-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.priority-selector label {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #666);
+}
+
+.priority-selector select {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  background: var(--bg-primary, white);
+}
+
+.form-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-primary {
+  padding: 0.5rem 1rem;
+  background: #e67e22;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #d35400;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  color: var(--text-secondary, #666);
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--bg-tertiary, #f0f0f0);
+}
+
+/* Filter Tabs */
+.kushya-filters {
+  display: flex;
+  padding: 0.5rem;
+  background: var(--bg-secondary, #f8f9fa);
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+  gap: 0.25rem;
+}
+
+.filter-btn {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: var(--text-secondary, #666);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  background: var(--bg-tertiary, #eee);
+}
+
+.filter-btn.active {
+  background: #e67e22;
+  color: white;
+}
+
+.filter-count {
+  padding: 0.1rem 0.4rem;
+  background: rgba(0,0,0,0.1);
+  border-radius: 10px;
+  font-size: 0.7rem;
+}
+
+.filter-btn.active .filter-count {
+  background: rgba(255,255,255,0.2);
+}
+
+/* Kushyot List */
+.kushyot-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-secondary, #666);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.empty-state p {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.hebrew-quote {
+  font-style: italic;
+  color: #e67e22;
+  font-size: 1rem;
+}
+
+/* Kushya Item */
+.kushya-item {
+  border-bottom: 1px solid var(--border-color, #eee);
+}
+
+.kushya-item:last-child {
+  border-bottom: none;
+}
+
+.kushya-item .kushya-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.kushya-item .kushya-header:hover {
+  background: var(--bg-secondary, #f8f9fa);
+}
+
+.status-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.kushya-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.kushya-text {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: var(--text-primary, #333);
+}
+
+.kushya-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.priority-badge {
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+  color: white;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.context-ref {
+  color: var(--primary, #4a90d9);
+}
+
+.kushya-date {
+  color: var(--text-muted, #999);
+}
+
+.expand-icon {
+  color: var(--text-muted, #999);
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* Kushya Body (Expanded) */
+.kushya-body {
+  padding: 0 1rem 1rem 3rem;
+}
+
+.selected-text {
+  padding: 0.75rem;
+  background: var(--bg-tertiary, #f5f5f5);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  border-left: 3px solid #e67e22;
+}
+
+.terutz-display {
+  padding: 1rem;
+  background: #d4edda;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+}
+
+.terutz-label {
+  font-weight: 600;
+  color: #155724;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.terutz-text {
+  margin: 0 0 0.5rem 0;
+  color: #155724;
+  line-height: 1.5;
+}
+
+.terutz-source {
+  font-size: 0.8rem;
+  color: #28a745;
+  font-style: italic;
+}
+
+.resolved-date {
+  font-size: 0.75rem;
+  color: #6c757d;
+  margin-top: 0.5rem;
+}
+
+.kushya-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 6px;
+  background: var(--bg-primary, white);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  background: var(--bg-secondary, #f8f9fa);
+}
+
+.action-btn.resolve:hover {
+  border-color: #28a745;
+  color: #28a745;
+}
+
+.action-btn.defer:hover {
+  border-color: #ffc107;
+  color: #856404;
+}
+
+.action-btn.delete:hover {
+  border-color: #dc3545;
+  color: #dc3545;
+}
+
+/* Resolve Form */
+.resolve-form {
+  background: var(--bg-secondary, #f8f9fa);
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.resolve-form textarea,
+.resolve-form input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+  font-family: inherit;
+}
+
+.resolve-form textarea:focus,
+.resolve-form input:focus {
+  outline: none;
+  border-color: #28a745;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Stats Footer */
+.kushya-stats {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 0.75rem;
+  background: var(--bg-secondary, #f8f9fa);
+  border-top: 1px solid var(--border-color, #e0e0e0);
+  font-size: 0.8rem;
+  color: var(--text-secondary, #666);
+}
+
+/* =============================================================================
+   Compact Mode
+   ============================================================================= */
+
+.kushya-tracker-compact {
+  position: relative;
+  display: inline-block;
+}
+
+.kushya-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  background: linear-gradient(135deg, #e67e22, #f39c12);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.kushya-badge:hover {
+  transform: scale(1.05);
+}
+
+.kushya-badge .count {
+  padding: 0.1rem 0.4rem;
+  background: rgba(255,255,255,0.3);
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.quick-add-form {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--bg-primary, white);
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  z-index: 100;
+  min-width: 280px;
+}
+
+.quick-add-form input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.quick-add-form input:focus {
+  outline: none;
+  border-color: #e67e22;
+}
+
+.quick-add-form button {
+  padding: 0.5rem 1rem;
+  background: #e67e22;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.quick-add-form button:disabled {
+  opacity: 0.5;
+}
+
+/* =============================================================================
+   Status Styling
+   ============================================================================= */
+
+.kushya-item.status-resolved {
+  opacity: 0.8;
+}
+
+.kushya-item.status-deferred {
+  background: #fff8e1;
+}
+
+/* =============================================================================
+   Dark Mode
+   ============================================================================= */
+
+[data-theme="dark"] .kushya-tracker {
+  background: var(--bg-secondary, #2d2d2d);
+  border-color: var(--border-color, #444);
+}
+
+[data-theme="dark"] .add-kushya-form,
+[data-theme="dark"] .kushya-filters {
+  background: var(--bg-tertiary, #1e1e1e);
+}
+
+[data-theme="dark"] .kushya-item .kushya-header:hover {
+  background: var(--bg-tertiary, #3d3d3d);
+}
+
+[data-theme="dark"] .terutz-display {
+  background: #1e4620;
+}
+
+[data-theme="dark"] .terutz-label,
+[data-theme="dark"] .terutz-text {
+  color: #a3d9a5;
+}
+
+[data-theme="dark"] .kushya-item.status-deferred {
+  background: #3d3520;
+}

@@ -1,0 +1,1416 @@
+/* =============================================================================
+   Sidebar - Clean & Modern Design with Category-Specific Themes
+   ============================================================================= */
+
+/* ============ CATEGORY COLOR THEMES ============ */
+
+/* Torah Theme - Warm golden parchment tones */
+.category.torah-theme.expanded .category-header {
+  background: linear-gradient(135deg, #d4a574 0%, #c4956a 50%, #b38860 100%);
+  border-color: #b38860;
+}
+
+.category.torah-theme .book-list {
+  background: linear-gradient(180deg, #fef9f3 0%, #fff 100%);
+  border-color: #d4a574;
+}
+
+.category.torah-theme .parsha-btn.active,
+.category.torah-theme .ch-btn.active {
+  background: linear-gradient(135deg, #d4a574 0%, #c4956a 100%);
+  border-color: #b38860;
+  color: white;
+}
+
+/* Gemara Theme - Cool blue scholarly tones */
+.category.gemara-theme.expanded .category-header {
+  background: linear-gradient(135deg, #4a6fa5 0%, #3d5a87 50%, #2c4a6e 100%);
+  border-color: #2c4a6e;
+}
+
+.category.gemara-theme .book-list {
+  background: linear-gradient(180deg, #f0f4f8 0%, #fff 100%);
+  border-color: #4a6fa5;
+}
+
+.category.gemara-theme .seder-header {
+  background: linear-gradient(135deg, #e8eef5 0%, #dce4ed 100%);
+  border-color: #b8c9dc;
+}
+
+.category.gemara-theme .seder-section.expanded .seder-header {
+  background: linear-gradient(135deg, #4a6fa5 0%, #3d5a87 100%);
+  color: white;
+}
+
+.category.gemara-theme .daf-btn.active {
+  background: linear-gradient(135deg, #4a6fa5 0%, #3d5a87 100%);
+  border-color: #2c4a6e;
+  color: white;
+}
+
+/* Mishnah Theme - Fresh green tones */
+.category.mishnah-theme.expanded .category-header {
+  background: linear-gradient(135deg, #5a9e6f 0%, #4a8e5f 50%, #3a7e4f 100%);
+  border-color: #3a7e4f;
+}
+
+.category.mishnah-theme .book-list {
+  background: linear-gradient(180deg, #f0f8f3 0%, #fff 100%);
+  border-color: #5a9e6f;
+}
+
+.category.mishnah-theme .seder-header {
+  background: linear-gradient(135deg, #e8f5ed 0%, #dceee3 100%);
+  border-color: #b8dcca;
+}
+
+.category.mishnah-theme .seder-section.expanded .seder-header {
+  background: linear-gradient(135deg, #5a9e6f 0%, #4a8e5f 100%);
+  color: white;
+}
+
+.category.mishnah-theme .perek-btn.active {
+  background: linear-gradient(135deg, #5a9e6f 0%, #4a8e5f 100%);
+  border-color: #3a7e4f;
+  color: white;
+}
+
+/* Tanach Theme - Neutral purple tones for Nevi'im & Ketuvim */
+.category.tanach-theme.expanded .category-header {
+  background: linear-gradient(135deg, #7c6c9a 0%, #6b5b89 50%, #5a4a78 100%);
+  border-color: #5a4a78;
+}
+
+.category.tanach-theme .book-list {
+  background: linear-gradient(180deg, #f5f3f8 0%, #fff 100%);
+  border-color: #7c6c9a;
+}
+
+.category.tanach-theme .ch-btn.active {
+  background: linear-gradient(135deg, #7c6c9a 0%, #6b5b89 100%);
+  border-color: #5a4a78;
+  color: white;
+}
+
+/* ============ END CATEGORY THEMES ============ */
+
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background: var(--card-bg, var(--bg-primary, #fff));
+  border-right: 1px solid var(--card-border, var(--border, #e5e7eb));
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  transition: var(--card-transition, all 0.3s ease);
+  box-shadow: var(--card-shadow);
+}
+
+.sidebar.collapsed {
+  width: 60px;
+  min-width: 60px;
+}
+
+/* Header */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--border, #e5e7eb);
+  background: linear-gradient(135deg, var(--bg-secondary, #f9fafb) 0%, rgba(91, 76, 219, 0.03) 100%);
+}
+
+.sidebar-header h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-primary, #111827);
+  letter-spacing: -0.01em;
+}
+
+.sidebar-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text-secondary, #6b7280);
+  transition: all 0.2s;
+}
+
+.sidebar-toggle:hover {
+  background: var(--primary, #5b4cdb);
+  border-color: var(--primary, #5b4cdb);
+  color: white;
+}
+
+.sidebar-toggle svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Collapsed Navigation */
+.collapsed-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+}
+
+.collapsed-nav button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text-secondary, #6b7280);
+  position: relative;
+  transition: all 0.2s;
+}
+
+.collapsed-nav button:hover {
+  background: var(--primary-light, #ede9fe);
+  color: var(--primary, #5b4cdb);
+}
+
+.collapsed-nav button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.collapsed-nav .badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  min-width: 16px;
+  height: 16px;
+  background: var(--primary, #5b4cdb);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.sidebar.collapsed .sidebar-toggle {
+  margin: 12px auto;
+}
+
+/* Tabs */
+.sidebar-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 6px;
+  border-bottom: 1px solid var(--border, #e5e7eb);
+  background: var(--bg-secondary, #f9fafb);
+}
+
+.sidebar-tabs button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px 6px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary, #6b7280);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.sidebar-tabs button:hover {
+  background: var(--bg-primary, #fff);
+  color: var(--text-primary, #111827);
+}
+
+.sidebar-tabs button.active {
+  background: var(--primary, #5b4cdb);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(91, 76, 219, 0.25);
+}
+
+.sidebar-tabs .count {
+  background: rgba(255,255,255,0.25);
+  padding: 1px 5px;
+  border-radius: 8px;
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+
+.sidebar-tabs button:not(.active) .count {
+  background: var(--primary, #5b4cdb);
+  color: white;
+}
+
+/* Content */
+.sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+/* Search Box */
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--card-bg, var(--bg-secondary, #f9fafb));
+  border: 1px solid var(--card-border, var(--border, #e5e7eb));
+  border-radius: var(--card-border-radius-sm, 10px);
+  margin-bottom: 12px;
+  transition: var(--card-transition, all 0.2s);
+}
+
+.search-box:focus-within {
+  border-color: var(--primary, #6366f1);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.search-box svg {
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted, #9ca3af);
+  flex-shrink: 0;
+}
+
+.search-box input {
+  flex: 1;
+  border: none;
+  background: none;
+  font-size: 0.875rem;
+  color: var(--text-primary, #111827);
+  outline: none;
+}
+
+.search-box input::placeholder {
+  color: var(--text-muted, #9ca3af);
+}
+
+.search-box .clear-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted, #9ca3af);
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.search-box .clear-btn:hover {
+  color: var(--error, #ef4444);
+}
+
+/* Categories */
+.categories {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.category {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--card-bg, var(--bg-secondary, #f9fafb));
+  border: 1px solid var(--card-border, var(--border, #e5e7eb));
+  border-radius: var(--card-border-radius-sm, 8px);
+  cursor: pointer;
+  transition: var(--card-transition, all 0.15s ease);
+}
+
+.category-header:hover {
+  background: var(--primary-light, #eef2ff);
+  border-color: rgba(99, 102, 241, 0.3);
+  transform: translateX(2px);
+}
+
+.category.expanded .category-header {
+  border-radius: var(--card-border-radius-sm, 8px) var(--card-border-radius-sm, 8px) 0 0;
+  background: linear-gradient(135deg, var(--primary, #6366f1) 0%, #8b5cf6 100%);
+  border-color: var(--primary, #6366f1);
+  color: white;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+}
+
+.cat-icon {
+  font-size: 1.1rem;
+}
+
+.cat-name {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-primary, #111827);
+}
+
+.category.expanded .cat-name {
+  color: white;
+}
+
+.cat-hebrew {
+  margin-left: auto;
+  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
+  font-size: 0.8rem;
+  color: var(--text-secondary, #6b7280);
+  opacity: 0.8;
+}
+
+.category.expanded .cat-hebrew {
+  color: rgba(255,255,255,0.85);
+}
+
+.arrow {
+  font-size: 0.6rem;
+  color: var(--text-muted, #9ca3af);
+  transition: transform 0.2s ease;
+}
+
+.arrow.up {
+  transform: rotate(180deg);
+}
+
+.category.expanded .arrow {
+  color: white;
+}
+
+/* Book List */
+.book-list {
+  background: var(--card-bg, var(--bg-primary, #fff));
+  border: 1px solid var(--primary, #6366f1);
+  border-top: none;
+  border-radius: 0 0 var(--card-border-radius-sm, 10px) var(--card-border-radius-sm, 10px);
+  padding: var(--card-padding-sm, 8px);
+  animation: slideDown 0.2s ease;
+  box-shadow: var(--card-shadow);
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.book {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.book.selected {
+  background: var(--primary-light, #ede9fe);
+}
+
+.book-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s;
+}
+
+.book-btn:hover {
+  background: var(--bg-secondary, #f9fafb);
+}
+
+.book.selected .book-btn {
+  background: transparent;
+}
+
+.book-icon {
+  font-size: 1.1rem;
+}
+
+.book-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary, #111827);
+}
+
+.book.selected .book-name {
+  color: var(--primary, #5b4cdb);
+  font-weight: 600;
+}
+
+/* ============ VIEW MODE TOGGLE (Torah) ============ */
+.view-mode-toggle {
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+  background: var(--bg-secondary, #f5f0e8);
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.view-mode-toggle button {
+  flex: 1;
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary, #6b7280);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-mode-toggle button:hover {
+  background: rgba(212, 165, 116, 0.1);
+  border-color: #d4a574;
+}
+
+.view-mode-toggle button.active {
+  background: linear-gradient(135deg, #d4a574 0%, #c4956a 100%);
+  border-color: #b38860;
+  color: white;
+  font-weight: 600;
+}
+
+/* ============ TORAH PARSHA NAVIGATION ============ */
+.parsha-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.torah-book-section {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.torah-book-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #f5efe6 0%, #ede5d8 100%);
+  border-bottom: 1px solid #d4c4a8;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #5a4a3a;
+}
+
+.torah-book-header .book-icon {
+  font-size: 1.1rem;
+}
+
+.parsha-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+  padding: 6px;
+  background: #fefcf8;
+}
+
+.parsha-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  background: white;
+  border: 1px solid #e8dcc8;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.parsha-btn:hover {
+  background: #fef9f3;
+  border-color: #d4a574;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(180, 140, 100, 0.15);
+}
+
+.parsha-btn.active {
+  background: linear-gradient(135deg, #d4a574 0%, #c4956a 100%);
+  border-color: #b38860;
+  color: white;
+  box-shadow: 0 2px 8px rgba(180, 140, 100, 0.3);
+}
+
+.parsha-icon {
+  font-size: 1.2rem;
+}
+
+.parsha-name {
+  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
+  font-size: 0.8rem;
+  font-weight: 600;
+  direction: rtl;
+}
+
+.parsha-btn.active .parsha-name {
+  color: white;
+}
+
+.parsha-english {
+  font-size: 0.65rem;
+  color: var(--text-muted, #9ca3af);
+}
+
+.parsha-btn.active .parsha-english {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.parsha-chapters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px;
+  background: linear-gradient(135deg, #fef9f3 0%, #fff 100%);
+  border-top: 1px dashed #d4c4a8;
+  animation: fadeIn 0.2s ease;
+}
+
+/* ============ SEDER NAVIGATION (Gemara/Mishnah) ============ */
+.seder-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.seder-section {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.seder-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg-secondary, #f9fafb);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+}
+
+.seder-header:hover {
+  transform: translateX(2px);
+}
+
+.seder-section.expanded .seder-header {
+  border-radius: 8px 8px 0 0;
+  color: white;
+}
+
+.seder-icon {
+  font-size: 1.1rem;
+}
+
+.seder-name {
+  font-weight: 600;
+  color: inherit;
+}
+
+.seder-hebrew {
+  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
+  font-size: 0.8rem;
+  margin-left: auto;
+  opacity: 0.8;
+}
+
+.seder-count {
+  background: rgba(0,0,0,0.1);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.seder-section.expanded .seder-count {
+  background: rgba(255,255,255,0.2);
+}
+
+.seder-header .arrow {
+  font-size: 0.6rem;
+  transition: transform 0.2s ease;
+}
+
+.seder-header .arrow.up {
+  transform: rotate(180deg);
+}
+
+.tractate-list {
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border, #e5e7eb);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 6px;
+  animation: slideDown 0.2s ease;
+}
+
+.tractate {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.tractate.selected {
+  background: rgba(74, 111, 165, 0.08);
+}
+
+.tractate-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s;
+  font-size: 0.85rem;
+}
+
+.tractate-btn:hover {
+  background: rgba(74, 111, 165, 0.08);
+}
+
+.tractate-icon {
+  font-size: 1rem;
+}
+
+.tractate-name {
+  font-weight: 500;
+  color: var(--text-primary, #111827);
+}
+
+.tractate.selected .tractate-name {
+  font-weight: 600;
+  color: #4a6fa5;
+}
+
+/* ============ DAF GRID (Gemara) ============ */
+.daf-range-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: linear-gradient(135deg, #e8eef5 0%, #dce4ed 100%);
+  border-radius: 6px 6px 0 0;
+  margin: 4px 6px 0;
+  border: 1px solid #b8c9dc;
+  border-bottom: none;
+}
+
+.daf-count {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #4a6fa5;
+  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
+}
+
+.daf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(38px, 1fr));
+  gap: 3px;
+  padding: 8px;
+  background: #f0f4f8;
+  border-radius: 0 0 6px 6px;
+  margin: 0 6px 6px;
+  max-height: 160px;
+  overflow-y: auto;
+  border: 1px solid #b8c9dc;
+  border-top: none;
+  animation: fadeIn 0.2s ease;
+}
+
+.daf-range-header + .daf-grid {
+  border-radius: 0 0 6px 6px;
+}
+
+.daf-btn {
+  padding: 6px 2px;
+  background: white;
+  border: 1px solid #d0dae8;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-primary, #111827);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.daf-btn.amud-a {
+  border-left: 3px solid #4a6fa5;
+}
+
+.daf-btn.amud-b {
+  border-left: 3px solid #8ba4c4;
+}
+
+.daf-btn:hover {
+  background: #e8eef5;
+  border-color: #4a6fa5;
+  transform: translateY(-1px);
+}
+
+.daf-btn.active {
+  background: linear-gradient(135deg, #4a6fa5 0%, #3d5a87 100%);
+  border-color: #2c4a6e;
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(74, 111, 165, 0.3);
+}
+
+/* ============ PEREK GRID (Mishnah) ============ */
+.perek-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 4px;
+  padding: 8px;
+  background: #f0f8f3;
+  border-radius: 6px;
+  margin: 4px 6px 6px;
+  animation: fadeIn 0.2s ease;
+}
+
+.perek-btn {
+  padding: 8px 6px;
+  background: white;
+  border: 1px solid #b8dcca;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
+  color: var(--text-primary, #111827);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  direction: rtl;
+}
+
+.perek-btn:hover {
+  background: #e8f5ed;
+  border-color: #5a9e6f;
+  transform: translateY(-1px);
+}
+
+.perek-btn.active {
+  background: linear-gradient(135deg, #5a9e6f 0%, #4a8e5f 100%);
+  border-color: #3a7e4f;
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(90, 158, 111, 0.3);
+}
+
+/* Chapter Grid */
+.chapter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+  gap: 4px;
+  padding: 8px;
+  background: var(--bg-secondary, #f9fafb);
+  border-radius: 8px;
+  margin: 4px 8px 8px;
+  max-height: 180px;
+  overflow-y: auto;
+  animation: fadeIn 0.2s ease;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary, #5b4cdb) transparent;
+}
+
+.chapter-grid::-webkit-scrollbar {
+  width: 4px;
+}
+
+.chapter-grid::-webkit-scrollbar-thumb {
+  background: var(--primary, #5b4cdb);
+  border-radius: 2px;
+}
+
+/* Chapter grid header with page range for Talmud */
+.chapter-grid-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, var(--primary-light, #ede9fe) 0%, rgba(91, 76, 219, 0.05) 100%);
+  border-radius: 6px 6px 0 0;
+  margin: 4px 8px 0;
+  border: 1px solid var(--primary, #5b4cdb);
+  border-bottom: none;
+}
+
+.chapter-grid-header + .chapter-grid {
+  margin-top: 0;
+  border-radius: 0 0 8px 8px;
+  border: 1px solid var(--border, #e5e7eb);
+  border-top: none;
+}
+
+.chapter-count {
+  font-size: 0.7rem;
+  color: var(--primary, #5b4cdb);
+  font-weight: 600;
+}
+
+.page-range-selector {
+  display: flex;
+  gap: 4px;
+}
+
+.page-range-btn {
+  padding: 2px 8px;
+  font-size: 0.65rem;
+  font-weight: 500;
+  background: var(--bg-elevated, #fff);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--text-secondary, #6b7280);
+  transition: all 0.15s ease;
+}
+
+.page-range-btn:hover {
+  border-color: var(--primary, #5b4cdb);
+  color: var(--primary, #5b4cdb);
+}
+
+.page-range-btn.active {
+  background: var(--primary, #5b4cdb);
+  color: white;
+  border-color: var(--primary, #5b4cdb);
+}
+
+/* Compact chapter view toggle */
+.chapter-view-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  margin: 0 8px;
+  background: var(--bg-subtle, #f3f4f6);
+  border: none;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  color: var(--text-muted, #9ca3af);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.chapter-view-toggle:hover {
+  background: var(--primary-light, #ede9fe);
+  color: var(--primary, #5b4cdb);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.ch-btn {
+  padding: 8px 4px;
+  background: var(--card-bg, var(--bg-primary, #fff));
+  border: 1px solid var(--card-border, var(--border, #e5e7eb));
+  border-radius: var(--btn-radius, 6px);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-primary, #111827);
+  cursor: pointer;
+  transition: var(--card-transition, all 0.15s);
+}
+
+.ch-btn:hover {
+  border-color: var(--primary, #6366f1);
+  color: var(--primary, #6366f1);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.15);
+}
+
+.ch-btn.active {
+  background: var(--primary, #6366f1);
+  border-color: var(--primary, #6366f1);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+/* Saved Panel */
+.saved-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.saved-section h3 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary, #6b7280);
+  margin: 0 0 8px;
+}
+
+.saved-section ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.saved-section li button {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  padding: var(--card-padding-sm, 10px 12px);
+  background: var(--card-bg, var(--bg-secondary, #f9fafb));
+  border: 1px solid var(--card-border, var(--border, #e5e7eb));
+  border-radius: var(--card-border-radius-sm, 8px);
+  cursor: pointer;
+  text-align: left;
+  transition: var(--card-transition, all 0.2s);
+  box-shadow: var(--card-shadow);
+}
+
+.saved-section li button:hover {
+  background: var(--primary-light, #eef2ff);
+  border-color: var(--primary, #6366f1);
+  transform: translateY(-2px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+.saved-section li button strong {
+  font-size: 0.85rem;
+  color: var(--text-primary, #111827);
+}
+
+.saved-section li button .preview {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #6b7280);
+  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
+}
+
+.saved-section li button .time {
+  font-size: 0.7rem;
+  color: var(--text-muted, #9ca3af);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted, #9ca3af);
+  background: var(--card-bg, transparent);
+  border-radius: var(--card-border-radius, 12px);
+}
+
+.empty-state .icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 12px;
+  opacity: 0.5;
+  animation: emptyBounce 3s ease-in-out infinite;
+}
+
+@keyframes emptyBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.empty-state p {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary, #6b7280);
+  margin: 0 0 4px;
+}
+
+.empty-state small {
+  font-size: 0.8rem;
+}
+
+/* Progress Panel */
+.progress-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Footer */
+.sidebar-footer {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border, #e5e7eb);
+  background: linear-gradient(135deg, var(--bg-secondary, #f9fafb) 0%, rgba(91, 76, 219, 0.03) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-footer .reading {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary, #5b4cdb);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: var(--primary-light, #ede9fe);
+  border-radius: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Dark Mode */
+.dark-mode .sidebar,
+.app.dark-mode .sidebar {
+  background: var(--bg-primary, #1f2937);
+  border-color: var(--border, #374151);
+}
+
+.dark-mode .sidebar-header,
+.app.dark-mode .sidebar-header {
+  background: var(--bg-secondary, #111827);
+  border-color: var(--border, #374151);
+}
+
+.dark-mode .sidebar-header h2,
+.app.dark-mode .sidebar-header h2 {
+  color: var(--text-primary, #f9fafb);
+}
+
+.dark-mode .sidebar-toggle,
+.app.dark-mode .sidebar-toggle {
+  background: var(--bg-secondary, #111827);
+  border-color: var(--border, #374151);
+  color: var(--text-secondary, #9ca3af);
+}
+
+.dark-mode .sidebar-tabs,
+.app.dark-mode .sidebar-tabs {
+  background: var(--bg-secondary, #111827);
+  border-color: var(--border, #374151);
+}
+
+.dark-mode .sidebar-tabs button,
+.app.dark-mode .sidebar-tabs button {
+  color: var(--text-secondary, #9ca3af);
+}
+
+.dark-mode .sidebar-tabs button:hover,
+.app.dark-mode .sidebar-tabs button:hover {
+  background: var(--bg-primary, #1f2937);
+  color: var(--text-primary, #f9fafb);
+}
+
+.dark-mode .search-box,
+.app.dark-mode .search-box {
+  background: var(--bg-secondary, #111827);
+  border-color: var(--border, #374151);
+}
+
+.dark-mode .search-box input,
+.app.dark-mode .search-box input {
+  color: var(--text-primary, #f9fafb);
+}
+
+.dark-mode .category-header,
+.app.dark-mode .category-header {
+  background: var(--bg-secondary, #111827);
+  border-color: var(--border, #374151);
+}
+
+.dark-mode .category-header:hover,
+.app.dark-mode .category-header:hover {
+  background: rgba(91,76,219,0.2);
+}
+
+.dark-mode .cat-name,
+.app.dark-mode .cat-name {
+  color: var(--text-primary, #f9fafb);
+}
+
+.dark-mode .book-list,
+.app.dark-mode .book-list {
+  background: var(--bg-primary, #1f2937);
+}
+
+.dark-mode .book-btn:hover,
+.app.dark-mode .book-btn:hover {
+  background: var(--bg-secondary, #111827);
+}
+
+.dark-mode .book-name,
+.app.dark-mode .book-name {
+  color: var(--text-primary, #f9fafb);
+}
+
+.dark-mode .chapter-grid,
+.app.dark-mode .chapter-grid {
+  background: var(--bg-secondary, #111827);
+}
+
+.dark-mode .ch-btn,
+.app.dark-mode .ch-btn {
+  background: var(--bg-primary, #1f2937);
+  border-color: var(--border, #374151);
+  color: var(--text-primary, #f9fafb);
+}
+
+.dark-mode .saved-section li button,
+.app.dark-mode .saved-section li button {
+  background: var(--bg-secondary, #111827);
+  border-color: var(--border, #374151);
+}
+
+.dark-mode .saved-section li button:hover,
+.app.dark-mode .saved-section li button:hover {
+  background: rgba(91,76,219,0.2);
+}
+
+.dark-mode .saved-section li button strong,
+.app.dark-mode .saved-section li button strong {
+  color: var(--text-primary, #f9fafb);
+}
+
+.dark-mode .sidebar-footer,
+.app.dark-mode .sidebar-footer {
+  background: var(--bg-secondary, #111827);
+  border-color: var(--border, #374151);
+}
+
+/* ============ DARK MODE - Category Themes ============ */
+
+/* Torah Dark */
+.dark-mode .category.torah-theme .book-list,
+.app.dark-mode .category.torah-theme .book-list {
+  background: linear-gradient(180deg, #2a2520 0%, var(--bg-primary, #1f2937) 100%);
+}
+
+.dark-mode .category.torah-theme .torah-book-header,
+.app.dark-mode .category.torah-theme .torah-book-header {
+  background: linear-gradient(135deg, #3a3025 0%, #2a2520 100%);
+  border-color: #5a4a3a;
+  color: #d4a574;
+}
+
+.dark-mode .category.torah-theme .parsha-grid,
+.app.dark-mode .category.torah-theme .parsha-grid {
+  background: #252018;
+}
+
+.dark-mode .category.torah-theme .parsha-btn,
+.app.dark-mode .category.torah-theme .parsha-btn {
+  background: var(--bg-secondary, #111827);
+  border-color: #4a3a2a;
+  color: var(--text-primary, #f9fafb);
+}
+
+.dark-mode .category.torah-theme .parsha-btn:hover,
+.app.dark-mode .category.torah-theme .parsha-btn:hover {
+  background: #3a3025;
+  border-color: #d4a574;
+}
+
+.dark-mode .category.torah-theme .parsha-chapters,
+.app.dark-mode .category.torah-theme .parsha-chapters {
+  background: linear-gradient(135deg, #2a2520 0%, var(--bg-primary, #1f2937) 100%);
+  border-color: #4a3a2a;
+}
+
+/* Gemara Dark */
+.dark-mode .category.gemara-theme .book-list,
+.app.dark-mode .category.gemara-theme .book-list {
+  background: linear-gradient(180deg, #1a2535 0%, var(--bg-primary, #1f2937) 100%);
+}
+
+.dark-mode .category.gemara-theme .seder-header,
+.app.dark-mode .category.gemara-theme .seder-header {
+  background: linear-gradient(135deg, #2a3545 0%, #1a2535 100%);
+  border-color: #3a4a5a;
+  color: var(--text-primary, #f9fafb);
+}
+
+.dark-mode .category.gemara-theme .tractate-list,
+.app.dark-mode .category.gemara-theme .tractate-list {
+  background: var(--bg-primary, #1f2937);
+  border-color: #3a4a5a;
+}
+
+.dark-mode .category.gemara-theme .tractate-btn:hover,
+.app.dark-mode .category.gemara-theme .tractate-btn:hover {
+  background: rgba(74, 111, 165, 0.15);
+}
+
+.dark-mode .category.gemara-theme .daf-range-header,
+.app.dark-mode .category.gemara-theme .daf-range-header {
+  background: linear-gradient(135deg, #2a3545 0%, #1a2535 100%);
+  border-color: #3a4a5a;
+}
+
+.dark-mode .category.gemara-theme .daf-grid,
+.app.dark-mode .category.gemara-theme .daf-grid {
+  background: #1a2535;
+  border-color: #3a4a5a;
+}
+
+.dark-mode .category.gemara-theme .daf-btn,
+.app.dark-mode .category.gemara-theme .daf-btn {
+  background: var(--bg-secondary, #111827);
+  border-color: #3a4a5a;
+  color: var(--text-primary, #f9fafb);
+}
+
+.dark-mode .category.gemara-theme .daf-btn:hover,
+.app.dark-mode .category.gemara-theme .daf-btn:hover {
+  background: #2a3545;
+}
+
+/* Mishnah Dark */
+.dark-mode .category.mishnah-theme .book-list,
+.app.dark-mode .category.mishnah-theme .book-list {
+  background: linear-gradient(180deg, #1a2a20 0%, var(--bg-primary, #1f2937) 100%);
+}
+
+.dark-mode .category.mishnah-theme .seder-header,
+.app.dark-mode .category.mishnah-theme .seder-header {
+  background: linear-gradient(135deg, #2a3a30 0%, #1a2a20 100%);
+  border-color: #3a5a4a;
+  color: var(--text-primary, #f9fafb);
+}
+
+.dark-mode .category.mishnah-theme .tractate-list,
+.app.dark-mode .category.mishnah-theme .tractate-list {
+  background: var(--bg-primary, #1f2937);
+  border-color: #3a5a4a;
+}
+
+.dark-mode .category.mishnah-theme .perek-grid,
+.app.dark-mode .category.mishnah-theme .perek-grid {
+  background: #1a2a20;
+}
+
+.dark-mode .category.mishnah-theme .perek-btn,
+.app.dark-mode .category.mishnah-theme .perek-btn {
+  background: var(--bg-secondary, #111827);
+  border-color: #3a5a4a;
+  color: var(--text-primary, #f9fafb);
+}
+
+.dark-mode .category.mishnah-theme .perek-btn:hover,
+.app.dark-mode .category.mishnah-theme .perek-btn:hover {
+  background: #2a3a30;
+}
+
+/* Tanach Dark */
+.dark-mode .category.tanach-theme .book-list,
+.app.dark-mode .category.tanach-theme .book-list {
+  background: linear-gradient(180deg, #252030 0%, var(--bg-primary, #1f2937) 100%);
+}
+
+/* View Mode Toggle Dark */
+.dark-mode .view-mode-toggle,
+.app.dark-mode .view-mode-toggle {
+  background: var(--bg-secondary, #111827);
+}
+
+.dark-mode .view-mode-toggle button,
+.app.dark-mode .view-mode-toggle button {
+  border-color: var(--border, #374151);
+  color: var(--text-secondary, #9ca3af);
+}
+
+.dark-mode .view-mode-toggle button:hover,
+.app.dark-mode .view-mode-toggle button:hover {
+  background: rgba(212, 165, 116, 0.15);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    min-width: 100%;
+    height: auto;
+    max-height: 70vh;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    top: auto;
+    border-right: none;
+    border-top: 1px solid var(--border, #e5e7eb);
+    border-radius: 16px 16px 0 0;
+    transform: translateY(calc(100% - 56px));
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar.expanded {
+    transform: translateY(0);
+  }
+
+  .sidebar.collapsed {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .collapsed-nav {
+    flex-direction: row;
+    justify-content: center;
+    gap: 16px;
+    padding: 8px 16px;
+  }
+
+  .collapsed-nav button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .sidebar-footer {
+    display: none;
+  }
+
+  /* Pull handle */
+  .sidebar::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    background: var(--border, #e5e7eb);
+    border-radius: 2px;
+  }
+}

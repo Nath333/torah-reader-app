@@ -1,12 +1,18 @@
-import React, { createContext, useContext, useMemo, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useMemo, useCallback, useEffect, useRef } from 'react';
 import useLocalStorage from '../hooks/useLocalStorage';
 import useReadingHistory from '../hooks/useReadingHistory';
 import useVerseNotes from '../hooks/useVerseNotes';
 import useVocabulary from '../hooks/useVocabulary';
+import useStudyStreak from '../hooks/useStudyStreak';
+import { useToast } from './ToastContext';
 
 export const StudyContext = createContext(null);
 
 export function StudyProvider({ children, book, chapter }) {
+  // Toast notifications
+  const toast = useToast();
+  const previousStreakRef = useRef(null);
+
   // Bookmarks
   const [bookmarks, setBookmarks] = useLocalStorage('torahBookmarks', []);
 
@@ -19,12 +25,63 @@ export function StudyProvider({ children, book, chapter }) {
   // Vocabulary
   const vocabulary = useVocabulary();
 
+  // Study streak tracking
+  const studyStreak = useStudyStreak();
+
   // Track reading history when book/chapter changes
+  // Use refs to avoid infinite loops with streak updates
+  const lastRecordedRef = useRef(null);
+  const recordStudyRef = useRef(studyStreak.recordStudy);
+
+  // Update the ref when recordStudy changes (it's memoized, so this is stable)
+  useEffect(() => {
+    recordStudyRef.current = studyStreak.recordStudy;
+  }, [studyStreak.recordStudy]);
+
   useEffect(() => {
     if (book && chapter) {
       addToHistory(book, chapter);
+
+      // Only record study once per book/chapter combination
+      const key = `${book}-${chapter}`;
+      if (lastRecordedRef.current !== key) {
+        lastRecordedRef.current = key;
+
+        // Store previous streak before recording
+        const prevStreak = studyStreak.currentStreak;
+
+        // Record study activity for streak tracking
+        recordStudyRef.current();
+
+        // Check for streak milestones after recording (use setTimeout to get updated value)
+        setTimeout(() => {
+          const newStreak = studyStreak.currentStreak;
+
+          // Only show milestone notification once per milestone
+          if (previousStreakRef.current !== newStreak) {
+            previousStreakRef.current = newStreak;
+
+            // Streak milestone achievements
+            const milestones = [3, 7, 14, 30, 50, 100];
+            if (milestones.includes(newStreak) && newStreak > prevStreak) {
+              const messages = {
+                3: '3 day streak! You\'re building a habit!',
+                7: '1 week streak! Incredible dedication!',
+                14: '2 week streak! You\'re on fire!',
+                30: '30 day streak! A month of learning!',
+                50: '50 day streak! Half century champion!',
+                100: '100 day streak! Master scholar!'
+              };
+              toast?.achievement(messages[newStreak]);
+            } else if (newStreak === 1 && prevStreak === 0) {
+              // First study day
+              toast?.streak('Welcome! Your learning journey begins!');
+            }
+          }
+        }, 100);
+      }
     }
-  }, [book, chapter, addToHistory]);
+  }, [book, chapter, addToHistory, studyStreak.currentStreak, toast]);
 
   // Bookmark functions
   const addBookmark = useCallback((verse, currentBook, currentChapter) => {
@@ -43,8 +100,9 @@ export function StudyProvider({ children, book, chapter }) {
 
     if (!exists) {
       setBookmarks(prev => [...prev, bookmark]);
+      toast?.bookmark(`Bookmarked ${currentBook} ${currentChapter}:${verse.verse}`);
     }
-  }, [bookmarks, setBookmarks]);
+  }, [bookmarks, setBookmarks, toast]);
 
   const removeBookmark = useCallback((index) => {
     setBookmarks(prev => prev.filter((_, i) => i !== index));
@@ -75,7 +133,8 @@ export function StudyProvider({ children, book, chapter }) {
   const saveWord = useCallback((word, english, french, currentBook, currentChapter) => {
     const context = `${currentBook} ${currentChapter}`;
     vocabulary.addWord(word, english, french, context);
-  }, [vocabulary]);
+    toast?.vocabulary(`Added "${word}" to vocabulary`);
+  }, [vocabulary, toast]);
 
   const value = useMemo(() => ({
     // Bookmarks
@@ -105,12 +164,30 @@ export function StudyProvider({ children, book, chapter }) {
     getWordsForReview: vocabulary.getWordsForReview,
     getStats: vocabulary.getStats,
     hasWord: vocabulary.hasWord,
-    saveWord
+    saveWord,
+
+    // Study Streak
+    studyStreak: {
+      currentStreak: studyStreak.currentStreak,
+      longestStreak: studyStreak.longestStreak,
+      totalDays: studyStreak.totalDays,
+      lastStudyDate: studyStreak.lastStudyDate,
+      todayMinutes: studyStreak.todayMinutes,
+      isStreakAtRisk: studyStreak.isStreakAtRisk,
+      recordStudy: studyStreak.recordStudy,
+      updateStudyTime: studyStreak.updateStudyTime,
+      getStreakMessage: studyStreak.getStreakMessage,
+      getWeeklyProgress: studyStreak.getWeeklyProgress,
+      getStats: studyStreak.getStats,
+      setWeeklyGoal: studyStreak.setWeeklyGoal,
+      setDailyGoal: studyStreak.setDailyGoal
+    }
   }), [
     bookmarks, addBookmark, removeBookmark, importBookmarks, isBookmarked,
     history, addToHistory, clearHistory,
     verseNotes,
-    vocabulary, saveWord
+    vocabulary, saveWord,
+    studyStreak
   ]);
 
   return (

@@ -1,18 +1,33 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 
 const useKeyboardShortcuts = (shortcuts) => {
+  // Use ref to store shortcuts to avoid dependency changes triggering re-renders
+  const shortcutsRef = useRef(shortcuts);
+
+  // Update ref when shortcuts change (no re-render triggered)
+  useEffect(() => {
+    shortcutsRef.current = shortcuts;
+  });
+
   const handleKeyDown = useCallback((e) => {
-    for (const shortcut of shortcuts) {
+    const currentShortcuts = shortcutsRef.current;
+    if (!currentShortcuts || !Array.isArray(currentShortcuts)) return;
+    if (!e || typeof e.key !== 'string') return;
+
+    const eventKey = e.key.toLowerCase();
+
+    for (const shortcut of currentShortcuts) {
+      if (!shortcut || typeof shortcut.key !== 'string' || !shortcut.handler) continue;
+
       const { key, ctrl, meta, shift, alt, handler, preventDefault = true } = shortcut;
+      const shortcutKey = key.toLowerCase();
 
       const ctrlMatch = ctrl ? (e.ctrlKey || e.metaKey) : (!e.ctrlKey && !e.metaKey);
       const shiftMatch = shift ? e.shiftKey : !e.shiftKey;
       const altMatch = alt ? e.altKey : !e.altKey;
-
-      // Handle meta key separately if specified
       const metaMatch = meta !== undefined ? (meta ? e.metaKey : !e.metaKey) : true;
 
-      if (e.key.toLowerCase() === key.toLowerCase() && ctrlMatch && shiftMatch && altMatch && metaMatch) {
+      if (eventKey === shortcutKey && ctrlMatch && shiftMatch && altMatch && metaMatch) {
         if (preventDefault) {
           e.preventDefault();
         }
@@ -20,7 +35,7 @@ const useKeyboardShortcuts = (shortcuts) => {
         break;
       }
     }
-  }, [shortcuts]);
+  }, []); // Empty deps - always use ref for latest shortcuts
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);

@@ -4,6 +4,7 @@
  */
 
 import { setGroqApiKey, getStoredApiKey } from '../services/groqService';
+import { initializePreload } from '../services/dictionaryPreloader';
 
 /**
  * Initialize API keys from environment variables
@@ -19,10 +20,27 @@ export const initializeApiKeys = () => {
 };
 
 /**
+ * Pre-warm dictionary cache with common words
+ * Runs asynchronously in background - doesn't block app startup
+ */
+export const initializeDictionaryCache = () => {
+  // Run in background after a short delay to not block initial render
+  setTimeout(async () => {
+    try {
+      await initializePreload();
+    } catch (e) {
+      // Silent fail - preloading is an optimization, not critical
+      console.debug('[Init] Dictionary preload skipped:', e.message);
+    }
+  }, 1000); // Wait 1 second after app loads
+};
+
+/**
  * Run all initialization tasks
  */
 export const initializeApp = () => {
   initializeApiKeys();
+  initializeDictionaryCache();
 };
 
 // Auto-run initialization when this module is imported

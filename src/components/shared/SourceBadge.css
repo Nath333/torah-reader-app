@@ -1,0 +1,863 @@
+/**
+ * SourceBadge - Professional source attribution styles
+ * Features: hover cards, era badges, smooth animations, dark mode support
+ */
+
+/* ============================================
+   BASE BADGE STYLES
+   ============================================ */
+
+.src-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  color: var(--text-muted, #64748b);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.src-badge.link {
+  cursor: pointer;
+}
+
+.src-badge.link:hover {
+  color: var(--src-color, #6366f1);
+}
+
+.src-badge.link:hover .src-name {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.src-badge.link:focus-visible {
+  outline: 2px solid var(--src-color, #6366f1);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Icon */
+.src-icon {
+  font-size: 0.9em;
+  opacity: 0.85;
+  transition: transform 0.2s ease;
+}
+
+.src-badge.link:hover .src-icon {
+  transform: scale(1.1);
+}
+
+/* Source name */
+.src-name {
+  color: var(--src-color, #475569);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* Method tag (HE→EN) */
+.src-method {
+  padding: 2px 6px;
+  background: var(--src-color, #6366f1);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 600;
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* Accuracy indicator */
+.src-acc {
+  font-size: 0.85em;
+  font-weight: 600;
+  margin-left: 2px;
+  transition: transform 0.2s ease;
+}
+
+.src-badge:hover .src-acc {
+  transform: scale(1.15);
+}
+
+/* Link icon */
+.src-link-icon {
+  font-size: 0.75em;
+  opacity: 0.5;
+  margin-left: 1px;
+  transition: all 0.2s ease;
+}
+
+.src-badge.link:hover .src-link-icon {
+  opacity: 1;
+  transform: translate(1px, -1px);
+}
+
+/* Compact mode */
+.src-badge.compact {
+  gap: 3px;
+}
+
+.src-badge.compact .src-method {
+  padding: 1px 4px;
+  font-size: 0.6rem;
+}
+
+/* ============================================
+   TRANSLATION HEADER
+   ============================================ */
+
+.trans-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Language tag */
+.lang-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  padding: 3px 8px;
+  background: linear-gradient(135deg, var(--lang-color, #6366f1), color-mix(in srgb, var(--lang-color, #6366f1) 85%, black));
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: 5px;
+  letter-spacing: 0.02em;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  transition: all 0.2s ease;
+}
+
+.lang-tag:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================
+   LOADING ANIMATION
+   ============================================ */
+
+.src-loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.75rem;
+  font-style: italic;
+}
+
+.src-loading .dot {
+  width: 5px;
+  height: 5px;
+  background: currentColor;
+  border-radius: 50%;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.src-loading .dot:nth-child(1) { animation-delay: -0.32s; }
+.src-loading .dot:nth-child(2) { animation-delay: -0.16s; }
+.src-loading .dot:nth-child(3) { animation-delay: 0s; }
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   SOURCE GROUP
+   ============================================ */
+
+.src-group {
+  display: inline-flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ============================================
+   ERA BADGE
+   ============================================ */
+
+.era-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--era-color, #6366f1) 15%, transparent),
+    color-mix(in srgb, var(--era-color, #6366f1) 8%, transparent)
+  );
+  color: var(--era-color, #6366f1);
+  font-size: 0.6rem;
+  font-weight: 600;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--era-color, #6366f1) 25%, transparent);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.era-badge.compact {
+  padding: 1px 5px;
+  font-size: 0.55rem;
+  border-radius: 6px;
+}
+
+.era-badge:hover {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--era-color, #6366f1) 22%, transparent),
+    color-mix(in srgb, var(--era-color, #6366f1) 12%, transparent)
+  );
+  border-color: color-mix(in srgb, var(--era-color, #6366f1) 35%, transparent);
+}
+
+/* ============================================
+   COMMENTARY SOURCE BADGE
+   ============================================ */
+
+.src-badge.commentary-src {
+  background: linear-gradient(135deg,
+    rgba(5, 150, 105, 0.08) 0%,
+    rgba(5, 150, 105, 0.04) 100%
+  );
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(5, 150, 105, 0.15);
+  gap: 6px;
+  transition: all 0.25s ease;
+}
+
+.src-badge.commentary-src:hover {
+  background: linear-gradient(135deg,
+    rgba(5, 150, 105, 0.12) 0%,
+    rgba(5, 150, 105, 0.06) 100%
+  );
+  border-color: rgba(5, 150, 105, 0.28);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(5, 150, 105, 0.12);
+}
+
+.src-badge.commentary-src:active {
+  transform: translateY(0);
+}
+
+/* ============================================
+   COMMENTARY HOVER CARD
+   ============================================ */
+
+.commentary-hover-card {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  padding: 14px;
+  background: white;
+  border-radius: 12px;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+  z-index: 1000;
+  animation: hoverCardIn 0.2s ease-out;
+  pointer-events: none;
+}
+
+@keyframes hoverCardIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Hover card arrow */
+.commentary-hover-card::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 12px;
+  height: 12px;
+  background: white;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.08);
+  border-radius: 2px;
+}
+
+.hover-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.hover-card-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.hover-card-titles {
+  flex: 1;
+  min-width: 0;
+}
+
+.hover-card-hebrew {
+  display: block;
+  font-family: 'SBL Hebrew', 'Noto Serif Hebrew', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  direction: rtl;
+}
+
+.hover-card-name {
+  display: block;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.hover-card-desc {
+  font-size: 0.8rem;
+  color: #475569;
+  line-height: 1.5;
+  margin: 0 0 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.hover-card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.hover-card-detail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  color: #64748b;
+}
+
+.detail-icon {
+  font-size: 0.85em;
+  opacity: 0.75;
+}
+
+.hover-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.hover-card-source {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.7rem;
+  color: #059669;
+  font-weight: 500;
+}
+
+.sefaria-icon {
+  font-size: 0.9em;
+}
+
+.hover-card-verified {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.65rem;
+  color: #059669;
+  font-weight: 600;
+  background: rgba(5, 150, 105, 0.1);
+  padding: 3px 8px;
+  border-radius: 10px;
+}
+
+/* ============================================
+   DETAILED BADGE VARIANT
+   ============================================ */
+
+.commentary-badge-detailed {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--src-color, #059669) 8%, white),
+    color-mix(in srgb, var(--src-color, #059669) 3%, white)
+  );
+  border: 1px solid color-mix(in srgb, var(--src-color, #059669) 15%, transparent);
+  border-radius: 10px;
+  padding: 12px;
+  transition: all 0.2s ease;
+}
+
+.commentary-badge-detailed:hover {
+  border-color: color-mix(in srgb, var(--src-color, #059669) 25%, transparent);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--src-color, #059669) 12%, transparent);
+}
+
+.detailed-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.detailed-icon {
+  font-size: 1.4rem;
+}
+
+.detailed-info {
+  flex: 1;
+}
+
+.detailed-hebrew {
+  display: block;
+  font-family: 'SBL Hebrew', 'Noto Serif Hebrew', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--src-color, #1e293b);
+  direction: rtl;
+}
+
+.detailed-name {
+  display: block;
+  font-size: 0.7rem;
+  color: #64748b;
+}
+
+.detailed-desc {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin: 0 0 10px;
+  line-height: 1.4;
+}
+
+.detailed-footer {
+  padding-top: 8px;
+  border-top: 1px solid color-mix(in srgb, var(--src-color, #059669) 12%, transparent);
+}
+
+.sefaria-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  color: #059669;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sefaria-link:hover {
+  color: #047857;
+  text-decoration: underline;
+}
+
+/* ============================================
+   VERIFIED BADGE
+   ============================================ */
+
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.12), rgba(5, 150, 105, 0.06));
+  color: #059669;
+  font-size: 0.65rem;
+  font-weight: 600;
+  border-radius: 10px;
+  border: 1px solid rgba(5, 150, 105, 0.2);
+}
+
+.verified-badge svg {
+  width: 10px;
+  height: 10px;
+}
+
+/* ============================================
+   CREDIBILITY BADGE
+   ============================================ */
+
+.credibility-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--cred-color, #6366f1) 12%, white),
+    color-mix(in srgb, var(--cred-color, #6366f1) 6%, white)
+  );
+  border: 1px solid color-mix(in srgb, var(--cred-color, #6366f1) 20%, transparent);
+  border-radius: 10px;
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--cred-color, #6366f1);
+  transition: all 0.2s ease;
+}
+
+.credibility-badge.compact {
+  padding: 1px 5px;
+  font-size: 0.62rem;
+}
+
+.credibility-badge:hover {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--cred-color, #6366f1) 18%, white),
+    color-mix(in srgb, var(--cred-color, #6366f1) 10%, white)
+  );
+  transform: translateY(-1px);
+}
+
+/* Tier styling */
+.credibility-badge.tier-gold {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.08));
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.credibility-badge.tier-silver {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.12), rgba(34, 197, 94, 0.06));
+  border-color: rgba(34, 197, 94, 0.25);
+}
+
+.credibility-badge.tier-bronze {
+  background: linear-gradient(135deg, rgba(85, 139, 47, 0.12), rgba(85, 139, 47, 0.06));
+  border-color: rgba(85, 139, 47, 0.2);
+}
+
+.cred-icon {
+  font-size: 0.9em;
+}
+
+.cred-label {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.cred-score {
+  font-size: 0.85em;
+  opacity: 0.7;
+  margin-left: 2px;
+}
+
+/* Inline stars in badges */
+.cred-stars-inline,
+.cred-stars-compact {
+  font-size: 0.75em;
+  opacity: 0.9;
+  margin-left: 1px;
+}
+
+.cred-stars-compact {
+  font-size: 0.7em;
+}
+
+/* Tier styling for commentary badges */
+.src-badge.commentary-src.tier-gold {
+  border-color: rgba(245, 158, 11, 0.35);
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.1) inset;
+}
+
+.src-badge.commentary-src.tier-silver {
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+/* ============================================
+   HOVER CARD CREDIBILITY SECTION
+   ============================================ */
+
+.hover-card-credibility {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  margin: 8px 0;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--cred-color, #6366f1) 10%, white),
+    color-mix(in srgb, var(--cred-color, #6366f1) 5%, white)
+  );
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--cred-color, #6366f1) 15%, transparent);
+}
+
+.hover-card-credibility .cred-stars {
+  font-size: 1rem;
+}
+
+.hover-card-credibility .cred-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--cred-color, #6366f1);
+}
+
+.hover-card-credibility .cred-score {
+  font-size: 0.68rem;
+  color: #64748b;
+}
+
+.hover-card-credibility .cred-category {
+  margin-left: auto;
+  padding: 2px 8px;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: white;
+  border-radius: 8px;
+  letter-spacing: 0.01em;
+}
+
+/* ============================================
+   DETAILED BADGE CREDIBILITY
+   ============================================ */
+
+.detailed-credibility {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  margin: 8px 0;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--cred-color, #6366f1) 8%, transparent),
+    color-mix(in srgb, var(--cred-color, #6366f1) 4%, transparent)
+  );
+  border-radius: 6px;
+}
+
+.detailed-credibility .cred-stars {
+  font-size: 0.9rem;
+}
+
+.detailed-credibility .cred-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--cred-color, #6366f1);
+}
+
+.detailed-credibility .cred-category-tag {
+  margin-left: auto;
+  padding: 2px 6px;
+  font-size: 0.58rem;
+  font-weight: 600;
+  color: white;
+  border-radius: 6px;
+}
+
+/* ============================================
+   DARK MODE
+   ============================================ */
+
+.dark-mode .src-badge {
+  color: #94a3b8;
+}
+
+.dark-mode .src-name {
+  color: var(--src-color, #94a3b8);
+}
+
+.dark-mode .lang-tag {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .src-badge.commentary-src {
+  background: linear-gradient(135deg,
+    rgba(5, 150, 105, 0.18) 0%,
+    rgba(5, 150, 105, 0.08) 100%
+  );
+  border-color: rgba(5, 150, 105, 0.28);
+}
+
+.dark-mode .src-badge.commentary-src:hover {
+  background: linear-gradient(135deg,
+    rgba(5, 150, 105, 0.25) 0%,
+    rgba(5, 150, 105, 0.12) 100%
+  );
+  border-color: rgba(5, 150, 105, 0.38);
+}
+
+.dark-mode .era-badge {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--era-color, #6366f1) 25%, transparent),
+    color-mix(in srgb, var(--era-color, #6366f1) 12%, transparent)
+  );
+  border-color: color-mix(in srgb, var(--era-color, #6366f1) 35%, transparent);
+}
+
+.dark-mode .commentary-hover-card {
+  background: #1e293b;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.dark-mode .commentary-hover-card::after {
+  background: #1e293b;
+}
+
+.dark-mode .hover-card-hebrew {
+  color: #f1f5f9;
+}
+
+.dark-mode .hover-card-name,
+.dark-mode .hover-card-detail {
+  color: #94a3b8;
+}
+
+.dark-mode .hover-card-desc {
+  color: #cbd5e1;
+  border-color: #334155;
+}
+
+.dark-mode .hover-card-footer {
+  border-color: #334155;
+}
+
+.dark-mode .commentary-badge-detailed {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--src-color, #059669) 15%, #1e293b),
+    color-mix(in srgb, var(--src-color, #059669) 6%, #1e293b)
+  );
+  border-color: color-mix(in srgb, var(--src-color, #059669) 25%, transparent);
+}
+
+.dark-mode .detailed-hebrew {
+  color: #f1f5f9;
+}
+
+.dark-mode .detailed-name,
+.dark-mode .detailed-desc {
+  color: #94a3b8;
+}
+
+.dark-mode .detailed-footer {
+  border-color: color-mix(in srgb, var(--src-color, #059669) 20%, transparent);
+}
+
+/* Credibility dark mode */
+.dark-mode .credibility-badge {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--cred-color, #6366f1) 20%, #1e293b),
+    color-mix(in srgb, var(--cred-color, #6366f1) 10%, #1e293b)
+  );
+  border-color: color-mix(in srgb, var(--cred-color, #6366f1) 30%, transparent);
+}
+
+.dark-mode .hover-card-credibility {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--cred-color, #6366f1) 15%, #1e293b),
+    color-mix(in srgb, var(--cred-color, #6366f1) 8%, #1e293b)
+  );
+  border-color: color-mix(in srgb, var(--cred-color, #6366f1) 25%, transparent);
+}
+
+.dark-mode .hover-card-credibility .cred-score {
+  color: #94a3b8;
+}
+
+.dark-mode .detailed-credibility {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--cred-color, #6366f1) 12%, #1e293b),
+    color-mix(in srgb, var(--cred-color, #6366f1) 6%, #1e293b)
+  );
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 640px) {
+  .src-badge {
+    font-size: 0.68rem;
+    gap: 4px;
+  }
+
+  .src-method {
+    font-size: 0.6rem;
+    padding: 1px 5px;
+  }
+
+  .lang-tag {
+    font-size: 0.6rem;
+    min-width: 24px;
+    padding: 2px 6px;
+  }
+
+  .commentary-hover-card {
+    width: 260px;
+    padding: 12px;
+  }
+
+  .era-badge {
+    padding: 1px 6px;
+    font-size: 0.55rem;
+  }
+
+  .src-badge.commentary-src {
+    padding: 3px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .commentary-hover-card {
+    display: none;
+  }
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .src-loading .dot {
+    animation: none;
+    opacity: 0.6;
+  }
+
+  .src-badge,
+  .lang-tag,
+  .era-badge,
+  .commentary-hover-card {
+    transition: none;
+  }
+
+  .commentary-hover-card {
+    animation: none;
+  }
+
+  .src-badge.link:hover .src-icon,
+  .src-badge:hover .src-acc,
+  .src-badge.link:hover .src-link-icon {
+    transform: none;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  .commentary-hover-card {
+    display: none;
+  }
+
+  .src-badge.commentary-src {
+    background: none;
+    border: 1px solid #ccc;
+  }
+
+  .era-badge {
+    background: none;
+    border: 1px solid currentColor;
+  }
+}

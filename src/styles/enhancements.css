@@ -1,7 +1,23 @@
 /* =============================================================================
    Visual Polish Enhancements
    Premium animations, micro-interactions, and refined effects
+   Note: Easing curves and durations are defined in variables.css
    ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   Additional Enhancement Variables (extends variables.css)
+   ----------------------------------------------------------------------------- */
+:root {
+  /* Hover shadows (specific to enhancement effects) */
+  --shadow-hover-light: 0 8px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.04);
+  --shadow-hover-dark: 0 8px 25px rgba(0, 0, 0, 0.3), 0 4px 10px rgba(0, 0, 0, 0.2);
+  --shadow-lift: 0 12px 32px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
+
+  /* Lift transform presets */
+  --lift-small: translateY(-2px);
+  --lift-medium: translateY(-4px);
+  --lift-large: translateY(-6px);
+}
 
 /* -----------------------------------------------------------------------------
    Premium Button Transitions
@@ -168,10 +184,8 @@
 .bookmark-item:hover,
 .history-item:hover,
 .vocabulary-item:hover {
-  transform: translateY(-2px) !important;
-  box-shadow:
-    0 8px 25px rgba(0, 0, 0, 0.08),
-    0 4px 10px rgba(0, 0, 0, 0.04) !important;
+  transform: var(--lift-small) !important;
+  box-shadow: var(--shadow-hover-light) !important;
 }
 
 /* Border glow on focus */
@@ -382,9 +396,7 @@
 .app.dark-mode .verse-item:hover,
 .app.dark-mode .bookmark-item:hover,
 .app.dark-mode .history-item:hover {
-  box-shadow:
-    0 8px 25px rgba(0, 0, 0, 0.3),
-    0 4px 10px rgba(0, 0, 0, 0.2) !important;
+  box-shadow: var(--shadow-hover-dark) !important;
 }
 
 /* Dark mode gradient mesh */
@@ -464,6 +476,315 @@ a:focus-visible {
 }
 
 /* -----------------------------------------------------------------------------
+   Premium Card Effects
+   ----------------------------------------------------------------------------- */
+
+/* Premium card hover with depth */
+.premium-card {
+  position: relative;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  transition: all 0.4s var(--ease-out-expo);
+}
+
+.premium-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.02) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.premium-card::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    var(--primary-light) 50%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: -1;
+}
+
+.premium-card:hover::after {
+  opacity: 1;
+}
+
+.premium-card:hover {
+  transform: var(--lift-large);
+  box-shadow:
+    0 20px 40px rgba(91, 76, 219, 0.1),
+    0 8px 16px rgba(0, 0, 0, 0.05);
+  border-color: transparent;
+}
+
+/* -----------------------------------------------------------------------------
+   Interactive Glow Effects
+   ----------------------------------------------------------------------------- */
+
+/* Subtle glow on hover */
+.glow-on-hover {
+  position: relative;
+}
+
+.glow-on-hover::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(
+    var(--glow-angle, 135deg),
+    var(--primary) 0%,
+    var(--accent-purple) 50%,
+    var(--accent-teal) 100%
+  );
+  border-radius: inherit;
+  opacity: 0;
+  filter: blur(8px);
+  transition: opacity 0.4s ease;
+  z-index: -1;
+}
+
+.glow-on-hover:hover::before {
+  opacity: 0.4;
+}
+
+/* Animated border gradient */
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.animated-border {
+  position: relative;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-lg);
+}
+
+.animated-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--border-angle),
+    var(--primary),
+    var(--accent-purple),
+    var(--accent-teal),
+    var(--primary)
+  );
+  z-index: -1;
+  animation: rotateBorder 4s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.animated-border:hover::before {
+  opacity: 1;
+}
+
+@keyframes rotateBorder {
+  to {
+    --border-angle: 360deg;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Hebrew Text Visual Enhancements
+   ----------------------------------------------------------------------------- */
+
+/* Verse text glow effect on hover */
+.verse-text-hebrew:hover {
+  text-shadow: 0 0 20px var(--primary-glow);
+}
+
+/* Selected verse highlight */
+.verse.selected {
+  position: relative;
+}
+
+.verse.selected::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 60%;
+  background: linear-gradient(180deg, var(--primary), var(--accent-purple));
+  border-radius: 2px;
+  animation: pulseLine 2s ease-in-out infinite;
+}
+
+@keyframes pulseLine {
+  0%, 100% {
+    opacity: 1;
+    height: 60%;
+  }
+  50% {
+    opacity: 0.7;
+    height: 70%;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Button Group Styling
+   ----------------------------------------------------------------------------- */
+
+.button-group {
+  display: inline-flex;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.button-group > button {
+  border-radius: 0;
+  border-right: 1px solid var(--border);
+}
+
+.button-group > button:first-child {
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+}
+
+.button-group > button:last-child {
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  border-right: none;
+}
+
+/* -----------------------------------------------------------------------------
+   Notification Toast Styling
+   ----------------------------------------------------------------------------- */
+
+.toast {
+  position: fixed;
+  bottom: var(--space-6);
+  right: var(--space-6);
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  animation: fadeSlideUp 0.4s var(--ease-out-expo) forwards;
+  z-index: var(--z-toast, 800);
+}
+
+.toast.toast-success {
+  border-left: 4px solid var(--success);
+}
+
+.toast.toast-error {
+  border-left: 4px solid var(--error);
+}
+
+.toast.toast-info {
+  border-left: 4px solid var(--info);
+}
+
+/* -----------------------------------------------------------------------------
+   Input Field Enhancements
+   ----------------------------------------------------------------------------- */
+
+.input-enhanced {
+  position: relative;
+}
+
+.input-enhanced input,
+.input-enhanced textarea {
+  background: var(--bg-subtle);
+  border: 2px solid var(--border);
+  transition: all 0.25s var(--ease-out-expo);
+}
+
+.input-enhanced input:focus,
+.input-enhanced textarea:focus {
+  background: var(--bg-elevated);
+  border-color: var(--primary);
+  box-shadow:
+    0 0 0 4px var(--primary-glow),
+    0 4px 12px rgba(91, 76, 219, 0.1);
+}
+
+/* Floating label effect */
+.input-with-label {
+  position: relative;
+}
+
+.input-with-label label {
+  position: absolute;
+  top: 50%;
+  left: var(--space-3);
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 14px;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  background: transparent;
+  padding: 0 4px;
+}
+
+.input-with-label input:focus + label,
+.input-with-label input:not(:placeholder-shown) + label {
+  top: 0;
+  font-size: 12px;
+  color: var(--primary);
+  background: var(--bg-elevated);
+}
+
+/* -----------------------------------------------------------------------------
+   Badge Enhancements
+   ----------------------------------------------------------------------------- */
+
+.badge-animated {
+  animation: badgeEnter 0.3s var(--ease-spring) forwards;
+}
+
+@keyframes badgeEnter {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  70% {
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.badge-pulse {
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 var(--primary-glow, rgba(91, 76, 219, 0.4));
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 6px transparent;
+  }
+}
+
+/* -----------------------------------------------------------------------------
    Reduced Motion Support
    ----------------------------------------------------------------------------- */
 
@@ -479,5 +800,2526 @@ a:focus-visible {
 
   .toolbar-btn::after {
     display: none;
+  }
+
+  .glow-on-hover::before,
+  .animated-border::before,
+  .premium-card::after {
+    display: none;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Delightful Micro-interactions
+   ----------------------------------------------------------------------------- */
+
+/* Bouncy button feedback */
+.btn-bouncy {
+  transition: transform 200ms var(--ease-out-back);
+}
+
+.btn-bouncy:hover {
+  transform: translateY(-3px);
+}
+
+.btn-bouncy:active {
+  transform: translateY(-1px) scale(0.97);
+}
+
+/* Smooth icon transitions */
+.icon-spin:hover svg {
+  animation: iconSpin 0.5s ease-in-out;
+}
+
+@keyframes iconSpin {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Wiggle effect for attention */
+.wiggle:hover {
+  animation: wiggle 0.5s ease-in-out;
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-3deg); }
+  40% { transform: rotate(3deg); }
+  60% { transform: rotate(-3deg); }
+  80% { transform: rotate(3deg); }
+}
+
+/* Smooth expand/collapse */
+.expandable {
+  overflow: hidden;
+  transition: max-height 0.35s var(--ease-smooth),
+              opacity 0.25s ease;
+}
+
+.expandable.collapsed {
+  max-height: 0;
+  opacity: 0;
+}
+
+.expandable.expanded {
+  max-height: 1000px;
+  opacity: 1;
+}
+
+/* -----------------------------------------------------------------------------
+   Friendly UI States
+   ----------------------------------------------------------------------------- */
+
+/* Success state glow - uses pulseGlow animation pattern */
+.state-success {
+  position: relative;
+}
+
+.state-success::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  background: var(--success);
+  filter: blur(12px);
+  opacity: 0.2;
+  z-index: -1;
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* Error shake animation */
+.shake-error {
+  animation: shakeError 0.4s ease-in-out;
+}
+
+@keyframes shakeError {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+/* Loading dot animation */
+.loading-dots::after {
+  content: '';
+  animation: loadingDots 1.5s infinite;
+}
+
+@keyframes loadingDots {
+  0% { content: ''; }
+  25% { content: '.'; }
+  50% { content: '..'; }
+  75% { content: '...'; }
+}
+
+/* -----------------------------------------------------------------------------
+   Friendly Empty States
+   ----------------------------------------------------------------------------- */
+
+.empty-state-friendly {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.empty-state-friendly .empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.6;
+  animation: emptyBounce 2s ease-in-out infinite;
+}
+
+@keyframes emptyBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.empty-state-friendly h3 {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.empty-state-friendly p {
+  margin: 0;
+  font-size: 0.95rem;
+  max-width: 300px;
+  line-height: 1.6;
+}
+
+/* -----------------------------------------------------------------------------
+   Card Hover Effects
+   ----------------------------------------------------------------------------- */
+
+/* Subtle lift with shadow */
+.card-lift {
+  transition: transform 0.3s var(--ease-smooth),
+              box-shadow 0.3s ease;
+}
+
+.card-lift:hover {
+  transform: var(--lift-medium);
+  box-shadow: var(--shadow-lift);
+}
+
+/* Border highlight on hover */
+.card-border-glow {
+  position: relative;
+  transition: border-color 0.3s ease;
+}
+
+.card-border-glow::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, var(--primary), var(--accent-purple));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.card-border-glow:hover::before {
+  opacity: 1;
+}
+
+.card-border-glow:hover {
+  border-color: transparent;
+}
+
+/* -----------------------------------------------------------------------------
+   Smooth Number Transitions
+   ----------------------------------------------------------------------------- */
+
+.number-counter {
+  display: inline-block;
+  transition: transform 0.3s var(--ease-out-back);
+}
+
+.number-counter.changed {
+  animation: numberPop 0.4s ease-out;
+}
+
+@keyframes numberPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); color: var(--primary); }
+  100% { transform: scale(1); }
+}
+
+/* -----------------------------------------------------------------------------
+   Interactive Tags
+   ----------------------------------------------------------------------------- */
+
+.tag-interactive {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tag-interactive:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.tag-interactive:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.tag-interactive.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+/* -----------------------------------------------------------------------------
+   Smooth Accordion
+   ----------------------------------------------------------------------------- */
+
+.accordion-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 16px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.accordion-trigger:hover {
+  background: var(--bg-subtle);
+  border-color: var(--primary);
+}
+
+.accordion-trigger .accordion-icon {
+  transition: transform 0.3s var(--ease-smooth);
+}
+
+.accordion-trigger[aria-expanded="true"] .accordion-icon {
+  transform: rotate(180deg);
+}
+
+.accordion-content {
+  overflow: hidden;
+  transition: max-height 0.35s var(--ease-smooth),
+              padding 0.35s ease,
+              opacity 0.25s ease;
+}
+
+/* -----------------------------------------------------------------------------
+   Friendly Notifications
+   ----------------------------------------------------------------------------- */
+
+.notification-friendly {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  border-left: 4px solid var(--primary);
+  box-shadow: var(--shadow-md);
+  animation: fadeSlideLeft 0.4s var(--ease-out-expo);
+}
+
+.notification-friendly.success {
+  border-left-color: var(--success);
+}
+
+.notification-friendly.warning {
+  border-left-color: var(--warning);
+}
+
+.notification-friendly.error {
+  border-left-color: var(--error);
+}
+
+/* -----------------------------------------------------------------------------
+   Smooth Progress Indicators
+   ----------------------------------------------------------------------------- */
+
+.progress-smooth {
+  height: 8px;
+  background: var(--bg-subtle);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-smooth .progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--accent-purple));
+  border-radius: 4px;
+  transition: width 0.5s var(--ease-smooth);
+  position: relative;
+}
+
+.progress-smooth .progress-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: progressShine 1.5s ease-in-out infinite;
+}
+
+@keyframes progressShine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* -----------------------------------------------------------------------------
+   Interactive Tabs
+   ----------------------------------------------------------------------------- */
+
+.tabs-friendly {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-lg);
+}
+
+.tab-friendly {
+  flex: 1;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.tab-friendly:hover {
+  color: var(--text-primary);
+  background: rgba(255,255,255,0.5);
+}
+
+.tab-friendly.active {
+  background: var(--bg-elevated);
+  color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* -----------------------------------------------------------------------------
+   Skeleton Loading Improvements
+   ----------------------------------------------------------------------------- */
+
+/* Reuses shimmerLoad animation from Enhanced Loading States section */
+.skeleton-friendly {
+  background: linear-gradient(
+    90deg,
+    var(--bg-subtle, #f1f5f9) 0%,
+    var(--bg-elevated, #ffffff) 50%,
+    var(--bg-subtle, #f1f5f9) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmerLoad 1.5s ease-in-out infinite;
+  border-radius: var(--radius);
+}
+
+.skeleton-text {
+  height: 1em;
+  margin: 0.5em 0;
+}
+
+.skeleton-title {
+  height: 1.5em;
+  width: 60%;
+}
+
+.skeleton-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.skeleton-card {
+  height: 120px;
+}
+
+/* =============================================================================
+   UI CARD & TEXT IMPROVEMENTS - Premium Visual Design
+   Enhanced shadows, borders, typography, and visual polish
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   Enhanced Card Design System
+   ----------------------------------------------------------------------------- */
+
+/* Premium card base with improved shadows and borders
+   Note: .translation-block has specific styles in "Translation Cards" section */
+.verse,
+.study-verse,
+.commentary-source-group,
+.commentary-display,
+.targum-section,
+.rashi-section,
+.rashi-comment-block {
+  position: relative;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(250, 251, 252, 1) 100%
+  ) !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+  border-radius: 14px !important;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.02),
+    0 2px 4px rgba(0, 0, 0, 0.02),
+    0 4px 8px rgba(0, 0, 0, 0.02),
+    0 0 0 1px rgba(255, 255, 255, 0.8) inset !important;
+  transition: all 0.3s var(--ease-smooth) !important;
+  overflow: hidden;
+}
+
+/* Card hover state with elegant lift */
+.verse:hover,
+.study-verse:hover,
+.commentary-source-group:hover,
+.commentary-display:hover {
+  border-color: rgba(99, 102, 241, 0.3) !important;
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.02),
+    0 8px 15px rgba(99, 102, 241, 0.08),
+    0 16px 30px rgba(99, 102, 241, 0.06),
+    0 0 0 1px rgba(99, 102, 241, 0.1) inset !important;
+  transform: translateY(-2px);
+}
+
+/* Dark mode card improvements */
+.dark-mode .verse,
+.dark-mode .study-verse,
+.dark-mode .commentary-source-group,
+.dark-mode .commentary-display,
+.dark-mode .targum-section,
+.dark-mode .rashi-section,
+.dark-mode .rashi-comment-block {
+  background: linear-gradient(
+    180deg,
+    rgba(30, 41, 59, 1) 0%,
+    rgba(15, 23, 42, 1) 100%
+  ) !important;
+  border-color: rgba(51, 65, 85, 0.8) !important;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.1),
+    0 2px 4px rgba(0, 0, 0, 0.08),
+    0 4px 8px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(51, 65, 85, 0.5) inset !important;
+}
+
+.dark-mode .verse:hover,
+.dark-mode .study-verse:hover,
+.dark-mode .commentary-source-group:hover,
+.dark-mode .commentary-display:hover {
+  border-color: rgba(129, 140, 248, 0.4) !important;
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.15),
+    0 8px 15px rgba(129, 140, 248, 0.1),
+    0 16px 30px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(129, 140, 248, 0.15) inset !important;
+}
+
+/* -----------------------------------------------------------------------------
+   Enhanced Typography & Text Readability
+   ----------------------------------------------------------------------------- */
+
+/* Hebrew text improvements */
+.hebrew-text,
+.hebrew-text-study,
+.verse-text-hebrew,
+.targum-aramaic,
+.commentary-text.hebrew-commentary {
+  font-family: 'Noto Serif Hebrew', 'Frank Ruhl Libre', 'David Libre', 'Times New Roman', serif !important;
+  font-feature-settings: 'kern' 1, 'liga' 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: 0.02em;
+  word-spacing: 0.05em;
+}
+
+/* Rashi text uses Rashi script (כתב רש"י) */
+.rashi-text {
+  font-family: 'Noto Rashi Hebrew', var(--font-rashi), 'Frank Ruhl Libre', serif !important;
+  font-feature-settings: 'kern' 1, 'liga' 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: 0.01em;
+  line-height: 1.9;
+}
+
+/* English text improvements */
+.english-text,
+.translation-text,
+.commentary-text.english-translation,
+.commentary-text.english-text {
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.75 !important;
+  letter-spacing: -0.01em;
+}
+
+/* French text styling */
+.french-translation,
+.trans-text[lang="fr"],
+.translation-block.french .translation-text {
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-style: normal;
+  color: #1e40af;
+}
+
+.dark-mode .french-translation,
+.dark-mode .trans-text[lang="fr"],
+.dark-mode .translation-block.french .translation-text {
+  color: #93c5fd;
+}
+
+/* -----------------------------------------------------------------------------
+   Source & Attribution Badges - Enhanced Design
+   ----------------------------------------------------------------------------- */
+
+/* Source icon badges */
+.source-info,
+.translation-header,
+.source-reference {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+}
+
+/* Enhanced language badges */
+.lang-badge,
+.language-badge,
+.trans-lang-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  padding: 4px 10px !important;
+  border-radius: 20px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s ease !important;
+}
+
+.lang-badge:hover,
+.language-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* EN badge */
+.lang-badge.en,
+.language-badge.green,
+.trans-lang-badge.en {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+  color: white !important;
+}
+
+/* FR badge */
+.lang-badge.fr,
+.language-badge.blue,
+.trans-lang-badge.fr {
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%) !important;
+  color: white !important;
+}
+
+/* HE badge */
+.lang-badge.he,
+.language-badge.purple {
+  background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%) !important;
+  color: white !important;
+}
+
+/* -----------------------------------------------------------------------------
+   Translation Cards - Premium Design
+   ----------------------------------------------------------------------------- */
+
+.translation-block,
+.verse-translation,
+.english-translation,
+.french-translation {
+  position: relative;
+  padding: 14px 18px !important;
+  margin: 12px 0 !important;
+  background: linear-gradient(
+    135deg,
+    rgba(248, 250, 252, 0.9) 0%,
+    rgba(241, 245, 249, 0.9) 100%
+  ) !important;
+  border-radius: 12px !important;
+  border-left-width: 4px !important;
+  border-left-style: solid !important;
+  backdrop-filter: blur(4px);
+}
+
+.translation-block.english,
+.english-translation {
+  border-left-color: #10b981 !important;
+  background: linear-gradient(
+    135deg,
+    rgba(236, 253, 245, 0.9) 0%,
+    rgba(209, 250, 229, 0.5) 100%
+  ) !important;
+}
+
+.translation-block.french,
+.french-translation {
+  border-left-color: #3b82f6 !important;
+  background: linear-gradient(
+    135deg,
+    rgba(239, 246, 255, 0.9) 0%,
+    rgba(219, 234, 254, 0.5) 100%
+  ) !important;
+}
+
+.dark-mode .translation-block,
+.dark-mode .verse-translation,
+.dark-mode .english-translation,
+.dark-mode .french-translation {
+  background: linear-gradient(
+    135deg,
+    rgba(15, 23, 42, 0.9) 0%,
+    rgba(30, 41, 59, 0.9) 100%
+  ) !important;
+}
+
+.dark-mode .translation-block.english,
+.dark-mode .english-translation {
+  background: linear-gradient(
+    135deg,
+    rgba(6, 78, 59, 0.4) 0%,
+    rgba(6, 95, 70, 0.3) 100%
+  ) !important;
+}
+
+.dark-mode .translation-block.french,
+.dark-mode .french-translation {
+  background: linear-gradient(
+    135deg,
+    rgba(30, 58, 95, 0.4) 0%,
+    rgba(30, 64, 175, 0.3) 100%
+  ) !important;
+}
+
+/* -----------------------------------------------------------------------------
+   Commentary Section Headers - Enhanced Design
+   ----------------------------------------------------------------------------- */
+
+.commentary-header,
+.section-header,
+.display-header,
+.targum-section .section-header,
+.rashi-section .section-header {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 12px 16px !important;
+  background: linear-gradient(
+    135deg,
+    rgba(248, 250, 252, 1) 0%,
+    rgba(241, 245, 249, 0.8) 100%
+  ) !important;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.6) !important;
+  border-radius: 14px 14px 0 0 !important;
+}
+
+.dark-mode .commentary-header,
+.dark-mode .section-header,
+.dark-mode .display-header {
+  background: linear-gradient(
+    135deg,
+    rgba(30, 41, 59, 1) 0%,
+    rgba(15, 23, 42, 0.8) 100%
+  ) !important;
+  border-bottom-color: rgba(51, 65, 85, 0.6) !important;
+}
+
+/* Section badges with icons */
+.section-badge,
+.source-badge-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 10px !important;
+  font-size: 18px !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+.section-badge.targum,
+.targum-section .section-badge {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+  color: white !important;
+}
+
+.section-badge.rashi,
+.rashi-section .section-badge {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
+  color: white !important;
+}
+
+/* Section titles */
+.section-title,
+.source-name,
+.source-hebrew,
+.source-english {
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* -----------------------------------------------------------------------------
+   Loading States - Elegant Animations
+   ----------------------------------------------------------------------------- */
+
+/* Enhanced loading text */
+.loading-text,
+.trans-text.loading,
+.translation-content .loading-text {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 8px 14px !important;
+  background: linear-gradient(
+    90deg,
+    rgba(241, 245, 249, 0.8) 0%,
+    rgba(226, 232, 240, 0.6) 50%,
+    rgba(241, 245, 249, 0.8) 100%
+  ) !important;
+  background-size: 200% 100% !important;
+  animation: shimmerLoad 1.8s ease-in-out infinite !important;
+  border-radius: 8px !important;
+  color: #64748b !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+/* Loading indicator with spinner - reuses spinGradient from Enhanced Loading States */
+.loading-text::before,
+.trans-text.loading::before {
+  content: '';
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(99, 102, 241, 0.2);
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: spinGradient 0.8s linear infinite;
+}
+
+.dark-mode .loading-text,
+.dark-mode .trans-text.loading {
+  background: linear-gradient(
+    90deg,
+    rgba(51, 65, 85, 0.8) 0%,
+    rgba(71, 85, 105, 0.6) 50%,
+    rgba(51, 65, 85, 0.8) 100%
+  ) !important;
+  background-size: 200% 100% !important;
+  color: #94a3b8 !important;
+}
+
+.dark-mode .loading-text::before,
+.dark-mode .trans-text.loading::before {
+  border-color: rgba(129, 140, 248, 0.2);
+  border-top-color: #818cf8;
+}
+
+/* French translation loading state */
+.french-translation .loading-text,
+.translation-block.french .loading-text {
+  background: linear-gradient(
+    90deg,
+    rgba(219, 234, 254, 0.8) 0%,
+    rgba(191, 219, 254, 0.6) 50%,
+    rgba(219, 234, 254, 0.8) 100%
+  ) !important;
+  background-size: 200% 100% !important;
+  color: #1e40af !important;
+}
+
+.french-translation .loading-text::before,
+.translation-block.french .loading-text::before {
+  border-color: rgba(37, 99, 235, 0.2);
+  border-top-color: #2563eb;
+}
+
+/* -----------------------------------------------------------------------------
+   Accuracy & Source Indicators
+   ----------------------------------------------------------------------------- */
+
+.accuracy-indicator,
+.accuracy-pill,
+.source-card-accuracy {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 3px 10px !important;
+  border-radius: 20px !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+.accuracy-indicator.high,
+.accuracy-pill.high,
+.source-card-accuracy.green {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%) !important;
+  color: #166534 !important;
+  box-shadow: 0 1px 3px rgba(22, 163, 74, 0.15) !important;
+}
+
+.accuracy-indicator.medium,
+.accuracy-pill.medium,
+.source-card-accuracy.amber {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
+  color: #92400e !important;
+  box-shadow: 0 1px 3px rgba(245, 158, 11, 0.15) !important;
+}
+
+.accuracy-indicator.auto,
+.accuracy-pill.auto,
+.source-card-accuracy.blue {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
+  color: #1e40af !important;
+  box-shadow: 0 1px 3px rgba(59, 130, 246, 0.15) !important;
+}
+
+/* -----------------------------------------------------------------------------
+   Rashi & Tosafot Special Styling
+   ----------------------------------------------------------------------------- */
+
+/* Rashi script text improvements */
+.rashi-font,
+.text-block.hebrew.rashi-script .commentary-text,
+.commentary-display[data-source="Rashi"] .commentary-text,
+.commentary-display[data-source="Tosafot"] .commentary-text {
+  font-family: 'Noto Rashi Hebrew', 'Frank Ruhl Libre', serif !important;
+  font-size: 18px !important;
+  line-height: 2 !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* Dibbur Hamatchil (opening words) enhancement */
+.dibbur-hamatchil-section,
+.text-block .dibbur-header {
+  position: relative;
+  padding: 12px 16px !important;
+  margin-bottom: 12px !important;
+  background: linear-gradient(
+    135deg,
+    rgba(250, 245, 255, 0.95) 0%,
+    rgba(243, 232, 255, 0.8) 100%
+  ) !important;
+  border-radius: 10px !important;
+  border-left: 4px solid #8b5cf6 !important;
+}
+
+.dark-mode .dibbur-hamatchil-section,
+.dark-mode .text-block .dibbur-header {
+  background: linear-gradient(
+    135deg,
+    rgba(88, 28, 135, 0.3) 0%,
+    rgba(107, 33, 168, 0.2) 100%
+  ) !important;
+}
+
+/* Dibbur text styling */
+.dibbur-text,
+.text-block .dibbur-hebrew {
+  font-weight: 700 !important;
+  color: #6d28d9 !important;
+  font-size: 1.1em !important;
+}
+
+.dark-mode .dibbur-text,
+.dark-mode .text-block .dibbur-hebrew {
+  color: #c4b5fd !important;
+}
+
+/* -----------------------------------------------------------------------------
+   Targum Section Enhancement
+   ----------------------------------------------------------------------------- */
+
+.targum-section {
+  background: linear-gradient(
+    180deg,
+    rgba(240, 253, 244, 1) 0%,
+    rgba(220, 252, 231, 0.8) 100%
+  ) !important;
+  border-color: rgba(187, 247, 208, 0.8) !important;
+  border-left: 4px solid #10b981 !important;
+}
+
+.dark-mode .targum-section {
+  background: linear-gradient(
+    180deg,
+    rgba(6, 78, 59, 0.4) 0%,
+    rgba(6, 95, 70, 0.3) 100%
+  ) !important;
+  border-color: rgba(6, 95, 70, 0.6) !important;
+}
+
+.targum-aramaic {
+  color: #065f46 !important;
+}
+
+.dark-mode .targum-aramaic {
+  color: #6ee7b7 !important;
+}
+
+/* -----------------------------------------------------------------------------
+   Source Icons - Refined Design
+   ----------------------------------------------------------------------------- */
+
+/* Sefaria source indicator */
+.source-icon.sefaria,
+[data-source="Sefaria"] .source-icon {
+  color: #10b981;
+}
+
+/* Translation API indicator */
+.source-icon.api,
+[data-source="API"] .source-icon {
+  color: #6366f1;
+}
+
+/* Link/external source */
+.source-link,
+.external-link-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 22px !important;
+  height: 22px !important;
+  background: rgba(99, 102, 241, 0.1) !important;
+  border-radius: 6px !important;
+  color: #6366f1 !important;
+  font-size: 12px !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer;
+}
+
+.source-link:hover,
+.external-link-icon:hover {
+  background: #6366f1 !important;
+  color: white !important;
+  transform: translateY(-1px);
+}
+
+/* -----------------------------------------------------------------------------
+   Micro-interactions & Polish
+   ----------------------------------------------------------------------------- */
+
+/* Subtle entrance animation for cards */
+.verse,
+.study-verse,
+.commentary-display {
+  animation: scaleIn 0.35s var(--ease-smooth) backwards;
+}
+
+/* Staggered animation for multiple cards */
+.commentary-display:nth-child(1) { animation-delay: 0.05s; }
+.commentary-display:nth-child(2) { animation-delay: 0.1s; }
+.commentary-display:nth-child(3) { animation-delay: 0.15s; }
+.translation-block:nth-child(1) { animation-delay: 0.05s; }
+.translation-block:nth-child(2) { animation-delay: 0.1s; }
+
+/* Smooth border-left transition for active states */
+.verse.highlighted,
+.verse.selected,
+.study-verse.highlighted {
+  border-left: 4px solid #6366f1 !important;
+  background: linear-gradient(
+    135deg,
+    rgba(238, 242, 255, 0.9) 0%,
+    rgba(224, 231, 255, 0.6) 100%
+  ) !important;
+}
+
+.dark-mode .verse.highlighted,
+.dark-mode .verse.selected,
+.dark-mode .study-verse.highlighted {
+  border-left-color: #818cf8 !important;
+  background: linear-gradient(
+    135deg,
+    rgba(49, 46, 129, 0.4) 0%,
+    rgba(55, 48, 163, 0.3) 100%
+  ) !important;
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Typography Adjustments
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+  .hebrew-text,
+  .hebrew-text-study,
+  .verse-text-hebrew {
+    font-size: 1.4em !important;
+    line-height: 1.9 !important;
+  }
+
+  .translation-text,
+  .english-text,
+  .commentary-text.english-translation {
+    font-size: 14px !important;
+    line-height: 1.65 !important;
+  }
+
+  .rashi-text,
+  .targum-aramaic {
+    font-size: 15px !important;
+    line-height: 1.85 !important;
+  }
+
+  .translation-block,
+  .verse-translation,
+  .english-translation,
+  .french-translation {
+    padding: 12px 14px !important;
+    margin: 8px 0 !important;
+  }
+
+  .lang-badge,
+  .language-badge {
+    padding: 3px 8px !important;
+    font-size: 10px !important;
+  }
+}
+
+/* Print-friendly styles */
+@media print {
+  .verse,
+  .study-verse,
+  .commentary-display {
+    box-shadow: none !important;
+    border: 1px solid #e5e7eb !important;
+    page-break-inside: avoid;
+  }
+
+  .hebrew-text,
+  .hebrew-text-study {
+    font-size: 14pt !important;
+    line-height: 1.8 !important;
+  }
+
+  .translation-text,
+  .english-text {
+    font-size: 11pt !important;
+    line-height: 1.6 !important;
+  }
+}
+
+/* =============================================================================
+   Enhanced Rashi Script Rendering - Premium Display
+   ============================================================================= */
+
+/* Ensure Rashi font loads properly with fallbacks */
+@font-face {
+  font-family: 'Noto Rashi Hebrew';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notorashihebrew/v28/EJR_Qh82XsIK-QFmqXk4zvLwFVya0vFL-HlKM5e6C6HZB-HkRw.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Noto Rashi Hebrew';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notorashihebrew/v28/EJR_Qh82XsIK-QFmqXk4zvLwFVya0vFL-HlKM5e6C6HZ4ObkRw.ttf) format('truetype');
+}
+
+/* Enhanced Rashi script - crisp and clear rendering */
+.rashi-script,
+.rashi-font,
+.text-block.rashi-script,
+.text-block.hebrew.rashi-script,
+.commentary-display[data-source="Rashi"] .commentary-text,
+.commentary-display[data-source="Tosafot"] .commentary-text,
+.rashi-script-source .commentary-text,
+.rashi-comment-block .commentary-text,
+[style*="Noto Rashi Hebrew"],
+.clickable-text.rashi-script,
+.clickable-word.rashi-script {
+  font-family: 'Noto Rashi Hebrew', 'Frank Ruhl Libre', 'David Libre', serif !important;
+  font-size: 1.15rem !important;
+  line-height: 2.1 !important;
+  letter-spacing: 0.015em !important;
+  font-feature-settings: "kern" 1, "liga" 1 !important;
+  text-rendering: optimizeLegibility !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* Rashi text container - clean background */
+.rashi-script-source .text-block.hebrew,
+.commentary-display[data-source="Rashi"] .text-block.hebrew,
+.commentary-display[data-source="Tosafot"] .text-block.hebrew {
+  background: linear-gradient(
+    180deg,
+    rgba(250, 245, 255, 0.8) 0%,
+    rgba(245, 240, 255, 0.6) 100%
+  ) !important;
+  padding: 16px 20px !important;
+  border-radius: 12px !important;
+  border-left: 3px solid #8b5cf6 !important;
+  margin: 8px 0 !important;
+}
+
+.dark-mode .rashi-script-source .text-block.hebrew,
+.dark-mode .commentary-display[data-source="Rashi"] .text-block.hebrew,
+.dark-mode .commentary-display[data-source="Tosafot"] .text-block.hebrew {
+  background: linear-gradient(
+    180deg,
+    rgba(88, 28, 135, 0.25) 0%,
+    rgba(107, 33, 168, 0.15) 100%
+  ) !important;
+  border-left-color: #a78bfa !important;
+}
+
+/* Rashi header styling */
+.rashi-script-source .display-header,
+.commentary-display[data-source="Rashi"] .display-header,
+.commentary-display[data-source="Tosafot"] .display-header {
+  background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%) !important;
+}
+
+/* =============================================================================
+   Word Definition Card - Premium Glassmorphism Design
+   ============================================================================= */
+
+/* Override card base for cleaner look */
+.word-definition-card {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(248, 250, 252, 0.95) 100%
+  ) !important;
+  border: 1px solid rgba(79, 70, 229, 0.12) !important;
+  border-radius: 20px !important;
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.04),
+    0 10px 20px rgba(79, 70, 229, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.8) inset !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  overflow: hidden !important;
+  max-width: 420px !important;
+}
+
+.word-definition-card.aramaic {
+  background: linear-gradient(
+    180deg,
+    rgba(240, 253, 244, 0.98) 0%,
+    rgba(220, 252, 231, 0.95) 100%
+  ) !important;
+  border-color: rgba(5, 150, 105, 0.12) !important;
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.04),
+    0 10px 20px rgba(5, 150, 105, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.8) inset !important;
+}
+
+/* Card header - sleek gradient */
+.wdc-header {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
+  padding: 14px 18px !important;
+  border-radius: 18px 18px 0 0 !important;
+}
+
+.word-definition-card.aramaic .wdc-header {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+}
+
+/* Word display in header */
+.wdc-word {
+  font-family: 'David Libre', 'Frank Ruhl Libre', 'SBL Hebrew', serif !important;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Close button - refined */
+.wdc-close {
+  width: 28px !important;
+  height: 28px !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+  border: none !important;
+  font-size: 18px !important;
+  opacity: 0.9 !important;
+}
+
+.wdc-close:hover {
+  background: rgba(255, 255, 255, 0.35) !important;
+  opacity: 1 !important;
+  transform: rotate(90deg) scale(1.1) !important;
+}
+
+/* Etymology section - clean pills */
+.wdc-etymology {
+  padding: 12px 16px !important;
+  background: rgba(79, 70, 229, 0.03) !important;
+  border-bottom: 1px solid rgba(79, 70, 229, 0.06) !important;
+  gap: 8px !important;
+}
+
+.wdc-root,
+.wdc-headword {
+  padding: 6px 12px !important;
+  background: white !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(79, 70, 229, 0.08) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Source definitions - clean cards */
+.wdc-sources {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+
+.wdc-source-item {
+  background: white !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  border-radius: 12px !important;
+  padding: 12px 14px !important;
+  transition: all 0.2s ease !important;
+}
+
+.wdc-source-item:hover {
+  border-color: rgba(79, 70, 229, 0.15) !important;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.08) !important;
+  transform: translateY(-1px) !important;
+}
+
+.wdc-source-item.primary {
+  border-color: rgba(79, 70, 229, 0.2) !important;
+  background: linear-gradient(
+    135deg,
+    rgba(79, 70, 229, 0.03) 0%,
+    rgba(99, 102, 241, 0.02) 100%
+  ) !important;
+}
+
+/* Source badge - refined pill style */
+.wdc-source-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 4px 10px !important;
+  border-radius: 6px !important;
+  font-size: 0.7rem !important;
+  font-weight: 600 !important;
+  color: white !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) !important;
+}
+
+.wdc-source-icon {
+  font-size: 0.75rem !important;
+}
+
+.wdc-source-name {
+  letter-spacing: 0.3px !important;
+}
+
+/* Definition text - clean typography */
+.wdc-source-text {
+  font-family: 'Inter', -apple-system, system-ui, sans-serif !important;
+  font-size: 0.9rem !important;
+  line-height: 1.6 !important;
+  color: #334155 !important;
+  margin: 8px 0 0 !important;
+}
+
+/* Expand button - subtle */
+.wdc-expand-btn {
+  background: none !important;
+  border: none !important;
+  color: #6366f1 !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  padding: 4px 8px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+.wdc-expand-btn:hover {
+  color: #4f46e5 !important;
+  background: rgba(79, 70, 229, 0.08) !important;
+  border-radius: 4px !important;
+}
+
+/* French translation line */
+.wdc-french {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin-top: 8px !important;
+  padding-top: 8px !important;
+  border-top: 1px dashed rgba(0, 0, 0, 0.08) !important;
+  font-size: 0.85rem !important;
+  color: #4f46e5 !important;
+  font-style: italic !important;
+}
+
+.wdc-fr-flag {
+  font-size: 0.6rem !important;
+  font-weight: 700 !important;
+  padding: 2px 6px !important;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+  color: white !important;
+  border-radius: 3px !important;
+}
+
+/* Footer actions - clean buttons */
+.wdc-footer {
+  padding: 12px 16px !important;
+  background: rgba(0, 0, 0, 0.02) !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.04) !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+.wdc-actions {
+  display: flex !important;
+  gap: 6px !important;
+}
+
+.wdc-action-btn {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 8px !important;
+  background: white !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 14px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  text-decoration: none !important;
+}
+
+.wdc-action-btn:hover {
+  background: #f1f5f9 !important;
+  border-color: rgba(79, 70, 229, 0.2) !important;
+  transform: translateY(-1px) !important;
+}
+
+.wdc-action-btn.copied,
+.wdc-action-btn.playing {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  border-color: transparent !important;
+  color: white !important;
+}
+
+/* Save button */
+.wdc-save-btn {
+  padding: 8px 16px !important;
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3) !important;
+}
+
+.wdc-save-btn:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4) !important;
+}
+
+.wdc-saved {
+  color: #10b981 !important;
+  font-weight: 600 !important;
+  font-size: 0.85rem !important;
+}
+
+/* Related words section */
+.wdc-related {
+  padding: 12px 16px !important;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.03) 100%) !important;
+  border-top: 1px solid rgba(16, 185, 129, 0.1) !important;
+}
+
+.wdc-related-header {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin-bottom: 8px !important;
+  font-size: 0.75rem !important;
+  color: #059669 !important;
+  font-weight: 600 !important;
+}
+
+.wdc-related-words {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+}
+
+.wdc-related-word {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 2px !important;
+  padding: 6px 10px !important;
+  background: white !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(16, 185, 129, 0.15) !important;
+  font-size: 0.75rem !important;
+}
+
+.wdc-rel-hebrew {
+  font-family: 'David Libre', 'Frank Ruhl Libre', serif !important;
+  font-weight: 600 !important;
+  color: #047857 !important;
+}
+
+.wdc-rel-meaning {
+  color: #6b7280 !important;
+  font-size: 0.65rem !important;
+}
+
+/* =============================================================================
+   Translation Display - Clean & Readable
+   ============================================================================= */
+
+/* Translation blocks - refined cards */
+.translation-block,
+.verse-translation,
+.english-translation,
+.french-translation {
+  background: white !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  border-radius: 12px !important;
+  padding: 14px 18px !important;
+  margin: 8px 0 !important;
+  transition: all 0.2s ease !important;
+}
+
+.translation-block:hover,
+.verse-translation:hover {
+  border-color: rgba(79, 70, 229, 0.12) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* English translation - subtle blue accent */
+.translation-block.english,
+.english-translation {
+  border-left: 3px solid #3b82f6 !important;
+  background: linear-gradient(
+    90deg,
+    rgba(59, 130, 246, 0.03) 0%,
+    rgba(255, 255, 255, 1) 20%
+  ) !important;
+}
+
+/* French translation - tricolor accent */
+.translation-block.french,
+.french-translation {
+  border-left: 3px solid #1d4ed8 !important;
+  background: linear-gradient(
+    90deg,
+    rgba(29, 78, 216, 0.03) 0%,
+    rgba(255, 255, 255, 1) 20%
+  ) !important;
+}
+
+/* Language badges - refined pills */
+.lang-badge,
+.language-badge,
+.translation-lang {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 4px 10px !important;
+  border-radius: 6px !important;
+  font-size: 0.65rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+.lang-badge.en,
+.language-badge[data-lang="en"] {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+  color: white !important;
+}
+
+.lang-badge.fr,
+.language-badge[data-lang="fr"] {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%) !important;
+  color: white !important;
+}
+
+.lang-badge.he,
+.language-badge[data-lang="he"] {
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%) !important;
+  color: white !important;
+}
+
+/* Translation text - optimal readability */
+.translation-text,
+.english-text,
+.french-text {
+  font-family: 'Inter', -apple-system, system-ui, sans-serif !important;
+  font-size: 1rem !important;
+  line-height: 1.7 !important;
+  color: #334155 !important;
+  font-weight: 400 !important;
+}
+
+/* Dark mode translation */
+.dark-mode .translation-block,
+.dark-mode .verse-translation,
+.dark-mode .english-translation,
+.dark-mode .french-translation {
+  background: rgba(30, 41, 59, 0.6) !important;
+  border-color: rgba(71, 85, 105, 0.3) !important;
+}
+
+.dark-mode .translation-block.english,
+.dark-mode .english-translation {
+  border-left-color: #60a5fa !important;
+  background: linear-gradient(
+    90deg,
+    rgba(59, 130, 246, 0.1) 0%,
+    rgba(30, 41, 59, 0.6) 20%
+  ) !important;
+}
+
+.dark-mode .translation-block.french,
+.dark-mode .french-translation {
+  border-left-color: #818cf8 !important;
+  background: linear-gradient(
+    90deg,
+    rgba(129, 140, 248, 0.1) 0%,
+    rgba(30, 41, 59, 0.6) 20%
+  ) !important;
+}
+
+.dark-mode .translation-text,
+.dark-mode .english-text,
+.dark-mode .french-text {
+  color: #e2e8f0 !important;
+}
+
+/* =============================================================================
+   Dark Mode Word Definition Card
+   ============================================================================= */
+
+.dark-mode .word-definition-card {
+  background: linear-gradient(
+    180deg,
+    rgba(30, 41, 59, 0.98) 0%,
+    rgba(15, 23, 42, 0.95) 100%
+  ) !important;
+  border-color: rgba(129, 140, 248, 0.15) !important;
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.2),
+    0 10px 20px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(129, 140, 248, 0.1) inset !important;
+}
+
+.dark-mode .word-definition-card.aramaic {
+  background: linear-gradient(
+    180deg,
+    rgba(6, 78, 59, 0.4) 0%,
+    rgba(15, 23, 42, 0.95) 100%
+  ) !important;
+  border-color: rgba(52, 211, 153, 0.15) !important;
+}
+
+.dark-mode .wdc-etymology {
+  background: rgba(129, 140, 248, 0.05) !important;
+  border-bottom-color: rgba(129, 140, 248, 0.1) !important;
+}
+
+.dark-mode .wdc-root,
+.dark-mode .wdc-headword {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-color: rgba(129, 140, 248, 0.1) !important;
+}
+
+.dark-mode .wdc-source-item {
+  background: rgba(30, 41, 59, 0.6) !important;
+  border-color: rgba(71, 85, 105, 0.3) !important;
+}
+
+.dark-mode .wdc-source-item:hover {
+  border-color: rgba(129, 140, 248, 0.25) !important;
+  background: rgba(30, 41, 59, 0.8) !important;
+}
+
+.dark-mode .wdc-source-text {
+  color: #e2e8f0 !important;
+}
+
+.dark-mode .wdc-footer {
+  background: rgba(0, 0, 0, 0.2) !important;
+  border-top-color: rgba(71, 85, 105, 0.3) !important;
+}
+
+.dark-mode .wdc-action-btn {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-color: rgba(71, 85, 105, 0.3) !important;
+  color: #e2e8f0 !important;
+}
+
+.dark-mode .wdc-action-btn:hover {
+  background: rgba(71, 85, 105, 0.5) !important;
+  border-color: rgba(129, 140, 248, 0.3) !important;
+}
+
+.dark-mode .wdc-related {
+  background: rgba(16, 185, 129, 0.08) !important;
+  border-top-color: rgba(52, 211, 153, 0.15) !important;
+}
+
+.dark-mode .wdc-related-word {
+  background: rgba(30, 41, 59, 0.6) !important;
+  border-color: rgba(52, 211, 153, 0.2) !important;
+}
+
+.dark-mode .wdc-rel-hebrew {
+  color: #6ee7b7 !important;
+}
+
+.dark-mode .wdc-rel-meaning {
+  color: #94a3b8 !important;
+}
+
+/* =============================================================================
+   Scholar Mode UI/UX Polish - Premium Animations & Interactions
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   Shimmer Loading Effect - Premium skeleton loading
+   ----------------------------------------------------------------------------- */
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.loading-skeleton,
+.skeleton-line {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base, rgba(200, 200, 200, 0.2)) 0%,
+    var(--skeleton-highlight, rgba(255, 255, 255, 0.4)) 50%,
+    var(--skeleton-base, rgba(200, 200, 200, 0.2)) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+.dark-mode .loading-skeleton,
+.dark-mode .skeleton-line {
+  --skeleton-base: rgba(60, 60, 80, 0.4);
+  --skeleton-highlight: rgba(100, 100, 140, 0.6);
+}
+
+/* Skeleton variants */
+.skeleton-line.full { width: 100%; height: 16px; margin-bottom: 8px; }
+.skeleton-line.medium { width: 75%; height: 16px; margin-bottom: 8px; }
+.skeleton-line.short { width: 50%; height: 16px; margin-bottom: 8px; }
+.skeleton-line.skeleton-header { width: 60%; height: 24px; margin-bottom: 16px; }
+
+/* Pulsing skeleton for icons */
+.skeleton-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--skeleton-base, rgba(200, 200, 200, 0.3));
+  animation: pulse-glow 1.5s ease-in-out infinite;
+}
+
+/* -----------------------------------------------------------------------------
+   Mode Grid Animations - Smooth mode selection
+   ----------------------------------------------------------------------------- */
+
+.mode-grid-clean {
+  --grid-gap: 8px;
+}
+
+.mode-grid-2x3,
+.mode-grid-advanced {
+  display: grid;
+  gap: var(--grid-gap);
+  animation: fadeSlideUp 0.3s var(--ease-out-expo) backwards;
+}
+
+.mode-grid-advanced {
+  animation-delay: 0.1s;
+}
+
+/* Mode button animations */
+.mode-btn {
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.2s var(--ease-out-back),
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.mode-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.3) 0%, transparent 70%);
+  opacity: 0;
+  transform: scale(0);
+  transition: transform 0.4s ease, opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.mode-btn:hover::before {
+  opacity: 1;
+  transform: scale(2);
+}
+
+.mode-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.mode-btn:active {
+  transform: translateY(0) scale(0.98);
+  transition-duration: 0.1s;
+}
+
+.mode-btn.active {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px var(--mode-color, rgba(99, 102, 241, 0.3));
+}
+
+/* Mode icon bounce on hover */
+.mode-btn .mode-icon {
+  transition: transform 0.3s var(--ease-spring);
+}
+
+.mode-btn:hover .mode-icon {
+  transform: scale(1.15) rotate(-5deg);
+}
+
+.mode-btn.active .mode-icon {
+  animation: icon-bounce 0.4s var(--ease-spring);
+}
+
+@keyframes icon-bounce {
+  0%, 100% { transform: scale(1); }
+  40% { transform: scale(1.2); }
+  70% { transform: scale(0.95); }
+}
+
+/* Favorite star animation */
+.mode-favorite {
+  transition: transform 0.2s var(--ease-spring), color 0.2s ease;
+}
+
+.mode-favorite:hover {
+  transform: scale(1.3);
+}
+
+.mode-favorite.active {
+  color: #fbbf24;
+  animation: star-pop 0.4s var(--ease-spring);
+}
+
+@keyframes star-pop {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.4) rotate(10deg); }
+  60% { transform: scale(0.9) rotate(-5deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+/* Completed mode check animation */
+.mode-check {
+  animation: check-pop 0.3s var(--ease-spring);
+}
+
+@keyframes check-pop {
+  0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+  60% { transform: scale(1.2) rotate(10deg); }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+/* Advanced modes toggle animation */
+.advanced-toggle {
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.advanced-toggle:hover {
+  transform: translateX(4px);
+}
+
+.advanced-toggle .toggle-icon {
+  transition: transform 0.3s var(--ease-spring);
+}
+
+.advanced-toggle.expanded .toggle-icon {
+  transform: rotate(90deg);
+}
+
+/* -----------------------------------------------------------------------------
+   Tab Transitions - Smooth tab switching
+   ----------------------------------------------------------------------------- */
+
+.panel-tabs,
+.tab-row,
+.words-subtab-nav,
+.mastery-view-tabs,
+.category-tabs,
+.commentary-view-toggle {
+  position: relative;
+}
+
+/* Tab indicator line */
+.panel-tabs::after,
+.tab-row::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: var(--accent, #6366f1);
+  transition: left 0.3s var(--ease-smooth), width 0.3s var(--ease-smooth);
+  pointer-events: none;
+}
+
+/* Tab button transitions */
+.tab-button,
+.words-subtab,
+.view-tab,
+.category-tab,
+.view-toggle-btn {
+  position: relative;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.tab-button:hover,
+.words-subtab:hover,
+.view-tab:hover,
+.category-tab:hover,
+.view-toggle-btn:hover {
+  transform: translateY(-1px);
+}
+
+.tab-button:active,
+.words-subtab:active,
+.view-tab:active,
+.category-tab:active,
+.view-toggle-btn:active {
+  transform: scale(0.98);
+}
+
+/* Active tab underline animation */
+.tab-button.active::after,
+.words-subtab.active::after,
+.view-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  width: 80%;
+  height: 2px;
+  background: currentColor;
+  animation: underline-grow 0.3s var(--ease-out-expo);
+}
+
+@keyframes underline-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* Tab badge bounce */
+.tab-badge {
+  animation: badge-bounce 0.4s var(--ease-spring);
+}
+
+@keyframes badge-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Tab content transition */
+.tab-content,
+.words-subtab-content,
+.mastery-content {
+  animation: tab-fade 0.25s ease-out;
+}
+
+@keyframes tab-fade {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* -----------------------------------------------------------------------------
+   Ripple Effect - Material-style click feedback
+   ----------------------------------------------------------------------------- */
+
+.ripple-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(0);
+  animation: ripple 0.6s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Apply ripple to interactive elements */
+.mode-btn,
+.ask-btn,
+.btn-analyze-main,
+.suggestion-btn,
+.action-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+/* -----------------------------------------------------------------------------
+   Hover Card Effects - Lift and glow
+   ----------------------------------------------------------------------------- */
+
+.result-section,
+.qa-exchange,
+.commentary-item,
+.review-item,
+.history-item,
+.lexicon-result,
+.word-card {
+  transition:
+    transform 0.25s var(--ease-out-back),
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.result-section:hover,
+.qa-exchange:hover,
+.commentary-item:hover,
+.review-item:hover,
+.history-item:hover,
+.lexicon-result:hover,
+.word-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* Clickable items cursor and effect */
+.history-item.clickable,
+.commentary-item,
+.suggestion-btn {
+  cursor: pointer;
+}
+
+.history-item.clickable:hover,
+.commentary-item:hover {
+  border-color: var(--accent, #6366f1);
+}
+
+/* -----------------------------------------------------------------------------
+   Input Focus Effects - Enhanced focus states
+   ----------------------------------------------------------------------------- */
+
+.followup-input,
+.search-input,
+.api-key-input,
+input[type="text"],
+input[type="search"] {
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.followup-input:focus,
+.search-input:focus,
+.api-key-input:focus,
+input[type="text"]:focus,
+input[type="search"]:focus {
+  transform: translateY(-1px);
+  box-shadow:
+    0 0 0 3px rgba(99, 102, 241, 0.15),
+    0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* -----------------------------------------------------------------------------
+   Button Micro-interactions
+   ----------------------------------------------------------------------------- */
+
+.ask-btn,
+.btn-analyze-main,
+.action-btn,
+.banner-action {
+  transition:
+    transform 0.2s var(--ease-out-back),
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.ask-btn:hover,
+.btn-analyze-main:hover,
+.action-btn:hover,
+.banner-action:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.ask-btn:active,
+.btn-analyze-main:active,
+.action-btn:active,
+.banner-action:active {
+  transform: translateY(0) scale(0.98);
+  transition-duration: 0.1s;
+}
+
+/* Loading spinner in button */
+.loading-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* -----------------------------------------------------------------------------
+   Toast Notifications - Slide-in feedback
+   ----------------------------------------------------------------------------- */
+
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: var(--card-bg, white);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  border-left: 4px solid var(--toast-color, #6366f1);
+  animation: toast-slide 0.4s var(--ease-out-back);
+  pointer-events: auto;
+  max-width: 360px;
+}
+
+.toast.toast-exit {
+  animation: toast-exit 0.3s var(--ease-smooth) forwards;
+}
+
+@keyframes toast-slide {
+  from {
+    opacity: 0;
+    transform: translateX(100%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes toast-exit {
+  to {
+    opacity: 0;
+    transform: translateX(100%) scale(0.9);
+  }
+}
+
+.toast-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.toast-content {
+  flex: 1;
+}
+
+.toast-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.toast-message {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.toast-close:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text-primary);
+}
+
+/* Toast variants */
+.toast.success { --toast-color: #10b981; }
+.toast.error { --toast-color: #ef4444; }
+.toast.warning { --toast-color: #f59e0b; }
+.toast.info { --toast-color: #3b82f6; }
+
+/* Dark mode toasts */
+.dark-mode .toast {
+  background: var(--card-bg-dark, #1e293b);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* -----------------------------------------------------------------------------
+   Save Success Feedback - Inline feedback
+   ----------------------------------------------------------------------------- */
+
+.save-success {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  animation: success-pop 0.4s var(--ease-spring);
+}
+
+@keyframes success-pop {
+  0% { opacity: 0; transform: scale(0.8) translateY(4px); }
+  60% { transform: scale(1.05) translateY(-2px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* -----------------------------------------------------------------------------
+   Progress Indicators
+   ----------------------------------------------------------------------------- */
+
+.mode-progress {
+  animation: progress-pop 0.3s var(--ease-spring);
+}
+
+@keyframes progress-pop {
+  0% { transform: scale(0.8); }
+  60% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* Progress bar animation */
+.progress-bar {
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  animation: progress-shine 2s ease-in-out infinite;
+}
+
+@keyframes progress-shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* -----------------------------------------------------------------------------
+   Genesis Mode Special Effects
+   ----------------------------------------------------------------------------- */
+
+.genesis-hint {
+  animation: genesis-glow 0.5s var(--ease-out-expo);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.05));
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: #d97706;
+}
+
+@keyframes genesis-glow {
+  from {
+    opacity: 0;
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+  }
+  to {
+    opacity: 1;
+    box-shadow: 0 0 20px 0 rgba(245, 158, 11, 0.1);
+  }
+}
+
+.genesis-icon {
+  animation: earth-spin 10s linear infinite;
+}
+
+@keyframes earth-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* -----------------------------------------------------------------------------
+   RAG Enhancement Indicator
+   ----------------------------------------------------------------------------- */
+
+.rag-indicator {
+  animation: rag-pulse 0.5s var(--ease-out-expo);
+}
+
+@keyframes rag-pulse {
+  0% { opacity: 0; transform: scale(0.9); }
+  50% { transform: scale(1.05); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.rag-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background: #10b981;
+  color: white;
+  border-radius: 50%;
+  font-size: 10px;
+  animation: check-bounce 0.4s var(--ease-spring);
+}
+
+@keyframes check-bounce {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* -----------------------------------------------------------------------------
+   Empty State Animations
+   ----------------------------------------------------------------------------- */
+
+.tab-empty,
+.mastery-empty,
+.ai-empty-state {
+  animation: empty-fade 0.4s var(--ease-out-expo);
+}
+
+@keyframes empty-fade {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.empty-icon {
+  animation: empty-icon-bounce 2s ease-in-out infinite;
+}
+
+@keyframes empty-icon-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* -----------------------------------------------------------------------------
+   Chavruta Mode Transitions
+   ----------------------------------------------------------------------------- */
+
+.chavruta-mode-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.mode-tab {
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.mode-tab:hover {
+  transform: translateY(-1px);
+}
+
+.mode-tab.active {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.rabbi-selector {
+  animation: selector-slide 0.3s var(--ease-out-expo);
+}
+
+@keyframes selector-slide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 200px;
+  }
+}
+
+.rabbi-option {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.rabbi-option:hover {
+  transform: scale(1.02);
+}
+
+.rabbi-option.selected {
+  animation: rabbi-select 0.3s var(--ease-spring);
+}
+
+@keyframes rabbi-select {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* -----------------------------------------------------------------------------
+   Q&A Exchange Animation
+   ----------------------------------------------------------------------------- */
+
+.qa-exchange {
+  animation: qa-slide 0.4s var(--ease-out-expo);
+}
+
+@keyframes qa-slide {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.qa-sources-used {
+  animation: sources-fade 0.3s ease 0.2s backwards;
+}
+
+@keyframes sources-fade {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.source-used-tag {
+  animation: tag-pop 0.2s var(--ease-spring);
+  animation-fill-mode: backwards;
+}
+
+.source-used-tag:nth-child(1) { animation-delay: 0.1s; }
+.source-used-tag:nth-child(2) { animation-delay: 0.15s; }
+.source-used-tag:nth-child(3) { animation-delay: 0.2s; }
+.source-used-tag:nth-child(4) { animation-delay: 0.25s; }
+.source-used-tag:nth-child(5) { animation-delay: 0.3s; }
+.source-used-tag:nth-child(6) { animation-delay: 0.35s; }
+
+@keyframes tag-pop {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* -----------------------------------------------------------------------------
+   Panel Close Animation
+   ----------------------------------------------------------------------------- */
+
+.scholar-mode-panel.closing {
+  animation: panel-close 0.25s var(--ease-smooth) forwards;
+}
+
+@keyframes panel-close {
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Touch Enhancements
+   ----------------------------------------------------------------------------- */
+
+@media (hover: none) and (pointer: coarse) {
+  /* Disable hover effects on touch devices */
+  .mode-btn:hover,
+  .tab-button:hover,
+  .action-btn:hover {
+    transform: none;
+    box-shadow: inherit;
+  }
+
+  /* Increase tap targets */
+  .mode-btn,
+  .tab-button,
+  .action-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Add active state for touch feedback */
+  .mode-btn:active,
+  .tab-button:active,
+  .action-btn:active {
+    opacity: 0.8;
+    transform: scale(0.98);
   }
 }

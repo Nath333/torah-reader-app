@@ -1,0 +1,382 @@
+/* =============================================================================
+   SourceChainView - Commentary Relationship Visualization
+   ============================================================================= */
+
+.source-chain-view {
+  background: var(--bg-primary, white);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.chain-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: linear-gradient(135deg, #2d3436, #636e72);
+  color: white;
+}
+
+.chain-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.commentator-count {
+  font-size: 0.8rem;
+  padding: 0.2rem 0.6rem;
+  background: rgba(255,255,255,0.2);
+  border-radius: 12px;
+}
+
+.source-chain-empty {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-secondary, #666);
+}
+
+/* =============================================================================
+   Timeline View
+   ============================================================================= */
+
+.source-timeline {
+  padding: 1rem;
+}
+
+.era-labels {
+  display: flex;
+  margin-bottom: 1rem;
+  gap: 0.5rem;
+}
+
+.era-section {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.era-section.rishonim {
+  background: rgba(108, 92, 231, 0.1);
+  border: 1px solid rgba(108, 92, 231, 0.3);
+}
+
+.era-section.acharonim {
+  background: rgba(0, 184, 148, 0.1);
+  border: 1px solid rgba(0, 184, 148, 0.3);
+}
+
+.era-label {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary, #333);
+}
+
+.era-years {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #666);
+}
+
+.timeline-track {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 0;
+  overflow-x: auto;
+  border-top: 2px solid var(--border-color, #e0e0e0);
+  border-bottom: 2px solid var(--border-color, #e0e0e0);
+}
+
+.timeline-node {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.timeline-node:hover {
+  transform: translateY(-4px);
+}
+
+.timeline-node.selected {
+  transform: translateY(-4px);
+}
+
+.node-marker {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--node-color, #6c5ce7);
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  position: relative;
+  z-index: 2;
+}
+
+.timeline-node.selected .node-marker {
+  width: 20px;
+  height: 20px;
+  box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.3);
+}
+
+.node-content {
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.node-content .hebrew-name {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary, #333);
+}
+
+.node-content .years {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text-muted, #999);
+}
+
+.relationship-indicator {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 0.6rem;
+  color: var(--warning, #f39c12);
+}
+
+.relationships-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--border-color, #ddd);
+}
+
+.rel-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #666);
+}
+
+.rel-badge {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  background: var(--bg-tertiary, #f0f0f0);
+}
+
+.rel-badge.student {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.rel-badge.responds {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.more-rels {
+  font-size: 0.75rem;
+  color: var(--text-muted, #999);
+  font-style: italic;
+}
+
+/* =============================================================================
+   List View
+   ============================================================================= */
+
+.source-list {
+  padding: 1rem;
+}
+
+.era-group {
+  margin-bottom: 1.5rem;
+}
+
+.era-group:last-child {
+  margin-bottom: 0;
+}
+
+.era-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 2px solid;
+}
+
+.era-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary, #333);
+}
+
+.era-english {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #666);
+}
+
+.commentators {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.commentator-card {
+  padding: 0.75rem;
+  background: var(--bg-secondary, #f8f9fa);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.commentator-card:hover {
+  border-color: var(--primary, #4a90d9);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.commentator-card.selected {
+  border-color: var(--primary, #4a90d9);
+  background: var(--primary-light, #e8f4fd);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.35rem;
+}
+
+.card-header .hebrew-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary, #333);
+}
+
+.card-header .latin-name {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #666);
+}
+
+.card-meta {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--text-muted, #999);
+  margin-bottom: 0.35rem;
+}
+
+.card-focus {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #666);
+  font-style: italic;
+}
+
+/* =============================================================================
+   Detail Panel
+   ============================================================================= */
+
+.detail-panel {
+  padding: 1rem;
+  background: var(--bg-secondary, #f8f9fa);
+  border-top: 3px solid var(--accent-color, #6c5ce7);
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.detail-title {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-title .hebrew-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary, #333);
+}
+
+.detail-title .full-name {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #666);
+}
+
+.close-btn {
+  padding: 0.25rem 0.5rem;
+  background: transparent;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-secondary, #666);
+}
+
+.close-btn:hover {
+  background: var(--bg-tertiary, #eee);
+}
+
+.detail-body {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.detail-row {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.detail-row .label {
+  min-width: 100px;
+  font-weight: 500;
+  color: var(--text-secondary, #666);
+}
+
+.detail-row .value {
+  color: var(--text-primary, #333);
+}
+
+.era-badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  color: white;
+  font-size: 0.8rem;
+}
+
+/* =============================================================================
+   Dark Mode
+   ============================================================================= */
+
+[data-theme="dark"] .source-chain-view {
+  background: var(--bg-secondary, #2d2d2d);
+  border-color: var(--border-color, #444);
+}
+
+[data-theme="dark"] .commentator-card {
+  background: var(--bg-tertiary, #3d3d3d);
+  border-color: var(--border-color, #555);
+}
+
+[data-theme="dark"] .commentator-card.selected {
+  background: var(--primary-dark, #2d5a87);
+}
+
+[data-theme="dark"] .detail-panel {
+  background: var(--bg-tertiary, #1e1e1e);
+}
+
+[data-theme="dark"] .node-marker {
+  border-color: var(--bg-secondary, #2d2d2d);
+}

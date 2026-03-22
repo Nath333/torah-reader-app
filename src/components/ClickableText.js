@@ -28,7 +28,7 @@ import './ClickableText.css';
 import { splitIntoWords, hasTranslation as hasLocalTranslation, cleanHebrewWord } from '../services/hebrewDictionary';
 import { lookupWordAsync as lookupHebrewAsync, lookupWordSync as lookupHebrewSync } from '../services/combinedTranslationService';
 import { scholarlyLookup, lookupJastrow, lookupWordSefaria } from '../services/scholarlyLexiconService';
-import { lookupAramaicWord } from '../services/babylonianDictionary';
+import { lookupAramaicWord } from '../services/calDictionaryService';
 import { cleanHtml } from '../utils/sanitize';
 import { translateEnglishToFrench, quickTranslate } from '../services/englishToFrenchService';
 import { getSourceStyle } from '../constants/dictionarySources';

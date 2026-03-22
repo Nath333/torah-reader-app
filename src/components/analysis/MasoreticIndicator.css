@@ -1,0 +1,381 @@
+/* MasoreticIndicator - Textual variant badges and tooltips */
+
+.masoretic-indicator {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  z-index: 10;
+}
+
+.masoretic-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 1px solid #f59e0b;
+  border-radius: 10px;
+  font-size: 0.65rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.masoretic-badge:hover {
+  background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.masoretic-badge.compact {
+  padding: 1px 4px;
+  font-size: 0.6rem;
+}
+
+.badge-kq {
+  font-family: 'Frank Ruhl Libre', serif;
+  color: #92400e;
+  font-weight: 600;
+}
+
+.badge-tiqqun {
+  font-family: 'Frank Ruhl Libre', serif;
+  color: #7c2d12;
+  font-weight: 600;
+}
+
+.badge-ms {
+  font-size: 0.7rem;
+}
+
+/* Tooltip */
+.masoretic-tooltip {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 320px;
+  max-height: 400px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  animation: tooltipSlideIn 0.2s ease;
+}
+
+@keyframes tooltipSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tooltip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1px solid #e5e7eb;
+  border-radius: 12px 12px 0 0;
+}
+
+.tooltip-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #1f2937;
+}
+
+.tooltip-close {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: #e5e7eb;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tooltip-close:hover {
+  background: #d1d5db;
+  color: #374151;
+}
+
+/* Tooltip Sections */
+.tooltip-section {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.tooltip-section:last-of-type {
+  border-bottom: none;
+}
+
+.tooltip-section .section-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.tooltip-section .section-icon {
+  font-size: 1rem;
+}
+
+.tooltip-section .section-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Variant Items */
+.variant-item {
+  padding: 10px;
+  background: #f9fafb;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.variant-item:last-child {
+  margin-bottom: 0;
+}
+
+.variant-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.variant-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #6b7280;
+  min-width: 70px;
+}
+
+.variant-hebrew {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 1rem;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+.variant-type {
+  font-size: 0.7rem;
+  color: #059669;
+  padding: 2px 6px;
+  background: #ecfdf5;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+.variant-notes {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-style: italic;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed #e5e7eb;
+}
+
+/* Ketiv/Qere specific */
+.kq-item {
+  background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
+  border-left: 3px solid #eab308;
+}
+
+/* Tiqqun Soferim specific */
+.tiqqun-item {
+  background: linear-gradient(135deg, #fdf4ff 0%, #fae8ff 100%);
+  border-left: 3px solid #a855f7;
+}
+
+/* Manuscript variants */
+.ms-item {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border-left: 3px solid #3b82f6;
+}
+
+.ms-item.major {
+  border-left-color: #dc2626;
+}
+
+.ms-item.messianic {
+  border-left-color: #7c3aed;
+}
+
+.mt-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: #f0fdf4;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  border-left: 3px solid #22c55e;
+}
+
+.mt-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #166534;
+}
+
+.variant-source {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.source-abbrev {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: white;
+  background: #3b82f6;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.source-name {
+  font-size: 0.7rem;
+  color: #6b7280;
+}
+
+.variant-reading {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 0.9rem;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.variant-significance {
+  font-size: 0.65rem;
+  color: #059669;
+  padding: 2px 6px;
+  background: #ecfdf5;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+/* Footer */
+.tooltip-footer {
+  padding: 8px 14px;
+  background: #f8fafc;
+  border-top: 1px solid #e5e7eb;
+  border-radius: 0 0 12px 12px;
+}
+
+.footer-note {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .masoretic-badge {
+    background: linear-gradient(135deg, #451a03 0%, #78350f 100%);
+    border-color: #f59e0b;
+  }
+
+  .badge-kq,
+  .badge-tiqqun {
+    color: #fcd34d;
+  }
+
+  .masoretic-tooltip {
+    background: #1f2937;
+    border-color: #374151;
+  }
+
+  .tooltip-header {
+    background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+    border-bottom-color: #374151;
+  }
+
+  .tooltip-title {
+    color: #f3f4f6;
+  }
+
+  .tooltip-close {
+    background: #374151;
+    color: #9ca3af;
+  }
+
+  .tooltip-close:hover {
+    background: #4b5563;
+    color: #e5e7eb;
+  }
+
+  .tooltip-section {
+    border-bottom-color: #374151;
+  }
+
+  .tooltip-section .section-title {
+    color: #e5e7eb;
+  }
+
+  .variant-item {
+    background: #111827;
+  }
+
+  .variant-hebrew {
+    color: #f3f4f6;
+  }
+
+  .variant-notes {
+    color: #9ca3af;
+    border-top-color: #374151;
+  }
+
+  .kq-item {
+    background: linear-gradient(135deg, #422006 0%, #451a03 100%);
+  }
+
+  .tiqqun-item {
+    background: linear-gradient(135deg, #3b0764 0%, #4c1d95 100%);
+  }
+
+  .ms-item {
+    background: linear-gradient(135deg, #1e3a5f 0%, #1e40af 100%);
+  }
+
+  .mt-text {
+    background: #064e3b;
+  }
+
+  .mt-label {
+    color: #6ee7b7;
+  }
+
+  .variant-reading {
+    color: #f3f4f6;
+  }
+
+  .tooltip-footer {
+    background: #111827;
+    border-top-color: #374151;
+  }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .masoretic-tooltip {
+    width: 280px;
+    right: -20px;
+  }
+}

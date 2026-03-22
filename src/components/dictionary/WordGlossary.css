@@ -1,0 +1,295 @@
+/* =============================================================================
+   WordGlossary Component Styles
+   Displays word-by-word definitions for Hebrew/Aramaic text
+   ============================================================================= */
+
+.word-glossary {
+  margin-top: 0.75rem;
+  background: var(--bg-subtle, #f8fafc);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: var(--radius-md, 8px);
+  overflow: hidden;
+}
+
+.glossary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-elevated, #fff);
+  border-bottom: 1px solid var(--border, #e2e8f0);
+}
+
+.glossary-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.glossary-title::before {
+  content: '📖';
+  font-size: 0.9rem;
+}
+
+.glossary-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-muted, #64748b);
+  transition: all 150ms ease;
+}
+
+.glossary-close:hover {
+  background: var(--bg-subtle, #f1f5f9);
+  color: var(--text-primary, #1e293b);
+}
+
+.glossary-close svg {
+  width: 14px;
+  height: 14px;
+}
+
+.glossary-content {
+  padding: 0.75rem;
+}
+
+/* Loading State */
+.glossary-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  color: var(--text-muted, #64748b);
+  font-size: 0.85rem;
+}
+
+.loading-spinner {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Error & Empty States */
+.glossary-error {
+  padding: 0.75rem;
+  text-align: center;
+  color: var(--error, #ef4444);
+  font-size: 0.85rem;
+}
+
+.glossary-empty {
+  padding: 0.75rem;
+  text-align: center;
+  color: var(--text-muted, #64748b);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+/* Glossary List */
+.glossary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.glossary-item {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.5rem 0.6rem;
+  background: var(--card-bg, #fff);
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid var(--border-light, #f1f5f9);
+}
+
+.glossary-item:hover {
+  border-color: var(--primary-light, #c7d2fe);
+}
+
+.glossary-word {
+  font-family: var(--font-hebrew, 'SBL Hebrew', 'David Libre', serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+}
+
+.glossary-expansion {
+  font-family: var(--font-hebrew, 'SBL Hebrew', 'David Libre', serif);
+  font-size: 0.85rem;
+  color: var(--text-muted, #64748b);
+}
+
+.glossary-arrow {
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.8rem;
+  margin: 0 0.15rem;
+}
+
+.glossary-definition {
+  flex: 1;
+  font-size: 0.9rem;
+  color: var(--text-primary, #334155);
+  min-width: 100px;
+}
+
+.glossary-source {
+  font-size: 0.65rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  background: var(--bg-subtle, #f1f5f9);
+  color: var(--text-muted, #64748b);
+}
+
+/* Source-specific colors */
+.glossary-source.jastrow {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.glossary-source.bdb {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.glossary-source.sefaria {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.glossary-source.abbreviation {
+  background: #f3e8ff;
+  color: #7c3aed;
+}
+
+.glossary-source.talmudic,
+.glossary-source.halachic {
+  background: #fce7f3;
+  color: #be185d;
+}
+
+/* Footer */
+.glossary-footer {
+  margin-top: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--border-light, #e2e8f0);
+}
+
+.glossary-hint {
+  font-size: 0.7rem;
+  color: var(--text-muted, #94a3b8);
+  font-style: italic;
+}
+
+/* Animation */
+.word-glossary.slide-down {
+  animation: slideDown 200ms ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =============================================================================
+   Dark Mode
+   ============================================================================= */
+
+.dark-mode .word-glossary {
+  background: var(--bg-elevated, #1e293b);
+  border-color: var(--border, #334155);
+}
+
+.dark-mode .glossary-header {
+  background: var(--bg-subtle, #0f172a);
+  border-color: var(--border, #334155);
+}
+
+.dark-mode .glossary-title {
+  color: var(--text-primary, #f1f5f9);
+}
+
+.dark-mode .glossary-close:hover {
+  background: var(--bg-elevated, #334155);
+  color: var(--text-primary, #f1f5f9);
+}
+
+.dark-mode .glossary-item {
+  background: var(--bg-subtle, #0f172a);
+  border-color: var(--border, #334155);
+}
+
+.dark-mode .glossary-item:hover {
+  border-color: var(--primary, #818cf8);
+}
+
+.dark-mode .glossary-word {
+  color: var(--text-primary, #f1f5f9);
+}
+
+.dark-mode .glossary-definition {
+  color: var(--text-secondary, #cbd5e1);
+}
+
+.dark-mode .glossary-source {
+  background: var(--bg-elevated, #334155);
+  color: var(--text-muted, #94a3b8);
+}
+
+.dark-mode .glossary-source.jastrow {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+}
+
+.dark-mode .glossary-source.bdb {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+}
+
+.dark-mode .glossary-source.sefaria {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+}
+
+.dark-mode .glossary-source.abbreviation {
+  background: rgba(139, 92, 246, 0.2);
+  color: #a78bfa;
+}
+
+.dark-mode .glossary-source.talmudic,
+.dark-mode .glossary-source.halachic {
+  background: rgba(236, 72, 153, 0.2);
+  color: #f472b6;
+}
+
+.dark-mode .glossary-footer {
+  border-color: var(--border, #334155);
+}
+
+.dark-mode .glossary-hint {
+  color: var(--text-muted, #64748b);
+}

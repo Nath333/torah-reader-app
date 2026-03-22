@@ -7,13 +7,11 @@ export const ROUTES = {
   HOME: '/',
   READ: '/read/:book/:chapter',
   READ_VERSE: '/read/:book/:chapter/:verse',
-  SEARCH: '/search',
   BOOKMARKS: '/bookmarks',
   HISTORY: '/history',
   VOCABULARY: '/vocabulary',
   DISCOVER: '/discover',
   VERSIONS: '/versions/:book/:chapter',
-  SPLIT: '/split/:book/:chapter',
   TRADITIONAL: '/traditional/:book/:chapter',
   STUDY: '/study',
 };
@@ -34,13 +32,6 @@ export const getReadPath = (book, chapter, verse = null) => {
  */
 export const getVersionsPath = (book, chapter) => {
   return `/versions/${encodeURIComponent(book)}/${chapter}`;
-};
-
-/**
- * Generate a URL path for split view
- */
-export const getSplitPath = (book, chapter) => {
-  return `/split/${encodeURIComponent(book)}/${chapter}`;
 };
 
 /**

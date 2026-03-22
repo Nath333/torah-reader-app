@@ -1,0 +1,552 @@
+/* =============================================================================
+   ChavrutaTab - Unified Study Partner Experience
+   ============================================================================= */
+
+.chavruta-tab {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 0;
+}
+
+/* =============================================================================
+   Sub-tab Navigation
+   ============================================================================= */
+
+.chavruta-sub-tabs {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  background: var(--bg-secondary, #f8f9fa);
+  border-radius: 10px;
+  margin-bottom: 0.5rem;
+}
+
+.sub-tab-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.5rem 0.25rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-secondary, #666);
+}
+
+.sub-tab-btn:hover:not(:disabled) {
+  background: var(--bg-tertiary, #eee);
+}
+
+.sub-tab-btn.active {
+  background: var(--primary, #4a90d9);
+  color: white;
+}
+
+.sub-tab-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sub-tab-icon {
+  font-size: 1.1rem;
+}
+
+.sub-tab-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: 'Frank Ruhl Libre', 'David', serif;
+}
+
+.sub-tab-sublabel {
+  font-size: 0.6rem;
+  opacity: 0.8;
+}
+
+/* =============================================================================
+   Context Bar
+   ============================================================================= */
+
+.chavruta-context-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.context-icon {
+  flex-shrink: 0;
+}
+
+.context-ref {
+  font-weight: 600;
+  color: #0369a1;
+  font-family: 'Frank Ruhl Libre', serif;
+}
+
+.context-preview {
+  flex: 1;
+  color: #64748b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: 'Frank Ruhl Libre', 'David', serif;
+  font-size: 0.75rem;
+}
+
+/* =============================================================================
+   Content Area
+   ============================================================================= */
+
+.chavruta-content {
+  flex: 1;
+  overflow-y: auto;
+  transition: opacity 0.15s ease;
+}
+
+.chavruta-content.transitioning {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* =============================================================================
+   Empty State
+   ============================================================================= */
+
+.chavruta-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-secondary, #666);
+}
+
+.chavruta-empty-state .empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
+
+.chavruta-empty-state h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  color: var(--text-primary, #333);
+}
+
+.chavruta-empty-state p {
+  margin: 0 0 1.5rem 0;
+  font-size: 0.9rem;
+}
+
+.empty-features {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+  width: 100%;
+  max-width: 300px;
+}
+
+.empty-features .feature {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: var(--bg-secondary, #f8f9fa);
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.feature-icon {
+  font-size: 1rem;
+}
+
+.feature-text {
+  color: var(--text-primary, #333);
+}
+
+/* =============================================================================
+   Commentator Comparison
+   ============================================================================= */
+
+.commentator-comparison {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0.5rem;
+}
+
+.compare-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-secondary, #666);
+}
+
+.compare-empty .empty-icon {
+  font-size: 3rem;
+  margin-bottom: 0.75rem;
+  opacity: 0.5;
+}
+
+.compare-empty h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+}
+
+.compare-empty p {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+/* Show All Chain in Empty State */
+.show-all-chain {
+  width: 100%;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--border-color, #ddd);
+}
+
+.show-all-chain h5 {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  color: var(--text-primary, #333);
+}
+
+/* =============================================================================
+   View Mode Toggle
+   ============================================================================= */
+
+.compare-view-toggle {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.35rem;
+  background: var(--bg-secondary, #f0f0f0);
+  border-radius: 10px;
+  margin-bottom: 0.75rem;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary, #666);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.toggle-btn:hover {
+  background: var(--bg-tertiary, #e0e0e0);
+  color: var(--text-primary, #333);
+}
+
+.toggle-btn.active {
+  background: var(--primary, #4f46e5);
+  color: white;
+  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);
+}
+
+/* Chain Section */
+.chain-section {
+  padding: 0.5rem;
+  margin-bottom: 0.75rem;
+  background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+  border: 1px solid #c4b5fd;
+  border-radius: 12px;
+}
+
+/* Commentator Selector */
+.commentator-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.selector-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #666);
+  font-weight: 500;
+}
+
+.commentator-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.commentator-chip {
+  padding: 0.35rem 0.65rem;
+  background: var(--bg-secondary, #f0f0f0);
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-family: 'Frank Ruhl Libre', serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.commentator-chip:hover {
+  background: #e0e7ff;
+  border-color: #6366f1;
+}
+
+.commentator-chip.selected {
+  background: #4f46e5;
+  border-color: #4f46e5;
+  color: white;
+}
+
+/* Comparison Grid */
+.comparison-grid {
+  display: grid;
+  gap: 0.75rem;
+  min-height: 200px;
+}
+
+.commentary-column {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-primary, white);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.column-header {
+  padding: 0.5rem 0.75rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+}
+
+.commentator-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: 'Frank Ruhl Libre', serif;
+  color: var(--text-primary, #1e293b);
+}
+
+.column-content {
+  flex: 1;
+  padding: 0.75rem;
+  overflow-y: auto;
+  max-height: 300px;
+}
+
+.hebrew-text {
+  font-family: 'Frank Ruhl Libre', 'David', serif;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--text-primary, #1e293b);
+  margin-bottom: 0.75rem;
+}
+
+.english-text {
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--text-secondary, #64748b);
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--border-color, #e2e8f0);
+}
+
+/* Comparison Questions */
+.comparison-questions {
+  padding: 0.75rem;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fef9c3 100%);
+  border: 1px solid #f59e0b;
+  border-radius: 10px;
+}
+
+.comparison-questions h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.85rem;
+  color: #92400e;
+}
+
+.comparison-questions ul {
+  margin: 0;
+  padding: 0 0 0 1.25rem;
+  list-style: disc;
+}
+
+.comparison-questions li {
+  font-size: 0.8rem;
+  color: #78350f;
+  margin-bottom: 0.25rem;
+  line-height: 1.4;
+}
+
+.comparison-questions li:last-child {
+  margin-bottom: 0;
+}
+
+/* =============================================================================
+   Dark Mode
+   ============================================================================= */
+
+[data-theme="dark"] .chavruta-sub-tabs {
+  background: var(--bg-tertiary, #1e1e1e);
+}
+
+[data-theme="dark"] .sub-tab-btn:hover:not(:disabled) {
+  background: var(--bg-secondary, #2d2d2d);
+}
+
+[data-theme="dark"] .sub-tab-btn.active {
+  background: var(--primary, #6366f1);
+}
+
+[data-theme="dark"] .chavruta-context-bar {
+  background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+  border-color: #1e40af;
+}
+
+[data-theme="dark"] .context-ref {
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .context-preview {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .chavruta-empty-state h3 {
+  color: var(--text-primary, #e2e8f0);
+}
+
+[data-theme="dark"] .empty-features .feature {
+  background: var(--bg-tertiary, #1e1e1e);
+}
+
+[data-theme="dark"] .feature-text {
+  color: var(--text-primary, #e2e8f0);
+}
+
+[data-theme="dark"] .commentator-chip {
+  background: var(--bg-tertiary, #334155);
+  border-color: var(--border-color, #475569);
+  color: var(--text-primary, #e2e8f0);
+}
+
+[data-theme="dark"] .commentator-chip:hover {
+  background: #312e81;
+  border-color: #6366f1;
+}
+
+[data-theme="dark"] .commentator-chip.selected {
+  background: #4f46e5;
+  border-color: #4f46e5;
+  color: white;
+}
+
+[data-theme="dark"] .commentary-column {
+  background: var(--bg-secondary, #1e293b);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .column-header {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .commentator-name {
+  color: var(--text-primary, #f1f5f9);
+}
+
+[data-theme="dark"] .hebrew-text {
+  color: var(--text-primary, #e2e8f0);
+}
+
+[data-theme="dark"] .english-text {
+  color: var(--text-secondary, #94a3b8);
+  border-color: var(--border-color, #475569);
+}
+
+[data-theme="dark"] .comparison-questions {
+  background: linear-gradient(135deg, #422006 0%, #78350f 100%);
+  border-color: #b45309;
+}
+
+[data-theme="dark"] .comparison-questions h4 {
+  color: #fcd34d;
+}
+
+[data-theme="dark"] .comparison-questions li {
+  color: #fef3c7;
+}
+
+[data-theme="dark"] .compare-view-toggle {
+  background: var(--bg-tertiary, #1e1e1e);
+}
+
+[data-theme="dark"] .toggle-btn {
+  color: var(--text-secondary, #94a3b8);
+}
+
+[data-theme="dark"] .toggle-btn:hover {
+  background: var(--bg-secondary, #2d2d2d);
+  color: var(--text-primary, #e2e8f0);
+}
+
+[data-theme="dark"] .toggle-btn.active {
+  background: #6366f1;
+  color: white;
+}
+
+[data-theme="dark"] .chain-section {
+  background: linear-gradient(135deg, #312e81 0%, #1e1b4b 100%);
+  border-color: #6366f1;
+}
+
+[data-theme="dark"] .show-all-chain {
+  border-color: var(--border-color, #475569);
+}
+
+[data-theme="dark"] .show-all-chain h5 {
+  color: var(--text-primary, #e2e8f0);
+}
+
+/* =============================================================================
+   Responsive
+   ============================================================================= */
+
+@media (max-width: 600px) {
+  .chavruta-sub-tabs {
+    padding: 0.35rem;
+  }
+
+  .sub-tab-btn {
+    padding: 0.35rem 0.15rem;
+  }
+
+  .sub-tab-sublabel {
+    display: none;
+  }
+
+  .comparison-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .column-content {
+    max-height: 200px;
+  }
+}

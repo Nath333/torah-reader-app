@@ -1,0 +1,555 @@
+/* =============================================================================
+   FamilyTree Component Styles
+   Visual tree showing all derived forms from a Hebrew/Aramaic root
+   ============================================================================= */
+
+.family-tree {
+  background: var(--surface, #fff);
+  border: 1px solid var(--border-light, #e0e0e0);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 12px 0;
+}
+
+.family-tree.compact {
+  padding: 12px;
+}
+
+/* =============================================================================
+   Loading, Error, Empty States
+   ============================================================================= */
+
+.family-tree.loading,
+.family-tree.error,
+.family-tree.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+}
+
+.family-tree-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary, #666);
+}
+
+.tree-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border-light, #e0e0e0);
+  border-top-color: var(--accent, #1976d2);
+  border-radius: 50%;
+  animation: tree-spin 0.8s linear infinite;
+}
+
+@keyframes tree-spin {
+  to { transform: rotate(360deg); }
+}
+
+.family-tree-error,
+.family-tree-empty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary, #666);
+}
+
+.error-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--error-bg, #fef2f2);
+  color: var(--error, #dc2626);
+  border-radius: 50%;
+  font-size: 0.75em;
+  font-weight: bold;
+}
+
+.empty-icon {
+  font-size: 1.5em;
+  color: var(--text-muted, #888);
+}
+
+/* =============================================================================
+   Header
+   ============================================================================= */
+
+.family-tree-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--border-light, #e0e0e0);
+}
+
+.tree-icon {
+  font-size: 1.2em;
+}
+
+.tree-title {
+  font-weight: 600;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.tree-count {
+  margin-left: auto;
+  font-size: 0.85em;
+  color: var(--text-secondary, #666);
+  background: var(--surface-elevated, #f5f5f5);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+/* =============================================================================
+   Root Node (Center)
+   ============================================================================= */
+
+.family-tree-root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 0 24px;
+  position: relative;
+}
+
+.root-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent, #1976d2) 0%, #1565c0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(25, 118, 210, 0.3);
+  position: relative;
+}
+
+.root-circle::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px dashed var(--accent-light, #64b5f6);
+  opacity: 0.5;
+}
+
+.root-letters {
+  font-family: 'SBL Hebrew', 'Ezra SIL', 'Times New Roman', serif;
+  font-size: 1.8em;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.root-meaning {
+  margin-top: 8px;
+  font-size: 0.95em;
+  color: var(--text-primary, #1a1a1a);
+  font-style: italic;
+}
+
+.root-language {
+  position: absolute;
+  top: -8px;
+  right: calc(50% - 60px);
+  font-size: 0.7em;
+  padding: 2px 8px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.root-language.hebrew {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.root-language.aramaic {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.root-field {
+  margin-top: 4px;
+  font-size: 0.75em;
+  padding: 2px 10px;
+  background: var(--surface-elevated, #f5f5f5);
+  border-radius: 12px;
+  color: var(--text-secondary, #666);
+}
+
+/* =============================================================================
+   Branches Container
+   ============================================================================= */
+
+.family-tree-branches {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+}
+
+/* Connecting lines visual effect */
+.family-tree-branches::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  width: 2px;
+  height: 20px;
+  background: var(--border-light, #e0e0e0);
+}
+
+/* =============================================================================
+   Category Section
+   ============================================================================= */
+
+.family-tree-category {
+  border: 1px solid var(--border-light, #e0e0e0);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.family-tree-category.expanded {
+  border-color: var(--category-color, #6b7280);
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--surface-elevated, #f8f9fa);
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  text-align: left;
+}
+
+.category-header:hover {
+  background: var(--hover-bg, #f0f0f0);
+}
+
+.category-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--category-color, #6b7280);
+  color: white;
+  border-radius: 6px;
+  font-family: 'SBL Hebrew', serif;
+  font-weight: 600;
+}
+
+.category-label {
+  font-weight: 600;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.category-hebrew {
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  color: var(--category-color, #6b7280);
+  font-size: 0.9em;
+}
+
+.category-count {
+  margin-left: auto;
+  font-size: 0.8em;
+  color: var(--text-muted, #888);
+  background: var(--surface, #fff);
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid var(--border-light, #e0e0e0);
+}
+
+.category-toggle {
+  color: var(--text-muted, #888);
+  transition: transform 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+.category-toggle.expanded {
+  transform: rotate(180deg);
+}
+
+.category-content {
+  padding: 12px;
+  background: var(--surface, #fff);
+}
+
+.category-forms-flat {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* =============================================================================
+   Pattern Group (Binyan grouping)
+   ============================================================================= */
+
+.family-tree-pattern {
+  margin-bottom: 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border-light, #eee);
+}
+
+.family-tree-pattern:last-child {
+  margin-bottom: 0;
+}
+
+.pattern-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--surface-elevated, #fafafa);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9em;
+  text-align: left;
+}
+
+.pattern-header:hover {
+  background: var(--hover-bg, #f0f0f0);
+}
+
+.pattern-toggle {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-bg, #e3f2fd);
+  color: var(--accent, #1976d2);
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-weight: 600;
+}
+
+.pattern-name {
+  font-weight: 600;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.pattern-hebrew {
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  color: var(--accent, #1976d2);
+}
+
+.pattern-count {
+  margin-left: auto;
+  font-size: 0.75em;
+  color: var(--text-muted, #999);
+}
+
+.pattern-meaning {
+  font-size: 0.8em;
+  color: var(--text-secondary, #666);
+  font-style: italic;
+}
+
+.pattern-forms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px;
+  padding-top: 4px;
+}
+
+/* =============================================================================
+   Form Item (Individual word)
+   ============================================================================= */
+
+.family-tree-form {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: var(--surface-elevated, #f8f9fa);
+  border: 1px solid var(--border-light, #e0e0e0);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 0.95em;
+}
+
+.family-tree-form:hover {
+  background: var(--accent-bg, #e3f2fd);
+  border-color: var(--accent, #1976d2);
+  transform: translateY(-1px);
+}
+
+.family-tree-form.attested {
+  border-color: var(--success, #16a34a);
+  background: linear-gradient(135deg, rgba(22, 163, 74, 0.05) 0%, var(--surface, #fff) 100%);
+}
+
+.family-tree-form.attested:hover {
+  background: rgba(22, 163, 74, 0.1);
+  border-color: var(--success, #16a34a);
+}
+
+.family-tree-form.generated {
+  border-style: dashed;
+}
+
+.family-tree-form.compact {
+  padding: 4px 8px;
+  font-size: 0.85em;
+}
+
+.form-word {
+  font-family: 'SBL Hebrew', 'Ezra SIL', 'Times New Roman', serif;
+  font-size: 1.1em;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.form-tense {
+  font-size: 0.7em;
+  color: var(--text-muted, #888);
+  padding: 1px 4px;
+  background: var(--surface, #fff);
+  border-radius: 3px;
+  text-transform: lowercase;
+}
+
+.form-freq {
+  font-size: 0.75em;
+  color: var(--success, #16a34a);
+  font-weight: 600;
+}
+
+.form-attested-badge {
+  font-size: 0.8em;
+  color: var(--success, #16a34a);
+  font-weight: bold;
+}
+
+/* =============================================================================
+   Legend
+   ============================================================================= */
+
+.family-tree-legend {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-light, #e0e0e0);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75em;
+  color: var(--text-muted, #888);
+}
+
+.legend-marker {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.legend-item.attested .legend-marker {
+  color: var(--success, #16a34a);
+}
+
+.legend-item.generated .legend-marker {
+  color: var(--text-muted, #888);
+}
+
+/* =============================================================================
+   Compact Mode Adjustments
+   ============================================================================= */
+
+.family-tree.compact .family-tree-root {
+  margin: 12px 0 16px;
+}
+
+.family-tree.compact .root-circle {
+  width: 60px;
+  height: 60px;
+}
+
+.family-tree.compact .root-letters {
+  font-size: 1.4em;
+}
+
+.family-tree.compact .category-header {
+  padding: 8px 10px;
+}
+
+.family-tree.compact .category-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.family-tree.compact .family-tree-legend {
+  margin-top: 12px;
+}
+
+/* =============================================================================
+   Dark Mode Support
+   ============================================================================= */
+
+@media (prefers-color-scheme: dark) {
+  .family-tree {
+    background: var(--surface, #1e1e1e);
+    border-color: var(--border-light, #333);
+  }
+
+  .root-circle::before {
+    border-color: var(--accent-light, #90caf9);
+  }
+
+  .category-header,
+  .pattern-header {
+    background: var(--surface-elevated, #2a2a2a);
+  }
+
+  .family-tree-form {
+    background: var(--surface-elevated, #2a2a2a);
+    border-color: var(--border-light, #444);
+  }
+}
+
+/* =============================================================================
+   Animations
+   ============================================================================= */
+
+.family-tree-category.expanded .category-content {
+  animation: fade-in 0.2s ease;
+}
+
+.family-tree-pattern.expanded .pattern-forms {
+  animation: fade-in 0.2s ease;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

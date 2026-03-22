@@ -17,18 +17,14 @@
  *
  * // Get commentary on a verse
  * const commentary = await getCommentary('Genesis', 1, 1);
- *
- * // Search across texts
- * const results = await searchTorah('Abraham');
  */
 
 import { createCache } from '../utils/cache';
 import { fetchWithFallback } from '../utils/http';
 import { cleanHtml } from '../utils/sanitize';
-import { getRashiOnTorah, getRashiOnTalmud, getRashiOnTanach, getRashiForVerse } from './rashiService';
+import { getRashiOnTorah, getRashiOnTalmud, getRashiOnTanach, getRashiForVerse, getRashiForChapter } from './rashiService';
 import { getTosafotOnTalmud, getTosafotForDaf, isTosafotAvailable } from './tosafotService';
-import { getMaharshaHalachot, getMaharshaAggadot, getMaharshaForDaf, isMaharshaAvailable } from './maharshaService';
-import { getRambanOnTorah, getRambanForVerse, isRambanAvailable } from './rambanService';
+import { translateCommentary } from './translationService';
 
 // Import shared book constants
 import {
@@ -38,7 +34,10 @@ import {
   TALMUD_BAVLI
 } from '../constants/bookConstants';
 
-const BASE_URL = 'https://www.sefaria.org/api';
+// Use local proxy in development to avoid CORS issues
+const BASE_URL = process.env.NODE_ENV === 'development'
+  ? '/sefaria-api'
+  : 'https://www.sefaria.org/api';
 
 // Create cache instances
 const textCache = createCache({ ttl: 10 * 60 * 1000, maxSize: 500 }); // 10 min
@@ -164,7 +163,7 @@ const toSefariaRef = (book, chapter, verse = null) => {
   return verse ? `${englishBook}.${chapter}.${verse}` : `${englishBook}.${chapter}`;
 };
 
-const formatBookName = (name) => name.replace(/ /g, '_');
+const formatBookName = (name) => (name || '').replace(/ /g, '_');
 
 const generateDafList = (tractate) => {
   const dafCount = TALMUD_DAF_COUNTS[tractate] || 30;
@@ -365,17 +364,38 @@ export const getCommentary = async (bookName, chapterNumber, verseNumber) => {
       const data = await fetchWithFallback(url, { timeout: 10000 });
       const results = [];
 
-      if (data.he) {
-        const texts = Array.isArray(data.he) ? data.he : [data.he];
-        texts.filter(t => t).forEach(text => {
-          results.push({ source: commentary, text, language: 'hebrew' });
+      const hebrewTexts = data.he ? (Array.isArray(data.he) ? data.he : [data.he]).filter(t => t) : [];
+      const englishTexts = data.text ? (Array.isArray(data.text) ? data.text : [data.text]).filter(t => t) : [];
+
+      // Add Hebrew comments
+      hebrewTexts.forEach(text => {
+        results.push({ source: commentary, text, language: 'hebrew' });
+      });
+
+      // Add English comments - either from Sefaria or translated
+      if (englishTexts.length > 0) {
+        // Use Sefaria's English translation
+        englishTexts.forEach(text => {
+          results.push({ source: commentary, text, language: 'english', isTranslated: false });
         });
-      }
-      if (data.text) {
-        const texts = Array.isArray(data.text) ? data.text : [data.text];
-        texts.filter(t => t).forEach(text => {
-          results.push({ source: commentary, text, language: 'english' });
-        });
+      } else if (hebrewTexts.length > 0) {
+        // No English from Sefaria - translate Hebrew commentary
+        for (const hebrewText of hebrewTexts) {
+          try {
+            const translated = await translateCommentary(hebrewText);
+            if (translated) {
+              results.push({
+                source: commentary,
+                text: translated,
+                language: 'english',
+                isTranslated: true
+              });
+            }
+          } catch (translationError) {
+            // Translation failed - skip English for this comment
+            console.warn(`Translation failed for ${commentary}:`, translationError.message);
+          }
+        }
       }
       return results;
     } catch (error) {
@@ -449,38 +469,6 @@ export const getOnkelos = async (bookName, chapterNumber) => {
     return result;
   } catch (error) {
     console.warn('Failed to fetch Onkelos:', error.message);
-    return [];
-  }
-};
-
-// =============================================================================
-// SEARCH
-// =============================================================================
-
-export const searchTorah = async (query) => {
-  if (!query) return [];
-
-  const cacheKey = `search:${query}`;
-  const cached = textCache.get(cacheKey);
-  if (cached) return cached;
-
-  try {
-    const data = await fetchWithFallback(`${BASE_URL}/search/${encodeURIComponent(query)}`);
-
-    const results = (data.hits || []).slice(0, 30).map(hit => ({
-      text: cleanHtml(hit.text || ''),
-      book: hit.book || 'Unknown',
-      chapter: hit.chapter || '',
-      verse: hit.verse || '',
-      score: hit.score || 0
-    })).filter(r => r.text?.trim());
-
-    results.sort((a, b) => (b.score || 0) - (a.score || 0));
-
-    textCache.set(cacheKey, results);
-    return results;
-  } catch (error) {
-    console.error('Search error:', error);
     return [];
   }
 };
@@ -902,7 +890,7 @@ export const clearCaches = () => {
 // RE-EXPORT RASHI SERVICE FUNCTIONS
 // =============================================================================
 
-export { getRashiOnTorah, getRashiOnTalmud, getRashiOnTanach, getRashiForVerse };
+export { getRashiOnTorah, getRashiOnTalmud, getRashiOnTanach, getRashiForVerse, getRashiForChapter };
 
 // =============================================================================
 // RE-EXPORT TOSAFOT SERVICE FUNCTIONS
@@ -911,16 +899,10 @@ export { getRashiOnTorah, getRashiOnTalmud, getRashiOnTanach, getRashiForVerse }
 export { getTosafotOnTalmud, getTosafotForDaf, isTosafotAvailable };
 
 // =============================================================================
-// RE-EXPORT MAHARSHA SERVICE FUNCTIONS
+// RE-EXPORT COMMENTARY FACTORY FUNCTIONS (Ramban, Maharsha)
 // =============================================================================
 
-export { getMaharshaHalachot, getMaharshaAggadot, getMaharshaForDaf, isMaharshaAvailable };
-
-// =============================================================================
-// RE-EXPORT RAMBAN SERVICE FUNCTIONS
-// =============================================================================
-
-export { getRambanOnTorah, getRambanForVerse, isRambanAvailable };
+export { getRambanForVerse, getRambanForChapter, getMaharshaForDaf } from './commentaryServiceFactory';
 
 // =============================================================================
 // IBN EZRA COMMENTARY FUNCTIONS
@@ -940,13 +922,35 @@ export const getIbnEzraForVerse = async (bookName, chapter, verse) => {
     const hebrewTexts = Array.isArray(data.he) ? data.he : [data.he];
     const englishTexts = Array.isArray(data.text) ? data.text : [data.text];
 
-    const comments = hebrewTexts
-      .map((he, i) => ({
-        hebrew: cleanHtml(he || ''),
-        english: cleanHtml(englishTexts[i] || ''),
-        dibbur: '' // Ibn Ezra doesn't always have distinct dibbur haMatchil
-      }))
-      .filter(c => c.hebrew || c.english);
+    const comments = [];
+    for (let i = 0; i < hebrewTexts.length; i++) {
+      const he = hebrewTexts[i];
+      if (!he) continue;
+
+      const hebrewText = cleanHtml(he);
+      let englishText = cleanHtml(englishTexts[i] || '');
+      let isTranslated = false;
+
+      // Translate if no English available
+      if (!englishText && hebrewText) {
+        try {
+          const translated = await translateCommentary(hebrewText);
+          if (translated) {
+            englishText = translated;
+            isTranslated = true;
+          }
+        } catch (err) {
+          console.warn('Translation failed for Ibn Ezra:', err.message);
+        }
+      }
+
+      comments.push({
+        hebrew: hebrewText,
+        english: englishText,
+        isTranslated,
+        dibbur: ''
+      });
+    }
 
     commentaryCache.set(cacheKey, comments);
     return comments;
@@ -974,13 +978,34 @@ export const getSfornoForVerse = async (bookName, chapter, verse) => {
     const hebrewTexts = Array.isArray(data.he) ? data.he : [data.he];
     const englishTexts = Array.isArray(data.text) ? data.text : [data.text];
 
-    const comments = hebrewTexts
-      .map((he, i) => ({
-        hebrew: cleanHtml(he || ''),
-        english: cleanHtml(englishTexts[i] || ''),
+    const comments = [];
+    for (let i = 0; i < hebrewTexts.length; i++) {
+      const he = hebrewTexts[i];
+      if (!he) continue;
+
+      const hebrewText = cleanHtml(he);
+      let englishText = cleanHtml(englishTexts[i] || '');
+      let isTranslated = false;
+
+      if (!englishText && hebrewText) {
+        try {
+          const translated = await translateCommentary(hebrewText);
+          if (translated) {
+            englishText = translated;
+            isTranslated = true;
+          }
+        } catch (err) {
+          console.warn('Translation failed for Sforno:', err.message);
+        }
+      }
+
+      comments.push({
+        hebrew: hebrewText,
+        english: englishText,
+        isTranslated,
         dibbur: ''
-      }))
-      .filter(c => c.hebrew || c.english);
+      });
+    }
 
     commentaryCache.set(cacheKey, comments);
     return comments;
@@ -1008,13 +1033,34 @@ export const getOrHaChaimForVerse = async (bookName, chapter, verse) => {
     const hebrewTexts = Array.isArray(data.he) ? data.he : [data.he];
     const englishTexts = Array.isArray(data.text) ? data.text : [data.text];
 
-    const comments = hebrewTexts
-      .map((he, i) => ({
-        hebrew: cleanHtml(he || ''),
-        english: cleanHtml(englishTexts[i] || ''),
+    const comments = [];
+    for (let i = 0; i < hebrewTexts.length; i++) {
+      const he = hebrewTexts[i];
+      if (!he) continue;
+
+      const hebrewText = cleanHtml(he);
+      let englishText = cleanHtml(englishTexts[i] || '');
+      let isTranslated = false;
+
+      if (!englishText && hebrewText) {
+        try {
+          const translated = await translateCommentary(hebrewText);
+          if (translated) {
+            englishText = translated;
+            isTranslated = true;
+          }
+        } catch (err) {
+          console.warn('Translation failed for Or HaChaim:', err.message);
+        }
+      }
+
+      comments.push({
+        hebrew: hebrewText,
+        english: englishText,
+        isTranslated,
         dibbur: ''
-      }))
-      .filter(c => c.hebrew || c.english);
+      });
+    }
 
     commentaryCache.set(cacheKey, comments);
     return comments;
@@ -1041,13 +1087,34 @@ export const getBartenuraForMishnah = async (tractate, chapter, mishnah) => {
     const hebrewTexts = Array.isArray(data.he) ? data.he : [data.he];
     const englishTexts = Array.isArray(data.text) ? data.text : [data.text];
 
-    const comments = hebrewTexts
-      .map((he, i) => ({
-        hebrew: cleanHtml(he || ''),
-        english: cleanHtml(englishTexts[i] || ''),
+    const comments = [];
+    for (let i = 0; i < hebrewTexts.length; i++) {
+      const he = hebrewTexts[i];
+      if (!he) continue;
+
+      const hebrewText = cleanHtml(he);
+      let englishText = cleanHtml(englishTexts[i] || '');
+      let isTranslated = false;
+
+      if (!englishText && hebrewText) {
+        try {
+          const translated = await translateCommentary(hebrewText);
+          if (translated) {
+            englishText = translated;
+            isTranslated = true;
+          }
+        } catch (err) {
+          console.warn('Translation failed for Bartenura:', err.message);
+        }
+      }
+
+      comments.push({
+        hebrew: hebrewText,
+        english: englishText,
+        isTranslated,
         dibbur: ''
-      }))
-      .filter(c => c.hebrew || c.english);
+      });
+    }
 
     commentaryCache.set(cacheKey, comments);
     return comments;
@@ -1074,19 +1141,270 @@ export const getTosafotYomTovForMishnah = async (tractate, chapter, mishnah) => 
     const hebrewTexts = Array.isArray(data.he) ? data.he : [data.he];
     const englishTexts = Array.isArray(data.text) ? data.text : [data.text];
 
-    const comments = hebrewTexts
-      .map((he, i) => ({
-        hebrew: cleanHtml(he || ''),
-        english: cleanHtml(englishTexts[i] || ''),
+    const comments = [];
+    for (let i = 0; i < hebrewTexts.length; i++) {
+      const he = hebrewTexts[i];
+      if (!he) continue;
+
+      const hebrewText = cleanHtml(he);
+      let englishText = cleanHtml(englishTexts[i] || '');
+      let isTranslated = false;
+
+      if (!englishText && hebrewText) {
+        try {
+          const translated = await translateCommentary(hebrewText);
+          if (translated) {
+            englishText = translated;
+            isTranslated = true;
+          }
+        } catch (err) {
+          console.warn('Translation failed for Tosafot Yom Tov:', err.message);
+        }
+      }
+
+      comments.push({
+        hebrew: hebrewText,
+        english: englishText,
+        isTranslated,
         dibbur: ''
-      }))
-      .filter(c => c.hebrew || c.english);
+      });
+    }
 
     commentaryCache.set(cacheKey, comments);
     return comments;
   } catch (error) {
     return [];
   }
+};
+
+// =============================================================================
+// TALMUD BAVLI WITH ENGLISH TRANSLATION (William Davidson Edition)
+// =============================================================================
+
+/**
+ * Fetch a Talmud daf (page) with full English translation
+ * Uses the William Davidson Edition (Steinsaltz translation)
+ * @async
+ * @param {string} tractate - Name of tractate (e.g., 'Shabbat', 'Berakhot')
+ * @param {string} daf - Daf reference (e.g., '2a', '15b')
+ * @returns {Promise<Object>} Object with Hebrew/Aramaic and English text
+ */
+export const getTalmudDaf = async (tractate, daf) => {
+  const cacheKey = `talmud:${tractate}:${daf}`;
+  const cached = textCache.get(cacheKey);
+  if (cached) return cached;
+
+  try {
+    const formattedTractate = formatBookName(tractate);
+    // Use v3 API with William Davidson English version
+    const data = await fetchWithFallback(
+      `${BASE_URL}/v3/texts/${formattedTractate}.${daf}?version=english|William%20Davidson%20Edition%20-%20English`
+    );
+
+    // Parse the response
+    const result = {
+      ref: data.ref || `${tractate}.${daf}`,
+      heRef: data.heRef || data.ref,
+      tractate,
+      daf,
+      // Original text (Hebrew/Aramaic)
+      hebrew: [],
+      // English translation (William Davidson / Steinsaltz)
+      english: [],
+      // Combined segments for easy display
+      segments: []
+    };
+
+    // Handle nested arrays (Talmud often has nested structure)
+    const flattenText = (arr) => {
+      if (!arr) return [];
+      if (typeof arr === 'string') return [arr];
+      if (Array.isArray(arr)) {
+        return arr.flatMap(item => flattenText(item));
+      }
+      return [];
+    };
+
+    const hebrewTexts = flattenText(data.he);
+    const englishTexts = flattenText(data.text);
+
+    for (let i = 0; i < Math.max(hebrewTexts.length, englishTexts.length); i++) {
+      const he = cleanHtml(hebrewTexts[i] || '');
+      const en = cleanHtml(englishTexts[i] || '');
+
+      if (he || en) {
+        result.hebrew.push(he);
+        result.english.push(en);
+        result.segments.push({
+          index: i + 1,
+          hebrew: he,
+          english: en
+        });
+      }
+    }
+
+    textCache.set(cacheKey, result);
+    return result;
+  } catch (error) {
+    console.error(`Error fetching Talmud ${tractate} ${daf}:`, error);
+    throw new Error(`Failed to load ${tractate} ${daf}`);
+  }
+};
+
+/**
+ * Fetch Tractate Shabbat with English translation
+ * Convenience function for Shabbat tractate
+ * @async
+ * @param {string} daf - Daf reference (e.g., '2a', '73a')
+ * @returns {Promise<Object>} Shabbat daf with Hebrew and English
+ */
+export const getShabbatDaf = async (daf) => {
+  return getTalmudDaf('Shabbat', daf);
+};
+
+/**
+ * Get Rashi on Talmud Shabbat with English translation
+ * Uses Sefaria Community Translation when available, falls back to AI translation
+ * @async
+ * @param {string} daf - Daf reference (e.g., '2a', '5b')
+ * @returns {Promise<Array>} Array of Rashi comments with Hebrew and English
+ */
+export const getRashiOnShabbat = async (daf) => {
+  const cacheKey = `rashi-shabbat:${daf}`;
+  const cached = commentaryCache.get(cacheKey);
+  if (cached) return cached;
+
+  const flattenText = (arr) => {
+    if (!arr) return [];
+    if (typeof arr === 'string') return [arr];
+    if (Array.isArray(arr)) {
+      return arr.flatMap(item => flattenText(item));
+    }
+    return [];
+  };
+
+  try {
+    // Try to fetch with English version (Sefaria Community Translation)
+    let data;
+    let hasEnglishVersion = false;
+
+    try {
+      // First try v3 API with specific English version
+      data = await fetchWithFallback(
+        `${BASE_URL}/v3/texts/Rashi_on_Shabbat.${daf}?version=english|Sefaria%20Community%20Translation`
+      );
+      hasEnglishVersion = true;
+    } catch {
+      // Fall back to regular API (Hebrew only)
+      data = await fetchWithFallback(
+        `${BASE_URL}/texts/Rashi_on_Shabbat.${daf}?context=0`
+      );
+    }
+
+    // Extract texts from v3 or v2 response format
+    let hebrewTexts, englishTexts;
+
+    if (data.versions) {
+      // v3 format
+      const heVersion = data.versions?.find(v => v.language === 'he');
+      const enVersion = data.versions?.find(v => v.language === 'en');
+      hebrewTexts = flattenText(heVersion?.text || data.he);
+      englishTexts = flattenText(enVersion?.text || data.text);
+    } else {
+      // v2 format
+      hebrewTexts = flattenText(data.he);
+      englishTexts = flattenText(data.text);
+    }
+
+    const comments = [];
+    for (let i = 0; i < hebrewTexts.length; i++) {
+      const he = hebrewTexts[i];
+      if (!he) continue;
+
+      const hebrewText = cleanHtml(he);
+      let englishText = cleanHtml(englishTexts[i] || '');
+      let isTranslated = false;
+      let translationSource = hasEnglishVersion && englishText ? 'Sefaria Community Translation' : null;
+
+      // If no English from Sefaria, try AI translation
+      if (!englishText && hebrewText) {
+        try {
+          const translated = await translateCommentary(hebrewText);
+          if (translated) {
+            englishText = translated;
+            isTranslated = true;
+            translationSource = 'AI Translation';
+          }
+        } catch (err) {
+          console.warn('Translation failed for Rashi on Shabbat:', err.message);
+        }
+      }
+
+      comments.push({
+        index: i + 1,
+        hebrew: hebrewText,
+        english: englishText,
+        isTranslated,
+        translationSource,
+        source: 'Rashi on Shabbat',
+        ref: `Rashi on Shabbat ${daf}:${i + 1}`
+      });
+    }
+
+    commentaryCache.set(cacheKey, comments);
+    return comments;
+  } catch (error) {
+    console.warn(`Failed to fetch Rashi on Shabbat ${daf}:`, error.message);
+    return [];
+  }
+};
+
+/**
+ * Get all commentaries for a Shabbat daf
+ * Includes Rashi, Tosafot, and Soncino footnotes for comparison
+ * @async
+ * @param {string} daf - Daf reference (e.g., '2a')
+ * @returns {Promise<Object>} Object with different commentaries from multiple sources
+ */
+export const getShabbatCommentaries = async (daf) => {
+  // Import Soncino service dynamically to avoid circular deps
+  const { getSoncinoFootnotes } = await import('./soncinoService');
+
+  const [rashi, tosafot, soncinoFootnotes] = await Promise.all([
+    getRashiOnShabbat(daf),
+    getTosafotForDaf('Shabbat', daf).catch(() => []),
+    getSoncinoFootnotes(daf).catch(() => [])
+  ]);
+
+  return {
+    // Sefaria sources
+    rashi,           // Hebrew Rashi (partial English from 5b:9)
+    tosafot,         // Hebrew Tosafot
+
+    // Soncino source (English footnotes with Rashi explanations)
+    soncino: {
+      footnotes: soncinoFootnotes,
+      source: 'Soncino Talmud (halakhah.com)',
+      note: 'English explanations based on Rashi, Tosafot, and scholarly commentary'
+    },
+
+    daf,
+
+    // Comparison helper
+    sources: {
+      sefaria: { rashi, tosafot },
+      soncino: soncinoFootnotes
+    }
+  };
+};
+
+/**
+ * Get list of all Shabbat dapim (pages)
+ * Shabbat has 157 dapim (2a to 157b)
+ * @returns {string[]} Array of daf references
+ */
+export const getShabbatDafList = () => {
+  return generateDafList('Shabbat');
 };
 
 // =============================================================================
@@ -1120,15 +1438,6 @@ const sefariaApi = {
   getTosafotOnTalmud,
   getTosafotForDaf,
   isTosafotAvailable,
-  // Dedicated Maharsha functions
-  getMaharshaHalachot,
-  getMaharshaAggadot,
-  getMaharshaForDaf,
-  isMaharshaAvailable,
-  // Dedicated Ramban functions
-  getRambanOnTorah,
-  getRambanForVerse,
-  isRambanAvailable,
   // Additional commentary functions
   getIbnEzraForVerse,
   getSfornoForVerse,
@@ -1139,8 +1448,6 @@ const sefariaApi = {
   getRelatedTexts,
   getCrossReferences,
   getCrossRefPreview,
-  // Search
-  searchTorah,
   // Random
   getRandomText,
   // Topics
@@ -1158,6 +1465,12 @@ const sefariaApi = {
   getPopularSheets,
   // Lexicon
   getWordDefinitions,
+  // Talmud with English (William Davidson Edition)
+  getTalmudDaf,
+  getShabbatDaf,
+  getRashiOnShabbat,
+  getShabbatCommentaries,
+  getShabbatDafList,
   // Utilities
   clearCaches,
   toSefariaRef

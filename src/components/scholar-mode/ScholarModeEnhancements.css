@@ -1,0 +1,338 @@
+/* =============================================================================
+   Scholar Mode Enhancements - PRO SCHOLAR v3
+   Additional styling for morphology, root family, and advanced analysis
+   ============================================================================= */
+
+/* =============================================================================
+   PRO SCHOLAR: Morphology Tab Styling
+   ============================================================================= */
+
+.section-tab-pro {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  border: none !important;
+  font-weight: 600;
+}
+
+.section-tab-pro:hover {
+  background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%) !important;
+  transform: translateY(-1px);
+}
+
+.section-tab-pro.active {
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+}
+
+.lexicon-morphology-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 12px 0;
+}
+
+/* =============================================================================
+   PRO SCHOLAR: Root Family Display
+   ============================================================================= */
+
+.root-family-section {
+  background: var(--surface-elevated, #f8f9fa);
+  border: 1px solid var(--border-light, #e0e0e0);
+  border-radius: 10px;
+  padding: 14px;
+  border-left: 4px solid #10b981;
+}
+
+.root-family-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-light, #e0e0e0);
+}
+
+.rf-icon {
+  font-size: 1.3em;
+}
+
+.rf-title {
+  font-weight: 600;
+  font-size: 1em;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.rf-root {
+  margin-left: auto;
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  font-size: 1.4em;
+  font-weight: 700;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 4px 12px;
+  border-radius: 6px;
+}
+
+.root-family-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Meanings (Base/Causative) */
+.rf-meanings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.rf-meaning-pair {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rf-label {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--text-muted, #666);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rf-value {
+  font-size: 1em;
+  font-weight: 500;
+  color: var(--text-primary, #1a1a1a);
+}
+
+/* Etymology */
+.rf-etymology {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 8px 10px;
+  background: rgba(139, 92, 246, 0.08);
+  border-radius: 6px;
+}
+
+.rf-etym-label {
+  font-size: 0.75em;
+  font-weight: 600;
+  color: #7c3aed;
+  text-transform: uppercase;
+}
+
+.rf-etym-value {
+  font-size: 0.9em;
+  color: #5b21b6;
+  font-style: italic;
+}
+
+/* Cognates */
+.rf-cognates {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rf-cog-label {
+  font-size: 0.75em;
+  font-weight: 600;
+  color: var(--text-muted, #666);
+  text-transform: uppercase;
+}
+
+.rf-cog-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.rf-cognate-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--surface, #fff);
+  border: 1px solid var(--border-light, #e0e0e0);
+  border-radius: 6px;
+  font-size: 0.85em;
+}
+
+.cog-lang {
+  font-weight: 600;
+  color: #0891b2;
+  text-transform: capitalize;
+}
+
+.cog-word {
+  color: var(--text-primary, #1a1a1a);
+}
+
+/* Frequency */
+.rf-frequency {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rf-freq-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8em;
+  font-weight: 600;
+}
+
+.rf-freq-chip.tanakh {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.rf-freq-chip.talmud {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* Semantic field */
+.rf-semantic {
+  display: flex;
+}
+
+.rf-sem-chip {
+  display: inline-flex;
+  padding: 4px 10px;
+  background: rgba(244, 63, 94, 0.1);
+  color: #e11d48;
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  border-radius: 12px;
+  font-size: 0.8em;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+/* Notes */
+.rf-notes {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 10px;
+  background: rgba(251, 191, 36, 0.1);
+  border-radius: 6px;
+  border-left: 3px solid #f59e0b;
+}
+
+.rf-note-icon {
+  font-size: 1em;
+}
+
+.rf-note-text {
+  font-size: 0.9em;
+  color: #92400e;
+  line-height: 1.4;
+}
+
+/* =============================================================================
+   Hebrew Binyan Badges (used in various places)
+   ============================================================================= */
+
+.binyan-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  font-weight: 600;
+}
+
+.binyan-qal { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
+.binyan-nifal { background: #fce7f3; color: #be185d; border: 1px solid #f9a8d4; }
+.binyan-piel { background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; }
+.binyan-pual { background: #e0e7ff; color: #4338ca; border: 1px solid #a5b4fc; }
+.binyan-hifil { background: #d1fae5; color: #047857; border: 1px solid #6ee7b7; }
+.binyan-hufal { background: #f3e8ff; color: #7e22ce; border: 1px solid #c4b5fd; }
+.binyan-hitpael { background: #fef2f2; color: #b91c1c; border: 1px solid #fca5a5; }
+
+/* Aramaic binyanim */
+.binyan-peal { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
+.binyan-pael { background: #fce7f3; color: #be185d; border: 1px solid #f9a8d4; }
+.binyan-aphel { background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; }
+.binyan-itpeel { background: #e0e7ff; color: #4338ca; border: 1px solid #a5b4fc; }
+.binyan-shafel { background: #d1fae5; color: #047857; border: 1px solid #6ee7b7; }
+
+/* =============================================================================
+   Responsive Adjustments
+   ============================================================================= */
+
+@media (max-width: 600px) {
+  .root-family-section {
+    padding: 10px;
+  }
+
+  .rf-root {
+    font-size: 1.2em;
+    padding: 3px 8px;
+  }
+
+  .rf-meanings {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .rf-cognates .rf-cog-list {
+    flex-direction: column;
+  }
+
+  .rf-frequency {
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+/* =============================================================================
+   Dark Mode Support
+   ============================================================================= */
+
+@media (prefers-color-scheme: dark) {
+  .root-family-section {
+    background: var(--surface-elevated-dark, #2d2d2d);
+    border-color: var(--border-dark, #444);
+  }
+
+  .rf-root {
+    background: rgba(16, 185, 129, 0.2);
+  }
+
+  .rf-etymology {
+    background: rgba(139, 92, 246, 0.15);
+  }
+
+  .rf-etym-value {
+    color: #a78bfa;
+  }
+
+  .rf-cognate-chip {
+    background: var(--surface-dark, #1e1e1e);
+    border-color: var(--border-dark, #444);
+  }
+
+  .cog-lang {
+    color: #22d3ee;
+  }
+
+  .rf-notes {
+    background: rgba(251, 191, 36, 0.15);
+  }
+
+  .rf-note-text {
+    color: #fbbf24;
+  }
+
+  .section-tab-pro {
+    background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%) !important;
+  }
+}

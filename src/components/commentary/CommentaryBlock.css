@@ -1,0 +1,263 @@
+/* =============================================================================
+   CommentaryBlock Component Styles
+   ============================================================================= */
+
+.commentary-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Commentary Source Group - Full Content Display */
+.commentary-source-group {
+  background: var(--card-bg, var(--bg-elevated, #fff));
+  border: 1px solid var(--card-border, var(--border, #e2e8f0));
+  border-radius: var(--card-border-radius, var(--radius-lg, 14px));
+  overflow: visible;
+  box-shadow: var(--card-shadow);
+  transition: var(--card-transition);
+}
+
+.commentary-source-group:hover {
+  box-shadow: var(--card-shadow-hover);
+}
+
+/* Allow clickable text definition cards to overflow */
+.commentary-source-group .clickable-text {
+  position: relative;
+}
+
+.commentary-source-group .word-definition-card {
+  position: relative;
+  z-index: 100;
+}
+
+.commentary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--card-padding-sm, 0.75rem 1rem);
+  background: var(--card-header-bg, var(--bg-subtle, #f8fafc));
+  border-bottom: 1px solid var(--card-border, var(--border, #e2e8f0));
+  border-radius: var(--card-border-radius, 14px) var(--card-border-radius, 14px) 0 0;
+}
+
+.commentary-source {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.source-icon {
+  font-size: 1.1rem;
+}
+
+.source-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-primary, #0f172a);
+}
+
+.commentary-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Action Buttons - Using unified btn system */
+.ai-summary-toggle,
+.translate-toggle,
+.glossary-toggle,
+.interlinear-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  background: var(--card-bg, var(--bg-elevated, #fff));
+  border: 1px solid var(--card-border, var(--border, #e2e8f0));
+  border-radius: var(--btn-radius, 6px);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary, #475569);
+  cursor: pointer;
+  transition: var(--card-transition, all 150ms ease);
+}
+
+.ai-summary-toggle:hover,
+.translate-toggle:hover,
+.glossary-toggle:hover,
+.interlinear-toggle:hover {
+  background: var(--primary-light, #f0eeff);
+  border-color: var(--primary, #6366f1);
+  color: var(--primary, #6366f1);
+  transform: translateY(-1px);
+}
+
+.ai-summary-toggle.active,
+.translate-toggle.active,
+.glossary-toggle.active,
+.interlinear-toggle.active {
+  background: var(--primary, #6366f1);
+  border-color: var(--primary, #6366f1);
+  color: white;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+.ai-summary-toggle svg,
+.translate-toggle svg,
+.glossary-toggle svg,
+.interlinear-toggle svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Glossary Section */
+.glossary-section {
+  padding: 0 var(--card-padding, 1rem);
+}
+
+/* Commentary Body */
+.commentary-body {
+  padding: var(--card-padding, 1rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.commentary-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.commentary-text {
+  line-height: 1.85;
+}
+
+/* Default Hebrew commentary - Square script (כתב מרובע) */
+.commentary-text.hebrew-commentary {
+  font-family: var(--font-ktav-merouba, 'David Libre', 'SBL Hebrew', serif);
+  font-size: 1.25rem;
+  direction: rtl;
+  text-align: right;
+  color: var(--text-primary, #0f172a);
+  line-height: 2;
+}
+
+/* Rashi script (כתב רש"י) - For Rashi and Tosafot */
+.commentary-text.hebrew-commentary.rashi-script,
+.commentary-source-group[data-source="Rashi"] .commentary-text.hebrew-commentary,
+.commentary-source-group[data-source="Tosafot"] .commentary-text.hebrew-commentary {
+  font-family: var(--font-rashi, 'Noto Rashi Hebrew', 'Frank Ruhl Libre', serif);
+  font-size: 1.3rem;
+  line-height: 2.1;
+  letter-spacing: 0.01em;
+}
+
+.commentary-text.english-translation {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--text-primary, #1e293b);
+  padding-left: 1rem;
+  border-left: 3px solid var(--primary-light, #f0eeff);
+}
+
+.commentary-text.english-text {
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--text-primary, #0f172a);
+}
+
+/* Loading and Empty States */
+.commentary-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.9rem;
+}
+
+.commentary-none {
+  text-align: center;
+  padding: 1.5rem;
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* Animations */
+.slide-down {
+  animation: slideDown 200ms ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Dark Mode */
+.dark-mode .commentary-source-group {
+  background: var(--card-bg, var(--bg-elevated, #1e293b));
+  border-color: var(--card-border, var(--border, #334155));
+  box-shadow: var(--card-shadow);
+}
+
+.dark-mode .commentary-header {
+  background: var(--card-header-bg, var(--bg-subtle, #1e293b));
+  border-color: var(--card-border, var(--border, #334155));
+}
+
+.dark-mode .source-name {
+  color: var(--text-primary, #f1f5f9);
+}
+
+.dark-mode .ai-summary-toggle,
+.dark-mode .translate-toggle,
+.dark-mode .glossary-toggle,
+.dark-mode .interlinear-toggle {
+  background: var(--bg-elevated, #1e293b);
+  border-color: var(--border, #334155);
+  color: var(--text-secondary, #94a3b8);
+}
+
+.dark-mode .ai-summary-toggle:hover,
+.dark-mode .translate-toggle:hover,
+.dark-mode .glossary-toggle:hover,
+.dark-mode .interlinear-toggle:hover {
+  background: var(--primary-light, rgba(129, 140, 248, 0.12));
+  color: var(--primary, #818cf8);
+}
+
+.dark-mode .commentary-text.hebrew-commentary {
+  color: var(--text-primary, #f1f5f9);
+}
+
+.dark-mode .commentary-text.english-translation {
+  color: var(--text-secondary, #94a3b8);
+  border-left-color: var(--primary-light, rgba(129, 140, 248, 0.12));
+}
+
+.dark-mode .commentary-text.english-text {
+  color: var(--text-primary, #f1f5f9);
+}
+

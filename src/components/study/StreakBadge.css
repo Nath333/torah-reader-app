@@ -1,0 +1,387 @@
+/* =============================================================================
+   StreakBadge - Study streak visualization
+   ============================================================================= */
+
+/* Compact version (for sidebar) */
+.streak-badge.compact {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, rgba(201, 162, 39, 0.15), rgba(201, 162, 39, 0.08));
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  border-radius: 20px;
+  cursor: default;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.streak-badge.compact::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 215, 0, 0.1) 50%,
+    transparent 70%
+  );
+  animation: shimmer 3s infinite linear;
+  pointer-events: none;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) rotate(45deg); }
+}
+
+.streak-badge.compact:hover {
+  background: linear-gradient(135deg, rgba(201, 162, 39, 0.25), rgba(201, 162, 39, 0.12));
+  border-color: rgba(201, 162, 39, 0.5);
+  transform: scale(1.05) translateY(-2px);
+  box-shadow: 0 4px 12px rgba(201, 162, 39, 0.3);
+}
+
+.streak-badge.compact.at-risk {
+  animation: pulse-warning 2s ease-in-out infinite;
+  border-color: rgba(251, 191, 36, 0.5);
+}
+
+@keyframes pulse-warning {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(251, 191, 36, 0); }
+}
+
+.streak-icon-compact {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.streak-emoji {
+  font-size: 16px;
+}
+
+.streak-count {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold-light, #e6c84a);
+}
+
+.streak-fire {
+  display: flex;
+  gap: 2px;
+}
+
+.fire-dot {
+  width: 4px;
+  height: 4px;
+  background: var(--gold-primary, #c9a227);
+  border-radius: 50%;
+  animation: fire-glow 1s ease-in-out infinite;
+}
+
+@keyframes fire-glow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+/* Milestone celebration classes - add via JS when milestones are hit */
+.streak-badge.milestone-3 .streak-emoji,
+.streak-badge.milestone-7 .streak-emoji-large {
+  animation: milestone-bounce 0.6s ease;
+}
+
+.streak-badge.milestone-7 .streak-emoji,
+.streak-badge.milestone-7 .streak-emoji-large {
+  animation: milestone-spin 0.8s ease;
+}
+
+.streak-badge.milestone-30 .streak-emoji,
+.streak-badge.milestone-30 .streak-emoji-large {
+  animation: milestone-pulse 0.5s ease 3;
+}
+
+@keyframes milestone-bounce {
+  0%, 100% { transform: translateY(0); }
+  25% { transform: translateY(-8px) scale(1.1); }
+  50% { transform: translateY(-4px) scale(1.05); }
+  75% { transform: translateY(-6px) scale(1.08); }
+}
+
+@keyframes milestone-spin {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(90deg) scale(1.2); }
+  50% { transform: rotate(180deg) scale(1); }
+  75% { transform: rotate(270deg) scale(1.2); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes milestone-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+}
+
+/* Full version (for dashboard) */
+.streak-badge.full {
+  padding: 20px;
+  background: linear-gradient(145deg, rgba(201, 162, 39, 0.12), rgba(201, 162, 39, 0.05));
+  border: 1px solid rgba(201, 162, 39, 0.25);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animated background for high streaks */
+.streak-badge.full.high-streak {
+  background: linear-gradient(
+    145deg,
+    rgba(201, 162, 39, 0.15),
+    rgba(245, 158, 11, 0.1),
+    rgba(201, 162, 39, 0.15)
+  );
+  background-size: 200% 200%;
+  animation: gradient-flow 4s ease infinite;
+}
+
+@keyframes gradient-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Flame animation for 7+ day streaks */
+.streak-badge.full.week-plus .streak-icon-large::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 20px;
+  background: linear-gradient(to top, transparent, rgba(255, 165, 0, 0.4));
+  border-radius: 50%;
+  animation: flame-flicker 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes flame-flicker {
+  0% { opacity: 0.5; transform: translateX(-50%) scaleY(1); }
+  100% { opacity: 1; transform: translateX(-50%) scaleY(1.2); }
+}
+
+.streak-badge.full.at-risk {
+  border-color: rgba(251, 191, 36, 0.5);
+  background: linear-gradient(145deg, rgba(251, 191, 36, 0.12), rgba(251, 191, 36, 0.05));
+}
+
+.streak-main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.streak-icon-large {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, rgba(201, 162, 39, 0.3), rgba(201, 162, 39, 0.1));
+  border: 2px solid rgba(201, 162, 39, 0.4);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.streak-badge.full:hover .streak-icon-large {
+  transform: scale(1.05);
+}
+
+.streak-emoji-large {
+  font-size: 32px;
+}
+
+.streak-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.streak-count-large {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--gold-light, #e6c84a);
+  line-height: 1;
+}
+
+.streak-label {
+  font-size: 14px;
+  color: var(--text-secondary, #c4b8a8);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.streak-message {
+  font-size: 14px;
+  color: var(--text-primary, #f5f0e6);
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  background: rgba(201, 162, 39, 0.1);
+  border-radius: 8px;
+}
+
+/* Weekly Progress */
+.weekly-progress {
+  margin-bottom: 16px;
+}
+
+.weekly-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: var(--text-secondary, #c4b8a8);
+}
+
+.weekly-count {
+  font-weight: 600;
+  color: var(--gold-light, #e6c84a);
+}
+
+.weekly-dots {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.day-dot {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(201, 162, 39, 0.1);
+  border: 1px solid rgba(201, 162, 39, 0.2);
+  border-radius: 8px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.day-dot.studied {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(16, 185, 129, 0.15));
+  border-color: rgba(16, 185, 129, 0.5);
+}
+
+.day-dot.today {
+  border-color: var(--gold-primary, #c9a227);
+  border-width: 2px;
+}
+
+.day-letter {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted, #8a7f72);
+}
+
+.day-dot.studied .day-letter {
+  color: #34d399;
+}
+
+.check-mark {
+  font-size: 10px;
+  color: #34d399;
+  position: absolute;
+  bottom: -2px;
+}
+
+.weekly-bar {
+  height: 4px;
+  background: rgba(201, 162, 39, 0.15);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.weekly-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-dark, #9a7b1c), var(--gold-light, #e6c84a));
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+
+/* Stats Row */
+.streak-stats {
+  display: flex;
+  justify-content: space-around;
+  padding-top: 12px;
+  border-top: 1px solid rgba(201, 162, 39, 0.15);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary, #f5f0e6);
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text-muted, #8a7f72);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Light mode */
+@media (prefers-color-scheme: light) {
+  .streak-badge.compact {
+    background: linear-gradient(135deg, rgba(201, 162, 39, 0.12), rgba(201, 162, 39, 0.05));
+    border-color: rgba(201, 162, 39, 0.25);
+  }
+
+  .streak-count {
+    color: #92400e;
+  }
+
+  .streak-badge.full {
+    background: linear-gradient(145deg, #fffbeb, #fef3c7);
+    border-color: #fcd34d;
+  }
+
+  .streak-count-large {
+    color: #92400e;
+  }
+
+  .streak-message {
+    background: rgba(201, 162, 39, 0.08);
+    color: #374151;
+  }
+
+  .day-dot {
+    background: #fef3c7;
+    border-color: #fde68a;
+  }
+
+  .day-dot.studied {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+    border-color: rgba(16, 185, 129, 0.4);
+  }
+
+  .stat-value {
+    color: #374151;
+  }
+
+  .weekly-count {
+    color: #92400e;
+  }
+}

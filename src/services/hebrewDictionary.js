@@ -5,66 +5,19 @@
 // and scholarlyLexiconService for BDB, Jastrow, Strong's, Klein sources
 // =============================================================================
 
-/**
- * Clean a Hebrew word by removing cantillation marks and vowels
- * @param {string} word - The Hebrew word to clean
- * @returns {string} - The cleaned word with only Hebrew letters
- */
-export const cleanHebrewWord = (word) => {
-  if (!word || typeof word !== 'string') return '';
-  return word
-    .replace(/[\u0591-\u05C7]/g, '') // Remove cantillation and vowels
-    .replace(/[^\u05D0-\u05EA]/g, ''); // Keep only Hebrew letters
-};
+// Import cleanHebrewWord from centralized utils
+import { cleanHebrewWord as cleanWord } from '../utils/hebrewUtils';
 
-// Common Hebrew prefixes that attach to words
-const HEBREW_PREFIXES = [
-  'וה', 'ול', 'וב', 'ומ', 'וכ', 'וש', // Vav + other prefix
-  'שה', 'של', 'שב', 'שמ', 'שכ', // Shin + other prefix
-  'מה', 'מל', 'מב', // Mem + other prefix
-  'כש', 'כה', 'כל', 'כב', // Kaf + other
-  'בה', 'לה', // Bet/Lamed + Heh
-  'ה', // The (definite article)
-  'ו', // And
-  'ב', // In/with
-  'ל', // To/for
-  'מ', // From
-  'כ', // Like/as
-  'ש', // That/which
-];
+// Import shared morphology constants from centralized constants
+import {
+  HEBREW_PREFIXES_ORDERED as HEBREW_PREFIXES,
+  HEBREW_SUFFIXES_ORDERED as HEBREW_SUFFIXES,
+  HEBREW_VERB_PREFIXES as VERB_PREFIXES,
+  HEBREW_VERB_SUFFIXES as VERB_SUFFIXES
+} from '../constants/morphology';
 
-// Common Hebrew suffixes
-const HEBREW_SUFFIXES = [
-  'ים', 'ות', 'ין', // Plural endings
-  'יה', 'הו', 'הם', 'הן', // Possessive endings
-  'י', 'ך', 'כם', 'כן', // More possessive
-  'נו', // Our
-  'ה', // Her (can also be directional)
-];
-
-// Common Hebrew verb prefixes for conjugations
-const VERB_PREFIXES = [
-  'וי', // Vav-conversive + yod (ויאמר)
-  'ות', // Vav-conversive + tav
-  'וא', // Vav-conversive + alef
-  'ונ', // Vav-conversive + nun
-  'י', // Future 3rd masc sing (יעשה)
-  'ת', // Future 2nd/3rd fem sing
-  'א', // Future 1st sing (אעשה)
-  'נ', // Future 1st plural (נעשה)
-];
-
-// Common Hebrew verb suffixes for conjugations
-const VERB_SUFFIXES = [
-  'תי', // Past 1st sing (עשיתי)
-  'ת', // Past 2nd masc sing
-  'תם', // Past 2nd masc plural
-  'תן', // Past 2nd fem plural
-  'נו', // Past 1st plural (עשינו)
-  'ו', // Past 3rd plural or future plural
-  'ה', // Past 3rd fem sing (עשתה)
-  'י', // Imperative fem sing
-];
+// Re-export for backward compatibility
+export const cleanHebrewWord = cleanWord;
 
 /**
  * Extract the likely 3-letter root (shoresh) from a Hebrew word
@@ -307,17 +260,13 @@ export const splitIntoWords = (text) => {
   return cleanText.split(/\s+/).filter(word => word.length > 0);
 };
 
-/**
- * @deprecated Use scholarlyLookup from scholarlyLexiconService instead
- * This is kept only for backwards compatibility
- */
-export const lookupWord = () => {
-  console.warn('hebrewDictionary.lookupWord is deprecated. Use scholarlyLookup from scholarlyLexiconService instead.');
-  return null;
-};
+// =============================================================================
+// Service Export
+// NOTE: Dictionary lookups are handled by scholarlyLexiconService.scholarlyLookup()
+// This module provides utility functions for Hebrew word processing only
+// =============================================================================
 
 const hebrewDictionaryService = {
-  lookupWord,
   hasTranslation,
   cleanHebrewWord,
   splitIntoWords,

@@ -6,7 +6,10 @@ import { fetchWithFallback } from '../utils/http';
 import { cleanTextArray } from '../utils/commentaryUtils';
 import { TORAH_BOOKS, NEVIIM_BOOKS, formatBook } from '../constants/bookConstants';
 
-const BASE_URL = 'https://www.sefaria.org/api';
+// Use local proxy in development to avoid CORS issues
+const BASE_URL = process.env.NODE_ENV === 'development'
+  ? '/sefaria-api'
+  : 'https://www.sefaria.org/api';
 
 // Use shared cache utility
 const targumCache = createCache({ ttl: 10 * 60 * 1000, maxSize: 200 });

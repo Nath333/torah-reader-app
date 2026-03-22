@@ -1,86 +1,129 @@
-import React from 'react';
+/**
+ * Torah Reader App - Entry Point
+ *
+ * Application bootstrap with providers, routing, and global components
+ */
+
+// React
+import React, { useCallback } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
+// Styles
 import './index.css';
-import './utils/initApp'; // Initialize app (API keys, etc.)
+import './styles/Toast.css';
+import './styles/textLayers.css';
+import './styles/cards.css';
+import './styles/ui-components.css';
+
+// App initialization
+import './utils/initApp';
+
+// Components
 import App from './App';
-import ErrorBoundary from './components/ErrorBoundary';
-import reportWebVitals from './reportWebVitals';
+import ErrorBoundary from './components/shared/ErrorBoundary';
+import ScrollToTopButton from './components/shared/ScrollToTopButton';
+import ReadingProgressIndicator from './components/shared/ReadingProgressIndicator';
+
+// Hooks
 import useDarkMode from './hooks/useDarkMode';
 import { useScrollProgress } from './hooks/useScrollProgress';
-import * as serviceWorker from './utils/serviceWorker';
+
+// Context Providers
 import { TorahProvider, useTorah } from './context/TorahContext';
 import { SettingsProvider } from './context/SettingsContext';
 import { StudyProvider } from './context/StudyContext';
+import { StudyModeProvider } from './context/StudyModeContext';
+import { ToastProvider } from './context/ToastContext';
+import { CommentaryProvider } from './context/CommentaryContext';
+import { ModalProvider } from './context/ModalContext';
 
-// Inner wrapper to connect StudyProvider with TorahContext
+// Utils
+import reportWebVitals from './utils/reportWebVitals';
+import * as serviceWorker from './utils/serviceWorker';
+
+// =============================================================================
+// App Routes Configuration
+// =============================================================================
+
+const APP_ROUTES = [
+  { path: '/', element: <App /> },
+  { path: '/read/:book/:chapter/:verse?', element: <App /> },
+  { path: '/bookmarks', element: <App /> },
+  { path: '/history', element: <App /> },
+  { path: '/vocabulary', element: <App /> },
+  { path: '/discover', element: <App /> },
+  { path: '/study', element: <App /> },
+  { path: '/versions/:book/:chapter', element: <App /> },
+  { path: '/split/:book/:chapter', element: <App /> },
+  { path: '/traditional/:book/:chapter', element: <App /> },
+  { path: '*', element: <App /> }
+];
+
+// =============================================================================
+// Provider Wrappers
+// =============================================================================
+
+/**
+ * StudyWrapper - Connects StudyProvider with TorahContext
+ */
 const StudyWrapper = ({ children }) => {
-  const torah = useTorah();
+  const { book, chapter } = useTorah();
+
   return (
-    <StudyProvider book={torah.book} chapter={torah.chapter}>
-      {children}
+    <StudyProvider book={book} chapter={chapter}>
+      <StudyModeProvider>
+        <CommentaryProvider>
+          <ModalProvider>
+            {children}
+          </ModalProvider>
+        </CommentaryProvider>
+      </StudyModeProvider>
     </StudyProvider>
   );
 };
 
+// =============================================================================
+// Root Component
+// =============================================================================
+
 const Root = () => {
   const { dark, set } = useDarkMode();
   const { progress, showScrollTop, scrollToTop } = useScrollProgress();
+  const toggleDarkMode = useCallback(() => set('toggle'), [set]);
 
   return (
-    <SettingsProvider darkMode={dark} toggleDarkMode={() => set('toggle')}>
-      <TorahProvider>
-        <StudyWrapper>
-          <div className="reading-progress-container">
-            <div
-              className="reading-progress-bar"
-              style={{ width: `${progress}%` }}
-              role="progressbar"
-              aria-valuenow={Math.round(progress)}
-              aria-valuemin="0"
-              aria-valuemax="100"
-            />
-          </div>
+    <SettingsProvider darkMode={dark} toggleDarkMode={toggleDarkMode}>
+      <ToastProvider>
+        <TorahProvider>
+          <StudyWrapper>
+            <ReadingProgressIndicator progress={progress} />
 
-          <Routes>
-            {/* Main reader routes with clean URLs */}
-            <Route path="/" element={<App />} />
-            <Route path="/read/:book/:chapter/:verse?" element={<App />} />
-            <Route path="/search" element={<App />} />
-            <Route path="/bookmarks" element={<App />} />
-            <Route path="/history" element={<App />} />
-            <Route path="/vocabulary" element={<App />} />
-            <Route path="/discover" element={<App />} />
-            <Route path="/study" element={<App />} />
-            <Route path="/versions/:book/:chapter" element={<App />} />
-            <Route path="/split/:book/:chapter" element={<App />} />
-            <Route path="/traditional/:book/:chapter" element={<App />} />
-            {/* Fallback to main app */}
-            <Route path="*" element={<App />} />
-          </Routes>
+            <Routes>
+              {APP_ROUTES.map(({ path, element }) => (
+                <Route key={path} path={path} element={element} />
+              ))}
+            </Routes>
 
-          {showScrollTop && (
-            <button
-              className={`scroll-to-top ${dark ? 'dark-mode' : ''}`}
+            <ScrollToTopButton
+              visible={showScrollTop}
               onClick={scrollToTop}
-              aria-label="Scroll to top"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M18 15l-6-6-6 6" />
-              </svg>
-            </button>
-          )}
-        </StudyWrapper>
-      </TorahProvider>
+              darkMode={dark}
+            />
+          </StudyWrapper>
+        </TorahProvider>
+      </ToastProvider>
     </SettingsProvider>
   );
 };
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-// Get basename for GitHub Pages deployment
+// =============================================================================
+// App Bootstrap
+// =============================================================================
+
 const basename = process.env.PUBLIC_URL || '';
 
-root.render(
+ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ErrorBoundary>
       <BrowserRouter basename={basename}>
@@ -90,12 +133,10 @@ root.render(
   </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+// Performance monitoring
 reportWebVitals();
 
-// Register service worker for offline support
+// Service worker for offline support
 serviceWorker.register({
   onSuccess: () => console.log('[App] Offline support enabled'),
   onUpdate: () => console.log('[App] New version available')
