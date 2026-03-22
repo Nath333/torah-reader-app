@@ -55,6 +55,8 @@ import { analyzeWordMorphology } from './morphologicalAnalysisService';
 import { extractRootsWithDirectValidation } from './unifiedRootService';
 // PRO SCHOLAR V5: O(1) trie-based prefix lookup (replaces O(n) iteration)
 import { findLongestPrefix } from '../utils/prefixTrie';
+// PRO SCHOLAR V7: Scholarly source metadata for rich attribution
+import { RELIABILITY_TIERS, MATCH_TYPES, SOURCE_TYPES, getSourceInfo } from '../constants/dictionarySources';
 
 // =============================================================================
 // Dictionary Data Getters (PRO SCHOLAR V7: Lazy loading convenience wrappers)
@@ -93,6 +95,83 @@ const logLookup = (step, word, result) => {
     const details = result?.source || result?.matchedForm || '';
     log.debug(`[Lookup] ${word} → ${step}: ${status}${details ? ` (${details})` : ''}`);
   }
+};
+
+// =============================================================================
+// PRO SCHOLAR V7: Scholarly Source Enrichment
+// Adds full academic metadata to source objects for scholarly display
+// =============================================================================
+
+/**
+ * Get scholarly metadata for a source name
+ * Uses getSourceInfo from dictionarySources for consistent source matching
+ * @param {string} sourceName - Name of the dictionary source
+ * @returns {object} - Full scholarly metadata
+ */
+const getSourceMetadata = (sourceName) => {
+  if (!sourceName) return null;
+
+  // Use the improved getSourceInfo which handles all variations like
+  // "Jastrow (1903)", "Jastrow (1903) (root)", "BDB", "Rabbinic", etc.
+  return getSourceInfo(sourceName);
+};
+
+/**
+ * Enrich a source object with full scholarly metadata
+ * @param {object} source - Basic source object
+ * @param {object} options - Additional context
+ * @returns {object} - Enriched source with scholarly metadata
+ */
+const enrichSourceWithMetadata = (source, options = {}) => {
+  if (!source) return source;
+
+  const { matchType = 'exact', confidence = null, isLocal = true } = options;
+  const metadata = getSourceMetadata(source.name);
+
+  // Get reliability tier
+  const reliability = metadata?.reliability ? RELIABILITY_TIERS[metadata.reliability] : null;
+  const matchInfo = MATCH_TYPES[matchType?.toUpperCase()] || MATCH_TYPES.EXACT;
+
+  // Calculate composite confidence
+  const baseConfidence = reliability?.baseConfidence || 70;
+  const matchConfidence = matchInfo?.confidence || 100;
+  const compositeConfidence = confidence || Math.round((baseConfidence * matchConfidence) / 100);
+
+  return {
+    // Original fields
+    ...source,
+
+    // Enhanced scholarly metadata
+    fullName: metadata?.fullName || source.fullName || source.name,
+    shortName: metadata?.shortName || source.name,
+    author: metadata?.author || null,
+    year: metadata?.year || source.year || null,
+
+    // Classification
+    type: metadata?.type || SOURCE_TYPES.CURATED,
+    reliabilityTier: reliability?.level || 3,
+    reliabilityLabel: reliability?.label || 'Reference',
+    reliabilityIcon: reliability?.icon || '📑',
+
+    // Match information
+    matchType: matchType,
+    matchIcon: matchInfo?.icon || '✓',
+
+    // Confidence scoring
+    confidence: compositeConfidence,
+    baseConfidence,
+    matchConfidence,
+
+    // Display helpers
+    specialization: metadata?.specialization || null,
+    citations: metadata?.citations || null,
+    color: metadata?.color || source.color || '#64748b',
+
+    // Flags
+    isLocal: isLocal,
+    isAcademic: (reliability?.level || 3) <= 2,
+    isLexicon: metadata?.type === SOURCE_TYPES.LEXICON
+  };
 };
 
 // =============================================================================
@@ -1167,7 +1246,7 @@ const lookupLocalDictionaries = (word, contextMode = null) => {
   const sources = [];
   const seenSources = new Set();
 
-  const addSourceFiltered = (result) => {
+  const addSourceFiltered = (result, matchType = 'exact') => {
     if (result?.sources) {
       for (const src of result.sources) {
         const key = src.name + (src.strongNumber || '');
@@ -1184,7 +1263,13 @@ const lookupLocalDictionaries = (word, contextMode = null) => {
           const defScore = scoreDefinition(src.definition, src.name);
           if (defScore > 0) {
             seenSources.add(key);
-            sources.push({ ...src, score: defScore });
+            // PRO SCHOLAR V7: Enrich with full scholarly metadata
+            const enrichedSource = enrichSourceWithMetadata(src, {
+              matchType: result.strippedPrefix ? 'PREFIX_STRIPPED' : matchType,
+              confidence: defScore,
+              isLocal: true
+            });
+            sources.push(enrichedSource);
           } else if (DEBUG_LOOKUPS) {
             log.debug(`[Lookup] Source rejected (score: ${defScore}): ${src.name} - ${src.definition?.substring(0, 40)}`);
           }
@@ -1206,13 +1291,19 @@ const lookupLocalDictionaries = (word, contextMode = null) => {
     const key = (crossRefResult.source || 'CrossRef') + (crossRefResult.strongNumber || '');
     const defScore = scoreDefinition(crossRefResult.english, 'CrossRef');
     if (!seenSources.has(key) && defScore > 0) {
-      sources.push({
+      // PRO SCHOLAR V7: Enrich CrossRef source with scholarly metadata
+      const crossRefSource = enrichSourceWithMetadata({
         name: crossRefResult.source || 'CrossRef',
         fullName: `${crossRefResult.source} (via ${strongNum})`,
         definition: crossRefResult.english,
         strongNumber: crossRefResult.strongNumber,
         score: defScore
+      }, {
+        matchType: 'CROSSREF',
+        confidence: defScore,
+        isLocal: false
       });
+      sources.push(crossRefSource);
     }
   }
 
@@ -1412,10 +1503,19 @@ export const lookupWordAsync = async (word) => {
   };
 
   // Helper: Add source only if definition is valid
-  const addSource = (sourceObj) => {
+  // PRO SCHOLAR V7: Enriches sources with full scholarly metadata
+  const addSource = (sourceObj, options = {}) => {
     const filteredDef = filterDefinition(sourceObj.definition);
     if (filteredDef) {
-      result.sources.push({ ...sourceObj, definition: filteredDef });
+      const enrichedSource = enrichSourceWithMetadata(
+        { ...sourceObj, definition: filteredDef },
+        {
+          matchType: options.matchType || 'EXACT',
+          confidence: options.confidence || null,
+          isLocal: false  // These are network/API sources
+        }
+      );
+      result.sources.push(enrichedSource);
       return true;
     }
     return false;

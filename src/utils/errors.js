@@ -73,6 +73,106 @@ export class ValidationError extends AppError {
   }
 }
 
+// =============================================================================
+// PRO SCHOLAR V8: Lookup-specific error classes
+// =============================================================================
+
+/**
+ * Base error class for all lookup-related errors
+ * Provides consistent error context for debugging and logging
+ */
+export class LookupError extends AppError {
+  constructor(operation, word, originalError, context = {}) {
+    const message = originalError?.message || 'Unknown error';
+    super(`${operation} failed for "${word}": ${message}`, ERROR_TYPES.UNKNOWN, true, context);
+    this.name = 'LookupError';
+    this.operation = operation;
+    this.word = word;
+    this.originalError = originalError;
+    this.context = context;
+  }
+
+  toJSON() {
+    return {
+      ...super.toJSON(),
+      operation: this.operation,
+      word: this.word,
+      context: this.context
+    };
+  }
+}
+
+/**
+ * Error for dictionary-specific failures
+ */
+export class DictionaryError extends LookupError {
+  constructor(dictionary, word, originalError, context = {}) {
+    super('dictionary_lookup', word, originalError, { dictionary, ...context });
+    this.name = 'DictionaryError';
+    this.dictionary = dictionary;
+  }
+}
+
+/**
+ * Error for cache operations
+ */
+export class CacheError extends LookupError {
+  constructor(cacheId, operation, originalError, context = {}) {
+    super(`cache_${operation}`, context.word || 'N/A', originalError, { cacheId, ...context });
+    this.name = 'CacheError';
+    this.cacheId = cacheId;
+  }
+}
+
+/**
+ * Error for morphological analysis failures
+ */
+export class MorphologyError extends LookupError {
+  constructor(word, analysisType, originalError, context = {}) {
+    super('morphology_analysis', word, originalError, { analysisType, ...context });
+    this.name = 'MorphologyError';
+    this.analysisType = analysisType;
+  }
+}
+
+/**
+ * Safely execute a function and return a result object
+ * @param {Function} fn - Async function to execute
+ * @param {Object} context - Context for error reporting
+ * @returns {Promise<{ success: boolean, data?: any, error?: Error }>}
+ */
+export const safeExecute = async (fn, context = {}) => {
+  try {
+    const data = await fn();
+    return { success: true, data };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof LookupError
+        ? error
+        : new LookupError(context.operation || 'unknown', context.word || 'N/A', error, context)
+    };
+  }
+};
+
+/**
+ * Create an error aggregator for collecting multiple errors
+ */
+export const createErrorAggregator = () => {
+  const errors = [];
+  return {
+    add: (error) => errors.push(error instanceof Error ? error : new Error(String(error))),
+    hasErrors: () => errors.length > 0,
+    getErrors: () => [...errors],
+    getSummary: () => ({
+      count: errors.length,
+      messages: errors.map(e => e.message),
+      operations: errors.filter(e => e instanceof LookupError).map(e => e.operation)
+    }),
+    clear: () => { errors.length = 0; }
+  };
+};
+
 // Helper functions
 export const isRetryable = (error) => {
   if (error?.retryable !== undefined) return error.retryable;
@@ -154,13 +254,21 @@ const errorUtils = {
   AIError,
   NetworkError,
   ValidationError,
+  // PRO SCHOLAR V8: Lookup-specific errors
+  LookupError,
+  DictionaryError,
+  CacheError,
+  MorphologyError,
+  // Utilities
   isRetryable,
   isNetworkError,
   isAuthError,
   isRateLimitError,
   getErrorMessage,
   createHttpError,
-  withErrorHandling
+  withErrorHandling,
+  safeExecute,
+  createErrorAggregator
 };
 
 export default errorUtils;

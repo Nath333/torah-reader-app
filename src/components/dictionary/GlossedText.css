@@ -396,6 +396,80 @@
 }
 
 /* =============================================================================
+   PRO SCHOLAR V7: Source Type Classification Styling
+   Academic Lexicon vs Local Curated vs Derived
+   ============================================================================= */
+
+/* Academic lexicon sources (Jastrow, BDB, CAL, Strong's) - solid border */
+.glossed-text ruby.source-lexicon {
+  border-bottom: 2px solid var(--accent-emerald, #059669);
+}
+
+.glossed-text ruby.source-lexicon rt {
+  font-weight: 600;
+}
+
+/* Local/curated sources - dashed border */
+.glossed-text ruby.source-local {
+  border-bottom: 2px dashed var(--accent-indigo, #6366f1);
+}
+
+.glossed-text ruby.source-local rt {
+  opacity: 0.9;
+}
+
+/* Derived from root - dotted border */
+.glossed-text ruby[data-match-type="ROOT_DERIVED"] {
+  border-bottom: 2px dotted var(--accent-violet, #8b5cf6);
+}
+
+.glossed-text ruby[data-match-type="ROOT_DERIVED"] rt::after {
+  content: ' √';
+  font-size: 0.8em;
+  color: var(--accent-violet, #8b5cf6);
+}
+
+/* Stats indicators - PRO SCHOLAR V7 */
+.glossed-stats .stat-lexicon {
+  color: var(--accent-emerald, #059669);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  background: rgba(5, 150, 105, 0.08);
+  border: 1px solid rgba(5, 150, 105, 0.2);
+  border-radius: 10px;
+  font-size: 0.68rem;
+}
+
+.glossed-stats .stat-local {
+  color: var(--accent-indigo, #6366f1);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px dashed rgba(99, 102, 241, 0.3);
+  border-radius: 10px;
+  font-size: 0.68rem;
+}
+
+.glossed-stats .stat-derived {
+  color: var(--accent-violet, #8b5cf6);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px dotted rgba(139, 92, 246, 0.3);
+  border-radius: 10px;
+  font-size: 0.68rem;
+}
+
+/* =============================================================================
    Dark Mode
    ============================================================================= */
 

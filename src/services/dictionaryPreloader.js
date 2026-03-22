@@ -1,47 +1,31 @@
-// =============================================================================
-// Dictionary Preloader Service
-// Pre-warms the translation cache with common Hebrew/Aramaic words on app load
-// Improves UX by having definitions ready before user clicks
-// SINGLE SOURCE OF TRUTH for common word lists (other modules import from here)
-// =============================================================================
+/**
+ * @deprecated This file is DEPRECATED as of PRO SCHOLAR V8.
+ *
+ * Dictionary preloading has been consolidated into dictionaryLoader.js
+ * Please import from there instead:
+ *
+ * import {
+ *   initializeDictionaries,
+ *   shouldPreload,
+ *   COMMON_HEBREW_WORDS,
+ *   COMMON_ARAMAIC_WORDS
+ * } from './dictionaryLoader';
+ *
+ * This file re-exports for backwards compatibility.
+ */
 
 import { createLogger } from '../utils/debug';
+import {
+  COMMON_HEBREW_WORDS,
+  COMMON_ARAMAIC_WORDS,
+  initializeDictionaries,
+  shouldPreload
+} from './dictionaryLoader';
+
+// Re-export from consolidated module
+export { COMMON_HEBREW_WORDS, COMMON_ARAMAIC_WORDS, initializeDictionaries, shouldPreload };
 
 const log = createLogger('DictionaryPreloader');
-
-// =============================================================================
-// Common Word Lists (exported for use by combinedTranslationService)
-// =============================================================================
-
-// Most common Hebrew words in Torah/Tanakh (high frequency)
-export const COMMON_HEBREW_WORDS = [
-  // Particles & conjunctions (highest frequency)
-  'את', 'אל', 'על', 'כי', 'לא', 'אשר', 'כל', 'עם', 'מן', 'גם',
-  'אם', 'או', 'עד', 'רק', 'אך', 'כן', 'לכן', 'אף', 'פן', 'בין',
-  // Common verbs (high frequency)
-  'אמר', 'היה', 'בא', 'עשה', 'נתן', 'הלך', 'ראה', 'שמע', 'ידע', 'לקח',
-  'שב', 'קרא', 'דבר', 'עלה', 'יצא', 'שלח', 'עמד', 'שם', 'בנה', 'מצא',
-  'אכל', 'שתה', 'ישב', 'קום', 'מות', 'חיה', 'אהב', 'שמר', 'זכר', 'כתב',
-  // Common nouns (high frequency)
-  'יום', 'בן', 'איש', 'אב', 'אם', 'בית', 'ארץ', 'עיר', 'שם', 'דבר',
-  'יד', 'עין', 'לב', 'נפש', 'פנים', 'ראש', 'רגל', 'מים', 'שמים', 'אדם',
-  'אלהים', 'מלך', 'עבד', 'כהן', 'נביא', 'שנה', 'עולם', 'דרך', 'משפט', 'תורה',
-  // Common adjectives/adverbs
-  'טוב', 'רע', 'גדול', 'קטן', 'רב', 'חדש', 'ישן', 'קדוש', 'טהור', 'טמא',
-];
-
-// Common Aramaic/Talmudic words
-export const COMMON_ARAMAIC_WORDS = [
-  // Talmudic terms
-  'גמרא', 'משנה', 'תנא', 'אמורא', 'רבי', 'רב', 'מר',
-  'הלכה', 'אגדה', 'מדרש', 'ברייתא', 'תוספתא',
-  // Common Aramaic verbs
-  'אמר', 'קאמר', 'תנן', 'תניא', 'איתמר',
-  // Logical/Argumentative terms
-  'אלא', 'אי', 'דילמא', 'השתא', 'למה', 'מאי', 'היכי',
-  // Common nouns with Aramaic emphatic state
-  'מילתא', 'עלמא', 'גברא', 'אינש', 'ביתא',
-];
 
 // All words to preload
 const ALL_COMMON_WORDS = [...COMMON_HEBREW_WORDS, ...COMMON_ARAMAIC_WORDS];
@@ -129,20 +113,8 @@ export const preloadVerseWords = async (words) => {
   return prefetchTranslations(words);
 };
 
-/**
- * Check if preloading is beneficial (e.g., cache is cold)
- * @returns {boolean} - True if preloading would be helpful
- */
-export const shouldPreload = () => {
-  // Could check localStorage for last preload time
-  // For now, always return true on first load
-  const lastPreload = localStorage.getItem('dictionary_preload_time');
-  if (!lastPreload) return true;
-
-  // Preload if more than 24 hours since last preload
-  const hoursSincePreload = (Date.now() - parseInt(lastPreload, 10)) / (1000 * 60 * 60);
-  return hoursSincePreload > 24;
-};
+// shouldPreload is re-exported from dictionaryLoader (see line 22)
+// Local implementation removed to avoid duplicate export
 
 /**
  * Mark preload as complete

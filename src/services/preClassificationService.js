@@ -566,6 +566,15 @@ export const ARAMAIC_PARTICLES = {
   'נפקא': { meaning: 'it derives/goes out', root: 'נפק', form: '3fs', confidence: 95 },
   'נפקי': { meaning: 'they go out', root: 'נפק', form: '3mp', confidence: 95 },
   'נפקינן': { meaning: 'we derive', root: 'נפק', form: '1p', confidence: 95 },
+  // PRO SCHOLAR V8: Aphel forms of נפק (Pe-Nun verb where נ assimilates)
+  'תפיקו': { meaning: 'you shall bring out', root: 'נפק', form: 'Aphel 2mp', confidence: 95, weakVerb: 'פ״נ', note: 'Aphel imperative: תפיקו from נפק (נ assimilated)' },
+  'תפיק': { meaning: 'it shall bring out / you shall bring out', root: 'נפק', form: 'Aphel 3fs/2ms', confidence: 95, weakVerb: 'פ״נ' },
+  'מפיק': { meaning: 'bringing out / one who brings out', root: 'נפק', form: 'Aphel participle', confidence: 95, weakVerb: 'פ״נ' },
+  'אפיק': { meaning: 'I shall bring out / he brought out', root: 'נפק', form: 'Aphel 1cs/3ms', confidence: 95, weakVerb: 'פ״נ' },
+  'מפקינן': { meaning: 'we bring out', root: 'נפק', form: 'Aphel 1p', confidence: 95, weakVerb: 'פ״נ' },
+  // Common Aphel forms of other Pe-Nun verbs
+  'אתינן': { meaning: 'we brought', root: 'נתן', form: 'Aphel 1p', confidence: 90, weakVerb: 'פ״נ' },
+  'מתרמי': { meaning: 'it occurs', root: 'נרם', form: 'Ithpaal 3ms', confidence: 90 },
   'אמרי': { meaning: 'they say', root: 'אמר', form: '3mp', confidence: 95 },
   'אמרינן': { meaning: 'we say', root: 'אמר', form: '1p', confidence: 95 },
   'תנא': { meaning: 'he taught / a Tanna', root: 'תני', confidence: 95 },
@@ -1717,9 +1726,13 @@ export const preClassify = (word, context = {}) => {
   // Normalize Unicode and remove ALL Hebrew diacritics: cantillation marks (0591-05AF), vowels (05B0-05C7)
   // Also remove maqaf (Hebrew hyphen U+05BE) and other marks
   const normalized = word.normalize('NFC');
-  const cleaned = normalized
+  // PRO SCHOLAR V8: Use pre-cleaned word from caller for dictionary lookups
+  // but keep original word for daf reference detection
+  const cleanedLocal = normalized
     .replace(/[\u0591-\u05C7\u05BE]/g, '')  // Remove diacritics and maqaf
     .replace(/\u200D/g, '');  // Remove zero-width joiner
+  // Use caller's cleaned version for dictionary matching if available
+  const cleaned = context.cleaned || cleanedLocal;
 
   // DEBUG: Extensive logging for problem words (only in development)
   if (DEBUG) {
@@ -1735,24 +1748,51 @@ export const preClassify = (word, context = {}) => {
   }
 
   // === 0. DAF REFERENCES: Detect Hebrew page numbers like צו: (96b), ב. (2a) ===
-  // Pattern: Hebrew gematria letters followed by : (amud bet) or . (amud alef)
-  // With possible parentheses around them
-  const dafPattern = /^[([]?([א-ת]+)[:.][)\]]?$/;
-  const dafMatch = word.match(dafPattern);
-  if (dafMatch) {
-    const hebrewNum = dafMatch[1];
-    const isAmudBet = word.includes(':');
-    // Basic gematria conversion for common daf numbers
+  // PRO SCHOLAR V9: Enhanced pattern to handle various daf notation formats:
+  // - צו: or צו. (basic)
+  // - (צו:) or [צו.] (parenthesized)
+  // - צו:) (half-parenthesized, common in some texts)
+  // - With or without nikud/vowels
+  // IMPORTANT: Use 'cleanedLocal' (keeps punctuation!) for daf detection, not 'cleaned' (from dictionary)
+  //
+  // Pattern: Short Hebrew gematria (1-3 letters) followed by : (amud bet) or . (amud alef)
+  // Examples: ב. = 2a, ב: = 2b, צו: = 96b, קנג. = 153a
+  const dafDetectionPattern = /^[([]?([א-ת]{1,3})[:.]/;
+  // Use cleanedLocal (keeps punctuation) NOT cleaned (from context, may strip punctuation)
+  const localNoBrackets = cleanedLocal.replace(/[()[\]]/g, '');
+  const dafMatch = localNoBrackets.match(dafDetectionPattern);
+
+  // Also try the original word with brackets/diacritics stripped
+  const originalNoBrackets = word.replace(/[()[\]\u0591-\u05C7]/g, '');
+  const originalDafMatch = originalNoBrackets.match(dafDetectionPattern);
+
+  const actualDafMatch = dafMatch || originalDafMatch;
+
+  if (actualDafMatch) {
+    const hebrewNum = actualDafMatch[1];
+    // Determine amud: : = amud bet (b), . = amud alef (a)
+    const isAmudBet = word.includes(':') || cleanedLocal.includes(':');
+
+    // PRO SCHOLAR V9: Enhanced gematria conversion
+    // Handles standard numbers and special cases (ט״ו = 15, ט״ז = 16)
     const gematria = {
       'א': 1, 'ב': 2, 'ג': 3, 'ד': 4, 'ה': 5, 'ו': 6, 'ז': 7, 'ח': 8, 'ט': 9,
-      'י': 10, 'כ': 20, 'ל': 30, 'מ': 40, 'נ': 50, 'ס': 60, 'ע': 70, 'פ': 80, 'צ': 90,
+      'י': 10, 'כ': 20, 'ך': 20, 'ל': 30, 'מ': 40, 'ם': 40, 'נ': 50, 'ן': 50,
+      'ס': 60, 'ע': 70, 'פ': 80, 'ף': 80, 'צ': 90, 'ץ': 90,
       'ק': 100, 'ר': 200, 'ש': 300, 'ת': 400
     };
     let pageNum = 0;
     for (const char of hebrewNum) {
       pageNum += gematria[char] || 0;
     }
-    if (pageNum > 0 && pageNum <= 200) { // Valid daf range
+
+    // Valid daf range (most tractates have 2-200 pages)
+    // Also require the word to be SHORT (just the page reference, not a real word)
+    const wordLen = localNoBrackets.replace(/[:.]/g, '').length;
+    if (pageNum >= 2 && pageNum <= 200 && wordLen <= 3) {
+      if (DEBUG) {
+        console.log(`[PreClassify] DAF DETECTED: ${word} → page ${pageNum}${isAmudBet ? 'b' : 'a'}`);
+      }
       return {
         type: 'reference',
         subtype: 'daf',
@@ -1852,6 +1892,24 @@ export const preClassify = (word, context = {}) => {
         }
       }
     }
+  }
+
+  // === PRO SCHOLAR V9: Check TALMUDIC_TECHNICAL_TERMS EARLY (before pattern detection) ===
+  // CRITICAL: Must check BEFORE detectProperNounPattern because words like לויה
+  // end with יה which would incorrectly trigger theophoric name detection
+  // Use normalizedLookup for robust Unicode handling
+  const techTermEarly = normalizedLookup(TALMUDIC_TECHNICAL_TERMS, cleaned) || normalizedLookup(TALMUDIC_TECHNICAL_TERMS, word);
+  if (techTermEarly) {
+    return {
+      type: 'technical_term',
+      original: word,
+      english: techTermEarly.meaning,
+      context: techTermEarly.context,
+      note: techTermEarly.note,
+      source: 'Talmudic Technical Terms',
+      confidence: 95,
+      skipDictionary: true
+    };
   }
 
   // === 2. ALGORITHMIC: Detect proper noun patterns ===
@@ -1960,34 +2018,8 @@ export const preClassify = (word, context = {}) => {
     };
   }
 
-  // === PRO SCHOLAR V6.2: Check TALMUDIC_TECHNICAL_TERMS ===
-  // Specialized terms like ברישיה, הוצאה, נפקא with Talmudic meanings
-  // Use normalizedLookup for robust Unicode handling
-  const techTerm = normalizedLookup(TALMUDIC_TECHNICAL_TERMS, cleaned) || normalizedLookup(TALMUDIC_TECHNICAL_TERMS, word);
-
-  // DEBUG: Log lookups for problematic words (only in development)
-  if (DEBUG) {
-    const debugWords = ['והכנסה', 'ברישיה', 'משה', 'הכנסה', 'הוצאה'];
-    if (debugWords.includes(cleaned) || debugWords.includes(word) || debugWords.some(w => normalizeHebrewWord(word) === w)) {
-      console.log('[PreClassify DEBUG] Word:', word, '| Cleaned:', cleaned);
-      console.log('[PreClassify DEBUG] In TALMUDIC_TECHNICAL_TERMS?', !!techTerm);
-      console.log('[PreClassify DEBUG] normalizedLookup result:', techTerm);
-      console.log('[PreClassify DEBUG] Keys sample:', Object.keys(TALMUDIC_TECHNICAL_TERMS).slice(0, 10));
-    }
-  }
-
-  if (techTerm) {
-    return {
-      type: 'technical_term',
-      original: word,
-      english: techTerm.meaning,
-      context: techTerm.context,
-      note: techTerm.note,
-      source: 'Talmudic Technical Terms',
-      confidence: 95,
-      skipDictionary: true
-    };
-  }
+  // NOTE: TALMUDIC_TECHNICAL_TERMS is now checked early (PRO SCHOLAR V9)
+  // at the start of preClassify, before pattern detection
 
   // For non-Biblical context, also check Biblical particles as fallback with normalized lookup
   if (!isBiblicalContext) {
@@ -2032,22 +2064,7 @@ export const preClassify = (word, context = {}) => {
     };
   }
 
-  // === 3.7 PRO SCHOLAR V5: TALMUDIC TECHNICAL TERMS ===
-  // Check for specialized terms that have context-specific meanings
-  // Use normalizedLookup for robust Unicode handling
-  const technicalTerm = normalizedLookup(TALMUDIC_TECHNICAL_TERMS, cleaned) || normalizedLookup(TALMUDIC_TECHNICAL_TERMS, word);
-  if (technicalTerm) {
-    return {
-      type: 'technical_term',
-      original: word,
-      english: technicalTerm.meaning,
-      context: technicalTerm.context,
-      note: technicalTerm.note,
-      source: 'Talmudic Technical Terms',
-      confidence: 90,
-      skipDictionary: true // Use our specialized definition
-    };
-  }
+  // NOTE: TALMUDIC_TECHNICAL_TERMS check moved to early position (PRO SCHOLAR V9)
 
   // === 4. ALGORITHMIC: Detect verb patterns ===
   const verbPattern = detectVerbPattern(cleaned);

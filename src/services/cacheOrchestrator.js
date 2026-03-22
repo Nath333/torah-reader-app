@@ -12,11 +12,15 @@
  * - Global cache operations (clear, prune)
  * - Memory usage estimation
  * - Hit rate analytics across services
+ * - LRU eviction policy support
+ *
+ * PRO SCHOLAR V8: Consolidated from wordLookupCache.js + cacheOrchestrator.js
+ * This is now the single source of truth for all caching in the app.
  *
  * @module CacheOrchestrator
  */
 
-import { createCache } from '../utils/cache';
+import { createCache, CACHE_PRESETS } from '../utils/cache';
 
 // =============================================================================
 // CACHE REGISTRY
@@ -426,6 +430,153 @@ export function createManagedCache(id, options = {}) {
 }
 
 // =============================================================================
+// ADVANCED LRU CACHE CLASS (Consolidated from wordLookupCache.js)
+// =============================================================================
+
+/**
+ * Cache entry with access tracking for LRU eviction
+ */
+class CacheEntry {
+  constructor(key, value) {
+    this.key = key;
+    this.value = value;
+    this.timestamp = Date.now();
+    this.lastAccess = Date.now();
+    this.accessCount = 1;
+  }
+
+  isExpired(ttl) {
+    return Date.now() - this.timestamp > ttl;
+  }
+
+  touch() {
+    this.lastAccess = Date.now();
+    this.accessCount++;
+  }
+}
+
+/**
+ * Advanced cache with LRU eviction, TTL, and metrics
+ * Use this for high-performance caching needs
+ */
+export class WordLookupCache {
+  constructor(config = {}) {
+    this.config = {
+      maxSize: 500,
+      ttl: 5 * 60 * 1000, // 5 minutes
+      evictionPolicy: 'lru',
+      ...config
+    };
+    this.cache = new Map();
+    this.metrics = { hits: 0, misses: 0, evictions: 0, expirations: 0 };
+  }
+
+  get(key) {
+    const entry = this.cache.get(key);
+    if (!entry) {
+      this.metrics.misses++;
+      return null;
+    }
+    if (entry.isExpired(this.config.ttl)) {
+      this.cache.delete(key);
+      this.metrics.expirations++;
+      this.metrics.misses++;
+      return null;
+    }
+    entry.touch();
+    this.metrics.hits++;
+    return entry.value;
+  }
+
+  set(key, value) {
+    if (this.cache.size >= this.config.maxSize && !this.cache.has(key)) {
+      this._evict();
+    }
+    this.cache.set(key, new CacheEntry(key, value));
+    return true;
+  }
+
+  has(key) {
+    const entry = this.cache.get(key);
+    if (!entry) return false;
+    if (entry.isExpired(this.config.ttl)) {
+      this.cache.delete(key);
+      this.metrics.expirations++;
+      return false;
+    }
+    return true;
+  }
+
+  delete(key) {
+    return this.cache.delete(key);
+  }
+
+  clear() {
+    this.cache.clear();
+  }
+
+  stats() {
+    const total = this.metrics.hits + this.metrics.misses;
+    return {
+      size: this.cache.size,
+      maxSize: this.config.maxSize,
+      ttl: this.config.ttl,
+      ...this.metrics,
+      hitRate: total > 0 ? `${(this.metrics.hits / total * 100).toFixed(1)}%` : 'N/A'
+    };
+  }
+
+  _evict() {
+    if (this.config.evictionPolicy === 'lru') {
+      let oldestKey = null;
+      let oldestAccess = Infinity;
+      for (const [key, entry] of this.cache.entries()) {
+        if (entry.lastAccess < oldestAccess) {
+          oldestAccess = entry.lastAccess;
+          oldestKey = key;
+        }
+      }
+      if (oldestKey) {
+        this.cache.delete(oldestKey);
+        this.metrics.evictions++;
+      }
+    } else {
+      // FIFO eviction
+      const firstKey = this.cache.keys().next().value;
+      if (firstKey) {
+        this.cache.delete(firstKey);
+        this.metrics.evictions++;
+      }
+    }
+  }
+
+  cleanup() {
+    let removed = 0;
+    const now = Date.now();
+    for (const [key, entry] of this.cache.entries()) {
+      if (now - entry.timestamp > this.config.ttl) {
+        this.cache.delete(key);
+        this.metrics.expirations++;
+        removed++;
+      }
+    }
+    return removed;
+  }
+}
+
+// Singleton instance for word lookups (backwards compatibility)
+const wordLookupCache = new WordLookupCache({
+  maxSize: 500,
+  ttl: 5 * 60 * 1000,
+  evictionPolicy: 'lru'
+});
+
+// Periodic cleanup (every 2 minutes)
+if (typeof window !== 'undefined') {
+  setInterval(() => wordLookupCache.cleanup(), 2 * 60 * 1000);
+}
+
+// =============================================================================
 // EXPORTS
 // =============================================================================
 
@@ -450,7 +601,13 @@ const CacheOrchestrator = {
   createManagedCache,
 
   // Constants
-  CACHE_CONFIGS
+  CACHE_CONFIGS,
+  CACHE_PRESETS,
+
+  // Advanced LRU cache
+  WordLookupCache,
+  wordLookupCache
 };
 
+export { wordLookupCache };
 export default CacheOrchestrator;

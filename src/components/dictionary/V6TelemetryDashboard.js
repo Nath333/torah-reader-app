@@ -202,8 +202,12 @@ function V6TelemetryDashboard({
     ? Math.round((cacheStats.hits / (cacheStats.hits + cacheStats.misses)) * 100)
     : 0;
 
-  const avgTime = telemetry.totalTime && telemetry.lookups > 0
-    ? Math.round(telemetry.totalTime / telemetry.lookups)
+  // Handle lookups being either a number or an object with a total property
+  const totalLookups = typeof telemetry.lookups === 'object'
+    ? (telemetry.lookups?.total || 0)
+    : (telemetry.lookups || 0);
+  const avgTime = telemetry.totalTime && totalLookups > 0
+    ? Math.round(telemetry.totalTime / totalLookups)
     : 0;
 
   // Panel class names
@@ -231,7 +235,7 @@ function V6TelemetryDashboard({
       <div className="stats-grid">
         <StatCard
           label="Total Lookups"
-          value={telemetry.lookups || 0}
+          value={totalLookups}
           icon="🔍"
           color="#3b82f6"
           description="Word analyses performed"

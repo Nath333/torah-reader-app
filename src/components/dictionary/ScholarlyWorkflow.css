@@ -1,0 +1,472 @@
+/**
+ * ScholarlyWorkflow.css - PRO SCHOLAR V7
+ * Step-by-step morphological analysis visualization
+ */
+
+/* =============================================================================
+   CONTAINER
+   ============================================================================= */
+
+.scholarly-workflow {
+  background: var(--bg-elevated, #fff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: var(--radius-md, 8px);
+  overflow: hidden;
+  margin: 0.75rem 0;
+}
+
+.scholarly-workflow.compact {
+  margin: 0.5rem 0;
+}
+
+/* =============================================================================
+   HEADER
+   ============================================================================= */
+
+.workflow-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, var(--bg-subtle, #f8fafc), var(--bg-elevated, #fff));
+  border-bottom: 1px solid var(--border-light, #f1f5f9);
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.workflow-header:hover {
+  background: var(--bg-subtle, #f1f5f9);
+}
+
+.workflow-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.workflow-icon {
+  font-size: 1.1rem;
+}
+
+.workflow-label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-primary, #1e293b);
+}
+
+.workflow-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.workflow-toggle {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-elevated, #fff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-muted, #64748b);
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.workflow-toggle:hover {
+  background: var(--primary-light, #e0e7ff);
+  border-color: var(--primary, #6366f1);
+  color: var(--primary, #6366f1);
+}
+
+/* =============================================================================
+   WORKFLOW STEPS
+   ============================================================================= */
+
+.workflow-steps {
+  padding: 1rem;
+}
+
+.workflow-step {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0;
+}
+
+.workflow-step.final {
+  margin-bottom: 0;
+}
+
+/* Step connector (vertical line + icon) */
+.step-connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 32px;
+  flex-shrink: 0;
+}
+
+.step-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: white;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.step-line {
+  width: 2px;
+  flex: 1;
+  min-height: 20px;
+  background: linear-gradient(to bottom, var(--border, #e2e8f0), transparent);
+  margin: 4px 0;
+}
+
+/* Step content */
+.step-content {
+  flex: 1;
+  padding-bottom: 1rem;
+}
+
+.step-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.step-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.step-hebrew {
+  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
+  font-size: 0.75rem;
+  color: var(--text-muted, #94a3b8);
+}
+
+.step-value {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-primary, #1e293b);
+  margin-bottom: 0.25rem;
+}
+
+.step-value.hebrew {
+  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
+  font-size: 1.1rem;
+  direction: rtl;
+}
+
+.step-description {
+  font-size: 0.75rem;
+  color: var(--text-muted, #94a3b8);
+  font-style: italic;
+  margin-top: 0.25rem;
+}
+
+.step-source {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+  font-size: 0.7rem;
+  color: var(--text-secondary, #64748b);
+  padding: 0.25rem 0.5rem;
+  background: var(--bg-subtle, #f8fafc);
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.source-icon {
+  font-size: 0.85rem;
+}
+
+.source-name {
+  font-weight: 500;
+}
+
+.source-year {
+  color: var(--text-muted, #94a3b8);
+}
+
+/* =============================================================================
+   MATCH TYPE BADGE
+   ============================================================================= */
+
+.match-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.match-icon {
+  font-size: 0.75rem;
+}
+
+.match-label {
+  font-size: 0.6rem;
+}
+
+/* =============================================================================
+   ACADEMIC/LOCAL BADGES
+   ============================================================================= */
+
+.academic-badge {
+  font-size: 1rem;
+  cursor: help;
+}
+
+.local-indicator {
+  font-size: 0.65rem;
+  color: var(--accent-indigo, #6366f1);
+  font-weight: 500;
+  padding: 0.1rem 0.35rem;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 3px;
+}
+
+/* =============================================================================
+   CONFIDENCE METER
+   ============================================================================= */
+
+.confidence-meter {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--border-light, #f1f5f9);
+  background: var(--bg-subtle, #f8fafc);
+}
+
+.confidence-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.confidence-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.confidence-score {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.confidence-bar {
+  height: 6px;
+  background: var(--border, #e2e8f0);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.confidence-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 300ms ease;
+}
+
+.confidence-explanation {
+  font-size: 0.7rem;
+  color: var(--text-muted, #94a3b8);
+  margin-top: 0.5rem;
+  line-height: 1.4;
+}
+
+/* =============================================================================
+   SOURCE ATTRIBUTION
+   ============================================================================= */
+
+.source-attribution {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--border-light, #f1f5f9);
+}
+
+.attribution-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.attribution-icon {
+  font-size: 1rem;
+}
+
+.attribution-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.attribution-content {
+  font-size: 0.8rem;
+  color: var(--text-primary, #334155);
+}
+
+.attribution-name {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.attribution-year,
+.attribution-author,
+.attribution-spec {
+  color: var(--text-muted, #64748b);
+  font-size: 0.75rem;
+}
+
+.attribution-local {
+  margin-top: 0.35rem;
+}
+
+.local-badge {
+  display: inline-block;
+  padding: 0.15rem 0.4rem;
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--accent-indigo, #6366f1);
+  border: 1px dashed var(--accent-indigo, #6366f1);
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+/* =============================================================================
+   WORKFLOW FOOTER
+   ============================================================================= */
+
+.workflow-footer {
+  padding: 0.5rem 1rem;
+  border-top: 1px solid var(--border-light, #f1f5f9);
+  background: var(--bg-subtle, #f8fafc);
+}
+
+.reliability-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.reliability-tier {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+}
+
+.match-description {
+  font-size: 0.7rem;
+  color: var(--text-muted, #94a3b8);
+  font-style: italic;
+}
+
+/* =============================================================================
+   COMPACT MODE
+   ============================================================================= */
+
+.scholarly-workflow.compact .workflow-header {
+  padding: 0.5rem 0.75rem;
+}
+
+.scholarly-workflow.compact .workflow-label {
+  font-size: 0.75rem;
+}
+
+.scholarly-workflow.compact .workflow-steps {
+  padding: 0.75rem;
+}
+
+.scholarly-workflow.compact .step-content {
+  padding-bottom: 0.5rem;
+}
+
+.scholarly-workflow.compact .step-value {
+  font-size: 0.9rem;
+}
+
+/* =============================================================================
+   DARK MODE
+   ============================================================================= */
+
+.dark-mode .scholarly-workflow {
+  background: var(--bg-elevated-dark, #1e293b);
+  border-color: var(--border-dark, #334155);
+}
+
+.dark-mode .workflow-header {
+  background: linear-gradient(135deg, var(--bg-subtle-dark, #0f172a), var(--bg-elevated-dark, #1e293b));
+}
+
+.dark-mode .workflow-header:hover {
+  background: var(--bg-subtle-dark, #1e293b);
+}
+
+.dark-mode .step-line {
+  background: linear-gradient(to bottom, var(--border-dark, #475569), transparent);
+}
+
+.dark-mode .step-source {
+  background: var(--bg-subtle-dark, #0f172a);
+}
+
+.dark-mode .confidence-meter,
+.dark-mode .source-attribution,
+.dark-mode .workflow-footer {
+  background: var(--bg-subtle-dark, #0f172a);
+  border-color: var(--border-dark, #334155);
+}
+
+.dark-mode .confidence-bar {
+  background: var(--border-dark, #475569);
+}
+
+/* =============================================================================
+   ANIMATIONS
+   ============================================================================= */
+
+.scholarly-workflow.expanded .workflow-steps {
+  animation: slideDown 200ms ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Step icons pulse on hover */
+.workflow-step:hover .step-icon {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 150ms ease;
+}

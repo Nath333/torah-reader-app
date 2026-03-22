@@ -17,6 +17,12 @@ import {
 } from '../../utils/commentaryUtils';
 // PRO SCHOLAR V6.2: Use comprehensive pre-classification for proper nouns & particles
 import { preClassify } from '../../services/preClassificationService';
+// PRO SCHOLAR V7: Scholarly source classification
+import {
+  isAcademicLexicon,
+  isLocalSource,
+  getSourceInfo
+} from '../../constants/dictionarySources';
 import './WordGlossary.css';
 
 /**
@@ -76,24 +82,32 @@ const lookupWord = async (word, contextType = 'talmudic') => {
     };
   }
 
-  // Check Rashi/Talmudic vocabulary
+  // Check Rashi/Talmudic vocabulary (local curated)
   if (RASHI_VOCABULARY[cleaned]) {
     return {
       word: cleaned,
       definition: RASHI_VOCABULARY[cleaned],
-      source: 'Talmudic'
+      source: 'rabbinic-vocab',
+      sourceName: 'Rabbinic',
+      isLocal: true,
+      matchType: 'EXACT'
     };
   }
 
-  // Fall back to scholarly API lookup
+  // Fall back to scholarly API lookup (academic lexicons)
   try {
     const result = await scholarlyLookup(cleaned);
     if (result?.primaryDefinition) {
+      const matchType = result._matchType || (result.root && result.root !== cleaned ? 'ROOT_DERIVED' : 'EXACT');
       return {
         word: cleaned,
         definition: result.primaryDefinition,
         source: result.primarySource || 'Sefaria',
-        root: result.root
+        sourceName: getSourceInfo(result.primarySource)?.name || result.primarySource,
+        root: result.root,
+        isLocal: isLocalSource(result.primarySource),
+        isLexicon: isAcademicLexicon(result.primarySource),
+        matchType
       };
     }
   } catch (err) {
@@ -205,31 +219,50 @@ const WordGlossary = React.memo(({ text, onClose }) => {
 
         {!loading && definitions.length > 0 && (
           <ul className="glossary-list" aria-label="Word definitions">
-            {definitions.map((def, idx) => (
-              <li key={`${def.word}-${idx}`} className={`glossary-item ${def.isProperNoun ? 'proper-noun' : ''} ${def.isAbbreviation ? 'abbreviation' : ''}`}>
-                <span className="glossary-word" dir="rtl" lang="he">{def.word}</span>
-                {def.isAbbreviation && def.expansion && (
-                  <span className="glossary-expansion" dir="rtl" lang="he">({def.expansion})</span>
-                )}
-                {def.isProperNoun && (
-                  <span className="glossary-proper-noun-badge" title={def.note || 'Proper noun'}>👤</span>
-                )}
-                <span className="glossary-arrow" aria-hidden="true">→</span>
-                <span className="glossary-definition">{def.definition}</span>
-                <span
-                  className={`glossary-source ${def.source?.toLowerCase().replace(/\s+/g, '-')}`}
-                  title={`Source: ${def.source}`}
+            {definitions.map((def, idx) => {
+              // PRO SCHOLAR V7: Get scholarly source info
+              const sourceInfo = getSourceInfo(def.source);
+              const sourceIcon = def.isLexicon ? '📚' : def.isLocal ? '📝' : '📖';
+              const sourceLabel = def.sourceName || sourceInfo?.name || def.source;
+              const matchLabel = def.matchType === 'ROOT_DERIVED' ? ' √' : '';
+
+              return (
+                <li
+                  key={`${def.word}-${idx}`}
+                  className={`glossary-item ${def.isProperNoun ? 'proper-noun' : ''} ${def.isAbbreviation ? 'abbreviation' : ''} ${def.isLexicon ? 'source-lexicon' : ''} ${def.isLocal ? 'source-local' : ''}`}
                 >
-                  {def.source}
-                </span>
-              </li>
-            ))}
+                  <span className="glossary-word" dir="rtl" lang="he">{def.word}</span>
+                  {def.isAbbreviation && def.expansion && (
+                    <span className="glossary-expansion" dir="rtl" lang="he">({def.expansion})</span>
+                  )}
+                  {def.isProperNoun && (
+                    <span className="glossary-proper-noun-badge" title={def.note || 'Proper noun'}>👤</span>
+                  )}
+                  {/* PRO SCHOLAR V7: Show root if derived */}
+                  {def.root && def.matchType === 'ROOT_DERIVED' && (
+                    <span className="glossary-root" dir="rtl" title={`Root: ${def.root}`}>
+                      (√{def.root})
+                    </span>
+                  )}
+                  <span className="glossary-arrow" aria-hidden="true">→</span>
+                  <span className="glossary-definition">{def.definition}</span>
+                  {/* PRO SCHOLAR V7: Scholarly source badge */}
+                  <span
+                    className={`glossary-source ${def.isLexicon ? 'lexicon' : def.isLocal ? 'local' : ''}`}
+                    title={`${sourceInfo?.fullName || def.source}${def.isLocal ? ' [local vocabulary]' : ' [academic lexicon]'}`}
+                  >
+                    {sourceIcon} {sourceLabel}{matchLabel}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         )}
 
         <div className="glossary-footer">
           <span className="glossary-hint">
-            Sources: Jastrow, BDB, Strong's via Sefaria
+            <span className="hint-lexicon">📚 Academic Lexicon</span>
+            <span className="hint-local">📝 Curated [local]</span>
           </span>
         </div>
       </div>

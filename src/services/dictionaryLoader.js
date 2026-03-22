@@ -363,6 +363,67 @@ export function lookupAllSync(word) {
   };
 }
 
+// =============================================================================
+// PRO SCHOLAR V8: Common Word Lists (consolidated from dictionaryPreloader)
+// =============================================================================
+
+/** Most common Hebrew words in Torah/Tanakh */
+export const COMMON_HEBREW_WORDS = [
+  'את', 'אל', 'על', 'כי', 'לא', 'אשר', 'כל', 'עם', 'מן', 'גם',
+  'אם', 'או', 'עד', 'רק', 'אך', 'כן', 'לכן', 'אף', 'פן', 'בין',
+  'אמר', 'היה', 'בא', 'עשה', 'נתן', 'הלך', 'ראה', 'שמע', 'ידע', 'לקח',
+  'שב', 'קרא', 'דבר', 'עלה', 'יצא', 'שלח', 'עמד', 'שם', 'בנה', 'מצא',
+  'יום', 'בן', 'איש', 'אב', 'בית', 'ארץ', 'עיר', 'יד', 'עין', 'לב',
+  'נפש', 'פנים', 'ראש', 'רגל', 'מים', 'שמים', 'אדם', 'אלהים', 'מלך', 'תורה'
+];
+
+/** Common Aramaic/Talmudic words */
+export const COMMON_ARAMAIC_WORDS = [
+  'גמרא', 'משנה', 'תנא', 'רבי', 'רב', 'הלכה', 'מדרש', 'ברייתא',
+  'אמר', 'קאמר', 'תנן', 'תניא', 'איתמר', 'אלא', 'אי', 'דילמא',
+  'מילתא', 'עלמא', 'גברא', 'ביתא'
+];
+
+/**
+ * Initialize all dictionary loading (call on app startup)
+ * PRO SCHOLAR V8: Unified initialization point
+ * @returns {Promise<Object>} Loading status
+ */
+export async function initializeDictionaries() {
+  log.debug('Initializing dictionaries...');
+  const startTime = Date.now();
+
+  await preloadDictionaries();
+
+  const status = getCacheStatus();
+  const duration = Date.now() - startTime;
+
+  log.debug(`Dictionaries initialized in ${duration}ms`, status);
+
+  // Store last preload time
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem('dictionary_preload_time', Date.now().toString());
+  }
+
+  return {
+    status,
+    duration,
+    loaded: Object.values(status).filter(Boolean).length
+  };
+}
+
+/**
+ * Check if preloading should run (cache is cold)
+ * @returns {boolean}
+ */
+export function shouldPreload() {
+  if (typeof localStorage === 'undefined') return true;
+  const lastPreload = localStorage.getItem('dictionary_preload_time');
+  if (!lastPreload) return true;
+  const hoursSincePreload = (Date.now() - parseInt(lastPreload, 10)) / (1000 * 60 * 60);
+  return hoursSincePreload > 24;
+}
+
 const dictionaryLoader = {
   // BDB
   getBDB,
@@ -392,7 +453,13 @@ const dictionaryLoader = {
   getCacheStatus,
   clearCache,
   lookupAllDictionaries,
-  lookupAllSync
+  lookupAllSync,
+
+  // PRO SCHOLAR V8: Unified initialization
+  initializeDictionaries,
+  shouldPreload,
+  COMMON_HEBREW_WORDS,
+  COMMON_ARAMAIC_WORDS
 };
 
 export default dictionaryLoader;

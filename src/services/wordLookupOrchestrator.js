@@ -73,6 +73,19 @@
  */
 
 import { createManagedCache, getGlobalTelemetry, getPerformanceMetrics, autoManageCaches } from './cacheOrchestrator';
+// PRO SCHOLAR V7: Import scholarly source classification and explanation generator
+import {
+  generateScholarlyExplanation,
+  getMatchTypeInfo,
+  explainConfidence,
+  getSourceInfo,
+  getSourceReliability,
+  calculateSourceConfidence,
+  isAcademicLexicon,
+  isLocalSource,
+  MATCH_TYPES,
+  RELIABILITY_TIERS
+} from '../constants/dictionarySources';
 
 // =============================================================================
 // SCHOLARLY CONSTANTS
@@ -399,9 +412,9 @@ const createNormalizedResult = (overrides = {}) => ({
   },
 
   // ─────────────────────────────────────────────────────────────────────────
-  // DERIVATION CHAIN (6-step scholarly breakdown)
+  // DERIVATION CHAIN (scholarly breakdown for UI display)
   // ─────────────────────────────────────────────────────────────────────────
-  derivationChain: [], // Array of { step, form, explanation, rule }
+  derivationChain: null, // { originalWord, extractedRoot, rootSource, rootMeaning, pattern, patternEffect, conjugation, finalTranslation }
 
   // ─────────────────────────────────────────────────────────────────────────
   // WEAK VERB ANALYSIS
@@ -465,10 +478,26 @@ const createNormalizedResult = (overrides = {}) => ({
   lookupPath: null,
 
   // ─────────────────────────────────────────────────────────────────────────
+  // PRO SCHOLAR V7: SCHOLARLY WORKFLOW ANALYSIS
+  // ─────────────────────────────────────────────────────────────────────────
+  scholarlyWorkflow: null,        // Full step-by-step analysis from generateScholarlyExplanation
+  matchType: 'EXACT',             // How the definition was found
+  matchTypeInfo: null,            // Detailed match type metadata
+  confidenceExplanation: null,    // Human-readable confidence breakdown
+  sourceClassification: {         // Source type classification
+    isAcademic: false,
+    isLocal: false,
+    reliabilityTier: null,
+    reliabilityLevel: null
+  },
+  prefixesStripped: [],           // Array of { letter, meaning }
+  suffixesStripped: [],           // Array of { suffix, meaning }
+
+  // ─────────────────────────────────────────────────────────────────────────
   // VERSION METADATA
   // ─────────────────────────────────────────────────────────────────────────
   _meta: {
-    version: '4.0-scholar',
+    version: '4.0-scholar-v7',
     timestamp: Date.now(),
     contextType: 'general',
     scholarFeatures: {
@@ -476,7 +505,8 @@ const createNormalizedResult = (overrides = {}) => ({
       sourceValidation: false,
       weakVerbAnalysis: false,
       historicalLayer: false,
-      cognates: false
+      cognates: false,
+      scholarlyWorkflow: false    // V7: Full workflow explanation
     }
   },
 
@@ -820,6 +850,42 @@ const generateRootHypotheses = (word, services) => {
     hypotheses.push({ root, confidence, weakType, strippedPrefix, strippedSuffix });
   };
 
+  // Strategy 0: PRO SCHOLAR - Aphel Pe-Nun pattern detection
+  // CRITICAL: תפיקו = ת + פיק + ו → Aphel of נפק (נ assimilated)
+  // Pattern: ת + XיX + ו where the root is נ + first consonant + last consonant
+  // Common verbs: נפק (go out), נתן (give), נפל (fall), נגע (touch), נטל (take)
+  const aphelPeNunPatterns = [
+    // תפיקו → נפק (Aphel 2mp imperative/jussive)
+    { regex: /^ת([א-ת])י([א-ת])ו$/, conf: 92, suffix: 'ו', note: 'Aphel 2mp' },
+    // תפיק → נפק (Aphel 3fs or 2ms)
+    { regex: /^ת([א-ת])י([א-ת])$/, conf: 90, suffix: '', note: 'Aphel 3fs/2ms' },
+    // מפיק → נפק (Aphel participle)
+    { regex: /^מ([א-ת])י([א-ת])$/, conf: 88, suffix: '', note: 'Aphel participle' },
+    // יפיק → נפק (Aphel 3ms imperfect)
+    { regex: /^י([א-ת])י([א-ת])$/, conf: 88, suffix: '', note: 'Aphel 3ms' },
+    // אפיק → נפק (Aphel 1cs)
+    { regex: /^א([א-ת])י([א-ת])$/, conf: 88, suffix: '', note: 'Aphel 1cs' },
+    // נפיק → נפק (Aphel 1cp)
+    { regex: /^נ([א-ת])י([א-ת])$/, conf: 88, suffix: '', note: 'Aphel 1cp' },
+    // תפיקי → נפק (Aphel 2fs)
+    { regex: /^ת([א-ת])י([א-ת])י$/, conf: 90, suffix: 'י', note: 'Aphel 2fs' },
+    // יפיקו → נפק (Aphel 3mp)
+    { regex: /^י([א-ת])י([א-ת])ו$/, conf: 90, suffix: 'ו', note: 'Aphel 3mp' },
+    // תפיקון → נפק (Aphel 2mp/3fp with final nun)
+    { regex: /^ת([א-ת])י([א-ת])ון$/, conf: 90, suffix: 'ון', note: 'Aphel 2mp/3fp' },
+  ];
+
+  for (const { regex, conf, suffix } of aphelPeNunPatterns) {
+    const match = consonants.match(regex);
+    if (match) {
+      // Reconstruct the Pe-Nun root: נ + first captured consonant + second captured consonant
+      const root = 'נ' + match[1] + match[2];
+      addHypothesis(root, conf, 'פ״נ', 'ת', suffix);
+      // Also add the non-reconstructed form with lower confidence as fallback
+      addHypothesis(match[1] + 'י' + match[2], conf - 15, null, 'ת', suffix);
+    }
+  }
+
   // Strategy 1: Direct 3-letter root
   if (len === 3) addHypothesis(consonants, 95);
 
@@ -998,55 +1064,284 @@ const analyzeWeakVerb = (root) => {
 // DERIVATION CHAIN
 // =============================================================================
 
+/**
+ * Build a derivation chain object for display in WordDefinitionCard
+ * Returns an object with named properties that the UI expects:
+ * - originalWord, extractedRoot, rootSource, rootMeaning, pattern, patternEffect, conjugation, finalTranslation
+ *
+ * @param {string} word - The original word
+ * @param {Object} result - The lookup result with root, english, source, etc.
+ * @param {Object} services - Service functions (stripVowels, GRAMMAR_CONSTANTS)
+ * @returns {Object} Derivation chain object for UI display
+ */
 const buildDerivationChain = (word, result, services) => {
-  const chain = [];
   let current = word;
+  let strippedPrefix = null;
+  let strippedSuffix = null;
 
-  chain.push({ step: 1, form: current, explanation: 'Surface form as written', rule: 'Input text' });
-
-  const noVowels = services.stripVowels(current);
+  // Strip vowels
+  const noVowels = services.stripVowels?.(current) || current;
   if (noVowels !== current) {
-    chain.push({ step: 2, form: noVowels, explanation: 'Consonantal skeleton', rule: 'Remove nikud' });
     current = noVowels;
   }
 
-  const { PREFIXES = {}, SUFFIXES = {} } = services.GRAMMAR_CONSTANTS || {};
-
+  // Check for prefix
   for (const p of ['הת', 'וה', 'מה', 'שה', 'לה', 'בה', 'כש', 'ה', 'ו', 'ב', 'כ', 'ל', 'מ', 'ש', 'נ', 'י', 'ת', 'א']) {
     if (current.startsWith(p) && current.length - p.length >= 2) {
-      const prefixMeaning = Array.from(p).map(c => PREFIXES[c]?.meaning || c).join(' + ');
-      chain.push({ step: 3, form: current.slice(p.length), explanation: `Remove prefix "${p}"`, rule: prefixMeaning });
+      strippedPrefix = p;
       current = current.slice(p.length);
       break;
     }
   }
 
+  // Check for suffix
   for (const s of ['תם', 'תן', 'נו', 'הם', 'הן', 'ים', 'ות', 'ין', 'ה', 'ו', 'י', 'ך', 'ם', 'ן', 'ת']) {
     if (current.endsWith(s) && current.length - s.length >= 2) {
-      const suffixInfo = SUFFIXES[s];
-      chain.push({ step: 4, form: current.slice(0, -s.length), explanation: `Remove suffix "${s}"`, rule: suffixInfo?.meaning || 'inflection' });
+      strippedSuffix = s;
       current = current.slice(0, -s.length);
       break;
     }
   }
 
+  // Reconstruct root for weak verbs
   let reconstructedRoot = current;
-  if (current.length === 2 && result.weakVerb?.primary) {
-    const wv = result.weakVerb.primary;
-    if (wv.code === 'פ״נ') reconstructedRoot = 'נ' + current;
-    else if (wv.code === 'פ״י') reconstructedRoot = 'י' + current;
-    else if (wv.code === 'ע״ו' || wv.code === 'ע״ו/ע״י') reconstructedRoot = current[0] + 'ו' + current[1];
-    else if (wv.code === 'ל״ה') reconstructedRoot = current + 'ה';
+  let weakVerbType = null;
+  let weakVerbNote = null;
 
-    chain.push({ step: 5, form: reconstructedRoot, explanation: `Reconstruct (${wv.code})`, rule: wv.transformation });
-  } else if (current.length === 3) {
-    chain.push({ step: 5, form: current, explanation: 'Three-letter root (שורש)', rule: 'Standard triliteral' });
+  // Check if we already have weak verb info from hypothesis validation
+  if (result.bestHypothesis?.weakType) {
+    weakVerbType = result.bestHypothesis.weakType;
+    reconstructedRoot = result.bestHypothesis.root || current;
+    weakVerbNote = `${weakVerbType} - root reconstructed`;
+  } else if (current.length === 2 && result.weakVerb?.primary) {
+    const wv = result.weakVerb.primary;
+    weakVerbType = wv.code;
+    if (wv.code === 'פ״נ') {
+      reconstructedRoot = 'נ' + current;
+      weakVerbNote = 'Pe-Nun: נ assimilated';
+    } else if (wv.code === 'פ״י') {
+      reconstructedRoot = 'י' + current;
+      weakVerbNote = 'Pe-Yod: י dropped';
+    } else if (wv.code === 'ע״ו' || wv.code === 'ע״ו/ע״י') {
+      reconstructedRoot = current[0] + 'ו' + current[1];
+      weakVerbNote = 'Hollow verb: middle letter restored';
+    } else if (wv.code === 'ל״ה') {
+      reconstructedRoot = current + 'ה';
+      weakVerbNote = 'Lamed-He: final ה restored';
+    }
+  }
+
+  // PRO SCHOLAR: Check for Pe-Nun pattern in 3-letter stems (e.g., פיק → נפק)
+  // This catches cases where the stem looks like XיX from an Aphel of נ-root
+  if (!weakVerbType && current.length === 3 && current[1] === 'י') {
+    // Possible Pe-Nun Aphel stem: first consonant + י + last consonant
+    // Check if נ + first + last is a known root
+    const potentialRoot = 'נ' + current[0] + current[2];
+    // Common Pe-Nun roots
+    const knownPeNunRoots = ['נפק', 'נתן', 'נפל', 'נגע', 'נטל', 'נצל', 'נכס', 'נשק', 'נגד', 'נסע'];
+    if (knownPeNunRoots.includes(potentialRoot)) {
+      weakVerbType = 'פ״נ';
+      reconstructedRoot = potentialRoot;
+      weakVerbNote = 'Pe-Nun: נ assimilated in Aphel/Hiphil';
+    }
   }
 
   const finalRoot = result.root || reconstructedRoot;
-  chain.push({ step: 6, form: finalRoot, explanation: `Lexical root: ${result.english || '(meaning)'}`, rule: result.source ? `Source: ${result.source.toUpperCase()}` : 'Dictionary lookup' });
 
-  return chain;
+  // Determine root source label
+  let rootSource = 'Analysis';
+  if (result.source === 'jastrow') rootSource = 'Jastrow';
+  else if (result.source === 'bdb') rootSource = 'BDB';
+  else if (result.source === 'strong' || result.source === 'strongs') rootSource = "Strong's";
+  else if (result.source === 'cal') rootSource = 'CAL';
+  else if (result.source === 'sefaria') rootSource = 'Sefaria';
+  else if (result.source === 'local') rootSource = 'Local';
+  else if (result.sourceTier === 'gold') rootSource = result.source?.charAt(0).toUpperCase() + result.source?.slice(1) || 'Dictionary';
+
+  // Determine pattern (binyan) info
+  let pattern = null;
+  let patternEffect = null;
+  if (result.morphology?.binyan) {
+    pattern = result.morphology.binyan;
+    patternEffect = result.morphology.binyanInfo?.meaning || null;
+  } else if (result.morphologyInfo?.pattern) {
+    pattern = result.morphologyInfo.pattern;
+    patternEffect = result.morphologyInfo.patternMeaning || null;
+  }
+
+  // Determine conjugation info
+  let conjugation = null;
+  if (result.morphology?.formDescription) {
+    conjugation = result.morphology.formDescription;
+  } else if (result.morphologyInfo?.conjugation) {
+    conjugation = result.morphologyInfo.conjugation;
+  }
+
+  // Build the derivation chain object matching UI expectations
+  return {
+    originalWord: word,
+    extractedRoot: finalRoot || null,
+    rootSource: rootSource,
+    rootMeaning: result.english || null,
+    pattern: pattern,
+    patternEffect: patternEffect,
+    conjugation: conjugation,
+    finalTranslation: result.english || result.translation || null,
+    // PRO SCHOLAR: Additional scholarly data for transparency
+    strippedPrefix,
+    strippedSuffix,
+    weakVerbType,
+    weakVerbNote,  // Explanation of weak verb transformation
+    stem: current,
+    // Confidence and validation info
+    confidence: result.confidence || (result.bestHypothesis?.confidence) || null,
+    validated: result.bestHypothesis?.validated || false,
+    consensusSources: result.consensusSources || null  // Sources that agree on the root
+  };
+};
+
+// =============================================================================
+// PRO SCHOLAR V7: SCHOLARLY WORKFLOW GENERATOR
+// =============================================================================
+
+/**
+ * Apply V7 scholarly workflow analysis to a result
+ * Generates step-by-step explanation of how the word was analyzed
+ *
+ * @param {Object} result - The lookup result
+ * @param {string} word - Original word
+ * @param {Object} options - Context options
+ * @returns {Object} Enhanced result with scholarly workflow
+ */
+const applyScholarlyWorkflow = (result, word, options = {}) => {
+  if (!result) return result;
+
+  try {
+    // Determine match type from lookup path and characteristics
+    let matchType = 'EXACT';
+    const prefixesStripped = [];
+    const suffixesStripped = [];
+
+    if (result.lookupPath?.includes('hypothesis') || result.bestHypothesis?.validated) {
+      matchType = 'ROOT_DERIVED';
+    } else if (result.derivationChain?.strippedPrefix) {
+      matchType = 'PREFIX_STRIPPED';
+      const prefixInfo = result.derivationChain.strippedPrefix;
+      prefixesStripped.push({
+        letter: prefixInfo,
+        meaning: getPrefixMeaning(prefixInfo)
+      });
+    } else if (result.derivationChain?.strippedSuffix) {
+      matchType = 'SUFFIX_STRIPPED';
+      suffixesStripped.push({
+        suffix: result.derivationChain.strippedSuffix,
+        meaning: getSuffixMeaning(result.derivationChain.strippedSuffix)
+      });
+    } else if (result.binyan) {
+      matchType = 'BINYAN';
+    } else if (result.weakVerb) {
+      matchType = 'MORPHOLOGICAL';
+    }
+
+    // Get match type info
+    const matchTypeInfo = getMatchTypeInfo(matchType);
+    result.matchType = matchType;
+    result.matchTypeInfo = matchTypeInfo;
+    result.prefixesStripped = prefixesStripped;
+    result.suffixesStripped = suffixesStripped;
+
+    // Calculate and explain confidence
+    const sourceConfidence = calculateSourceConfidence(result.source, matchType);
+    result.confidenceExplanation = explainConfidence(
+      result.confidence || sourceConfidence.score,
+      result.source,
+      matchType
+    );
+
+    // Classify source
+    const sourceInfo = getSourceInfo(result.source);
+    const reliability = getSourceReliability(result.source);
+
+    result.sourceClassification = {
+      isAcademic: isAcademicLexicon(result.source),
+      isLocal: isLocalSource(result.source),
+      reliabilityTier: reliability?.label || 'Unknown',
+      reliabilityLevel: reliability?.level || 5,
+      reliabilityIcon: reliability?.icon || '📑',
+      sourceType: sourceInfo?.type || 'unknown'
+    };
+
+    // Generate full scholarly workflow explanation
+    result.scholarlyWorkflow = generateScholarlyExplanation({
+      word: word,
+      root: result.root,
+      definition: result.english || result.translation,
+      source: result.source,
+      matchType: matchType,
+      prefixes: prefixesStripped,
+      suffixes: suffixesStripped,
+      binyan: result.binyan,
+      confidence: result.confidence
+    });
+
+    result._meta.scholarFeatures.scholarlyWorkflow = true;
+
+  } catch (e) {
+    logError('applyScholarlyWorkflow', e, word);
+  }
+
+  return result;
+};
+
+/**
+ * Get prefix meaning for scholarly display
+ */
+const getPrefixMeaning = (prefix) => {
+  const meanings = {
+    'ה': 'the (definite article)',
+    'ו': 'and/or (conjunction)',
+    'ב': 'in/with (preposition)',
+    'כ': 'as/like (comparative)',
+    'ל': 'to/for (dative)',
+    'מ': 'from (ablative)',
+    'ש': 'that/which (relative)',
+    'הת': 'reflexive (Hitpael)',
+    'נ': 'passive marker',
+    'י': 'imperfect prefix (3ms/3fp)',
+    'ת': 'imperfect prefix (2ms/3fs)',
+    'א': 'imperfect prefix (1cs)',
+    'מה': 'the + from',
+    'שה': 'that + the',
+    'לה': 'to + the',
+    'בה': 'in + the',
+    'כש': 'when/as (temporal)',
+    'וה': 'and + the'
+  };
+  return meanings[prefix] || 'grammatical prefix';
+};
+
+/**
+ * Get suffix meaning for scholarly display
+ */
+const getSuffixMeaning = (suffix) => {
+  const meanings = {
+    'ה': 'her/it (3fs) or directional',
+    'ו': 'his/him (3ms)',
+    'י': 'my (1cs)',
+    'ך': 'your (2ms)',
+    'ם': 'them (3mp)',
+    'ן': 'them (3fp)',
+    'ת': 'you (2fs) or construct',
+    'ים': 'masculine plural',
+    'ות': 'feminine plural',
+    'ין': 'Aramaic masculine plural',
+    'תם': 'you all (2mp)',
+    'תן': 'you all (2fp)',
+    'נו': 'us/our (1cp)',
+    'הם': 'them/their (3mp)',
+    'הן': 'them/their (3fp)'
+  };
+  return meanings[suffix] || 'grammatical suffix';
 };
 
 // =============================================================================
@@ -1361,6 +1656,52 @@ const applyScholarlyEnhancements = async (result, word, services, scholarService
     }
   }
 
+  // 1.5 PRO SCHOLAR V8: CONSENSUS SCORING
+  // Cross-validate root across multiple dictionaries for higher confidence
+  if (result.root || result.bestHypothesis?.root) {
+    const rootToValidate = result.root || result.bestHypothesis?.root;
+    const consensusResults = { sources: [], agreement: 0, confidence: 0 };
+
+    try {
+      // Check multiple sources in parallel for consensus
+      const [jastrowCheck, bdbCheck, strongsCheck] = await Promise.allSettled([
+        services.lookupJastrow?.(rootToValidate)?.catch(() => null),
+        services.lookupBDB?.(rootToValidate)?.catch(() => null),
+        services.lookupStrongs?.(rootToValidate)?.catch(() => null)
+      ]);
+
+      if (jastrowCheck.status === 'fulfilled' && jastrowCheck.value?.headword) {
+        consensusResults.sources.push('Jastrow');
+      }
+      if (bdbCheck.status === 'fulfilled' && bdbCheck.value?.headword) {
+        consensusResults.sources.push('BDB');
+      }
+      if (strongsCheck.status === 'fulfilled' && strongsCheck.value?.headword) {
+        consensusResults.sources.push("Strong's");
+      }
+
+      consensusResults.agreement = consensusResults.sources.length;
+
+      // Calculate consensus confidence boost
+      if (consensusResults.agreement >= 3) {
+        consensusResults.confidence = 95;
+        result.confidence = Math.max(result.confidence || 0, 95);
+      } else if (consensusResults.agreement === 2) {
+        consensusResults.confidence = 85;
+        result.confidence = Math.max(result.confidence || 0, 85);
+      } else if (consensusResults.agreement === 1) {
+        consensusResults.confidence = 75;
+        result.confidence = Math.max(result.confidence || 0, 75);
+      }
+
+      result.consensusSources = consensusResults.sources;
+      result.consensusScore = consensusResults;
+      result._meta.scholarFeatures.consensusValidation = true;
+    } catch {
+      // Consensus validation is optional, don't fail the lookup
+    }
+  }
+
   // 2. Weak verb analysis
   if (result.root) {
     const weakAnalysis = analyzeWeakVerb(result.root);
@@ -1429,6 +1770,42 @@ const applyScholarlyEnhancements = async (result, word, services, scholarService
   result.matchValidation = validateDictionaryMatch(word, result);
   result._meta.scholarFeatures.sourceValidation = true;
 
+  // 8.5 PRO SCHOLAR V8: UNCERTAINTY WARNINGS
+  // Flag low-confidence results and provide alternatives
+  const effectiveConfidence = result.confidence || result.consensusScore?.confidence ||
+    result.bestHypothesis?.confidence || 50;
+
+  if (effectiveConfidence < 60) {
+    result.uncertain = true;
+    result.uncertaintyLevel = effectiveConfidence < 40 ? 'high' : 'moderate';
+    result.uncertaintyWarning = effectiveConfidence < 40
+      ? 'Multiple interpretations possible - verification recommended'
+      : 'Root extraction has moderate uncertainty';
+
+    // Provide alternative hypotheses for user consideration
+    if (result.rootHypotheses && result.rootHypotheses.length > 1) {
+      result.alternatives = result.rootHypotheses.slice(1, 4).map(h => ({
+        root: h.root,
+        confidence: h.confidence,
+        weakType: h.weakType,
+        definition: h.definition || null,
+        source: h.source || null
+      }));
+    }
+  } else if (effectiveConfidence >= 90) {
+    result.highConfidence = true;
+    result.confidenceLevel = 'high';
+  } else if (effectiveConfidence >= 75) {
+    result.confidenceLevel = 'good';
+  } else {
+    result.confidenceLevel = 'moderate';
+  }
+
+  result._meta.scholarFeatures.uncertaintyAnalysis = true;
+
+  // 9. PRO SCHOLAR V7: Apply scholarly workflow explanation
+  result = applyScholarlyWorkflow(result, word, options);
+
   return result;
 };
 
@@ -1461,15 +1838,36 @@ export const lookupWord = async (word, options = {}) => {
   _telemetry.cacheMisses++;
 
   return getOrCreatePendingRequestWithCleanup(cacheKey, async () => {
-    const preClass = services.preClassify(cleaned, { reference, textType: effectiveContext });
+    // PRO SCHOLAR V8: Pass ORIGINAL word to preClassify for daf reference detection
+    // (צו:) needs the punctuation to be recognized as page 96b)
+    const preClass = services.preClassify(word, { reference, textType: effectiveContext, cleaned });
 
     if (preClass?.skipLookup || preClass?.skipDictionary) {
+      // PRO SCHOLAR V8: Include contextual note for technical terms
+      const meaningWithContext = preClass.note
+        ? `${preClass.meaning || preClass.english} — ${preClass.note}`
+        : (preClass.meaning || preClass.english);
+
       const result = createNormalizedResult({
-        word, cleanedWord: cleaned, english: preClass.meaning || preClass.english, translation: preClass.meaning || preClass.english,
-        root: preClass.root, source: preClass.type === 'abbreviation' ? 'abbreviation' : 'pre-classification',
-        confidence: preClass.confidence || 95, lookupPath: `pre-classification:${preClass.type}`,
+        word, cleanedWord: cleaned,
+        english: meaningWithContext,
+        translation: meaningWithContext,
+        root: preClass.root,
+        source: preClass.type === 'abbreviation' ? 'abbreviation' :
+                preClass.type === 'technical_term' ? `Talmudic (${preClass.context || 'technical'})` : 'pre-classification',
+        confidence: preClass.confidence || 95,
+        lookupPath: `pre-classification:${preClass.type}`,
+        // Include the scholarly note and context directly
+        contextNote: preClass.note,
+        termContext: preClass.context,
         _meta: { version: '4.0-scholar', timestamp: Date.now(), contextType: effectiveContext, preClassified: true, scholarFeatures: {} }
       });
+      // PRO SCHOLAR V8: Build derivation chain for pre-classified results too
+      // Include weak verb info if available from preClass
+      if (preClass.weakVerb) {
+        result.bestHypothesis = { root: preClass.root, weakType: preClass.weakVerb, confidence: preClass.confidence };
+      }
+      result.derivationChain = buildDerivationChain(word, result, services);
       if (useCache) _lookupCache.set(cacheKey, result);
       return result;
     }
@@ -1563,10 +1961,14 @@ export const quickLookup = (word) => {
   try {
     const syncResult = services.lookupWordSync(cleaned);
     if (syncResult?.english) {
-      return createNormalizedResult({
+      const result = createNormalizedResult({
         word, cleanedWord: cleaned, english: syncResult.english, translation: syncResult.english,
-        source: syncResult.source || 'local', headword: syncResult.headword, lookupPath: 'sync-local'
+        source: syncResult.source || 'local', headword: syncResult.headword, lookupPath: 'sync-local',
+        root: syncResult.root || null
       });
+      // Build derivation chain for UI display
+      result.derivationChain = buildDerivationChain(word, result, services);
+      return result;
     }
   } catch (e) {
     logError('quickLookup', e, word);
@@ -1706,8 +2108,20 @@ const wordLookupOrchestrator = {
   // Utility functions
   createNormalizedResult, validateDictionaryMatch, calculateHeadwordSimilarity,
   generateRootHypotheses, analyzeWeakVerb, buildDerivationChain, detectHistoricalLayer,
+  // PRO SCHOLAR V7: Scholarly workflow functions
+  applyScholarlyWorkflow, getPrefixMeaning, getSuffixMeaning,
   // Constants
-  SOURCE_TIERS, SOURCE_METADATA, WEAK_VERB_TYPES, BINYAN_INFO, SEMANTIC_DOMAINS, HISTORICAL_LAYERS, COGNATE_LANGUAGES
+  SOURCE_TIERS, SOURCE_METADATA, WEAK_VERB_TYPES, BINYAN_INFO, SEMANTIC_DOMAINS, HISTORICAL_LAYERS, COGNATE_LANGUAGES,
+  // PRO SCHOLAR V7: Re-exported from dictionarySources
+  MATCH_TYPES, RELIABILITY_TIERS,
+  generateScholarlyExplanation, getMatchTypeInfo, explainConfidence, isAcademicLexicon, isLocalSource
 };
 
 export default wordLookupOrchestrator;
+
+// PRO SCHOLAR V7: Named exports for direct imports
+export {
+  applyScholarlyWorkflow,
+  getPrefixMeaning,
+  getSuffixMeaning
+};

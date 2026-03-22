@@ -524,59 +524,135 @@ const WordDefinitionCard = React.memo(function WordDefinitionCard({
         </div>
       )}
 
-      {/* PRO SCHOLAR: Derivation Chain - Shows full scholarly workflow */}
+      {/* PRO SCHOLAR V7: Enhanced Derivation Chain - Shows full scholarly workflow with confidence */}
       {showMorphology && translationData?.derivationChain && (
         <div className="wdc-derivation-chain">
           <div className="derivation-header">
             <span className="derivation-icon">📚</span>
-            <span className="derivation-title">Scholarly Derivation</span>
+            <span className="derivation-title">Morphological Analysis</span>
+            {/* Source indicator */}
+            <span className={`derivation-source-badge ${
+              translationData.derivationChain.rootSource?.includes('Local') ||
+              translationData.derivationChain.rootSource?.includes('ROOT_MEANINGS') ? 'local' :
+              translationData.derivationChain.rootSource?.includes('Jastrow') ||
+              translationData.derivationChain.rootSource?.includes('BDB') ? 'dictionary' : 'analysis'
+            }`}>
+              {translationData.derivationChain.rootSource?.includes('Local') ||
+               translationData.derivationChain.rootSource?.includes('ROOT_MEANINGS') ? '📍 Local' :
+               translationData.derivationChain.rootSource?.includes('Jastrow') ? '📖 Jastrow' :
+               translationData.derivationChain.rootSource?.includes('BDB') ? '📖 BDB' :
+               translationData.derivationChain.rootSource?.includes('Strong') ? '📖 Strong\'s' : '🔬 Analysis'}
+            </span>
+            {/* Confidence indicator */}
+            {translationData.confidence && (
+              <span className={`derivation-confidence ${
+                translationData.confidence >= 85 ? 'high' :
+                translationData.confidence >= 70 ? 'medium' : 'low'
+              }`} title="Root extraction confidence">
+                {translationData.confidence}%
+              </span>
+            )}
           </div>
           <div className="derivation-steps">
             {/* Step 1: Original word */}
             <div className="derivation-step">
-              <span className="step-num">1</span>
-              <span className="step-label">Word:</span>
+              <span className="step-num">①</span>
+              <span className="step-label">Surface Form:</span>
               <span className="step-value word" dir="rtl">{translationData.derivationChain.originalWord}</span>
             </div>
-            {/* Step 2: Root extraction */}
-            <div className="derivation-step">
-              <span className="step-num">2</span>
-              <span className="step-label">Root:</span>
-              <span className="step-value root" dir="rtl">{translationData.derivationChain.extractedRoot}</span>
-              <span className="step-source">({translationData.derivationChain.rootSource})</span>
-            </div>
-            {/* Step 3: Root meaning */}
-            {translationData.derivationChain.rootMeaning && (
+            {/* Step 2: Root extraction - only show if we have a root */}
+            {translationData.derivationChain.extractedRoot && (
               <div className="derivation-step">
-                <span className="step-num">3</span>
-                <span className="step-label">Base:</span>
-                <span className="step-value meaning">"{translationData.derivationChain.rootMeaning}"</span>
+                <span className="step-num">②</span>
+                <span className="step-label">שורש (Root):</span>
+                <span className="step-value root" dir="rtl">{translationData.derivationChain.extractedRoot}</span>
+                {translationData.derivationChain.rootSource &&
+                 translationData.derivationChain.rootSource !== 'ROOT_MEANINGS' && (
+                  <span className="step-source-tag">{translationData.derivationChain.rootSource.replace(' (Local)', '').replace('Local', '')}</span>
+                )}
+                {/* PRO SCHOLAR V8: Weak verb type indicator */}
+                {translationData.derivationChain.weakVerbType && (
+                  <span className="step-weak-badge" title={translationData.derivationChain.weakVerbNote || `Weak verb: ${translationData.derivationChain.weakVerbType}`}>
+                    {translationData.derivationChain.weakVerbType}
+                  </span>
+                )}
               </div>
             )}
-            {/* Step 4: Pattern transformation */}
-            <div className="derivation-step">
-              <span className="step-num">{translationData.derivationChain.rootMeaning ? '4' : '3'}</span>
-              <span className="step-label">Pattern:</span>
-              <span className="step-value pattern">{translationData.derivationChain.pattern}</span>
-              {translationData.derivationChain.patternEffect && (
-                <span className="step-effect">→ {translationData.derivationChain.patternEffect}</span>
-              )}
-            </div>
-            {/* Step 5: Conjugation */}
+            {/* PRO SCHOLAR V8: Weak verb reconstruction note */}
+            {translationData.derivationChain.weakVerbNote && (
+              <div className="derivation-step weak-note">
+                <span className="step-num">↳</span>
+                <span className="step-label weak-label">{translationData.derivationChain.weakVerbNote}</span>
+              </div>
+            )}
+            {/* Step 3: Root meaning - only show if we have meaning */}
+            {translationData.derivationChain.rootMeaning && (
+              <div className="derivation-step">
+                <span className="step-num">③</span>
+                <span className="step-label">Base Meaning:</span>
+                <span className="step-value meaning">{translationData.derivationChain.rootMeaning}</span>
+              </div>
+            )}
+            {/* Step 4: Pattern transformation - only show if we have pattern */}
+            {translationData.derivationChain.pattern && (
+              <div className="derivation-step">
+                <span className="step-num">{translationData.derivationChain.rootMeaning ? '④' : '③'}</span>
+                <span className="step-label">בניין (Pattern):</span>
+                <span className="step-value pattern">{translationData.derivationChain.pattern}</span>
+                {translationData.derivationChain.patternEffect && (
+                  <span className="step-effect">→ {translationData.derivationChain.patternEffect}</span>
+                )}
+              </div>
+            )}
+            {/* Step 5: Conjugation - only show if we have conjugation */}
             {translationData.derivationChain.conjugation && (
               <div className="derivation-step">
-                <span className="step-num">{translationData.derivationChain.rootMeaning ? '5' : '4'}</span>
-                <span className="step-label">Conj:</span>
+                <span className="step-num">{translationData.derivationChain.rootMeaning ? '⑤' : '④'}</span>
+                <span className="step-label">Conjugation:</span>
                 <span className="step-value conj">{translationData.derivationChain.conjugation}</span>
               </div>
             )}
-            {/* Final: Translation */}
-            <div className="derivation-step final">
-              <span className="step-num">✓</span>
-              <span className="step-label">Result:</span>
-              <span className="step-value translation">"{translationData.derivationChain.finalTranslation}"</span>
-            </div>
+            {/* Final: Translation - only show if we have a result */}
+            {translationData.derivationChain.finalTranslation && (
+              <div className="derivation-step final">
+                <span className="step-num">✓</span>
+                <span className="step-label">Translation:</span>
+                <span className="step-value translation">{translationData.derivationChain.finalTranslation}</span>
+              </div>
+            )}
           </div>
+          {/* Source attribution */}
+          <div className="derivation-footer">
+            <span className="derivation-method">
+              {translationData._multiHypothesis ? '🔬 Multi-hypothesis analysis' :
+               translationData._hebrewVerbAnalysis ? '📐 Binyan pattern analysis' :
+               translationData._functionWord ? '📋 Common vocabulary' :
+               translationData.offline ? '💾 Offline dictionary' : '🌐 API lookup'}
+            </span>
+            {/* PRO SCHOLAR V8: Confidence indicator */}
+            {translationData.derivationChain.confidence && (
+              <span className={`derivation-confidence ${
+                translationData.derivationChain.confidence >= 90 ? 'high' :
+                translationData.derivationChain.confidence >= 75 ? 'good' :
+                translationData.derivationChain.confidence >= 60 ? 'moderate' : 'low'
+              }`}>
+                {translationData.derivationChain.confidence}%
+              </span>
+            )}
+            {/* PRO SCHOLAR V8: Consensus sources */}
+            {translationData.derivationChain.consensusSources?.length > 0 && (
+              <span className="derivation-consensus" title={`Validated by: ${translationData.derivationChain.consensusSources.join(', ')}`}>
+                ✓ {translationData.derivationChain.consensusSources.length} sources
+              </span>
+            )}
+          </div>
+          {/* PRO SCHOLAR V8: Uncertainty warning */}
+          {translationData.uncertain && (
+            <div className={`derivation-uncertainty ${translationData.uncertaintyLevel || 'moderate'}`}>
+              <span className="uncertainty-icon">⚠️</span>
+              <span className="uncertainty-text">{translationData.uncertaintyWarning || 'Root extraction has some uncertainty'}</span>
+            </div>
+          )}
         </div>
       )}
 

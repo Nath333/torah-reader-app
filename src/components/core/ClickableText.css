@@ -9519,6 +9519,81 @@
   font-size: 0.8rem;
 }
 
+/* PRO SCHOLAR V7: Source badges and confidence indicators */
+.derivation-source-badge {
+  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.derivation-source-badge.local {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.derivation-source-badge.dictionary {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1e40af;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.derivation-source-badge.analysis {
+  background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+  color: #7c3aed;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.derivation-confidence {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.derivation-confidence.high {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  color: #166534;
+}
+
+.derivation-confidence.medium {
+  background: linear-gradient(135deg, #fef9c3 0%, #fef08a 100%);
+  color: #854d0e;
+}
+
+.derivation-confidence.low {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #991b1b;
+}
+
+.step-source-tag {
+  margin-left: 6px;
+  padding: 1px 5px;
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+  border-radius: 3px;
+  font-size: 0.65rem;
+  font-weight: 500;
+}
+
+.derivation-footer {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(99, 102, 241, 0.1);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.derivation-method {
+  font-size: 0.7rem;
+  color: #64748b;
+  font-style: italic;
+}
+
 /* Dark mode for derivation chain */
 .app.dark-mode .wdc-derivation-chain {
   background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
@@ -9586,6 +9661,53 @@
 
 .app.dark-mode .step-value.translation {
   color: #6ee7b7;
+}
+
+/* Dark mode for V7 source badges and confidence */
+.app.dark-mode .derivation-source-badge.local {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(234, 179, 8, 0.15) 100%);
+  color: #fcd34d;
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.app.dark-mode .derivation-source-badge.dictionary {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.15) 100%);
+  color: #93c5fd;
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+.app.dark-mode .derivation-source-badge.analysis {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(124, 58, 237, 0.15) 100%);
+  color: #c4b5fd;
+  border-color: rgba(139, 92, 246, 0.4);
+}
+
+.app.dark-mode .derivation-confidence.high {
+  background: rgba(34, 197, 94, 0.2);
+  color: #86efac;
+}
+
+.app.dark-mode .derivation-confidence.medium {
+  background: rgba(234, 179, 8, 0.2);
+  color: #fde047;
+}
+
+.app.dark-mode .derivation-confidence.low {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
+
+.app.dark-mode .step-source-tag {
+  background: rgba(99, 102, 241, 0.2);
+  color: #a5b4fc;
+}
+
+.app.dark-mode .derivation-footer {
+  border-top-color: rgba(99, 102, 241, 0.2);
+}
+
+.app.dark-mode .derivation-method {
+  color: #94a3b8;
 }
 
 /* =============================================================================

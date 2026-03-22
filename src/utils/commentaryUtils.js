@@ -5,6 +5,8 @@
 import { cleanHtml } from './sanitize';
 import { createLogger } from './debug';
 import { pickBestDefinition } from './definitionCleaner';
+// Centralized Hebrew utilities
+import { normalizeFinals } from './hebrewUtils';
 // LOCAL dictionaries - much better than API calls!
 import { JASTROW_COMPLETE } from '../data/jastrowComplete';
 import { BDB_BY_WORD } from '../data/bdbComplete';
@@ -479,20 +481,53 @@ const RASHI_VOCABULARY = {
   'לפני': 'before',
   'עד': 'until',
   'מאז': 'since',
+
+  // === PRO SCHOLAR V9: MISHKAN/TABERNACLE TERMS ===
+  // Critical for Shabbat tractate (the 39 melachot derive from Mishkan work)
+  'לויה': 'Levite',
+  'לוי': 'Levite',
+  'לויים': 'Levites',
+  'מחנה': 'camp',
+  'ישראל': 'Israel',
+  'כהן': 'priest',
+  'כהנים': 'priests',
+  'משכן': 'Tabernacle',
+  'אהל': 'tent',
+  'מועד': 'meeting, appointed time',
+  'קרש': 'board, plank',
+  'קרשים': 'boards, planks',
+  'יריעה': 'curtain',
+  'יריעות': 'curtains',
+  'אדן': 'socket, base',
+  'אדנים': 'sockets, bases',
+  'בריח': 'bar',
+  'בריחים': 'bars',
+  'עמוד': 'pillar',
+  'עמודים': 'pillars',
+  'וו': 'hook',
+  'ווים': 'hooks',
+
+  // === BIBLICAL COMMANDS/VERSES ===
+  'ויצו': 'and He commanded',
+  'ויעבירו': 'and they proclaimed',
+  'תפיקו': 'you shall bring out',
+  'תוציאו': 'you shall take out',
+  'נדבות': 'voluntary offerings',
+  'תרומה': 'contribution, offering',
+  'תרומות': 'contributions, offerings',
+
+  // === ADDITIONAL TALMUDIC TERMS ===
+  'כדיליף': 'as is derived',
+  'כדילפינן': 'as we derive',
+  'נפקא לן': 'we derive',
+  'שגגתו': 'his unintentional sin',
+  'זדונו': 'his intentional sin',
+  'התראתו': 'his warning',
 };
 
 // Hebrew prefixes - use centralized morphology constants (single source of truth)
 // SINGLE_PREFIXES imported from '../constants/morphology'
-
-/**
- * Normalize Hebrew final letters to regular form for dictionary matching
- */
-const normalizeFinals = (word) => word
-  .replace(/ם/g, 'מ')
-  .replace(/ן/g, 'נ')
-  .replace(/ץ/g, 'צ')
-  .replace(/ף/g, 'פ')
-  .replace(/ך/g, 'כ');
+// normalizeFinals imported from './hebrewUtils'
 
 /**
  * Look up a word in a local dictionary with morphological variations

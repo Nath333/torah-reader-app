@@ -206,6 +206,50 @@ const getAllDictionaryResults = (word) => {
   const structure = analyzeStructure(word);
   const cleaned = cleanHebrewWord(word);
 
+  // === PRO SCHOLAR V9: TALMUDIC PAGE REFERENCE DETECTION ===
+  // Page references like "צו:" or "צו:)" are daf (page) numbers, not words to translate
+  // Hebrew letters represent numbers: א=1, ב=2, ... י=10, כ=20, ל=30, מ=40, נ=50, ס=60, ע=70, פ=80, צ=90, ק=100
+  // CRITICAL: Must check BEFORE cleanHebrewWord strips the : and ) punctuation
+  const isTalmudicPageRef = (w) => {
+    if (!w) return false;
+    // Strip only nikud/vowels, keeping punctuation for daf detection
+    const noNikud = w.replace(/[\u0591-\u05C7]/g, '');
+    // Pattern: Optional opening paren + 1-3 Hebrew letters + : or . + optional closing paren
+    // e.g., "צו:" = 96b, "צו." = 96a, "(צו:)" = 96b, "צו:)" = 96b
+    const dafPattern = /^[([]*[א-ת]{1,3}[:.][\])]*$/;
+    return dafPattern.test(noNikud);
+  };
+
+  if (isTalmudicPageRef(word)) {
+    // Convert Hebrew letters to number for display
+    const hebrewToNum = { 'א': 1, 'ב': 2, 'ג': 3, 'ד': 4, 'ה': 5, 'ו': 6, 'ז': 7, 'ח': 8, 'ט': 9,
+      'י': 10, 'כ': 20, 'ך': 20, 'ל': 30, 'מ': 40, 'ם': 40, 'נ': 50, 'ן': 50, 'ס': 60, 'ע': 70,
+      'פ': 80, 'ף': 80, 'צ': 90, 'ץ': 90, 'ק': 100, 'ר': 200, 'ש': 300, 'ת': 400 };
+    const letters = cleaned.replace(/[^א-ת]/g, '');
+    const pageNum = letters.split('').reduce((sum, c) => sum + (hebrewToNum[c] || 0), 0);
+
+    // PRO SCHOLAR V9: Valid daf range check
+    // Most tractates have 2-200 pages. Bava Batra (largest) has 176 pages.
+    // Numbers above 200 are almost certainly real words (שבת=702), not page refs.
+    if (pageNum >= 2 && pageNum <= 200) {
+      // Amud notation: : = amud bet (side b), . = amud alef (side a)
+      const amud = word.includes(':') ? 'b' : 'a';
+      return {
+        results: [{
+          source: 'Daf Reference',
+          definition: `daf ${pageNum}${amud}`,
+          isAcademic: false,
+          priority: -1,
+          isPageRef: true,
+        }],
+        isAbbrev: false,
+        structure: { prefixes: [], root: cleaned },
+        isPageRef: true,
+      };
+    }
+    // If page number is out of range, fall through to normal word lookup
+  }
+
   // === CRITICAL WORD FALLBACK (HIGHEST PRIORITY) ===
   // Check for words that MUST have correct translations regardless of lookup issues
   const criticalTranslation = CRITICAL_WORDS[cleaned] || CRITICAL_WORDS[word];
@@ -288,40 +332,16 @@ const getAllDictionaryResults = (word) => {
     }
   }
 
-  // === ALWAYS QUERY ALL SOURCES (PRO SCHOLAR MODE) ===
+  // === PRO SCHOLAR V8: ACADEMIC-FIRST PRIORITY SYSTEM ===
+  // Priority order: Academic dictionaries (1-2) > Scholarly (3) > Curated vocabulary (5-6)
+  // This ensures Jastrow/BDB/CAL show as primary, with local vocab as supplementary
 
-  // 1. Check RASHI_VOCABULARY (quick Talmudic terms)
-  const rashiMatch = checkRashiWithPrefixes(cleaned);
-  if (rashiMatch) {
-    const fullDef = rashiMatch.prefix
-      ? `${rashiMatch.prefix} ${rashiMatch.definition}`
-      : rashiMatch.definition;
-    addResult({
-      source: 'Talmudic',
-      definition: fullDef,
-      isAcademic: true,
-      priority: 1,
-    });
-  }
-
-  // 2. Check Halachic terms (always check, not just when empty)
-  if (cleaned) {
-    const halachicResult = lookupHalachicWithPrefix(cleaned);
-    if (halachicResult?.definition) {
-      addResult({
-        source: halachicResult.source || 'Halachic',
-        definition: halachicResult.definition,
-        isAcademic: true,
-        priority: 2,
-      });
-    }
-  }
-
-  // 3. ALWAYS query main dictionaries (Jastrow, BDB, Strong's, Klein, CAL)
+  // 1. FIRST: Query main dictionaries (Jastrow, BDB, Strong's, Klein, CAL)
+  // These get HIGHEST priority for scholarly credibility
   try {
     const lookup = lookupWordSync(word);
 
-    // Add all sources from combined service (PRO SCHOLAR: show ALL)
+    // Add all sources from combined service (PRO SCHOLAR V8: academic sources FIRST)
     if (lookup?.sources) {
       for (const src of lookup.sources) {
         if (src.definition) {
@@ -332,14 +352,44 @@ const getAllDictionaryResults = (word) => {
             strictQuality: true,
           });
           if (cleanedDef && cleanedDef.length > 2) {
+            // PRO SCHOLAR V8: Academic sources get TOP priority
+            const isAcademic = src.isAcademic || isAcademicSource(src.name);
+            const tier = src.reliabilityTier || (isAcademic ? 1 : 3);
+
             addResult({
-              source: src.name || 'Dictionary',
+              // Basic fields
+              source: src.shortName || src.name || 'Dictionary',
+              fullName: src.fullName || src.name,
               definition: cleanedDef,
               fullDefinition: src.definition,
               year: src.year,
               strongNumber: src.strongNumber,
-              isAcademic: isAcademicSource(src.name),
-              priority: isAcademicSource(src.name) ? 3 : 5,
+              // PRO SCHOLAR V7: Enriched scholarly metadata
+              author: src.author,
+              citations: src.citations,
+              specialization: src.specialization,
+              // Classification
+              reliabilityTier: tier,
+              reliabilityLabel: src.reliabilityLabel,
+              reliabilityIcon: src.reliabilityIcon,
+              // Match information
+              matchType: src.matchType,
+              matchIcon: src.matchIcon,
+              // Confidence scoring
+              confidence: src.confidence,
+              baseConfidence: src.baseConfidence,
+              matchConfidence: src.matchConfidence,
+              // Flags
+              isAcademic,
+              isLocal: src.isLocal,
+              isLexicon: src.isLexicon,
+              // PRO SCHOLAR V8: Academic-first priority
+              // Tier 1 (Jastrow, BDB, CAL): priority 1
+              // Tier 2 (Strong's, Klein): priority 2
+              // Other: priority 4
+              priority: (tier === 1) ? 1 :
+                        (tier === 2) ? 2 :
+                        isAcademic ? 1 : 4,
             });
           }
         }
@@ -354,11 +404,12 @@ const getAllDictionaryResults = (word) => {
         removeHebrew: true,
       });
       if (cleanedDef) {
+        const isAcademic = isAcademicSource(lookup.source);
         addResult({
           source: lookup.source || 'Dictionary',
           definition: cleanedDef,
-          isAcademic: isAcademicSource(lookup.source),
-          priority: 4,
+          isAcademic,
+          priority: isAcademic ? 2 : 4,
         });
       }
     }
@@ -366,39 +417,63 @@ const getAllDictionaryResults = (word) => {
     // Ignore lookup errors
   }
 
-  // 4. If has prefixes, ALSO try root lookup (adds more scholarly sources)
-  if (structure.prefixes.length > 0 && structure.root.length >= 2) {
-    // Check RASHI_VOCABULARY for the root
-    if (RASHI_VOCABULARY[structure.root]) {
+  // 2. SECOND: Check RASHI_VOCABULARY (curated Talmudic terms) - SUPPLEMENTARY
+  // These are useful fallbacks but should NOT override academic dictionaries
+  const rashiMatch = checkRashiWithPrefixes(cleaned);
+  if (rashiMatch) {
+    const fullDef = rashiMatch.prefix
+      ? `${rashiMatch.prefix} ${rashiMatch.definition}`
+      : rashiMatch.definition;
+    addResult({
+      source: 'Rabbinic',
+      definition: fullDef,
+      isAcademic: false,
+      isLocal: true,
+      reliabilityTier: 3,
+      priority: 5,  // Lower priority than academic sources
+    });
+  }
+
+  // 3. THIRD: Check Halachic terms - SUPPLEMENTARY
+  if (cleaned) {
+    const halachicResult = lookupHalachicWithPrefix(cleaned);
+    if (halachicResult?.definition) {
       addResult({
-        source: 'Talmudic (root)',
-        definition: RASHI_VOCABULARY[structure.root],
-        isRoot: true,
-        isAcademic: true,
-        priority: 6,
+        source: halachicResult.source || 'Halachic',
+        definition: halachicResult.definition,
+        isAcademic: false,
+        isLocal: true,
+        reliabilityTier: 3,
+        priority: 5,  // Lower priority than academic sources
       });
     }
+  }
 
+  // 4. FOURTH: If has prefixes, try root lookup (adds more scholarly sources)
+  if (structure.prefixes.length > 0 && structure.root.length >= 2) {
+    // Try dictionary root lookup FIRST (academic sources)
     try {
       const rootLookup = lookupWordSync(structure.root);
       if (rootLookup?.sources) {
         for (const src of rootLookup.sources) {
           if (src.definition) {
-            // CRITICAL: Use strictQuality to filter garbage definitions like "intermission", "daughter"
             const cleanedDef = cleanDefinition(src.definition, {
               maxLength: 120,
               removeReferences: true,
               removeHebrew: true,
-              strictQuality: true,  // FIXED: Was missing, allowing garbage through
+              strictQuality: true,
             });
             if (cleanedDef && cleanedDef.length > 2) {
+              const isAcademic = isAcademicSource(src.name);
               addResult({
                 source: `${src.name || 'Dict'} (root)`,
                 definition: cleanedDef,
                 year: src.year,
                 isRoot: true,
-                isAcademic: isAcademicSource(src.name),
-                priority: 7,
+                isAcademic,
+                reliabilityTier: isAcademic ? 1 : 3,
+                // Root lookups from academic sources still get good priority
+                priority: isAcademic ? 3 : 6,
               });
             }
           }
@@ -406,6 +481,19 @@ const getAllDictionaryResults = (word) => {
       }
     } catch (e) {
       // Ignore
+    }
+
+    // Check RASHI_VOCABULARY for the root (supplementary)
+    if (RASHI_VOCABULARY[structure.root]) {
+      addResult({
+        source: 'Rabbinic (root)',
+        definition: RASHI_VOCABULARY[structure.root],
+        isRoot: true,
+        isAcademic: false,
+        isLocal: true,
+        reliabilityTier: 3,
+        priority: 7,
+      });
     }
   }
 
@@ -425,30 +513,162 @@ const getAllDictionaryResults = (word) => {
 };
 
 /**
- * Source badge with reliability
+ * PRO SCHOLAR V7: Tier Legend Component
+ * Explains the source reliability tiers for scholarly transparency
  */
-const SourceBadge = ({ source, year, small = false }) => {
+const TierLegend = ({ compact = true }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  if (compact && !expanded) {
+    return (
+      <button
+        className="tier-legend-toggle"
+        onClick={() => setExpanded(true)}
+        title="Show source tier explanation"
+      >
+        ℹ️ Tier Legend
+      </button>
+    );
+  }
+
+  return (
+    <div className="tier-legend">
+      <div className="tier-legend-header">
+        <span className="tier-legend-title">📊 Source Reliability Tiers</span>
+        {compact && (
+          <button className="tier-legend-close" onClick={() => setExpanded(false)}>×</button>
+        )}
+      </div>
+      <div className="tier-legend-items">
+        <div className="tier-item gold">
+          <span className="tier-icon">🥇</span>
+          <span className="tier-label">Gold</span>
+          <span className="tier-desc">Academic standard (Jastrow, BDB, CAL)</span>
+        </div>
+        <div className="tier-item silver">
+          <span className="tier-icon">🥈</span>
+          <span className="tier-label">Silver</span>
+          <span className="tier-desc">Reliable reference (Strong's, Klein)</span>
+        </div>
+        <div className="tier-item bronze">
+          <span className="tier-icon">🥉</span>
+          <span className="tier-label">Bronze</span>
+          <span className="tier-desc">Supplementary (computed/inferred)</span>
+        </div>
+      </div>
+      <div className="tier-legend-match-types">
+        <span className="match-legend-title">Match Types:</span>
+        <span className="match-item"><span className="match-badge exact">✓</span> Exact</span>
+        <span className="match-item"><span className="match-badge morphed">P</span> Prefix stripped</span>
+        <span className="match-item"><span className="match-badge root">R</span> Root lookup</span>
+        <span className="match-item"><span className="match-badge fuzzy">~</span> Approximate</span>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * PRO SCHOLAR V7: Enhanced source badge with match type and confidence
+ * Shows: Source name, reliability tier, match type (exact/morphological/fuzzy), local indicator
+ * Now accepts enriched metadata directly from combinedTranslationService
+ */
+const SourceBadge = ({
+  source,
+  year,
+  small = false,
+  matchType,
+  isLocal = true,
+  confidence,
+  // PRO SCHOLAR V7: Enriched metadata fields
+  fullName,
+  author,
+  reliabilityTier,
+  reliabilityIcon,
+  reliabilityLabel,
+  specialization,
+  citations,
+  matchIcon,
+  color
+}) => {
+  // Use enriched data if available, otherwise fall back to lookup
   const info = getSourceInfo(source);
   const reliability = RELIABILITY_TIERS[info?.reliability];
 
+  // Determine tier display - prefer enriched data
+  const tierLevel = reliabilityTier || reliability?.level || 3;
+  const tierClass = tierLevel === 1 ? 'gold' : tierLevel === 2 ? 'silver' : 'bronze';
+  const tierIcon = reliabilityIcon || reliability?.icon || '📑';
+  const tierLabel = reliabilityLabel || reliability?.label || 'Reference';
+
+  // Match type display - enhanced with enriched matchType
+  const matchTypeDisplay = {
+    'EXACT': { label: '✓', title: 'Exact dictionary match', class: 'exact' },
+    'exact': { label: '✓', title: 'Exact dictionary match', class: 'exact' },
+    'NORMALIZED': { label: '≈', title: 'Normalized (finals converted)', class: 'normalized' },
+    'normalized': { label: 'N', title: 'Normalized (finals → regular)', class: 'normalized' },
+    'PREFIX_STRIPPED': { label: 'P', title: 'Prefix stripped (ו, ה, ב, ל, מ, כ)', class: 'morphed' },
+    'prefix-stripped': { label: 'P', title: 'Prefix stripped (ו, ה, ב, ל, מ, כ)', class: 'morphed' },
+    'SUFFIX_STRIPPED': { label: 'S', title: 'Suffix stripped', class: 'morphed' },
+    'suffix-stripped': { label: 'S', title: 'Suffix stripped', class: 'morphed' },
+    'ROOT_DERIVED': { label: 'R', title: 'Root form lookup', class: 'root' },
+    'root': { label: 'R', title: 'Root form lookup', class: 'root' },
+    'MORPHOLOGICAL': { label: 'M', title: 'Full morphological analysis', class: 'morphed' },
+    'morphological': { label: 'M', title: 'Morphological analysis', class: 'morphed' },
+    'BINYAN': { label: 'B', title: 'Binyan pattern analysis', class: 'binyan' },
+    'CROSSREF': { label: '→', title: 'Cross-reference lookup', class: 'crossref' },
+    'fuzzy': { label: '~', title: 'Fuzzy/approximate match', class: 'fuzzy' },
+    'inferred': { label: '?', title: 'Algorithmically inferred', class: 'inferred' },
+  };
+
+  const matchInfo = matchType ? matchTypeDisplay[matchType] : null;
+
+  // Use enriched icon if available
+  const displayMatchIcon = matchIcon || matchInfo?.label;
+
+  // Build detailed tooltip with enriched metadata
+  const tooltip = [
+    fullName || info?.fullName || source,
+    author ? `Author: ${author}` : null,
+    year ? `Published: ${year}` : null,
+    specialization || info?.specialization || null,
+    citations ? `Standard citation: ${citations}` : null,
+    '',
+    `Tier: ${tierLevel === 1 ? '🥇 Gold (Academic)' : tierLevel === 2 ? '🥈 Silver (Reference)' : '🥉 Bronze (Supplementary)'}`,
+    `Level: ${tierLabel}`,
+    matchInfo ? `Match: ${matchInfo.title}` : null,
+    confidence ? `Confidence: ${confidence}%` : null,
+    isLocal !== false ? '📦 Local dictionary (offline capable)' : '🌐 Network lookup',
+  ].filter(Boolean).join('\n');
+
   return (
     <span
-      className={`scholar-source ${small ? 'small' : ''} ${reliability?.level === 1 ? 'gold' : ''}`}
-      style={{ backgroundColor: info?.color || '#6b7280' }}
-      title={`${info?.fullName || source}${year ? ` (${year})` : ''}\n${info?.specialization || ''}`}
+      className={`scholar-source ${small ? 'small' : ''} ${tierClass}`}
+      style={{ backgroundColor: color || info?.color || '#6b7280' }}
+      title={tooltip}
     >
-      {reliability?.icon && <span className="rel-icon">{reliability.icon}</span>}
+      <span className="rel-icon">{tierIcon}</span>
       {info?.name || source}
       {year && <span className="src-year">({year})</span>}
+      {matchInfo && (
+        <span className={`match-type-badge ${matchInfo.class}`} title={matchInfo.title}>
+          {displayMatchIcon}
+        </span>
+      )}
+      {confidence && confidence < 100 && (
+        <span className={`confidence-indicator ${confidence >= 85 ? 'high' : confidence >= 70 ? 'med' : 'low'}`}>
+          {confidence}%
+        </span>
+      )}
     </span>
   );
 };
 
 /**
- * Single glossary entry
+ * PRO SCHOLAR V7: Enhanced glossary entry with confidence scoring
+ * Shows: Word, match type, root analysis confidence, dictionary sources
  */
 const GlossaryEntry = ({ word, data, expanded, onToggle }) => {
-  const { results, isAbbrev, structure } = data;
+  const { results, isAbbrev, structure, isPreClassified } = data;
   const hasMultiple = results.length > 1;
   const primary = results[0];
 
@@ -461,6 +681,14 @@ const GlossaryEntry = ({ word, data, expanded, onToggle }) => {
 
   const displayPrimary = sortedResults[0] || primary;
 
+  // Determine match type for display
+  const getMatchType = () => {
+    if (isPreClassified) return 'exact';
+    if (displayPrimary?.isRoot) return 'root';
+    if (structure.prefixes.length > 0) return 'prefix-stripped';
+    return 'exact';
+  };
+
   if (!displayPrimary) {
     return (
       <div className="glossary-entry no-trans">
@@ -471,15 +699,31 @@ const GlossaryEntry = ({ word, data, expanded, onToggle }) => {
     );
   }
 
+  // PRO SCHOLAR V7: Show derivation path for transparency
+  const showDerivation = structure.prefixes.length > 0 || displayPrimary?.isRoot;
+
   return (
     <div className={`glossary-entry ${expanded ? 'expanded' : ''} ${hasMultiple ? 'clickable' : ''}`}>
       <div className="gl-main" onClick={() => hasMultiple && onToggle()}>
         <span className="gl-word" dir="rtl">{word}</span>
 
-        {isAbbrev && <span className="gl-tag abbrev">abbr</span>}
+        {/* PRO SCHOLAR V7: Type badges */}
+        {data.isPageRef && <span className="gl-tag type-pageref">daf</span>}
+        {isAbbrev && !data.isPageRef && <span className="gl-tag abbrev">abbr</span>}
+        {isPreClassified && displayPrimary?.type && (
+          <span className={`gl-tag type-${displayPrimary.type}`}>
+            {displayPrimary.type === 'proper_name' ? 'name' :
+             displayPrimary.type === 'technical_term' ? 'tech' :
+             displayPrimary.type === 'aramaic_particle' ? 'aram' :
+             displayPrimary.type === 'biblical_particle' ? 'bibl' :
+             displayPrimary.type === 'verb_form' ? 'verb' :
+             displayPrimary.type}
+          </span>
+        )}
 
+        {/* PRO SCHOLAR V7: Morphological analysis indicator */}
         {structure.prefixes.length > 0 && (
-          <span className="gl-morph">
+          <span className="gl-morph" title={`Prefix analysis: ${structure.prefixes.map(p => `${p.letter}=${p.meaning}`).join(', ')}`}>
             {structure.prefixes.map(p => p.meaning).join('+')}+
           </span>
         )}
@@ -487,28 +731,86 @@ const GlossaryEntry = ({ word, data, expanded, onToggle }) => {
         <span className="gl-arrow">→</span>
         <span className="gl-def">{displayPrimary.definition}</span>
 
-        <SourceBadge source={displayPrimary.source} year={displayPrimary.year} small />
+        {/* PRO SCHOLAR V7: Enhanced source badge with full metadata */}
+        <SourceBadge
+          source={displayPrimary.source}
+          year={displayPrimary.year}
+          small
+          matchType={displayPrimary.matchType || getMatchType()}
+          isLocal={displayPrimary.isLocal !== false}
+          confidence={displayPrimary.confidence}
+          fullName={displayPrimary.fullName}
+          author={displayPrimary.author}
+          reliabilityTier={displayPrimary.reliabilityTier}
+          reliabilityIcon={displayPrimary.reliabilityIcon}
+          reliabilityLabel={displayPrimary.reliabilityLabel}
+          specialization={displayPrimary.specialization}
+          citations={displayPrimary.citations}
+          matchIcon={displayPrimary.matchIcon}
+          color={displayPrimary.color}
+        />
 
         {hasMultiple && (
-          <span className="gl-more" title="Click to see more sources">
+          <span className="gl-more" title="Click to see all dictionary sources">
             +{results.length - 1}
           </span>
         )}
       </div>
 
+      {/* PRO SCHOLAR V7: Expanded view with derivation chain */}
       {expanded && hasMultiple && (
         <div className="gl-alternatives">
           <div className="gl-alt-header">📖 All dictionary sources ({results.length}):</div>
+
+          {/* Show derivation if morphological analysis was used */}
+          {showDerivation && (
+            <div className="gl-derivation">
+              <span className="derivation-label">Analysis:</span>
+              <span className="derivation-word" dir="rtl">{word}</span>
+              {structure.prefixes.length > 0 && (
+                <>
+                  <span className="derivation-arrow">→</span>
+                  <span className="derivation-prefix">
+                    {structure.prefixes.map(p => `${p.letter} (${p.meaning})`).join(' + ')}
+                  </span>
+                  <span className="derivation-plus">+</span>
+                </>
+              )}
+              <span className="derivation-root" dir="rtl">{structure.root}</span>
+            </div>
+          )}
+
           {sortedResults.slice(1).map((r, i) => (
-            <div key={i} className={`gl-alt ${r.isAcademic ? 'academic' : ''}`}>
-              <SourceBadge source={r.source} year={r.year} />
+            <div key={i} className={`gl-alt ${r.isAcademic ? 'academic' : ''} tier-${r.reliabilityTier || 3}`}>
+              <SourceBadge
+                source={r.source}
+                year={r.year}
+                matchType={r.matchType || (r.isRoot ? 'root' : 'exact')}
+                isLocal={r.isLocal !== false}
+                confidence={r.confidence}
+                fullName={r.fullName}
+                author={r.author}
+                reliabilityTier={r.reliabilityTier}
+                reliabilityIcon={r.reliabilityIcon}
+                reliabilityLabel={r.reliabilityLabel}
+                specialization={r.specialization}
+                citations={r.citations}
+                matchIcon={r.matchIcon}
+                color={r.color}
+              />
               {r.strongNumber && (
                 <span className="gl-strong" title="Strong's Concordance Number">
-                  {r.strongNumber}
+                  H{r.strongNumber}
                 </span>
               )}
               <span className="gl-alt-def">{r.definition}</span>
-              {r.isRoot && <span className="gl-root-tag">root</span>}
+              {r.isRoot && <span className="gl-root-tag" title="Definition from root form">root</span>}
+              {r.note && <span className="gl-note" title={r.note}>💡</span>}
+              {r.confidence && r.confidence < 100 && (
+                <span className={`gl-confidence ${r.confidence >= 85 ? 'high' : r.confidence >= 70 ? 'med' : 'low'}`}>
+                  {r.confidence}%
+                </span>
+              )}
             </div>
           ))}
         </div>
@@ -531,6 +833,81 @@ const DictionaryTranslation = ({ text, className = '' }) => {
     const sources = {};
     let translated = 0;
 
+    // PRO SCHOLAR V7: Normalize source names for deduplication
+    const normalizeSourceName = (name) => {
+      if (!name) return 'Unknown';
+      // Remove year suffixes, variants, emojis, and standardize names
+      let normalized = name
+        .replace(/[\u{1F300}-\u{1F9FF}]/gu, '')  // Remove emojis (tier icons like 🥇🥈🥉)
+        .replace(/\s*\(\d{4}\)\s*/g, '')  // Remove (1903), (1906), etc.
+        .replace(/\s*\(root\)\s*/gi, '')  // Remove (root)
+        .replace(/\s*\(local\)\s*/gi, '') // Remove (local)
+        .replace(/\s*\(Aram\.?\)\s*/gi, '') // Remove (Aram) or (Aram.)
+        .replace(/\s+\d{4}$/g, '')        // Remove trailing year like "Jastrow 1903"
+        .replace(/['']s?\s*/g, '')        // Remove apostrophes and possessives
+        .trim();
+
+      // Map variant names to canonical forms for proper aggregation
+      const canonicalNames = {
+        // Jastrow variants
+        'jastrow': 'Jastrow',
+        'marcus jastrow': 'Jastrow',
+        'jastrows': 'Jastrow',
+        'm jastrow': 'Jastrow',
+        // BDB variants
+        'bdb': 'BDB',
+        'brown-driver-briggs': 'BDB',
+        'brown driver briggs': 'BDB',
+        'browndriverbriggs': 'BDB',
+        'brown': 'BDB',
+        // CAL variants
+        'cal': 'CAL',
+        'cal database': 'CAL',
+        'comprehensive aramaic lexicon': 'CAL',
+        'aramaic lexicon': 'CAL',
+        // Strong's variants
+        'strong': "Strong's",
+        'strongs': "Strong's",
+        'strongs concordance': "Strong's",
+        'strong concordance': "Strong's",
+        // Klein variants
+        'klein': 'Klein',
+        'ernest klein': 'Klein',
+        'e klein': 'Klein',
+        // HALOT variants
+        'halot': 'HALOT',
+        'koehler': 'HALOT',
+        'koehler-baumgartner': 'HALOT',
+        // Gesenius variants
+        'gesenius': 'Gesenius',
+        'gks': 'Gesenius',
+        // Sefaria
+        'sefaria': 'Sefaria',
+        // Other
+        'rabbinic': 'Rabbinic',
+        'talmudic': 'Rabbinic',
+        'rashi': 'Rabbinic',
+        'halachic': 'Halachic',
+        'halacha': 'Halachic',
+        'core': 'Core',
+        'dict': 'Dictionary',
+        'dictionary': 'Dictionary',
+        'reference': 'Reference',
+        'pre-classification': 'Pre-Classification',
+        'preclassification': 'Pre-Classification',
+        'function': 'Function Words',
+        'function words': 'Function Words',
+        'particles': 'Particles',
+        'morphology': 'Morphology',
+        'morphological': 'Morphology',
+        'root': 'Root Analysis',
+      };
+
+      // Lookup canonical name (case-insensitive)
+      const lowerNormalized = normalized.toLowerCase();
+      return canonicalNames[lowerNormalized] || normalized;
+    };
+
     for (const word of words) {
       const data = getAllDictionaryResults(word);
       entries.push({ word, data });
@@ -538,7 +915,9 @@ const DictionaryTranslation = ({ text, className = '' }) => {
       if (data.results.length > 0) {
         translated++;
         for (const r of data.results) {
-          sources[r.source] = (sources[r.source] || 0) + 1;
+          // Use normalized name for counting
+          const normalizedName = normalizeSourceName(r.source);
+          sources[normalizedName] = (sources[normalizedName] || 0) + 1;
         }
       }
     }
@@ -580,18 +959,21 @@ const DictionaryTranslation = ({ text, className = '' }) => {
     <div className={`dictionary-translation scholar-glossary ${className}`}>
       {/* Header */}
       <div className="scholar-header">
-        <span className="scholar-title">📚 Dictionary-Based Glossary</span>
+        <span className="scholar-title">📚 Pro Scholar Glossary</span>
         <span className={`coverage-badge ${coverage >= 70 ? 'high' : coverage >= 40 ? 'med' : 'low'}`}>
           {coverage}% ({stats.translated}/{stats.total})
         </span>
       </div>
+
+      {/* PRO SCHOLAR V7: Source Tier Legend */}
+      <TierLegend compact={true} />
 
       {/* Sources used - sorted by reliability */}
       <div className="scholar-sources">
         <span className="sources-label">Sources:</span>
         {sources.map(({ name, count, isAcademic }) => (
           <span key={name} className={`source-with-count ${isAcademic ? 'academic' : ''}`}>
-            <SourceBadge source={name} />
+            <SourceBadge source={name} matchType="exact" isLocal={true} />
             <span className="src-count">×{count}</span>
           </span>
         ))}
@@ -610,8 +992,18 @@ const DictionaryTranslation = ({ text, className = '' }) => {
         ))}
       </div>
 
-      <div className="scholar-tip">
-        🥇 Academic sources: Jastrow (1903), BDB (1906), CAL • Click <strong>+N</strong> to compare definitions
+      {/* PRO SCHOLAR V7: Enhanced scholarly footer */}
+      <div className="scholar-footer">
+        <div className="scholar-tip">
+          <strong>📊 Source Tiers:</strong> 🥇 Gold = Academic standard (Jastrow 1903, BDB 1906, CAL) •
+          🥈 Silver = Reliable reference • 🥉 Bronze = Supplementary
+        </div>
+        <div className="scholar-tip-secondary">
+          <strong>Match Types:</strong> ✓ = Exact match • P = Prefix stripped • R = Root lookup • ~ = Approximate
+        </div>
+        <div className="scholar-tip-tertiary">
+          Click <strong>+N</strong> to compare all dictionary definitions for a word
+        </div>
       </div>
     </div>
   );

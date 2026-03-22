@@ -1,5 +1,24 @@
 /**
- * PRO SCHOLAR V5: Unified Word Lookup Cache Service
+ * @deprecated This file is DEPRECATED as of PRO SCHOLAR V8.
+ *
+ * The cache functionality has been consolidated into cacheOrchestrator.js
+ * Please import from there instead:
+ *
+ * import { WordLookupCache, wordLookupCache } from './cacheOrchestrator';
+ *
+ * This file re-exports from cacheOrchestrator for backwards compatibility.
+ */
+
+// Re-export from consolidated cache module
+export { WordLookupCache, wordLookupCache } from './cacheOrchestrator';
+export { wordLookupCache as default } from './cacheOrchestrator';
+
+// =============================================================================
+// DEPRECATED - Original implementation below kept for reference only
+// =============================================================================
+
+/*
+ * PRO SCHOLAR V5: Unified Word Lookup Cache Service (DEPRECATED)
  *
  * Consolidates the multiple cache implementations into a single service:
  * - useWordLookup.js: resultCache (100 entries, no TTL)
@@ -14,6 +33,7 @@
  * - Singleton pattern for app-wide consistency
  */
 
+/*
 import { createLogger } from '../utils/debug';
 
 const log = createLogger('WordLookupCache');
@@ -305,3 +325,4 @@ export {
 };
 
 export default wordLookupCache;
+*/

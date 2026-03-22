@@ -857,9 +857,9 @@ export {
 } from './servicePreloader';
 
 // =============================================================================
-// PRO SCHOLAR V5 - Unified Word Lookup Cache
+// PRO SCHOLAR V8 - Unified Cache System (consolidated in cacheOrchestrator)
 // =============================================================================
-export { default as wordLookupCache, WordLookupCache } from './wordLookupCache';
+export { wordLookupCache, WordLookupCache } from './cacheOrchestrator';
 
 // =============================================================================
 // PRO SCHOLAR V6.1 - Advanced Linguistic Analysis + Historical & Cognate Data

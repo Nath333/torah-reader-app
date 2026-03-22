@@ -136,7 +136,8 @@
       "Bash(npm run build:dev:*)",
       "Bash(npm run lint)",
       "Bash(for dir in src/components/*/)",
-      "Bash(do [ ! -f \"$dir/index.js\" ])"
+      "Bash(do [ ! -f \"$dir/index.js\" ])",
+      "Bash(npm run lint:*)"
     ]
   }
 }

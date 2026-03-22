@@ -48,3 +48,15 @@ export {
   useModal,
   MODALS
 } from './ModalContext';
+
+// =============================================================================
+// PRO SCHOLAR V8: Initialization Context
+// =============================================================================
+
+// Initialization Context - tracks app startup and dictionary loading
+export {
+  InitializationProvider,
+  useInitialization,
+  useWaitForInit,
+  INIT_STATES
+} from './InitializationContext';

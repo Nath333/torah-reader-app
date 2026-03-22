@@ -8,7 +8,7 @@
 import { createManagedCache } from './cacheOrchestrator';
 import { cleanHtml } from '../utils/sanitize';
 import { fetchWithFallback } from '../utils/http';
-import { cleanHebrewWord } from '../utils/hebrewUtils';
+import { cleanHebrewWord, normalizeFinals } from '../utils/hebrewUtils';
 import { analyzeWord as analyzeGrammar, extractRoot as extractGrammarRoot } from './grammarAnalysisService';
 import { createLogger } from '../utils/debug';
 // Import halachic overrides for context-specific translations
@@ -156,13 +156,7 @@ const lookupLocalJastrow = async (word, _depth = 0) => {
   const cleaned = cleanWordForLookup(word);
   if (!cleaned || cleaned.length < 2) return null;
 
-  // Normalize final letters (sofit → regular form)
-  const normalizeFinals = (w) => w
-    .replace(/ם/g, 'מ')
-    .replace(/ן/g, 'נ')
-    .replace(/ץ/g, 'צ')
-    .replace(/ף/g, 'פ')
-    .replace(/ך/g, 'כ');
+  // normalizeFinals imported from ../utils/hebrewUtils
 
   // Try to find entry in dictionary with normalization
   const tryLookup = (form) => {
@@ -377,10 +371,7 @@ const lookupLocalBDB = async (word) => {
   const cleaned = cleanWordForLookup(word);
   if (!cleaned || cleaned.length < 2) return null;
 
-  // Normalize final letters
-  const normalizeFinals = (w) => w
-    .replace(/ם/g, 'מ').replace(/ן/g, 'נ')
-    .replace(/ץ/g, 'צ').replace(/ף/g, 'פ').replace(/ך/g, 'כ');
+  // normalizeFinals imported from ../utils/hebrewUtils
 
   const tryLookup = (form) => {
     if (!form || form.length < 2) return null;
@@ -426,10 +417,7 @@ const lookupLocalStrongs = async (word) => {
   const cleaned = cleanWordForLookup(word);
   if (!cleaned || cleaned.length < 2) return null;
 
-  // Normalize final letters
-  const normalizeFinals = (w) => w
-    .replace(/ם/g, 'מ').replace(/ן/g, 'נ')
-    .replace(/ץ/g, 'צ').replace(/ף/g, 'פ').replace(/ך/g, 'כ');
+  // normalizeFinals imported from ../utils/hebrewUtils
 
   const tryLookup = (form) => {
     if (!form || form.length < 2) return null;

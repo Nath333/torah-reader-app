@@ -16,7 +16,12 @@ import React, { useMemo, useCallback, useRef, useState } from 'react';
 import { splitIntoWords } from '../../services/hebrewDictionary';
 import { lookupWordSync, clearCaches as clearServiceCaches } from '../../services/combinedTranslationService';
 import { useSettings } from '../../context/SettingsContext';
-import { getSourceReliability } from '../../constants/dictionarySources';
+import {
+  getSourceReliability,
+  isAcademicLexicon,
+  isLocalSource,
+  formatSourceDisplay
+} from '../../constants/dictionarySources';
 import { lookupFunctionWord } from '../../constants/morphology';
 import { preClassify } from '../../services/preClassificationService';
 import { analyzeVerbGrammar, formatVerbGrammar, calculateConfidence } from '../../utils/morphologyAnalyzer';
@@ -201,6 +206,9 @@ const getWordGloss = (word, showFrench = false, contextMode = null, reference = 
       // PRO SCHOLAR v3: Calculate confidence score
       const confidence = calculateConfidence(result);
 
+      // PRO SCHOLAR V7: Determine match type for confidence calculation
+      const matchType = result._matchType || (result.root ? 'ROOT_DERIVED' : 'EXACT');
+
       const glossData = {
         gloss: gloss || null,
         source: result.source || 'unknown',
@@ -213,7 +221,9 @@ const getWordGloss = (word, showFrench = false, contextMode = null, reference = 
         isAramaic: result.isAramaic || result.language === 'Aramaic',
         // PRO SCHOLAR v3: Grammar and confidence
         grammar,
-        confidence
+        confidence,
+        // PRO SCHOLAR V7: Match type for scholarly display
+        matchType
       };
 
       // Cache the result
@@ -338,10 +348,18 @@ const GlossedText = ({
       // Reference provides more accurate context detection:
       // - "Rashi on Shabbat 2a" → talmudic context
       // - "Rashi on Genesis 1:1" → biblical context
+      const glossResult = getWordGloss(word, showFrench, contextMode, reference);
       const {
         gloss, source, sources, sourceCount, tier, reliability, root, headword, isAramaic,
-        grammar, confidence
-      } = getWordGloss(word, showFrench, contextMode, reference);
+        grammar, confidence, matchType
+      } = glossResult;
+
+      // PRO SCHOLAR V7: Scholarly source classification
+      const sourceDisplay = formatSourceDisplay(source, {
+        matchType: matchType || 'EXACT',
+        root: root,
+        confidence: confidence
+      });
 
       const wordData = {
         word,
@@ -357,7 +375,12 @@ const GlossedText = ({
         isAramaic,
         // PRO SCHOLAR v3: Verb grammar and confidence
         grammar,
-        confidence
+        confidence,
+        // PRO SCHOLAR V7: Scholarly classification
+        sourceDisplay,
+        isLexicon: isAcademicLexicon(source),
+        isLocal: isLocalSource(source),
+        matchType: matchType || 'EXACT'
       };
 
       seenWords.set(word, wordData);
@@ -429,15 +452,16 @@ const GlossedText = ({
     return null;
   }
 
-  // Calculate stats for display (PRO SCHOLAR enhanced)
+  // Calculate stats for display (PRO SCHOLAR V7 enhanced)
   const glossedCount = glossedWords.filter(w => w.gloss).length;
   const totalCount = glossedWords.length;
   const coverage = Math.round((glossedCount / totalCount) * 100);
 
-  // Count multi-source words (scholarly quality indicator)
+  // PRO SCHOLAR V7: Count by source type (academic lexicon vs local curated)
+  const lexiconCount = glossedWords.filter(w => w.isLexicon && w.gloss).length;
+  const localCount = glossedWords.filter(w => w.isLocal && w.gloss).length;
+  const rootDerivedCount = glossedWords.filter(w => w.matchType === 'ROOT_DERIVED' && w.gloss).length;
   const multiSourceCount = glossedWords.filter(w => w.sourceCount > 1).length;
-  const goldTierCount = glossedWords.filter(w => w.tier === 'gold').length;
-  const silverTierCount = glossedWords.filter(w => w.tier === 'silver').length;
 
   return (
     <div className={`glossed-text-wrapper ${language}`}>
@@ -447,28 +471,41 @@ const GlossedText = ({
         role="group"
         aria-label="Glossed Hebrew text"
       >
-        {glossedWords.map(({ word, gloss, fullGloss, source, sources, sourceCount, tier, root, isAramaic, grammar, confidence }, index) => {
-          // Build rich tooltip showing all sources + grammar + confidence
+        {glossedWords.map(({ word, gloss, fullGloss, source, sources, sourceCount, tier, root, isAramaic, grammar, confidence, sourceDisplay, isLexicon, isLocal, matchType }, index) => {
+          // PRO SCHOLAR V7: Build scholarly tooltip
+          const sourceInfo = sourceDisplay?.isAcademic
+            ? `📚 ${sourceDisplay.display}`
+            : sourceDisplay?.isLocal
+            ? `📝 ${sourceDisplay.name} [local]`
+            : source;
+
+          const derivationInfo = root && matchType !== 'EXACT'
+            ? `\n🔤 Root: ${root} (${matchType === 'ROOT_DERIVED' ? 'derived' : matchType})`
+            : root ? `\n🔤 Root: ${root}` : '';
+
           const sourceList = sources?.length > 0
             ? sources.map(s => `${s.name}: ${s.definition?.substring(0, 60) || '...'}`).join('\n')
             : fullGloss || '';
 
-          // PRO SCHOLAR v3: Build grammar info for tooltip
+          // PRO SCHOLAR V7: Build grammar info for tooltip
           const grammarInfo = grammar ? `\n\n📖 Grammar:\n${grammar.summary}` : '';
           const confidenceInfo = confidence ? `\n${confidence.emoji} ${confidence.score}% confident` : '';
 
           const tooltip = fullGloss
-            ? `${word}: ${fullGloss}${root ? ` (שורש: ${root})` : ''}${grammarInfo}${confidenceInfo}${sourceCount > 1 ? `\n\n📚 ${sourceCount} sources:\n${sourceList}` : ''}`
+            ? `${word}: ${fullGloss}${derivationInfo}\n\nSource: ${sourceInfo}${grammarInfo}${confidenceInfo}${sourceCount > 1 ? `\n\n📚 ${sourceCount} sources:\n${sourceList}` : ''}`
             : word;
 
-          // PRO SCHOLAR v3: Confidence-based class
+          // PRO SCHOLAR V7: Source type class
+          const sourceTypeClass = isLexicon ? 'source-lexicon' : isLocal ? 'source-local' : '';
           const confidenceClass = confidence?.level ? `confidence-${confidence.level}` : '';
 
           return (
             <ruby
               key={`${word}-${index}`}
-              className={`glossed-word ${gloss ? 'has-gloss' : 'no-gloss'} ${activeIndex === index ? 'active' : ''} ${lookingUpIndex === index ? 'looking-up' : ''} ${tier ? `tier-${tier}` : ''} ${isAramaic ? 'aramaic' : ''} ${confidenceClass} ${grammar ? 'has-grammar' : ''}`}
+              className={`glossed-word ${gloss ? 'has-gloss' : 'no-gloss'} ${activeIndex === index ? 'active' : ''} ${lookingUpIndex === index ? 'looking-up' : ''} ${tier ? `tier-${tier}` : ''} ${isAramaic ? 'aramaic' : ''} ${confidenceClass} ${sourceTypeClass} ${grammar ? 'has-grammar' : ''}`}
               data-source={source}
+              data-source-type={isLexicon ? 'lexicon' : isLocal ? 'local' : 'unknown'}
+              data-match-type={matchType}
               data-tier={tier}
               data-sources={sourceCount}
               data-root={root}
@@ -530,16 +567,25 @@ const GlossedText = ({
           </div>
 
           <div className="glossed-stats-right">
-            {/* PRO SCHOLAR: Show source quality indicators */}
-            {multiSourceCount > 0 && (
-              <span className="stat-multi-source" title={`${multiSourceCount} words have multiple scholarly sources`}>
-                📚 {multiSourceCount}
+            {/* PRO SCHOLAR V7: Show source type breakdown */}
+            {lexiconCount > 0 && (
+              <span className="stat-lexicon" title={`${lexiconCount} words from academic lexicons (Jastrow, BDB, etc.)`}>
+                📚 {lexiconCount}
               </span>
             )}
-            {(goldTierCount > 0 || silverTierCount > 0) && (
-              <span className="stat-quality" title="Academic quality sources">
-                {goldTierCount > 0 && <span className="tier-gold-indicator">🥇 {goldTierCount}</span>}
-                {silverTierCount > 0 && <span className="tier-silver-indicator">🥈 {silverTierCount}</span>}
+            {localCount > 0 && (
+              <span className="stat-local" title={`${localCount} words from curated vocabulary [local]`}>
+                📝 {localCount}
+              </span>
+            )}
+            {rootDerivedCount > 0 && (
+              <span className="stat-derived" title={`${rootDerivedCount} words derived from root analysis`}>
+                🔤 {rootDerivedCount}
+              </span>
+            )}
+            {multiSourceCount > 0 && (
+              <span className="stat-multi-source" title={`${multiSourceCount} words have multiple sources`}>
+                +{multiSourceCount}
               </span>
             )}
           </div>
