@@ -746,36 +746,9 @@ export {
 } from './rootFormsService';
 
 // =============================================================================
-// MULTI-HYPOTHESIS SERVICE - Legacy root extraction
-// ⚠️ DEPRECATED: Use unifiedRootService.extractRootsWithDirectValidation instead!
-// This service has been superseded by PRO SCHOLAR V6 unified root extraction.
-// =============================================================================
-export { default as multiHypothesisService } from './multiHypothesisService';
-
-// =============================================================================
-// WORD LOOKUP SERVICE - Legacy lookup functions
-// ⚠️ DEPRECATED: Use wordLookupOrchestrator or wordLookupHelpers instead!
-// This service will be removed in a future version.
-// =============================================================================
-export { default as wordLookupService } from './wordLookupService';
-export {
-  // Prefix/Suffix utilities - consider using grammarAnalysisService instead
-  getPrefixMeaning,
-  getSuffixMeaning,
-  checkHalachicOverride,
-  // Detection utilities
-  isLikelyNoun,
-  isVerbSenseDefinition,
-  // Async lookup functions - prefer wordLookupOrchestrator.lookupWord()
-  lookupHebrewScholarlyAsync,
-  lookupAramaicAsync,
-  lookupAramaicSync
-} from './wordLookupService';
-
-// =============================================================================
 // PRO SCHOLAR v4 - Unified Feature Registry & Performance Layer
-// ⚠️ DEPRECATED for root extraction - Use unifiedRootService.js instead!
-// Still valid for: FEATURES flags, telemetry, service cache management
+// NOTE: Root extraction moved to unifiedRootService.js (V6)
+// v4 still valid for: FEATURES flags, telemetry, service cache management
 // =============================================================================
 export { default as proScholarV4 } from './proScholarV4';
 export {

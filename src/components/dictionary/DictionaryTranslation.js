@@ -52,13 +52,7 @@ const analyzeStructure = (word) => {
   // PRO SCHOLAR: CRITICAL FIX - Don't strip prefixes from words with complete translations
   // This prevents ויעבירו → ו + יעבירו when we have "and they caused to pass" as complete translation
   // Check FUNCTION_WORDS first - these are complete words that shouldn't be broken down
-  const funcWordDirect = FUNCTION_WORDS[cleaned];
-  const funcWordLookup = lookupFunctionWord(cleaned);
-  // DEBUG: Trace function word lookup
-  if (cleaned === 'משה' || cleaned === 'ויעבירו' || cleaned === 'וגו') {
-    console.log(`[DEBUG analyzeStructure] "${cleaned}": FUNCTION_WORDS direct=`, funcWordDirect, ', lookupFunctionWord=', funcWordLookup, ', FUNCTION_WORDS type=', typeof FUNCTION_WORDS, ', keys sample=', Object.keys(FUNCTION_WORDS || {}).slice(0, 5));
-  }
-  if (funcWordDirect || funcWordLookup) {
+  if (FUNCTION_WORDS[cleaned] || lookupFunctionWord(cleaned)) {
     return { prefixes: [], root: cleaned };
   }
 
@@ -178,6 +172,28 @@ const checkRashiWithPrefixes = (word) => {
   return null;
 };
 
+// === CRITICAL WORD FALLBACK ===
+// High-priority words that MUST have correct translations
+// Used as fallback when other lookups fail (e.g., due to Unicode issues)
+const CRITICAL_WORDS = {
+  'משה': 'Moses',
+  'ויעבירו': 'and they proclaimed',
+  'וגו': 'etc.',
+  "וגו'": 'etc.',
+  'וגו׳': 'etc.',
+  'להו': 'to them',
+  'ברישיה': 'at its beginning',
+  'לר"ה': 'to public domain',
+  'לרה"י': 'to private domain',
+  'מדבריהם': 'from their words',
+  'אהרן': 'Aaron',
+  'אברהם': 'Abraham',
+  'יצחק': 'Isaac',
+  'יעקב': 'Jacob',
+  'דוד': 'David',
+  'שלמה': 'Solomon',
+};
+
 /**
  * Get ALL dictionary translations for a word - PRO SCHOLAR MODE
  * ALWAYS queries ALL dictionaries for scholarly comparison
@@ -189,6 +205,22 @@ const getAllDictionaryResults = (word) => {
   const isAbbrev = isAbbreviation(word);
   const structure = analyzeStructure(word);
   const cleaned = cleanHebrewWord(word);
+
+  // === CRITICAL WORD FALLBACK (HIGHEST PRIORITY) ===
+  // Check for words that MUST have correct translations regardless of lookup issues
+  const criticalTranslation = CRITICAL_WORDS[cleaned] || CRITICAL_WORDS[word];
+  if (criticalTranslation) {
+    return {
+      results: [{
+        source: 'Core',
+        definition: criticalTranslation,
+        isAcademic: true,
+        priority: -2, // Highest possible priority
+      }],
+      isAbbrev: isAbbreviation(word),
+      structure: { prefixes: [], root: cleaned },
+    };
+  }
 
   // Helper to add result with deduplication
   const addResult = (result) => {
@@ -204,10 +236,6 @@ const getAllDictionaryResults = (word) => {
   // Check for complete verb forms and common words that shouldn't be broken down
   // e.g., ויעבירו → "and they passed/proclaimed" (not "and they ed")
   const functionWordTranslation = lookupFunctionWord(cleaned);
-  // DEBUG: Trace word lookup
-  if (cleaned === 'משה' || cleaned === 'ויעבירו' || cleaned === 'וגו') {
-    console.log(`[DEBUG] Word: "${cleaned}", FUNCTION_WORDS lookup:`, FUNCTION_WORDS[cleaned], 'lookupFunctionWord:', functionWordTranslation);
-  }
   if (functionWordTranslation) {
     addResult({
       source: 'Talmudic',
@@ -228,10 +256,6 @@ const getAllDictionaryResults = (word) => {
   // Check for proper nouns (משה=Moses), abbreviations, technical terms
   // BEFORE dictionary lookup to prevent wrong homograph matches
   const preClassResult = preClassify(cleaned, { textType: 'talmudic' });
-  // DEBUG: Trace preClassify
-  if (cleaned === 'משה' || cleaned === 'ויעבירו' || cleaned === 'וגו') {
-    console.log(`[DEBUG] preClassify("${cleaned}"):`, preClassResult);
-  }
   if (preClassResult && preClassResult.skipDictionary) {
     // For proper names, abbreviations, and technical terms - use our definition directly
     const definition = preClassResult.english || preClassResult.meaning;
@@ -589,19 +613,6 @@ const DictionaryTranslation = ({ text, className = '' }) => {
       <div className="scholar-tip">
         🥇 Academic sources: Jastrow (1903), BDB (1906), CAL • Click <strong>+N</strong> to compare definitions
       </div>
-
-      {/* DEBUG: Visible debug output for specific words */}
-      {process.env.NODE_ENV === 'development' && (
-        <div style={{ marginTop: '10px', padding: '10px', backgroundColor: '#ffffcc', fontSize: '11px', border: '1px solid #ccc' }}>
-          <strong>DEBUG:</strong>
-          <div>FUNCTION_WORDS type: {typeof FUNCTION_WORDS}</div>
-          <div>FUNCTION_WORDS['משה']: {String(FUNCTION_WORDS?.['משה'])}</div>
-          <div>FUNCTION_WORDS['ויעבירו']: {String(FUNCTION_WORDS?.['ויעבירו'])}</div>
-          <div>lookupFunctionWord('משה'): {String(lookupFunctionWord('משה'))}</div>
-          <div>lookupFunctionWord('ויעבירו'): {String(lookupFunctionWord('ויעבירו'))}</div>
-          <div>Sample keys: {Object.keys(FUNCTION_WORDS || {}).slice(0, 10).join(', ')}</div>
-        </div>
-      )}
     </div>
   );
 };

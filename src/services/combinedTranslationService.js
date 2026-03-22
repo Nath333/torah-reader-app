@@ -8,6 +8,8 @@
 import { scholarlyLookup, lookupWordSefaria, getSimpleTranslation, lookupJastrow } from './scholarlyLexiconService';
 import { cleanHebrewWord } from './hebrewDictionary';
 import { isLikelyAramaic } from './babylonianDictionary';
+// PRO SCHOLAR V8: Centralized Hebrew utilities (single source of truth)
+import { normalizeFinals, areSimilarWords } from '../utils/hebrewUtils';
 import { translateEnglishToFrench, quickTranslate } from './englishToFrenchService';
 // PRO SCHOLAR V6.2: Use managed cache with CacheOrchestrator for unified telemetry
 import { createManagedCache } from './cacheOrchestrator';
@@ -102,34 +104,7 @@ const logLookup = (step, word, result) => {
 const HEBREW_PREFIXES = HEBREW_PREFIXES_ORDERED;
 const HEBREW_SUFFIXES = HEBREW_SUFFIXES_ORDERED;
 
-/**
- * Normalize final letters (sofit → regular form)
- */
-const normalizeFinals = (word) => word
-  .replace(/ם/g, 'מ')
-  .replace(/ן/g, 'נ')
-  .replace(/ץ/g, 'צ')
-  .replace(/ף/g, 'פ')
-  .replace(/ך/g, 'כ');
-
-/**
- * Check if two Hebrew words are similar enough (share most consonants)
- * Used to prevent morphology from matching completely unrelated words
- */
-const areSimilarWords = (word1, word2) => {
-  if (!word1 || !word2) return false;
-  // Remove vowels and normalize
-  const clean1 = word1.replace(/[\u0591-\u05C7]/g, '');
-  const clean2 = word2.replace(/[\u0591-\u05C7]/g, '');
-  // Must share at least 2 consonants in same position
-  const minLen = Math.min(clean1.length, clean2.length);
-  if (minLen < 2) return clean1 === clean2;
-  let matches = 0;
-  for (let i = 0; i < minLen; i++) {
-    if (clean1[i] === clean2[i]) matches++;
-  }
-  return matches >= Math.min(2, minLen - 1);
-};
+// normalizeFinals and areSimilarWords are now imported from ../utils/hebrewUtils
 
 /**
  * Try to find a word in a dictionary with morphological variations
@@ -288,6 +263,10 @@ const lookupWithMorphology = (word, dictionary) => {
 
 // PRO SCHOLAR V6.2: Use CacheOrchestrator's managed cache for unified telemetry
 const combinedCache = createManagedCache('translation', { ttl: 60 * 60 * 1000, maxSize: 1000 }); // 1 hour
+
+// PRO SCHOLAR V7: Word-level cache for lookupLocalDictionaries to prevent duplicate lookups
+// This fixes the issue where the same word is looked up 3-4 times through different code paths
+const localDictionaryCache = createManagedCache('localDictionary', { ttl: 5 * 60 * 1000, maxSize: 500 }); // 5 minutes
 
 // =============================================================================
 // Local Dictionary Fallback Lookups
@@ -1005,6 +984,16 @@ const lookupRootInDictionaries = (root, contextMode) => {
  * @returns {object|null} - Combined result from local dictionaries
  */
 const lookupLocalDictionaries = (word, contextMode = null) => {
+  // === PRO SCHOLAR V7: CACHE CHECK TO PREVENT DUPLICATE LOOKUPS ===
+  // The same word can be looked up 3-4 times through different code paths
+  // (main lookup, halachic root, Aramaic root analysis, etc.)
+  const cacheKey = `${word}:${contextMode || 'auto'}`;
+  const cached = localDictionaryCache.get(cacheKey);
+  if (cached !== undefined) {
+    if (DEBUG_LOOKUPS) log.debug(`[Lookup] Cache HIT: ${word}`);
+    return cached;
+  }
+
   if (DEBUG_LOOKUPS) log.debug(`[Lookup] Starting local lookup: ${word}`);
 
   // === PRO SCHOLAR: DETECT CONTEXT MODE ===
@@ -1058,6 +1047,7 @@ const lookupLocalDictionaries = (word, contextMode = null) => {
   // Check if we have any results
   if (!bdbResult && !jastrowResult && !strongResult && !kleinResult && !bdbAramaicResult && !calResult && !jastrowAramaicResult && !crossRefResult) {
     if (DEBUG_LOOKUPS) log.debug(`[Lookup] No results for: ${word}`);
+    localDictionaryCache.set(cacheKey, null); // Cache negative results too
     return null;
   }
 
@@ -1161,9 +1151,11 @@ const lookupLocalDictionaries = (word, contextMode = null) => {
     // This handles inflected forms like שגגתו → שגג/שגה, זדונו → זדון
     const rootFallback = lookupByExtractedRoot(word, effectiveContext);
     if (rootFallback) {
+      localDictionaryCache.set(cacheKey, rootFallback);
       return rootFallback;
     }
 
+    localDictionaryCache.set(cacheKey, null);
     return null;
   }
 
@@ -1227,7 +1219,7 @@ const lookupLocalDictionaries = (word, contextMode = null) => {
   // Sort sources by score (highest first) for better display
   sources.sort((a, b) => (b.score || 0) - (a.score || 0));
 
-  return {
+  const result = {
     english: primaryResult?.english,
     fullDefinition: primaryResult?.fullDefinition,
     source: primaryResult?.source || 'Local Dictionary',
@@ -1241,6 +1233,10 @@ const lookupLocalDictionaries = (word, contextMode = null) => {
     language: isAramaic ? 'Aramaic' : 'Hebrew',
     offline: true
   };
+
+  // Cache the result to prevent duplicate lookups
+  localDictionaryCache.set(cacheKey, result);
+  return result;
 };
 
 // Note: pickBestDefinition is imported from '../utils/definitionCleaner'

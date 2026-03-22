@@ -45,6 +45,41 @@ export const stripAllDiacritics = (text) => {
 };
 
 /**
+ * Normalize final letters (sofit → regular form)
+ * Converts ם ן ץ ף ך to מ נ צ פ כ
+ * @param {string} word - Hebrew word
+ * @returns {string} - Word with normalized finals
+ */
+export const normalizeFinals = (word) => {
+  if (!word || typeof word !== 'string') return word;
+  return word
+    .replace(/ם/g, 'מ')
+    .replace(/ן/g, 'נ')
+    .replace(/ץ/g, 'צ')
+    .replace(/ף/g, 'פ')
+    .replace(/ך/g, 'כ');
+};
+
+/**
+ * Check if two Hebrew words are similar (share consonants)
+ * @param {string} word1 - First Hebrew word
+ * @param {string} word2 - Second Hebrew word
+ * @returns {boolean} - True if words share enough consonants
+ */
+export const areSimilarWords = (word1, word2) => {
+  if (!word1 || !word2) return false;
+  const clean1 = stripAllDiacritics(word1);
+  const clean2 = stripAllDiacritics(word2);
+  const minLen = Math.min(clean1.length, clean2.length);
+  if (minLen < 2) return clean1 === clean2;
+  let matches = 0;
+  for (let i = 0; i < minLen; i++) {
+    if (clean1[i] === clean2[i]) matches++;
+  }
+  return matches >= Math.min(2, minLen - 1);
+};
+
+/**
  * Clean a Hebrew word for dictionary lookup
  * Removes diacritics but PRESERVES gershayim (' ״) for abbreviation detection
  * @param {string} word - Hebrew word to clean
@@ -239,6 +274,9 @@ const hebrewUtils = {
   stripAllDiacritics,
   stripNiqqud,
   cleanHebrewWord,
+  cleanHebrewWordStrict,
+  normalizeFinals,
+  areSimilarWords,
   processHebrewText,
   hasVowels,
   hasCantillation,

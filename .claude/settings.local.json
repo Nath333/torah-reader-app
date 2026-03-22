@@ -134,7 +134,9 @@
       "Bash(powershell -Command \"\\(Get-Content ''c:\\\\Users\\\\natha\\\\Desktop\\\\App_N\\\\torah-reader-app\\\\src\\\\data\\\\rootDatabase.js''\\).Count\")",
       "Bash(timeout 90 npm run build:*)",
       "Bash(npm run build:dev:*)",
-      "Bash(npm run lint)"
+      "Bash(npm run lint)",
+      "Bash(for dir in src/components/*/)",
+      "Bash(do [ ! -f \"$dir/index.js\" ])"
     ]
   }
 }
