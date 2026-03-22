@@ -143,6 +143,11 @@
     z-index: 1000;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
   }
+
+  /* Add bottom padding to prevent content from being hidden behind fixed panel */
+  .torah-reader-wrapper.with-scholar-panel > .torah-reader {
+    padding-bottom: calc(70vh + var(--space-4));
+  }
 }
 
 /* -----------------------------------------------------------------------------
@@ -187,6 +192,8 @@
   background: var(--bg-elevated);
   border-radius: var(--radius-xl);
   gap: var(--space-4);
+  position: relative;
+  z-index: 50;
   flex-wrap: wrap;
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-light);
@@ -281,7 +288,12 @@
 }
 
 .control-button:active {
-  transform: translateY(0);
+  transform: translateY(0) scale(0.98);
+}
+
+.control-button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 .control-button.active {
@@ -299,6 +311,11 @@
 .control-button.active:hover {
   background: var(--primary-hover);
   box-shadow: 0 6px 20px rgba(91, 76, 219, 0.4);
+}
+
+.control-button.active:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 8px rgba(91, 76, 219, 0.3);
 }
 
 /* Clear cache button - small refresh icon */
@@ -450,6 +467,7 @@
   padding: 4px;
   border-radius: var(--radius);
   border: 1px solid var(--border-light);
+  flex-shrink: 0;
 }
 
 .font-size-display {
@@ -463,6 +481,7 @@
   background: var(--bg-elevated);
   border-radius: calc(var(--radius) - 4px);
   line-height: 30px;
+  white-space: nowrap;
 }
 
 .font-btn {
@@ -479,11 +498,18 @@
   border-radius: calc(var(--radius) - 4px);
   color: var(--text-secondary);
   transition: all 150ms ease;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.font-btn:active {
+  transform: scale(0.95);
+  background: var(--primary-light);
 }
 
 .font-btn svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   stroke-width: 2.5;
 }
 
@@ -492,9 +518,9 @@
   color: var(--primary);
 }
 
-.font-btn svg {
-  width: 16px;
-  height: 16px;
+.font-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 /* -----------------------------------------------------------------------------
@@ -505,6 +531,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 /* Individual Verse - Unified Card Design */
@@ -516,7 +544,9 @@
   position: relative;
   background: var(--card-bg);
   box-shadow: var(--card-shadow);
-  overflow: hidden;
+  overflow: visible; /* Allow word definition cards to display properly */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 /* Subtle gradient overlay on hover */
@@ -5195,10 +5225,19 @@
     flex-direction: column;
     align-items: stretch;
     gap: var(--space-3);
+    padding: var(--space-3);
   }
 
   .control-group {
     justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  /* Font controls on mobile - ensure they stay together */
+  .font-controls {
+    margin: 0 auto;
+    width: fit-content;
   }
 
   .verse {
@@ -5215,6 +5254,17 @@
 
   .english-translation {
     font-size: 1em;
+  }
+
+  /* Prevent text overlap on resize */
+  .control-button {
+    min-width: auto;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .control-segment {
+    flex-wrap: nowrap;
   }
 }
 

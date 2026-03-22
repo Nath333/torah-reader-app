@@ -93,6 +93,31 @@ export { default as scholarlyLexiconService } from './scholarlyLexiconService';
 export { default as translationService } from './translationService';
 export { default as englishToFrenchService } from './englishToFrenchService';
 export { default as dictionaryPreloader } from './dictionaryPreloader';
+export { default as dictionaryLoader } from './dictionaryLoader';
+
+// =============================================================================
+// PRE-CLASSIFICATION SERVICE (PRO SCHOLAR V5)
+// =============================================================================
+export { default as preClassificationService } from './preClassificationService';
+export {
+  preClassify,
+  getContextFromReference,
+  getSourcesForContext as getSourcesForContextType,
+  ARAMAIC_PARTICLES,
+  PROPER_NAMES,
+  TECHNICAL_TERMS
+} from './preClassificationService';
+
+// =============================================================================
+// MORPHOLOGICAL ANALYSIS SERVICE
+// =============================================================================
+export { default as morphologicalAnalysisService } from './morphologicalAnalysisService';
+export {
+  analyzeMorphology,
+  getMorphologyBreakdown,
+  getVerbMorphology,
+  getNounMorphology
+} from './morphologicalAnalysisService';
 
 // =============================================================================
 // COMMENTARY SERVICES
@@ -247,6 +272,40 @@ export {
   translateWithSource,
   quickTranslate
 } from './englishToFrenchService';
+
+// =============================================================================
+// NAMED EXPORTS - Dictionary Loader (BDB, Jastrow, Strong's)
+// PRO SCHOLAR V7: Single source of truth for all dictionary operations
+// =============================================================================
+export {
+  // Async loaders
+  getBDB,
+  getJastrow,
+  getStrongs,
+  // Async lookups
+  lookupBDBByWord,
+  lookupBDBByStrongs,
+  lookupJastrowByWord,
+  lookupStrongsByWord,
+  lookupStrongsByNumber,
+  lookupAllDictionaries,
+  // Sync lookups (require preloaded data)
+  lookupBDBSync,
+  lookupJastrowSync,
+  lookupStrongsSync,
+  lookupAllSync,
+  // Raw data access (for morphological analysis)
+  getBDBData,
+  getJastrowData,
+  getStrongsData,
+  // Preloading & state management
+  preloadDictionaries,
+  isDictionaryLoaded,
+  isDictionaryLoading,
+  getLoadingStatus as getDictionaryLoadingStatus,
+  getCacheStatus as getDictionaryCacheStatus,
+  clearCache as clearDictionaryCache
+} from './dictionaryLoader';
 
 // =============================================================================
 // NAMED EXPORTS - Dictionary Preloader
@@ -685,3 +744,260 @@ export {
   searchRootFamily,
   FORM_CATEGORIES
 } from './rootFormsService';
+
+// =============================================================================
+// MULTI-HYPOTHESIS SERVICE - Legacy root extraction
+// ⚠️ DEPRECATED: Use unifiedRootService.extractRootsWithDirectValidation instead!
+// This service has been superseded by PRO SCHOLAR V6 unified root extraction.
+// =============================================================================
+export { default as multiHypothesisService } from './multiHypothesisService';
+
+// =============================================================================
+// WORD LOOKUP SERVICE - Legacy lookup functions
+// ⚠️ DEPRECATED: Use wordLookupOrchestrator or wordLookupHelpers instead!
+// This service will be removed in a future version.
+// =============================================================================
+export { default as wordLookupService } from './wordLookupService';
+export {
+  // Prefix/Suffix utilities - consider using grammarAnalysisService instead
+  getPrefixMeaning,
+  getSuffixMeaning,
+  checkHalachicOverride,
+  // Detection utilities
+  isLikelyNoun,
+  isVerbSenseDefinition,
+  // Async lookup functions - prefer wordLookupOrchestrator.lookupWord()
+  lookupHebrewScholarlyAsync,
+  lookupAramaicAsync,
+  lookupAramaicSync
+} from './wordLookupService';
+
+// =============================================================================
+// PRO SCHOLAR v4 - Unified Feature Registry & Performance Layer
+// ⚠️ DEPRECATED for root extraction - Use unifiedRootService.js instead!
+// Still valid for: FEATURES flags, telemetry, service cache management
+// =============================================================================
+export { default as proScholarV4 } from './proScholarV4';
+export {
+  // Version & Feature Flags
+  PRO_SCHOLAR_VERSION,
+  FEATURES as PRO_SCHOLAR_FEATURES,
+
+  // Service Management
+  getService as getProService,
+
+  // Unified Cache System
+  getCached,
+  setCached,
+  clearCache as clearProCache,
+  getCacheStats as getProCacheStats,
+
+  // Unified API
+  analyzeWord as proAnalyzeWord,
+  getCrossReferences as proGetCrossReferences,
+  getKnowledgeGraph as proGetKnowledgeGraph,
+  getSRSCard as proGetSRSCard,
+  processSRSReview as proProcessSRSReview,
+
+  // Preloading & Prefetching
+  preloadServices,
+  prefetchWords,
+
+  // Telemetry
+  getTelemetry as getProTelemetry
+} from './proScholarV4';
+
+// =============================================================================
+// WORD LOOKUP ORCHESTRATOR - Unified Word Lookup Interface
+// =============================================================================
+export { default as wordLookupOrchestrator } from './wordLookupOrchestrator';
+export {
+  lookupWord,
+  quickLookup,
+  clearLookupCache,
+  getCacheStats as getLookupCacheStats
+} from './wordLookupOrchestrator';
+
+// =============================================================================
+// PRO SCHOLAR V6.1 - Unified Root Extraction Service
+// =============================================================================
+export { default as unifiedRootService } from './unifiedRootService';
+export {
+  // ★★★ PRO SCHOLAR V6.1: Complete scholarly analysis (NEWEST!)
+  analyzeWordComplete,
+  getHistoricalLayer,
+  getHistoricalEvolution,
+  getGrammaticalAnomaly,
+  getCognates as getRootCognates,
+
+  // ★★ PRO SCHOLAR V6: Enhanced analysis with binyan, dialect, semantic
+  extractRootsEnhanced,
+  analyzeBinyan,
+  detectDialect,
+  detectCitations,
+  getSemanticField,
+  getRootFamily as getRootFamilyV6,
+
+  // ★ PREFERRED: Direct dictionary validation (no callbacks needed!)
+  extractRootsWithDirectValidation,
+  validateWithDirectDictionaries,
+
+  // Standard extraction (with optional callback)
+  extractRoots,
+  generateHypotheses,
+  getBestRoot,
+  getTopRoots,
+
+  // Legacy compatibility (use extractRootsWithDirectValidation instead)
+  extractRootsMultiHypothesis,
+  extractAllPossibleRoots,
+
+  // PRO SCHOLAR V5.2: Comprehensive linguistic patterns
+  PREFIX_PATTERNS,
+  SUFFIX_PATTERNS,
+  NOUN_PATTERNS,
+  getSourcesForContext,
+
+  // Configuration
+  DICTIONARY_TIERS,
+  WEAK_VERB_TYPES,
+  BINYANIM,
+
+  // Cache management
+  clearCache as clearRootCache,
+  getCacheStats as getRootCacheStats,
+
+  // Telemetry
+  getTelemetry as getRootTelemetry,
+  resetTelemetry as resetRootTelemetry
+} from './unifiedRootService';
+
+// =============================================================================
+// Service Preloader - Parallel initialization
+// =============================================================================
+export { default as servicePreloader } from './servicePreloader';
+export {
+  preloadServices as preloadAllServices,
+  preloadCriticalServices,
+  getPreloadStatus,
+  isServiceLoaded
+} from './servicePreloader';
+
+// =============================================================================
+// PRO SCHOLAR V5 - Unified Word Lookup Cache
+// =============================================================================
+export { default as wordLookupCache, WordLookupCache } from './wordLookupCache';
+
+// =============================================================================
+// PRO SCHOLAR V6.1 - Advanced Linguistic Analysis + Historical & Cognate Data
+// =============================================================================
+export { default as proScholarV6 } from './proScholarV6';
+export {
+  PRO_SCHOLAR_V6_VERSION,
+  // Binyan analysis
+  BINYAN_ANALYSIS,
+  analyzeBinyan as analyzeWordBinyan,
+  // Dialect detection
+  DIALECT_MARKERS,
+  detectAramaicDialect,
+  // Citation patterns
+  CITATION_PATTERNS,
+  detectCitationPatterns,
+  // Root family
+  expandRootFamily,
+  // Semantic fields
+  SEMANTIC_FIELDS as V6_SEMANTIC_FIELDS,
+  identifySemanticField,
+  // Contextual analysis
+  applyContextualBoost,
+  // Cross-references
+  BIBLICAL_BOOKS,
+  detectCrossReferences,
+  // Unified V6 analysis
+  analyzeWordV6,
+
+  // ★ PRO SCHOLAR V6.1: Historical Layers
+  HISTORICAL_LAYERS,
+  HISTORICAL_EVOLUTION,
+  detectHistoricalLayer,
+
+  // ★ PRO SCHOLAR V6.1: Grammatical Anomalies
+  GRAMMATICAL_ANOMALIES,
+  checkGrammaticalAnomaly,
+
+  // ★ PRO SCHOLAR V6.1: Cognate Languages
+  COGNATE_LANGUAGES,
+  ROOT_COGNATES,
+  getCognates,
+
+  // ★ PRO SCHOLAR V6.1: Enhanced Analysis
+  analyzeWordV6Enhanced
+} from './proScholarV6';
+
+// =============================================================================
+// PRO SCHOLAR ENGINE V7 - Unified Orchestrator
+// =============================================================================
+export { default as ProScholarEngine } from './ProScholarEngine';
+export {
+  ENGINE_VERSION,
+  // Main analysis functions
+  analyzeWord as engineAnalyzeWord,
+  analyzeWords as engineAnalyzeWords,
+  quickLookup as engineQuickLookup,
+  // Gematria calculator
+  GematriaCalculator,
+  // Word evolution tracker
+  WordEvolutionTracker,
+  // Difficulty scorer
+  DifficultyScorer,
+  // Parallel text finder
+  ParallelTextFinder,
+  // Engine management
+  EngineManager
+} from './ProScholarEngine';
+
+// =============================================================================
+// CACHE ORCHESTRATOR - Unified Cache Management
+// =============================================================================
+export { default as CacheOrchestrator } from './cacheOrchestrator';
+export {
+  // Registration
+  registerCache,
+  unregisterCache,
+  getCache,
+  // Telemetry
+  recordOperation,
+  getGlobalTelemetry,
+  getPerformanceMetrics,
+  // Operations
+  clearAllCaches,
+  pruneExpiredEntries,
+  getMemoryPressure,
+  autoManageCaches,
+  // Factory
+  createManagedCache,
+  // Constants
+  CACHE_CONFIGS
+} from './cacheOrchestrator';
+
+// =============================================================================
+// TELEMETRY SERVICE - PRO SCHOLAR V6 Unified Analytics
+// =============================================================================
+export { default as TelemetryService } from './telemetryService';
+export {
+  // Recording
+  recordLookup,
+  recordV6Analysis,
+  recordTiming,
+  recordError,
+  recordDictionaryLookup,
+  // Retrieval
+  getTelemetry,
+  getCacheStats as getTelemetryCacheStats,
+  getRecentPerformance,
+  getDictionaryStats,
+  getPerformanceAlerts,
+  // Control
+  resetTelemetry,
+  exportTelemetry
+} from './telemetryService';

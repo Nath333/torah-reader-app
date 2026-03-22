@@ -818,3 +818,93 @@
     border-color: rgba(99, 102, 241, 0.4);
   }
 }
+
+/* =============================================================================
+   PRO SCHOLAR V6: Enhanced Analysis Badges
+   ============================================================================= */
+
+/* V6 Analysis Badge */
+.morphology-v6-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75em;
+  font-weight: 600;
+}
+
+.morphology-v6-badge.confidence-high {
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  color: white;
+}
+
+.morphology-v6-badge.confidence-medium {
+  background: linear-gradient(135deg, #ca8a04, #eab308);
+  color: white;
+}
+
+.morphology-v6-badge.confidence-low {
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+  color: white;
+}
+
+.morphology-v6-badge .v6-label {
+  font-size: 0.65em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.9;
+}
+
+.morphology-v6-badge .v6-confidence {
+  font-size: 0.85em;
+}
+
+/* Dialect Badge */
+.morphology-dialect-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: var(--surface-secondary, #f9fafb);
+  border-radius: 6px;
+  font-size: 0.75em;
+  border: 1px solid var(--border-light, #e5e7eb);
+}
+
+.morphology-dialect-badge .dialect-icon {
+  font-size: 0.9em;
+}
+
+.morphology-dialect-badge .dialect-name {
+  font-weight: 500;
+}
+
+/* Semantic Field Badge */
+.morphology-semantic-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: var(--surface-secondary, #f9fafb);
+  border-radius: 6px;
+  font-size: 0.75em;
+  border: 1px solid var(--border-light, #e5e7eb);
+}
+
+.morphology-semantic-badge .semantic-icon {
+  font-size: 0.9em;
+}
+
+.morphology-semantic-badge .semantic-name {
+  font-weight: 500;
+}
+
+/* Dark Mode V6 Badges */
+@media (prefers-color-scheme: dark) {
+  .morphology-dialect-badge,
+  .morphology-semantic-badge {
+    background: var(--surface-dark, #1f2937);
+    border-color: var(--border-dark, #374151);
+  }
+}

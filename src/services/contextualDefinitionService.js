@@ -257,13 +257,14 @@ function calculateTextSimilarity(text1, text2) {
  */
 export function scoreDefinition(definition, context) {
   const {
-    word = '',
+    word: _word = '',
     contextType = CONTEXT_TYPES.GENERAL,
     surroundingText = '',
     detectedDomains = [],
     userLevel = 'intermediate',
     preferredSources = [],
   } = context;
+  void _word; // Reserved for future use
 
   let score = 0.5; // Base score
   const breakdown = {};

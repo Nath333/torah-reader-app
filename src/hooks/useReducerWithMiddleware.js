@@ -198,14 +198,18 @@ export function createFormReducer(initialValues = {}) {
 
 /**
  * Logger middleware - logs all actions and state changes
+ * Only logs in development mode
  */
 export const loggerMiddleware = (state, action, next) => {
-  console.group(`Action: ${action.type}`);
-  console.log('Prev state:', state);
-  console.log('Action:', action);
   const result = next(action);
-  console.log('Next state:', result);
-  console.groupEnd();
+  // Only log in development
+  if (process.env.NODE_ENV === 'development') {
+    console.group(`Action: ${action.type}`);
+    console.log('Prev state:', state);
+    console.log('Action:', action);
+    console.log('Next state:', result);
+    console.groupEnd();
+  }
   return result;
 };
 

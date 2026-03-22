@@ -19,14 +19,33 @@ import { hebrewToCalTransliteration as hebrewToCAL } from '../../services/calDic
 import { analyzeVerb } from '../../services/grammarAnalysisService';
 import SettingsContext from '../../context/SettingsContext';
 import { SourceBadge } from '../shared/SourceBadge';
+// PRO SCHOLAR V5: Prefix/suffix utilities from centralized helpers
 import {
   getPrefixMeaning,
   getSuffixMeaning,
   isLikelyNoun,
   isVerbSenseDefinition
-} from '../../services/wordLookupService';
+} from '../../utils/wordLookupHelpers';
+// 2026 Smart Features - Source Credibility for trust indicators
+import {
+  getSourceCredibility,
+  getCredibilityBadge
+} from '../../services/sourceCredibilityService';
+// PRO SCHOLAR V3: Context-aware confidence scoring (available for future use)
+// import { computeConfidence, getSourceTier, getContextFromReference } from '../../services/preClassificationService';
 import SourceDefinitionItem from './SourceDefinitionItem';
 import VerbConjugationDisplay from './VerbConjugationDisplay';
+// PRO SCHOLAR V6: Advanced linguistic analysis panel
+import ProScholarPanel from './ProScholarPanel';
+// PRO SCHOLAR V6: Root family tree visualization
+import RootFamilyTree from './RootFamilyTree';
+// PRO SCHOLAR V6: Historical layer and cognate panels
+import HistoricalLayerPanel from './HistoricalLayerPanel';
+import CognateLanguagesPanel from './CognateLanguagesPanel';
+// PRO SCHOLAR V6: Analysis badge for header
+import V6AnalysisBadge from './V6AnalysisBadge';
+// PRO SCHOLAR V5: Loading skeleton for better UX
+import LoadingSkeleton from '../shared/LoadingSkeleton';
 
 // Stable empty array to prevent useMemo dependency issues
 const EMPTY_SOURCES = [];
@@ -39,12 +58,14 @@ const WordDefinitionCard = React.memo(function WordDefinitionCard({
   word,
   translationData,
   isLoading,
+  lookupError = null,
   isAramaic,
   isRashiScript = false,
   showFrench: showFrenchProp,
   isInVocabulary,
   onSave,
-  onClose
+  onClose,
+  onWordLookup // PRO SCHOLAR V6: Callback for looking up related words (root family, conjugations)
 }) {
   // Get settings for controlling feature display
   const settings = useContext(SettingsContext);
@@ -152,6 +173,10 @@ const WordDefinitionCard = React.memo(function WordDefinitionCard({
         const isProperName = isProperNameDef(cleanedText);
         const isVerbSense = isVerbSenseDefinition(cleanedText);
 
+        // Get credibility data for this source
+        const credibility = getSourceCredibility(src.name);
+        const badge = credibility ? getCredibilityBadge(credibility.authorityScore) : null;
+
         defs.push({
           text: cleanedText,
           source: src.name,
@@ -164,7 +189,10 @@ const WordDefinitionCard = React.memo(function WordDefinitionCard({
           allSourceSenses: src.allSenses?.length > 1 ? src.allSenses : null,
           isProperName,
           isVerbSense,
-          recommended: src.recommended === true
+          recommended: src.recommended === true,
+          // 2026: Source credibility info
+          credibility,
+          credibilityBadge: badge
         });
       }
     }
@@ -274,6 +302,17 @@ const WordDefinitionCard = React.memo(function WordDefinitionCard({
                 H{strongNumber}
               </a>
             )}
+            {/* PRO SCHOLAR V6: Compact analysis badge showing confidence & root */}
+            {showMorphology && word && (
+              <V6AnalysisBadge
+                word={word}
+                size="small"
+                showRoot={true}
+                showBinyan={false}
+                showWeakType={true}
+                onClick={onWordLookup ? (w, analysis) => onWordLookup?.(analysis?.root || w) : undefined}
+              />
+            )}
           </div>
           {showSourceBadges && translationData?.source && translationData.source !== 'none' && (
             <div className="wdc-source-badge">
@@ -295,30 +334,92 @@ const WordDefinitionCard = React.memo(function WordDefinitionCard({
         </div>
         <div className="wdc-actions-mini">
           {!(root || (headword && headword !== word)) && (
-            <button className={`wdc-act-fr ${showFrenchLocal ? 'active' : ''}`} onClick={() => setShowFrenchLocal(!showFrenchLocal)} title="Toggle French">
+            <button
+              className={`wdc-act-fr ${showFrenchLocal ? 'active' : ''}`}
+              onClick={() => setShowFrenchLocal(!showFrenchLocal)}
+              title="Toggle French translation"
+              aria-label={showFrenchLocal ? 'Hide French translation' : 'Show French translation'}
+              aria-pressed={showFrenchLocal}
+            >
               FR
             </button>
           )}
-          <button className={`wdc-act ${copied ? 'done' : ''}`} onClick={handleCopy} title="Copy">
-            {copied ? '✓' : '⎘'}
+          <button
+            className={`wdc-act ${copied ? 'done' : ''}`}
+            onClick={handleCopy}
+            title="Copy definition"
+            aria-label={copied ? 'Copied!' : 'Copy definition to clipboard'}
+          >
+            <span aria-hidden="true">{copied ? '✓' : '⎘'}</span>
           </button>
           {onSave && (
-            <button className={`wdc-act ${isWordSaved ? 'done' : ''}`} onClick={handleSave} disabled={isWordSaved} title="Save">
-              {isWordSaved ? '✓' : '★'}
+            <button
+              className={`wdc-act ${isWordSaved ? 'done' : ''}`}
+              onClick={handleSave}
+              disabled={isWordSaved}
+              title={isWordSaved ? 'Word saved' : 'Save to vocabulary'}
+              aria-label={isWordSaved ? 'Word saved to vocabulary' : 'Save word to vocabulary'}
+            >
+              <span aria-hidden="true">{isWordSaved ? '✓' : '★'}</span>
             </button>
           )}
-          <button className="wdc-close" onClick={onClose} aria-label="Close">×</button>
+          <button className="wdc-close" onClick={onClose} aria-label="Close definition card">
+            <span aria-hidden="true">×</span>
+          </button>
         </div>
       </div>
 
-      {/* Root + Headword row */}
-      {(root || (headword && headword !== word)) && (
+      {/* Root + Headword row - PRO SCHOLAR: Shows root with confidence */}
+      {(root || (headword && headword !== word) || translationData?.morphologyInfo) && (
         <div className="wdc-meta-row">
-          {root && <span className="wdc-meta-item"><span className="wdc-meta-label">שורש</span><span className="wdc-meta-val" dir="rtl">{root}</span></span>}
+          {/* Root with confidence indicator */}
+          {root && (
+            <span className="wdc-meta-item wdc-root-item">
+              <span className="wdc-meta-label">שורש</span>
+              <span className="wdc-meta-val wdc-root-val" dir="rtl">{root}</span>
+              {/* PRO SCHOLAR: Show confidence badge for computed roots */}
+              {translationData?.morphologyInfo?.confidence && (
+                <span
+                  className={`wdc-confidence-badge ${
+                    translationData.morphologyInfo.confidence >= 85 ? 'high' :
+                    translationData.morphologyInfo.confidence >= 70 ? 'medium' : 'low'
+                  }`}
+                  title={`Root extraction confidence: ${translationData.morphologyInfo.confidence}%${
+                    translationData.morphologyInfo.wasComputed ? ' (computed algorithmically)' : ''
+                  }`}
+                >
+                  {translationData.morphologyInfo.confidence}%
+                </span>
+              )}
+              {/* PRO SCHOLAR: Show weak verb type badge */}
+              {translationData?.morphologyInfo?.weakType && (
+                <span
+                  className="wdc-weak-badge"
+                  title={`Weak verb type: ${translationData.morphologyInfo.weakType}`}
+                >
+                  {translationData.morphologyInfo.weakType.split(' ')[0]}
+                </span>
+              )}
+            </span>
+          )}
+          {/* Headword (dictionary form) */}
           {headword && headword !== word && headword !== root && (
             <span className="wdc-meta-item"><span className="wdc-meta-label">צורה</span><span className="wdc-meta-val" dir="rtl">{headword}</span></span>
           )}
-          <button className={`wdc-fr-toggle ${showFrenchLocal ? 'active' : ''}`} onClick={() => setShowFrenchLocal(!showFrenchLocal)}>
+          {/* Pattern indicator for Aramaic verbs */}
+          {translationData?.morphologyInfo?.pattern && (
+            <span className="wdc-meta-item wdc-pattern-item">
+              <span className="wdc-meta-label">בניין</span>
+              <span className="wdc-meta-val wdc-pattern-val">{translationData.morphologyInfo.pattern}</span>
+            </span>
+          )}
+          <button
+            className={`wdc-fr-toggle ${showFrenchLocal ? 'active' : ''}`}
+            onClick={() => setShowFrenchLocal(!showFrenchLocal)}
+            aria-label={showFrenchLocal ? 'Hide French translation' : 'Show French translation'}
+            aria-pressed={showFrenchLocal}
+            title="Toggle French translation"
+          >
             FR
           </button>
         </div>
@@ -423,19 +524,197 @@ const WordDefinitionCard = React.memo(function WordDefinitionCard({
         </div>
       )}
 
-      {/* Loading */}
-      {isLoading && !translation && (
-        <div className="word-def-loading">
-          <div className="word-def-spinner"></div>
-          <div className="word-def-loading-sources">
-            <span className="loading-text">Searching dictionaries...</span>
-            <div className="loading-source-indicators">
-              <span className="source-dot bdb" title="BDB">●</span>
-              <span className="source-dot jastrow" title="Jastrow">●</span>
-              <span className="source-dot strong" title="Strong's">●</span>
-              <span className="source-dot klein" title="Klein">●</span>
+      {/* PRO SCHOLAR: Derivation Chain - Shows full scholarly workflow */}
+      {showMorphology && translationData?.derivationChain && (
+        <div className="wdc-derivation-chain">
+          <div className="derivation-header">
+            <span className="derivation-icon">📚</span>
+            <span className="derivation-title">Scholarly Derivation</span>
+          </div>
+          <div className="derivation-steps">
+            {/* Step 1: Original word */}
+            <div className="derivation-step">
+              <span className="step-num">1</span>
+              <span className="step-label">Word:</span>
+              <span className="step-value word" dir="rtl">{translationData.derivationChain.originalWord}</span>
+            </div>
+            {/* Step 2: Root extraction */}
+            <div className="derivation-step">
+              <span className="step-num">2</span>
+              <span className="step-label">Root:</span>
+              <span className="step-value root" dir="rtl">{translationData.derivationChain.extractedRoot}</span>
+              <span className="step-source">({translationData.derivationChain.rootSource})</span>
+            </div>
+            {/* Step 3: Root meaning */}
+            {translationData.derivationChain.rootMeaning && (
+              <div className="derivation-step">
+                <span className="step-num">3</span>
+                <span className="step-label">Base:</span>
+                <span className="step-value meaning">"{translationData.derivationChain.rootMeaning}"</span>
+              </div>
+            )}
+            {/* Step 4: Pattern transformation */}
+            <div className="derivation-step">
+              <span className="step-num">{translationData.derivationChain.rootMeaning ? '4' : '3'}</span>
+              <span className="step-label">Pattern:</span>
+              <span className="step-value pattern">{translationData.derivationChain.pattern}</span>
+              {translationData.derivationChain.patternEffect && (
+                <span className="step-effect">→ {translationData.derivationChain.patternEffect}</span>
+              )}
+            </div>
+            {/* Step 5: Conjugation */}
+            {translationData.derivationChain.conjugation && (
+              <div className="derivation-step">
+                <span className="step-num">{translationData.derivationChain.rootMeaning ? '5' : '4'}</span>
+                <span className="step-label">Conj:</span>
+                <span className="step-value conj">{translationData.derivationChain.conjugation}</span>
+              </div>
+            )}
+            {/* Final: Translation */}
+            <div className="derivation-step final">
+              <span className="step-num">✓</span>
+              <span className="step-label">Result:</span>
+              <span className="step-value translation">"{translationData.derivationChain.finalTranslation}"</span>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* PRO SCHOLAR V4: Multiple Root Hypotheses - Shows ALL possible roots with scholarly sources */}
+      {showMorphology && translationData?.allHypotheses && translationData.allHypotheses.length > 1 && (
+        <div className="wdc-multi-hypotheses">
+          <details className="hypotheses-details">
+            <summary className="hypotheses-summary">
+              <span className="hypotheses-icon">🔬</span>
+              <span className="hypotheses-title">Alternative Roots ({translationData.allHypotheses.length})</span>
+            </summary>
+            <div className="hypotheses-list">
+              {translationData.allHypotheses.map((hyp, idx) => (
+                <div
+                  key={`${hyp.root}-${idx}`}
+                  className={`hypothesis-item ${idx === 0 ? 'primary' : ''}`}
+                >
+                  <div className="hyp-root-line">
+                    <span className="hyp-rank">{idx + 1}</span>
+                    <span className="hyp-root" dir="rtl">{hyp.root}</span>
+                    <span className={`hyp-confidence ${
+                      hyp.confidence >= 85 ? 'high' :
+                      hyp.confidence >= 70 ? 'medium' : 'low'
+                    }`}>
+                      {hyp.confidence}%
+                    </span>
+                    {hyp.weakVerb && (
+                      <span className="hyp-weak-badge" title={`Weak verb: ${hyp.weakVerb}`}>
+                        {hyp.weakVerb}
+                      </span>
+                    )}
+                  </div>
+                  <div className="hyp-meaning-line">
+                    <span className="hyp-definition">"{hyp.definition}"</span>
+                    {hyp.source && (
+                      <span className={`hyp-source tier-${hyp.tier || 'bronze'}`}>
+                        {hyp.source}
+                      </span>
+                    )}
+                  </div>
+                  {hyp.hypothesis?.morphology && (
+                    <div className="hyp-morph-line">
+                      <span className="hyp-morph">{hyp.hypothesis.morphology}</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </details>
+        </div>
+      )}
+
+      {/* PRO SCHOLAR: Verb Breakdown - Simpler view for verbs without full derivation */}
+      {showMorphology && translationData?.verbBreakdown && !translationData?.derivationChain && (
+        <div className="wdc-verb-breakdown">
+          <div className="verb-breakdown-header">
+            <span className="verb-icon">📐</span>
+            <span className="verb-title">Verb Analysis</span>
+            {translationData.verbBreakdown.weakType && (
+              <span className="verb-weak-badge" title={`Weak verb: ${translationData.verbBreakdown.weakType}`}>
+                {translationData.verbBreakdown.weakType}
+              </span>
+            )}
+          </div>
+          <div className="verb-breakdown-grid">
+            <div className="verb-row">
+              <span className="verb-label">שורש</span>
+              <span className="verb-value root" dir="rtl">{translationData.verbBreakdown.root}</span>
+            </div>
+            <div className="verb-row">
+              <span className="verb-label">בניין</span>
+              <span className="verb-value pattern">{translationData.verbBreakdown.pattern}</span>
+              {translationData.verbBreakdown.patternMeaning && (
+                <span className="verb-meaning">({translationData.verbBreakdown.patternMeaning})</span>
+              )}
+            </div>
+            {translationData.verbBreakdown.conjugation && (
+              <div className="verb-row">
+                <span className="verb-label">גוף</span>
+                <span className="verb-value conj">{translationData.verbBreakdown.conjugation}</span>
+              </div>
+            )}
+            <div className="verb-row translation-row">
+              <span className="verb-label">→</span>
+              <span className="verb-value computed-translation">"{translationData.verbBreakdown.translation}"</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PRO SCHOLAR: Transparency - Show how translation was derived */}
+      {translationData?.lookupPath && (
+        <div className="wdc-transparency">
+          <span className="transparency-label">מקור:</span>
+          <span className="transparency-path">{translationData.lookupPath}</span>
+          {translationData.isLowConfidenceMatch && (
+            <span className="transparency-warning" title="Low confidence match - headword doesn't exactly match query">⚠️</span>
+          )}
+        </div>
+      )}
+
+      {/* PRO SCHOLAR: Rejected Dictionary Result - Show alternatives considered */}
+      {translationData?.rejectedDictionaryResult && (
+        <div className="wdc-rejected-alternative">
+          <details className="rejected-details">
+            <summary className="rejected-summary">
+              <span className="rejected-icon">ℹ️</span>
+              <span className="rejected-text">Dictionary suggestion rejected</span>
+            </summary>
+            <div className="rejected-content">
+              <div className="rejected-row">
+                <span className="rejected-label">Suggested:</span>
+                <span className="rejected-value" dir="rtl">{translationData.rejectedDictionaryResult.headword}</span>
+                <span className="rejected-def">= "{translationData.rejectedDictionaryResult.definition}"</span>
+              </div>
+              <div className="rejected-row">
+                <span className="rejected-label">Reason:</span>
+                <span className="rejected-reason">{translationData.rejectedDictionaryResult.reason}</span>
+              </div>
+              <div className="rejected-row">
+                <span className="rejected-label">Source:</span>
+                <span className="rejected-source">{translationData.rejectedDictionaryResult.source}</span>
+              </div>
+            </div>
+          </details>
+        </div>
+      )}
+
+      {/* Loading - PRO SCHOLAR V5: Enhanced skeleton loading */}
+      {isLoading && !translation && (
+        <LoadingSkeleton type="word-card" />
+      )}
+
+      {/* PRO SCHOLAR V5: Error feedback for failed lookups */}
+      {lookupError && !isLoading && (
+        <div className="wdc-lookup-error" role="alert">
+          <span className="wdc-error-icon" aria-hidden="true">⚠️</span>
+          <span className="wdc-error-text">{lookupError}</span>
         </div>
       )}
 
@@ -556,6 +835,78 @@ const WordDefinitionCard = React.memo(function WordDefinitionCard({
         );
       })() : null}
 
+      {/* PRO SCHOLAR V6: Advanced linguistic analysis */}
+      {translation && showMorphology && (
+        <ProScholarPanel
+          word={word}
+          root={root}
+          translationData={translationData}
+          isAramaic={isAramaic}
+          contextType={translationData?.contextType || 'unknown'}
+          onWordClick={onWordLookup ? (clickedWord) => {
+            if (clickedWord && clickedWord !== word) {
+              onWordLookup(clickedWord, { source: 'pro-scholar-panel' });
+            }
+          } : undefined}
+          compact={false}
+          showTelemetry={process.env.NODE_ENV === 'development'}
+        />
+      )}
+
+      {/* PRO SCHOLAR V6: Root Family Tree - expandable section for root exploration */}
+      {root && showMorphology && (
+        <details className="wdc-root-family-details">
+          <summary className="wdc-root-family-summary">
+            <span className="summary-icon">🌳</span>
+            <span className="summary-text">Root Family</span>
+            <span className="summary-root" dir="rtl">{root}</span>
+          </summary>
+          <RootFamilyTree
+            root={root}
+            language={effectiveIsAramaic ? 'Aramaic' : 'Hebrew'}
+            highlightWord={word}
+            onWordClick={(clickedWord) => {
+              // PRO SCHOLAR V6: Trigger actual word lookup for root family member
+              if (onWordLookup && clickedWord && clickedWord !== word) {
+                onWordLookup(clickedWord, { source: 'root-family', root });
+              }
+            }}
+            compact={true}
+          />
+        </details>
+      )}
+
+      {/* PRO SCHOLAR V6: Historical Layer Panel - Shows word's historical period */}
+      {root && showMorphology && (
+        <details className="wdc-historical-details">
+          <summary className="wdc-historical-summary">
+            <span className="summary-icon">📜</span>
+            <span className="summary-text">Historical Layer</span>
+          </summary>
+          <HistoricalLayerPanel
+            word={word}
+            root={root}
+            isAramaic={effectiveIsAramaic}
+            compact={true}
+          />
+        </details>
+      )}
+
+      {/* PRO SCHOLAR V6: Cognate Languages Panel - Shows Semitic cognates */}
+      {root && showMorphology && (
+        <details className="wdc-cognate-details">
+          <summary className="wdc-cognate-summary">
+            <span className="summary-icon">🌍</span>
+            <span className="summary-text">Semitic Cognates</span>
+          </summary>
+          <CognateLanguagesPanel
+            root={root}
+            word={word}
+            compact={true}
+          />
+        </details>
+      )}
+
       {/* No translation */}
       {!translation && !isLoading && (
         <div className="word-def-empty">No translation found</div>
@@ -599,12 +950,16 @@ WordDefinitionCard.propTypes = {
     _halachicOverride: PropTypes.bool
   }),
   isLoading: PropTypes.bool,
+  /** Error message from failed API lookup */
+  lookupError: PropTypes.string,
   isAramaic: PropTypes.bool,
   isRashiScript: PropTypes.bool,
   showFrench: PropTypes.bool,
   isInVocabulary: PropTypes.bool,
   onSave: PropTypes.func,
-  onClose: PropTypes.func
+  onClose: PropTypes.func,
+  /** PRO SCHOLAR V6: Callback for looking up related words (root family clicks, etc.) */
+  onWordLookup: PropTypes.func
 };
 
 WordDefinitionCard.defaultProps = {

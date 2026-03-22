@@ -18,7 +18,7 @@ import { getCompleteScholarlyAnalysis, addVocalization } from '../../services/sc
 import { isTalmudBook, getSefarimCategories, getChapters, getVerses } from '../../services/sefariaApi';
 import './ScholarModePanel.css';
 
-// Import extracted components - SIMPLIFIED 4 TAB STRUCTURE
+// Import extracted components - 5 TAB STRUCTURE (with Talmud tools for Talmud mode)
 import {
   TabButton,
   LoadingState,
@@ -26,7 +26,8 @@ import {
   WordsTab,           // WORDS - Dictionary lookup
   CommentaryTab,      // COMMENTARY - Commentaries view
   NotebookTab,        // NOTEBOOK - Personal journal
-  TzuratHaDafTab      // TZURAT HADAF - Traditional layout (toggle view for Talmud)
+  TzuratHaDafTab,     // TZURAT HADAF - Traditional layout (toggle view for Talmud)
+  TalmudToolsTab      // TALMUD - Iyun/Bekius/Chazara modes, abbreviations, sages (Talmud only)
 } from '.';
 
 // Connectivity indicator for online/offline status
@@ -451,11 +452,13 @@ const ScholarModePanel = ({
 
   // Reset tab when text type changes (in case old tab IDs were stored)
   useEffect(() => {
-    const validTabs = ['learn', 'words', 'commentary', 'notebook'];
+    const validTabs = isTalmud
+      ? ['learn', 'talmud', 'words', 'commentary', 'notebook']
+      : ['learn', 'words', 'commentary', 'notebook'];
     if (!validTabs.includes(activeTab)) {
       setActiveTab('learn');
     }
-  }, [activeTab]);
+  }, [activeTab, isTalmud]);
 
   // Local analysis (no API needed) - only for Talmud flow visualization
   const flowData = useMemo(() => {
@@ -501,7 +504,7 @@ const ScholarModePanel = ({
   }, [text, isVocalized, originalText, onTextChange]);
 
   // Dynamic tab configuration based on text type
-  // SIMPLIFIED: 4 core tabs (Chavruta merged into Learn)
+  // 5 tabs for Talmud, 4 for Torah/other
   const tabs = useMemo(() => {
     // Core 4 tabs - cleaner interface with Hebrew + English format
     const coreTabs = [
@@ -511,8 +514,13 @@ const ScholarModePanel = ({
       { id: 'notebook', label: 'מחברת Notebook', icon: '📝', badge: 0 }
     ];
 
+    // Add Talmud tools tab for Talmud texts (Iyun/Bekius/Chazara modes)
+    if (isTalmud) {
+      coreTabs.splice(1, 0, { id: 'talmud', label: 'גמרא Talmud', icon: '📜', badge: 0 });
+    }
+
     return coreTabs;
-  }, [scholarlyData]);
+  }, [scholarlyData, isTalmud]);
 
   // Track Talmud view mode (for toggling between normal and tzurat hadaf)
   const [showTzuratHaDaf, setShowTzuratHaDaf] = useState(false);
@@ -1000,6 +1008,14 @@ const ScholarModePanel = ({
                 text={text}
                 reference={reference}
                 onWordLookup={handleTzuratWordLookup}
+              />
+            )}
+
+            {/* TALMUD Tab - Iyun/Bekius/Chazara study modes (Talmud only) */}
+            {activeTab === 'talmud' && isTalmud && (
+              <TalmudToolsTab
+                text={text}
+                reference={reference}
               />
             )}
 

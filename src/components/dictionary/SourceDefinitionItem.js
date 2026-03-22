@@ -10,10 +10,116 @@
  * - Different/related headword indicators
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { translateEnglishToFrench, quickTranslate } from '../../services/englishToFrenchService';
 import { getSourceStyle } from '../../constants/dictionarySources';
+
+// =============================================================================
+// PRO SCHOLAR V6: Dictionary Tier Display
+// =============================================================================
+
+/** Dictionary source tier configuration - derived from unifiedRootService */
+const DICTIONARY_TIERS = {
+  jastrow: { tier: 'gold', fullName: "Jastrow's Dictionary (1903)", bonus: 5 },
+  bdb: { tier: 'gold', fullName: 'Brown-Driver-Briggs (1906)', bonus: 5 },
+  strongs: { tier: 'silver', fullName: "Strong's Concordance", bonus: 0 },
+  cal: { tier: 'gold', fullName: 'Comprehensive Aramaic Lexicon', bonus: 5 },
+  sefaria: { tier: 'silver', fullName: 'Sefaria Lexicon', bonus: 0 },
+  klein: { tier: 'gold', fullName: 'Klein Dictionary', bonus: 5 }
+};
+
+/** Tier display styling */
+const TIER_DISPLAY = {
+  gold: {
+    icon: '🥇',
+    label: 'Gold Standard',
+    className: 'tier-gold',
+    color: '#b8860b',
+    bgColor: '#fef3c7',
+    borderColor: '#f59e0b',
+    tooltip: 'Highly authoritative academic source'
+  },
+  silver: {
+    icon: '🥈',
+    label: 'Standard',
+    className: 'tier-silver',
+    color: '#6b7280',
+    bgColor: '#f3f4f6',
+    borderColor: '#d1d5db',
+    tooltip: 'Reliable reference source'
+  },
+  bronze: {
+    icon: '🥉',
+    label: 'Supplementary',
+    className: 'tier-bronze',
+    color: '#b45309',
+    bgColor: '#fef3c7',
+    borderColor: '#d97706',
+    tooltip: 'Supplementary reference'
+  }
+};
+
+/**
+ * Get tier info for a source
+ */
+const getSourceTier = (sourceName) => {
+  if (!sourceName) return null;
+  const key = sourceName.toLowerCase().replace(/[^a-z]/g, '');
+  // Check direct match
+  if (DICTIONARY_TIERS[key]) {
+    return { ...DICTIONARY_TIERS[key], display: TIER_DISPLAY[DICTIONARY_TIERS[key].tier] };
+  }
+  // Check partial matches
+  for (const [dictKey, tierInfo] of Object.entries(DICTIONARY_TIERS)) {
+    if (key.includes(dictKey) || dictKey.includes(key)) {
+      return { ...tierInfo, display: TIER_DISPLAY[tierInfo.tier] };
+    }
+  }
+  // Default to silver
+  return { tier: 'silver', display: TIER_DISPLAY.silver };
+};
+
+/**
+ * Dictionary Tier Badge Component
+ */
+const TierBadge = React.memo(function TierBadge({ source, compact = false }) {
+  const tierInfo = useMemo(() => getSourceTier(source), [source]);
+
+  if (!tierInfo?.display) return null;
+
+  const { display } = tierInfo;
+
+  if (compact) {
+    return (
+      <span
+        className={`tier-badge-compact ${display.className}`}
+        title={`${display.label}: ${display.tooltip}`}
+        style={{
+          color: display.color,
+          fontSize: '0.75rem'
+        }}
+      >
+        {display.icon}
+      </span>
+    );
+  }
+
+  return (
+    <span
+      className={`tier-badge ${display.className}`}
+      title={display.tooltip}
+      style={{
+        background: display.bgColor,
+        borderColor: display.borderColor,
+        color: display.color
+      }}
+    >
+      <span className="tier-icon">{display.icon}</span>
+      <span className="tier-label">{display.label}</span>
+    </span>
+  );
+});
 
 /**
  * Single Source Definition Item with French translation
@@ -44,7 +150,10 @@ const SourceDefinitionItem = React.memo(function SourceDefinitionItem({
     translateEnglishToFrench(def.text).then(result => {
       if (result) setFrench(result);
       setLoadingFr(false);
-    }).catch(() => setLoadingFr(false));
+    }).catch((err) => {
+      console.warn('French translation failed for definition:', err.message || err);
+      setLoadingFr(false);
+    });
   }, [showFrench, def.text, french]);
 
   // Determine CSS classes based on entry type
@@ -94,6 +203,18 @@ const SourceDefinitionItem = React.memo(function SourceDefinitionItem({
           <span className="source-badge" style={getSourceStyle(def.source)}>
             {def.source}
             {def.year && <span className="source-year">({def.year})</span>}
+          </span>
+        )}
+        {/* PRO SCHOLAR V6: Dictionary Tier Badge */}
+        <TierBadge source={def.source} compact />
+        {/* Credibility badge - 2026 Smart Feature */}
+        {def.credibilityBadge && (
+          <span
+            className="credibility-badge"
+            style={{ color: def.credibility?.category?.color }}
+            title={`Authority: ${def.credibility?.authorityScore || 'N/A'}/100 - ${def.credibility?.category?.label || ''}`}
+          >
+            {def.credibilityBadge.emoji} {def.credibilityBadge.label}
           </span>
         )}
         {/* Recommended badge for halachic/contextual overrides */}
@@ -189,7 +310,19 @@ SourceDefinitionItem.propTypes = {
     searchedWord: PropTypes.string,
     senseNum: PropTypes.number,
     subSense: PropTypes.string,
-    semanticField: PropTypes.string
+    semanticField: PropTypes.string,
+    // 2026: Source credibility data
+    credibility: PropTypes.shape({
+      authorityScore: PropTypes.number,
+      category: PropTypes.shape({
+        label: PropTypes.string,
+        color: PropTypes.string
+      })
+    }),
+    credibilityBadge: PropTypes.shape({
+      emoji: PropTypes.string,
+      label: PropTypes.string
+    })
   }).isRequired,
   showFrench: PropTypes.bool,
   frenchTranslation: PropTypes.string,

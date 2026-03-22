@@ -17,8 +17,8 @@ import {
   getTosafotForDaf,
   getMaharshaForDaf,
   getRambanForChapter,
-  getIbnEzraForVerse,
-  getSfornoForVerse
+  getIbnEzraForChapter,
+  getSfornoForChapter
 } from '../services/sefariaApi';
 import { getSoncinoFootnotesForTractate, isTractateAvailable } from '../services/soncinoService';
 import { createLogger } from '../utils/debug';
@@ -109,6 +109,9 @@ export function useCommentaryLoader({
   const [sfornoLoading, setSfornoLoading] = useState({});
   const [soncinoLoading, setSoncinoLoading] = useState(false);
 
+  // Error states for UI feedback
+  const [errors, setErrors] = useState({});
+
   // Refs to track loaded items and prevent duplicate requests
   const rashiLoadedRef = useRef(new Set());
   const rambanLoadedRef = useRef(new Set());
@@ -181,6 +184,7 @@ export function useCommentaryLoader({
       setRashiData(prev => ({ ...prev, ...newRashiData }));
     } catch (error) {
       log.error('Failed to batch fetch Rashi:', error);
+      setErrors(prev => ({ ...prev, rashi: error.message || 'Failed to load Rashi commentary' }));
     }
     setRashiLoading(prev => ({ ...prev, [chapterKey]: false }));
   }, [selectedBook, selectedChapter, isTalmud]);
@@ -200,6 +204,7 @@ export function useCommentaryLoader({
     } catch (error) {
       log.error('Failed to fetch Tosafot:', error);
       setTosafotData(prev => ({ ...prev, [cacheKey]: [] }));
+      setErrors(prev => ({ ...prev, tosafot: error.message || 'Failed to load Tosafot commentary' }));
     }
     setTosafotLoading(false);
   }, [selectedBook, selectedChapter, isTalmud]);
@@ -219,6 +224,7 @@ export function useCommentaryLoader({
     } catch (error) {
       log.error('Failed to fetch Maharsha:', error);
       setMaharshaData(prev => ({ ...prev, [cacheKey]: { comments: [] } }));
+      setErrors(prev => ({ ...prev, maharsha: error.message || 'Failed to load Maharsha commentary' }));
     }
     setMaharshaLoading(false);
   }, [selectedBook, selectedChapter, isTalmud]);
@@ -247,6 +253,7 @@ export function useCommentaryLoader({
     } catch (error) {
       log.error('Soncino: Failed to fetch:', error);
       setSoncinoData(prev => ({ ...prev, [cacheKey]: [], _error: error.message }));
+      setErrors(prev => ({ ...prev, soncino: error.message || 'Failed to load Soncino commentary' }));
     }
     setSoncinoLoading(false);
   }, [selectedBook, selectedChapter, isTalmud, hasSoncinoAvailable]);
@@ -275,46 +282,69 @@ export function useCommentaryLoader({
       log.debug(`Ramban: Loaded ${verseMap.size} verses with batch API call`);
     } catch (error) {
       log.error('Failed to batch fetch Ramban:', error);
+      setErrors(prev => ({ ...prev, ramban: error.message || 'Failed to load Ramban commentary' }));
     }
     setRambanLoading(prev => ({ ...prev, [chapterKey]: false }));
   }, [selectedBook, selectedChapter]);
 
   // ============================================================================
-  // Ibn Ezra Loading (Torah only, per-verse)
+  // Ibn Ezra Loading (Torah only, batch per chapter)
   // ============================================================================
-  const loadIbnEzraForVerse = useCallback(async (verseNumber) => {
-    const cacheKey = `${selectedBook}:${selectedChapter}:${verseNumber}`;
-    if (ibnEzraLoadedRef.current.has(cacheKey)) return;
-    ibnEzraLoadedRef.current.add(cacheKey);
+  const loadIbnEzraForChapter = useCallback(async () => {
+    const chapterKey = `ibnezra:${selectedBook}:${selectedChapter}`;
+    if (ibnEzraLoadedRef.current.has(chapterKey)) return;
+    ibnEzraLoadedRef.current.add(chapterKey);
 
-    setIbnEzraLoading(prev => ({ ...prev, [cacheKey]: true }));
+    setIbnEzraLoading(prev => ({ ...prev, [chapterKey]: true }));
     try {
-      const comments = await getIbnEzraForVerse(selectedBook, selectedChapter, verseNumber);
-      setIbnEzraData(prev => ({ ...prev, [cacheKey]: comments }));
+      log.debug(`Ibn Ezra: Batch loading chapter ${selectedBook}:${selectedChapter}`);
+      const verseMap = await getIbnEzraForChapter(selectedBook, selectedChapter);
+
+      // Convert Map to object with verse-level keys
+      const newIbnEzraData = {};
+      verseMap.forEach((comments, verseNum) => {
+        const cacheKey = `${selectedBook}:${selectedChapter}:${verseNum}`;
+        newIbnEzraData[cacheKey] = { comments };
+        ibnEzraLoadedRef.current.add(cacheKey);
+      });
+
+      setIbnEzraData(prev => ({ ...prev, ...newIbnEzraData }));
+      log.debug(`Ibn Ezra: Loaded ${verseMap.size} verses with single API call`);
     } catch (error) {
-      log.error('Failed to fetch Ibn Ezra:', error);
-      setIbnEzraData(prev => ({ ...prev, [cacheKey]: { comments: [] } }));
+      log.error('Failed to batch fetch Ibn Ezra:', error);
+      setErrors(prev => ({ ...prev, ibnEzra: error.message || 'Failed to load Ibn Ezra commentary' }));
     }
-    setIbnEzraLoading(prev => ({ ...prev, [cacheKey]: false }));
+    setIbnEzraLoading(prev => ({ ...prev, [chapterKey]: false }));
   }, [selectedBook, selectedChapter]);
 
   // ============================================================================
-  // Sforno Loading (Torah only, per-verse)
+  // Sforno Loading (Torah only, batch per chapter)
   // ============================================================================
-  const loadSfornoForVerse = useCallback(async (verseNumber) => {
-    const cacheKey = `${selectedBook}:${selectedChapter}:${verseNumber}`;
-    if (sfornoLoadedRef.current.has(cacheKey)) return;
-    sfornoLoadedRef.current.add(cacheKey);
+  const loadSfornoForChapter = useCallback(async () => {
+    const chapterKey = `sforno:${selectedBook}:${selectedChapter}`;
+    if (sfornoLoadedRef.current.has(chapterKey)) return;
+    sfornoLoadedRef.current.add(chapterKey);
 
-    setSfornoLoading(prev => ({ ...prev, [cacheKey]: true }));
+    setSfornoLoading(prev => ({ ...prev, [chapterKey]: true }));
     try {
-      const comments = await getSfornoForVerse(selectedBook, selectedChapter, verseNumber);
-      setSfornoData(prev => ({ ...prev, [cacheKey]: comments }));
+      log.debug(`Sforno: Batch loading chapter ${selectedBook}:${selectedChapter}`);
+      const verseMap = await getSfornoForChapter(selectedBook, selectedChapter);
+
+      // Convert Map to object with verse-level keys
+      const newSfornoData = {};
+      verseMap.forEach((comments, verseNum) => {
+        const cacheKey = `${selectedBook}:${selectedChapter}:${verseNum}`;
+        newSfornoData[cacheKey] = { comments };
+        sfornoLoadedRef.current.add(cacheKey);
+      });
+
+      setSfornoData(prev => ({ ...prev, ...newSfornoData }));
+      log.debug(`Sforno: Loaded ${verseMap.size} verses with single API call`);
     } catch (error) {
-      log.error('Failed to fetch Sforno:', error);
-      setSfornoData(prev => ({ ...prev, [cacheKey]: { comments: [] } }));
+      log.error('Failed to batch fetch Sforno:', error);
+      setErrors(prev => ({ ...prev, sforno: error.message || 'Failed to load Sforno commentary' }));
     }
-    setSfornoLoading(prev => ({ ...prev, [cacheKey]: false }));
+    setSfornoLoading(prev => ({ ...prev, [chapterKey]: false }));
   }, [selectedBook, selectedChapter]);
 
   // ============================================================================
@@ -356,19 +386,19 @@ export function useCommentaryLoader({
     }
   }, [showFlags.showRamban, isTorahBook, hasVerses, selectedBook, selectedChapter, loadRambanForChapter]);
 
-  // Load Ibn Ezra (Torah only, per-verse)
+  // Load Ibn Ezra (Torah only, batch per chapter)
   useEffect(() => {
-    if (showFlags.showIbnEzra && isTorahBook && verses.length > 0) {
-      verses.forEach(verse => loadIbnEzraForVerse(verse.verse));
+    if (showFlags.showIbnEzra && isTorahBook && hasVerses) {
+      loadIbnEzraForChapter();
     }
-  }, [showFlags.showIbnEzra, isTorahBook, verses, loadIbnEzraForVerse]);
+  }, [showFlags.showIbnEzra, isTorahBook, hasVerses, selectedBook, selectedChapter, loadIbnEzraForChapter]);
 
-  // Load Sforno (Torah only, per-verse)
+  // Load Sforno (Torah only, batch per chapter)
   useEffect(() => {
-    if (showFlags.showSforno && isTorahBook && verses.length > 0) {
-      verses.forEach(verse => loadSfornoForVerse(verse.verse));
+    if (showFlags.showSforno && isTorahBook && hasVerses) {
+      loadSfornoForChapter();
     }
-  }, [showFlags.showSforno, isTorahBook, verses, loadSfornoForVerse]);
+  }, [showFlags.showSforno, isTorahBook, hasVerses, selectedBook, selectedChapter, loadSfornoForChapter]);
 
   // ============================================================================
   // Helper functions for consumers
@@ -430,6 +460,7 @@ export function useCommentaryLoader({
     setIbnEzraData({});
     setSfornoData({});
     setSoncinoData({});
+    setErrors({});
 
     rashiLoadedRef.current.clear();
     rambanLoadedRef.current.clear();
@@ -438,6 +469,17 @@ export function useCommentaryLoader({
     tosafotLoadedRef.current.clear();
     maharshaLoadedRef.current.clear();
     soncinoLoadedRef.current.clear();
+  }, []);
+
+  /**
+   * Clear a specific error
+   */
+  const clearError = useCallback((commentaryType) => {
+    setErrors(prev => {
+      const next = { ...prev };
+      delete next[commentaryType];
+      return next;
+    });
   }, []);
 
   return {
@@ -463,6 +505,10 @@ export function useCommentaryLoader({
     isTalmud,
     hasSoncinoAvailable,
 
+    // Error states
+    errors,
+    clearError,
+
     // Helper functions
     getRashiForVerse,
     getCommentaryForVerse,
@@ -475,8 +521,8 @@ export function useCommentaryLoader({
     loadMaharsha,
     loadSoncino,
     loadRambanForChapter,
-    loadIbnEzraForVerse,
-    loadSfornoForVerse,
+    loadIbnEzraForChapter,
+    loadSfornoForChapter,
 
     // Configuration (for UI)
     COMMENTARY_CONFIG

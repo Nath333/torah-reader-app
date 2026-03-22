@@ -1,10 +1,10 @@
 // =============================================================================
-// Morphology Breakdown Component - PRO SCHOLAR v3
+// Morphology Breakdown Component - PRO SCHOLAR V6
 // Displays Hebrew word structure: prefix + root + suffix
-// With verb grammar, confidence indicators, and pattern recognition
+// With verb grammar, confidence indicators, pattern recognition, and V6 features
 // =============================================================================
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { analyzeWordMorphology, getSimpleBreakdown } from '../../utils/morphologyAnalyzer';
 import { analyzeVerbGrammar, formatVerbGrammar } from '../../utils/morphology/verbGrammar';
 import { calculateConfidence, getConfidenceDisplay } from '../../utils/morphology/confidence';
@@ -14,6 +14,42 @@ import { createCard, getCard } from '../../services/srsService';
 import ConjugationTable from './ConjugationTable';
 import EtymologyChain from './EtymologyChain';
 import './MorphologyBreakdown.css';
+
+// =============================================================================
+// PRO SCHOLAR V6: Unified Root Service Integration
+// =============================================================================
+// eslint-disable-next-line no-unused-vars
+let extractRootsEnhanced, analyzeBinyan, detectDialect, getSemanticField;
+try {
+  const unifiedRoot = require('../../services/unifiedRootService');
+  extractRootsEnhanced = unifiedRoot.extractRootsEnhanced;
+  analyzeBinyan = unifiedRoot.analyzeBinyan;
+  detectDialect = unifiedRoot.detectDialect;
+  getSemanticField = unifiedRoot.getSemanticField;
+} catch (e) {
+  extractRootsEnhanced = () => null;
+  // eslint-disable-next-line no-unused-vars
+  analyzeBinyan = () => null;
+  detectDialect = () => null;
+  getSemanticField = () => null;
+}
+
+/** PRO SCHOLAR V6: Dialect display configuration */
+const DIALECT_DISPLAY = {
+  'biblical_hebrew': { name: 'Biblical Hebrew', icon: '📜', color: '#1d4ed8' },
+  'mishnaic_hebrew': { name: 'Mishnaic Hebrew', icon: '📚', color: '#7c3aed' },
+  'talmudic_aramaic': { name: 'Talmudic Aramaic', icon: '📖', color: '#059669' },
+  'targumic_aramaic': { name: 'Targumic Aramaic', icon: '🎯', color: '#d97706' }
+};
+
+/** PRO SCHOLAR V6: Semantic field display configuration */
+const SEMANTIC_FIELD_DISPLAY = {
+  LEGAL: { name: 'Legal/Halachic', icon: '⚖️', color: '#1d4ed8' },
+  DIALECTIC: { name: 'Dialectical', icon: '💬', color: '#7c3aed' },
+  RITUAL: { name: 'Ritual/Temple', icon: '🕯️', color: '#b45309' },
+  AGRICULTURAL: { name: 'Agricultural', icon: '🌾', color: '#16a34a' },
+  COMMERCIAL: { name: 'Commercial', icon: '💰', color: '#ca8a04' }
+};
 
 /**
  * Confidence indicator badge
@@ -258,6 +294,96 @@ const AddToSRSButton = ({ word, definition, root, pattern, language }) => {
 };
 
 /**
+ * PRO SCHOLAR V6: Dialect Badge
+ * Shows detected language dialect
+ */
+const DialectBadgeV6 = ({ word }) => {
+  const dialectResult = useMemo(() => {
+    try {
+      return detectDialect?.(word);
+    } catch {
+      return null;
+    }
+  }, [word]);
+
+  if (!dialectResult || dialectResult.dialect === 'unknown') return null;
+
+  const display = DIALECT_DISPLAY[dialectResult.dialect];
+  if (!display) return null;
+
+  return (
+    <span
+      className="morphology-dialect-badge"
+      style={{ color: display.color }}
+      title={`${display.name} (${dialectResult.confidence}% confidence)`}
+    >
+      <span className="dialect-icon">{display.icon}</span>
+      <span className="dialect-name">{display.name}</span>
+    </span>
+  );
+};
+
+/**
+ * PRO SCHOLAR V6: Semantic Field Badge
+ * Shows semantic categorization of the root
+ */
+const SemanticFieldBadgeV6 = ({ root }) => {
+  const semanticField = useMemo(() => {
+    if (!root) return null;
+    try {
+      return getSemanticField?.(root);
+    } catch {
+      return null;
+    }
+  }, [root]);
+
+  if (!semanticField) return null;
+
+  const display = SEMANTIC_FIELD_DISPLAY[semanticField];
+  if (!display) return null;
+
+  return (
+    <span
+      className="morphology-semantic-badge"
+      style={{ color: display.color }}
+      title={`Semantic field: ${display.name}`}
+    >
+      <span className="semantic-icon">{display.icon}</span>
+      <span className="semantic-name">{display.name}</span>
+    </span>
+  );
+};
+
+/**
+ * PRO SCHOLAR V6: Enhanced root analysis badge
+ * Shows multi-hypothesis root extraction confidence
+ */
+const RootConfidenceBadgeV6 = ({ word }) => {
+  const v6Analysis = useMemo(() => {
+    try {
+      return extractRootsEnhanced?.(word);
+    } catch {
+      return null;
+    }
+  }, [word]);
+
+  if (!v6Analysis || !v6Analysis.roots || v6Analysis.roots.length === 0) return null;
+
+  const topRoot = v6Analysis.roots[0];
+  const confidence = topRoot.confidence || v6Analysis.confidence || 0;
+
+  return (
+    <span
+      className={`morphology-v6-badge confidence-${confidence >= 80 ? 'high' : confidence >= 50 ? 'medium' : 'low'}`}
+      title={`V6 Analysis: ${v6Analysis.roots.length} hypothesis${v6Analysis.roots.length > 1 ? 'es' : ''}`}
+    >
+      <span className="v6-label">V6</span>
+      <span className="v6-confidence">{confidence}%</span>
+    </span>
+  );
+};
+
+/**
  * Pattern recognition display (Hebrew Binyanim + Aramaic patterns)
  * PRO SCHOLAR: Comprehensive verb pattern display
  */
@@ -387,8 +513,11 @@ const MorphologyBreakdown = ({
         />
       </div>
 
-      {/* PRO SCHOLAR: Pattern and language badges */}
+      {/* PRO SCHOLAR V6: Pattern, language, and V6 analysis badges */}
       <div className="morphology-badges">
+        {/* V6 Enhanced Analysis Badge */}
+        <RootConfidenceBadgeV6 word={word} />
+
         {detectedPattern && (
           <PatternBadge pattern={detectedPattern} language={analysis.language} />
         )}
@@ -406,6 +535,12 @@ const MorphologyBreakdown = ({
             שׁוֹרֶשׁ: {rootAnalysis.root}
           </span>
         )}
+
+        {/* V6 Semantic Field Badge */}
+        <SemanticFieldBadgeV6 root={rootAnalysis?.root || breakdown?.root?.text} />
+
+        {/* V6 Dialect Badge */}
+        <DialectBadgeV6 word={word} />
       </div>
 
       {/* Word component breakdown */}

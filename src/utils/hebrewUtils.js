@@ -46,15 +46,29 @@ export const stripAllDiacritics = (text) => {
 
 /**
  * Clean a Hebrew word for dictionary lookup
- * Removes diacritics AND non-Hebrew letters
+ * Removes diacritics but PRESERVES gershayim (' ״) for abbreviation detection
  * @param {string} word - Hebrew word to clean
- * @returns {string} - Consonants only (Hebrew letters only)
+ * @returns {string} - Consonants + gershayim (Hebrew letters + abbreviation marks)
  */
 export const cleanHebrewWord = (word) => {
   if (!word || typeof word !== 'string') return '';
   return word
     .replace(/[\u0591-\u05C7]/g, '') // Remove cantillation and vowels
-    .replace(/[^\u05D0-\u05EA]/g, ''); // Keep only Hebrew letters
+    // Keep Hebrew letters + gershayim (״ U+05F4, ' U+0027, " U+0022, ׳ U+05F3)
+    .replace(/[^\u05D0-\u05EA\u05F3\u05F4'"]/g, '');
+};
+
+/**
+ * Clean a Hebrew word STRICTLY (for root matching)
+ * Removes ALL non-Hebrew letters including gershayim
+ * @param {string} word - Hebrew word to clean
+ * @returns {string} - Hebrew consonants ONLY
+ */
+export const cleanHebrewWordStrict = (word) => {
+  if (!word || typeof word !== 'string') return '';
+  return word
+    .replace(/[\u0591-\u05C7]/g, '') // Remove cantillation and vowels
+    .replace(/[^\u05D0-\u05EA]/g, ''); // Keep ONLY Hebrew letters
 };
 
 // Alias used by some services

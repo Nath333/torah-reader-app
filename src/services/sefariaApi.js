@@ -19,7 +19,8 @@
  * const commentary = await getCommentary('Genesis', 1, 1);
  */
 
-import { createCache } from '../utils/cache';
+// PRO SCHOLAR V6.2: Use CacheOrchestrator for unified cache management
+import { createManagedCache } from './cacheOrchestrator';
 import { fetchWithFallback } from '../utils/http';
 import { cleanHtml } from '../utils/sanitize';
 import { getRashiOnTorah, getRashiOnTalmud, getRashiOnTanach, getRashiForVerse, getRashiForChapter } from './rashiService';
@@ -39,9 +40,9 @@ const BASE_URL = process.env.NODE_ENV === 'development'
   ? '/sefaria-api'
   : 'https://www.sefaria.org/api';
 
-// Create cache instances
-const textCache = createCache({ ttl: 10 * 60 * 1000, maxSize: 500 }); // 10 min
-const commentaryCache = createCache({ ttl: 60 * 60 * 1000, maxSize: 300 }); // 1 hour
+// PRO SCHOLAR V6.2: Create managed cache instances with CacheOrchestrator
+const textCache = createManagedCache('api', { ttl: 10 * 60 * 1000, maxSize: 500 }); // 10 min
+const commentaryCache = createManagedCache('commentary', { ttl: 60 * 60 * 1000, maxSize: 300 }); // 1 hour
 
 // =============================================================================
 // BOOK DATA - Mishnah structure (Torah, Neviim, Ketuvim, Talmud from constants)
@@ -272,7 +273,9 @@ export const getVerses = async (bookName, chapterNumber) => {
     const hebrewVerses = Array.isArray(data.he) ? data.he : [data.he];
     const englishVerses = Array.isArray(data.text) ? data.text : [data.text];
 
-    for (let i = 0; i < hebrewVerses.length; i++) {
+    // Use max length to handle arrays of different sizes
+    const maxLength = Math.max(hebrewVerses.length, englishVerses.length);
+    for (let i = 0; i < maxLength; i++) {
       const rawEnglish = englishVerses[i] || '';
       verses.push({
         verse: i + 1,
@@ -404,8 +407,12 @@ export const getCommentary = async (bookName, chapterNumber, verseNumber) => {
     }
   };
 
-  const allResults = await Promise.all(commentaries.map(fetchSingle));
-  const commentaryData = allResults.flat();
+  // Use Promise.allSettled to handle partial failures gracefully
+  const allResults = await Promise.allSettled(commentaries.map(fetchSingle));
+  const commentaryData = allResults
+    .filter(r => r.status === 'fulfilled')
+    .map(r => r.value)
+    .flat();
 
   commentaryCache.set(cacheKey, commentaryData);
   return commentaryData;
@@ -902,7 +909,13 @@ export { getTosafotOnTalmud, getTosafotForDaf, isTosafotAvailable };
 // RE-EXPORT COMMENTARY FACTORY FUNCTIONS (Ramban, Maharsha)
 // =============================================================================
 
-export { getRambanForVerse, getRambanForChapter, getMaharshaForDaf } from './commentaryServiceFactory';
+export {
+  getRambanForVerse,
+  getRambanForChapter,
+  getMaharshaForDaf,
+  getIbnEzraForChapter,
+  getSfornoForChapter
+} from './commentaryServiceFactory';
 
 // =============================================================================
 // IBN EZRA COMMENTARY FUNCTIONS

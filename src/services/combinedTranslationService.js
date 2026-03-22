@@ -9,13 +9,18 @@ import { scholarlyLookup, lookupWordSefaria, getSimpleTranslation, lookupJastrow
 import { cleanHebrewWord } from './hebrewDictionary';
 import { isLikelyAramaic } from './babylonianDictionary';
 import { translateEnglishToFrench, quickTranslate } from './englishToFrenchService';
-import { createCache } from '../utils/cache';
-// Local dictionaries for offline fallback
-import { BDB_BY_WORD, BDB_BY_STRONGS } from '../data/bdbComplete';
-import { JASTROW_COMPLETE } from '../data/jastrowComplete';
-// Full Strong's concordance (8,674 Hebrew entries + Greek)
-import { STRONGS_BY_WORD, STRONGS_BY_NUMBER } from '../data/strongsComplete.js';
+// PRO SCHOLAR V6.2: Use managed cache with CacheOrchestrator for unified telemetry
+import { createManagedCache } from './cacheOrchestrator';
+// PRO SCHOLAR V7: Dynamic dictionary loading (removes ~30MB from bundle!)
+// Uses dictionaryLoader.js for lazy loading instead of static imports
+import {
+  // Raw data access for morphological lookups (returns cached data or null)
+  getBDBData,
+  getJastrowData,
+  getStrongsData
+} from './dictionaryLoader';
 // Additional local lexicons (Klein etymology, Strong's subset, BDB Aramaic)
+// These are small enough to keep as static imports
 import { KLEIN_LEXICON, STRONG_LEXICON, BDB_ARAMAIC } from '../data/hebrewLexicons.js';
 // Local Aramaic dictionaries for offline lookup (CAL subset + Jastrow Aramaic)
 import { CAL_ARAMAIC } from '../data/calAramaic';
@@ -37,9 +42,39 @@ import {
 // Dynamic halachic lookup with prefix handling
 import { lookupHalachicWithPrefix } from '../utils/commentaryUtils';
 // Centralized stop words, prefix list, and smart pattern detection for morphology
-import { STOP_WORDS, isLikelyCompleteRoot, HEBREW_PREFIXES_ORDERED, HEBREW_SUFFIXES_ORDERED } from '../constants/morphology';
+import { STOP_WORDS, isLikelyCompleteRoot, HEBREW_PREFIXES_ORDERED, HEBREW_SUFFIXES_ORDERED, extractAramaicRoot, computeVerbTranslation, ROOT_MEANINGS, lookupFunctionWord, extractHebrewRoot, HEBREW_BINYANIM } from '../constants/morphology';
 // PRO SCHOLAR v2: Reference-based context detection for auto dictionary selection
 import { getContextFromReference } from '../constants/bookConstants';
+// PRO SCHOLAR V3: Pre-classification service for proper nouns, abbreviations, technical terms
+import { preClassify } from './preClassificationService';
+// PRO SCHOLAR V3: Systematic morphological analysis with multiple possible roots
+import { analyzeWordMorphology } from './morphologicalAnalysisService';
+// PRO SCHOLAR V5: Unified root extraction with direct dictionary validation
+import { extractRootsWithDirectValidation } from './unifiedRootService';
+// PRO SCHOLAR V5: O(1) trie-based prefix lookup (replaces O(n) iteration)
+import { findLongestPrefix } from '../utils/prefixTrie';
+
+// =============================================================================
+// Dictionary Data Getters (PRO SCHOLAR V7: Lazy loading convenience wrappers)
+// =============================================================================
+// These replace the old static imports (BDB_BY_WORD, JASTROW_COMPLETE, etc.)
+const getBDB_BY_WORD = () => {
+  const data = getBDBData();
+  return data?.byWord || data || null;
+};
+const getBDB_BY_STRONGS = () => {
+  const data = getBDBData();
+  return data?.byStrongs || null;
+};
+const getJASTROW_COMPLETE = () => getJastrowData();
+const getSTRONGS_BY_WORD = () => {
+  const data = getStrongsData();
+  return data?.byWord || data || null;
+};
+const getSTRONGS_BY_NUMBER = () => {
+  const data = getStrongsData();
+  return data?.byNumber || null;
+};
 
 // =============================================================================
 // Debug Logging for Lookup Tracking
@@ -133,26 +168,49 @@ const lookupWithMorphology = (word, dictionary) => {
     return areSimilarWords(headword, stem) || areSimilarWords(headword, originalWord);
   };
 
-  // Try stripping prefixes
+  // PRO SCHOLAR V5: Try stripping prefixes using O(1) trie lookup
+  // First try the longest matching prefix (most common case)
+  const trieResult = findLongestPrefix(word);
+  if (trieResult && trieResult.remainder.length >= 2) {
+    const { prefix, remainder: stem } = trieResult;
+
+    // CRITICAL: Check if stem is a STOP WORD - this is our target word!
+    if (STOP_WORDS.has(stem)) {
+      if (dictionary[stem]) {
+        return { entry: dictionary[stem], matchedForm: stem, strippedPrefix: prefix };
+      }
+    } else {
+      // Try direct match
+      if (dictionary[stem] && isValidMatch(dictionary[stem], stem, word)) {
+        return { entry: dictionary[stem], matchedForm: stem, strippedPrefix: prefix };
+      }
+      // Try normalized
+      const normalizedStem = normalizeFinals(stem);
+      if (normalizedStem !== stem && dictionary[normalizedStem]) {
+        if (isValidMatch(dictionary[normalizedStem], normalizedStem, word)) {
+          return { entry: dictionary[normalizedStem], matchedForm: normalizedStem, strippedPrefix: prefix };
+        }
+      }
+    }
+  }
+
+  // Fallback: Try shorter prefixes if longest didn't work (rare case)
   for (const prefix of HEBREW_PREFIXES) {
+    // Skip if this is the same as trie result (already tried)
+    if (trieResult && prefix === trieResult.prefix) continue;
+
     if (word.startsWith(prefix) && word.length > prefix.length + 1) {
       const stem = word.slice(prefix.length);
 
-      // CRITICAL: Check if stem is a STOP WORD - this is our target word!
-      // e.g., "השבת" = "ה" + "שבת" - שבת is a stop word, so look it up directly
       if (STOP_WORDS.has(stem)) {
         if (dictionary[stem]) {
           return { entry: dictionary[stem], matchedForm: stem, strippedPrefix: prefix };
         }
-        // Stop word not in this dictionary - continue to next prefix, don't strip further
         continue;
       }
 
-      if (dictionary[stem]) {
-        // VALIDATE: entry must be related to stem
-        if (isValidMatch(dictionary[stem], stem, word)) {
-          return { entry: dictionary[stem], matchedForm: stem, strippedPrefix: prefix };
-        }
+      if (dictionary[stem] && isValidMatch(dictionary[stem], stem, word)) {
+        return { entry: dictionary[stem], matchedForm: stem, strippedPrefix: prefix };
       }
       const normalizedStem = normalizeFinals(stem);
       if (normalizedStem !== stem && dictionary[normalizedStem]) {
@@ -164,6 +222,9 @@ const lookupWithMorphology = (word, dictionary) => {
   }
 
   // Try stripping suffixes
+  // Construct+possessive suffixes that need ה restoration
+  const CONSTRUCT_POSSESSIVE = new Set(['תו', 'תי', 'תך', 'תם', 'תן', 'תנו']);
+
   for (const suffix of HEBREW_SUFFIXES) {
     if (word.endsWith(suffix) && word.length > suffix.length + 2) {
       const stem = word.slice(0, -suffix.length);
@@ -173,10 +234,32 @@ const lookupWithMorphology = (word, dictionary) => {
           return { entry: dictionary[stem], matchedForm: stem, strippedSuffix: suffix };
         }
       }
+
+      // PRO SCHOLAR: Construct-state ה restoration
+      // For construct+possessive suffixes (תו, תי, etc.), try adding ה
+      // Example: שגגתו → strip תו → שגג → try שגגה ✓
+      if (CONSTRUCT_POSSESSIVE.has(suffix) && dictionary[stem + 'ה']) {
+        if (isValidMatch(dictionary[stem + 'ה'], stem + 'ה', word)) {
+          return { entry: dictionary[stem + 'ה'], matchedForm: stem + 'ה', strippedSuffix: suffix };
+        }
+      }
+
       // For ות plural, try adding ה for feminine singular
       if (suffix === 'ות' && dictionary[stem + 'ה']) {
         if (isValidMatch(dictionary[stem + 'ה'], stem + 'ה', word)) {
           return { entry: dictionary[stem + 'ה'], matchedForm: stem + 'ה', strippedSuffix: suffix };
+        }
+      }
+
+      // PRO SCHOLAR: For possessive suffixes where stem ends in ת (construct state)
+      // Try replacing ת with ה to get absolute form
+      // Example: מלאכתו → strip ו → מלאכת → מלאכה ✓
+      if (['ו', 'י', 'ך', 'ה'].includes(suffix) && stem.endsWith('ת') && stem.length >= 3) {
+        const absoluteForm = stem.slice(0, -1) + 'ה';
+        if (dictionary[absoluteForm]) {
+          if (isValidMatch(dictionary[absoluteForm], absoluteForm, word)) {
+            return { entry: dictionary[absoluteForm], matchedForm: absoluteForm, strippedSuffix: suffix };
+          }
         }
       }
     }
@@ -203,8 +286,8 @@ const lookupWithMorphology = (word, dictionary) => {
   return null;
 };
 
-// Use shared cache utility for combined lookups
-const combinedCache = createCache({ ttl: 60 * 60 * 1000, maxSize: 1000 }); // 1 hour
+// PRO SCHOLAR V6.2: Use CacheOrchestrator's managed cache for unified telemetry
+const combinedCache = createManagedCache('translation', { ttl: 60 * 60 * 1000, maxSize: 1000 }); // 1 hour
 
 // =============================================================================
 // Local Dictionary Fallback Lookups
@@ -216,6 +299,7 @@ const combinedCache = createCache({ ttl: 60 * 60 * 1000, maxSize: 1000 }); // 1 
  * @returns {object|null} - Raw dictionary entry
  */
 const lookupBDBRaw = (word) => {
+  const BDB_BY_WORD = getBDB_BY_WORD();
   if (!word || !BDB_BY_WORD) return null;
 
   const match = lookupWithMorphology(word, BDB_BY_WORD);
@@ -239,6 +323,7 @@ const lookupBDBRaw = (word) => {
  * @returns {object|null} - Dictionary entry or null
  */
 const lookupLocalBDB = (word) => {
+  const BDB_BY_WORD = getBDB_BY_WORD();
   if (!word || !BDB_BY_WORD) return null;
 
   const match = lookupWithMorphology(word, BDB_BY_WORD);
@@ -310,6 +395,7 @@ const lookupLocalBDB = (word) => {
  * @returns {object|null} - Raw dictionary entry
  */
 const lookupJastrowRaw = (word) => {
+  const JASTROW_COMPLETE = getJASTROW_COMPLETE();
   if (!word || !JASTROW_COMPLETE) return null;
 
   const match = lookupWithMorphology(word, JASTROW_COMPLETE);
@@ -333,6 +419,7 @@ const lookupJastrowRaw = (word) => {
  * @returns {object|null} - Dictionary entry or null
  */
 const lookupLocalJastrow = (word) => {
+  const JASTROW_COMPLETE = getJASTROW_COMPLETE();
   if (!word || !JASTROW_COMPLETE) return null;
 
   const match = lookupWithMorphology(word, JASTROW_COMPLETE);
@@ -450,7 +537,8 @@ const lookupLocalStrong = (word) => {
   if (!word) return null;
 
   // Try full Strong's dictionary first (with morphology)
-  const fullMatch = lookupWithMorphology(word, STRONGS_BY_WORD);
+  const STRONGS_BY_WORD = getSTRONGS_BY_WORD();
+  const fullMatch = STRONGS_BY_WORD ? lookupWithMorphology(word, STRONGS_BY_WORD) : null;
   if (fullMatch?.entry) {
     const entry = fullMatch.entry;
     // Extract clean definition from full Strong's format
@@ -521,6 +609,10 @@ const lookupByStrongsNumber = (strongNumber) => {
   const normalized = strongNumber.toUpperCase().startsWith('H')
     ? strongNumber.toUpperCase()
     : `H${strongNumber}`;
+
+  // Get dynamically loaded dictionary data
+  const STRONGS_BY_NUMBER = getSTRONGS_BY_NUMBER();
+  const BDB_BY_STRONGS = getBDB_BY_STRONGS();
 
   // Try full Strong's by number
   if (STRONGS_BY_NUMBER?.[normalized]) {
@@ -663,6 +755,240 @@ const lookupLocalJastrowAramaic = (word) => {
     strippedSuffix: match.strippedSuffix,
     offline: true
   };
+};
+
+// =============================================================================
+// PRO SCHOLAR V4: SYSTEMATIC ROOT EXTRACTION AND LOOKUP
+// =============================================================================
+
+/**
+ * Extract the 3-letter שורש (root) from any Hebrew/Aramaic word
+ * Uses systematic morphological analysis without hardcoding every form
+ *
+ * @param {string} word - Hebrew word
+ * @returns {Object} - { root, prefixes, suffixes, pattern, confidence }
+ */
+const extractShoresh = (word) => {
+  if (!word || word.length < 2) return null;
+
+  const cleaned = cleanWord(word);
+  let remaining = cleaned;
+  const prefixes = [];
+  const suffixes = [];
+
+  // === STEP 1: STRIP PREFIXES ===
+  // Order matters: longer prefixes first (וה, וב, ול, etc.)
+  const prefixPatterns = [
+    { prefix: 'וה', meaning: 'and the' },
+    { prefix: 'וב', meaning: 'and in' },
+    { prefix: 'ול', meaning: 'and to' },
+    { prefix: 'ומ', meaning: 'and from' },
+    { prefix: 'וכ', meaning: 'and like' },
+    { prefix: 'הת', meaning: 'hitpael marker' },
+    { prefix: 'מת', meaning: 'mitpael marker' },
+    { prefix: 'ו', meaning: 'and' },
+    { prefix: 'ה', meaning: 'the' },
+    { prefix: 'ב', meaning: 'in' },
+    { prefix: 'ל', meaning: 'to' },
+    { prefix: 'מ', meaning: 'from/participle' },
+    { prefix: 'כ', meaning: 'like' },
+    { prefix: 'ש', meaning: 'that/who' },
+    { prefix: 'ד', meaning: 'of (Aram.)' },
+  ];
+
+  // Only strip if remaining > 2 letters
+  for (const { prefix, meaning } of prefixPatterns) {
+    if (remaining.startsWith(prefix) && remaining.length > prefix.length + 2) {
+      // Don't strip from protected roots
+      if (!STOP_WORDS.has(remaining)) {
+        prefixes.push({ letter: prefix, meaning });
+        remaining = remaining.slice(prefix.length);
+        if (prefixes.length >= 2) break; // Max 2 prefixes
+      }
+    }
+  }
+
+  // === STEP 2: STRIP SUFFIXES ===
+  // Order: longer suffixes first for greedy matching
+  const suffixPatterns = [
+    // Construct + possessive compound suffixes
+    { suffix: 'ותיהם', meaning: 'their (f.pl)' },
+    { suffix: 'ותיהן', meaning: 'their (f.pl)' },
+    { suffix: 'תנו', meaning: 'construct + our' },
+    { suffix: 'תם', meaning: 'construct + their (m)' },
+    { suffix: 'תן', meaning: 'construct + their (f)' },
+    { suffix: 'תו', meaning: 'construct + his' },
+    { suffix: 'תי', meaning: 'construct + my' },
+    { suffix: 'תך', meaning: 'construct + your' },
+    // Plurals
+    { suffix: 'ים', meaning: 'plural (m)' },
+    { suffix: 'ות', meaning: 'plural (f)' },
+    { suffix: 'ין', meaning: 'plural (Aram.)' },
+    // Possessives
+    { suffix: 'יהם', meaning: 'their' },
+    { suffix: 'יהן', meaning: 'their (f)' },
+    { suffix: 'נו', meaning: 'our/we' },
+    { suffix: 'הם', meaning: 'them' },
+    { suffix: 'הן', meaning: 'them (f)' },
+    { suffix: 'יו', meaning: 'his' },
+    { suffix: 'יה', meaning: 'her' },
+    { suffix: 'כם', meaning: 'your (pl)' },
+    { suffix: 'ו', meaning: 'his/they' },
+    { suffix: 'י', meaning: 'my' },
+    { suffix: 'ך', meaning: 'your' },
+    { suffix: 'ה', meaning: 'her/direction' },
+    // Aramaic
+    { suffix: 'תא', meaning: 'emphatic (Aram.)' },
+    { suffix: 'יא', meaning: 'emphatic (Aram.)' },
+    { suffix: 'א', meaning: 'emphatic (Aram.)' },
+  ];
+
+  for (const { suffix, meaning } of suffixPatterns) {
+    if (remaining.endsWith(suffix) && remaining.length > suffix.length + 2) {
+      suffixes.push({ letter: suffix, meaning });
+      remaining = remaining.slice(0, -suffix.length);
+      break; // Only one suffix pass
+    }
+  }
+
+  // === STEP 3: HANDLE WEAK VERB PATTERNS ===
+  let root = remaining;
+  let pattern = 'Qal';
+  let weakType = null;
+
+  // Qal participle: CוCC → remove ו to get CCC
+  if (root.length === 4 && root[1] === 'ו') {
+    root = root[0] + root.slice(2);
+    pattern = 'Qal Participle';
+  }
+
+  // Hollow verbs (ע"ו/ע"י): CיC or CוC → expand to CוC or CיC
+  if (root.length === 3 && (root[1] === 'ו' || root[1] === 'י')) {
+    weakType = 'hollow (ע"ו/ע"י)';
+  }
+
+  // Lamed-He verbs: CC → CCה (if only 2 letters remain)
+  if (root.length === 2) {
+    root = root + 'ה';
+    weakType = 'lamed-he (ל"ה)';
+  }
+
+  // Geminate (ע"ע): CC → CCC (double last letter)
+  // Only if remaining is 2 consonants
+  if (root.length === 2 && !weakType) {
+    root = root + root[1];
+    weakType = 'geminate (ע"ע)';
+  }
+
+  return {
+    originalWord: cleaned,
+    root: root.length >= 2 && root.length <= 4 ? root : remaining,
+    prefixes,
+    suffixes,
+    pattern,
+    weakType,
+    confidence: root.length === 3 ? 90 : (root.length === 2 ? 70 : 50)
+  };
+};
+
+/**
+ * PRO SCHOLAR V4: Root-based fallback lookup
+ * When direct lookup fails, extract the root and look it up
+ * Returns scholarly definition with full morphological breakdown
+ *
+ * @param {string} word - The original word
+ * @param {string} contextMode - Context for dictionary priority
+ * @returns {Object|null} - Lookup result with morphological info
+ */
+const lookupByExtractedRoot = (word, contextMode) => {
+  const rootAnalysis = extractShoresh(word);
+  if (!rootAnalysis || !rootAnalysis.root || rootAnalysis.root.length < 2) {
+    return null;
+  }
+
+  const { root, prefixes, suffixes, pattern, weakType, confidence } = rootAnalysis;
+
+  if (DEBUG_LOOKUPS) {
+    log.debug(`[RootLookup] ${word} → root: ${root}, pattern: ${pattern}, weak: ${weakType || 'strong'}`);
+  }
+
+  // Try looking up the extracted root in dictionaries
+  const rootResult = lookupRootInDictionaries(root, contextMode);
+
+  // Also try with ה restoration for lamed-he verbs
+  let alternateResult = null;
+  if (!rootResult && root.length === 3 && !root.endsWith('ה')) {
+    alternateResult = lookupRootInDictionaries(root.slice(0, 2) + 'ה', contextMode);
+  }
+
+  // Also try potential construct-state restoration
+  if (!rootResult && !alternateResult && suffixes.some(s => s.letter.startsWith('ת'))) {
+    // שגגתו → שגג → שגגה
+    alternateResult = lookupRootInDictionaries(root + 'ה', contextMode);
+  }
+
+  const finalResult = rootResult || alternateResult;
+  if (!finalResult) return null;
+
+  // Build morphological breakdown string
+  const prefixStr = prefixes.map(p => `${p.letter} (${p.meaning})`).join(' + ');
+  const suffixStr = suffixes.map(s => `${s.letter} (${s.meaning})`).join(' + ');
+  const morphNote = [
+    prefixStr ? `Prefix: ${prefixStr}` : null,
+    `Root: ${root}`,
+    pattern !== 'Qal' ? `Pattern: ${pattern}` : null,
+    weakType ? `Type: ${weakType}` : null,
+    suffixStr ? `Suffix: ${suffixStr}` : null,
+  ].filter(Boolean).join(' • ');
+
+  return {
+    english: finalResult.english,
+    fullDefinition: finalResult.fullDefinition,
+    source: `${finalResult.source} (root)`,
+    sources: finalResult.sources?.map(s => ({
+      ...s,
+      name: `${s.name} (root)`,
+      isRootLookup: true
+    })) || [{
+      name: `${finalResult.source} (root)`,
+      definition: finalResult.english,
+      isRootLookup: true
+    }],
+    headword: root,
+    matchedForm: root,
+    originalWord: word,
+    morphologyNote: morphNote,
+    rootAnalysis: {
+      root,
+      prefixes,
+      suffixes,
+      pattern,
+      weakType,
+      confidence
+    },
+    language: finalResult.language || 'Hebrew',
+    isRootLookup: true,
+    offline: true
+  };
+};
+
+/**
+ * Look up a root in all dictionaries (used by root-based fallback)
+ */
+const lookupRootInDictionaries = (root, contextMode) => {
+  // Try each dictionary for the root
+  const bdbResult = lookupLocalBDB(root);
+  const jastrowResult = lookupLocalJastrow(root);
+  const strongResult = contextMode !== CONTEXT_MODES.TALMUDIC ? lookupLocalStrong(root) : null;
+  const kleinResult = lookupLocalKlein(root);
+
+  // Return first valid result with priority
+  if (jastrowResult?.english) return jastrowResult;
+  if (bdbResult?.english) return bdbResult;
+  if (kleinResult?.english) return kleinResult;
+  if (strongResult?.english) return strongResult;
+
+  return null;
 };
 
 /**
@@ -829,6 +1155,15 @@ const lookupLocalDictionaries = (word, contextMode = null) => {
 
   if (!primaryResult) {
     if (DEBUG_LOOKUPS) log.debug(`[Lookup] All candidates rejected for: ${word}`);
+
+    // === PRO SCHOLAR V4: ROOT-BASED FALLBACK ===
+    // If no direct match, extract the שורש (root) and look it up
+    // This handles inflected forms like שגגתו → שגג/שגה, זדונו → זדון
+    const rootFallback = lookupByExtractedRoot(word, effectiveContext);
+    if (rootFallback) {
+      return rootFallback;
+    }
+
     return null;
   }
 
@@ -912,6 +1247,123 @@ const lookupLocalDictionaries = (word, contextMode = null) => {
 
 // cleanWord alias for cleanHebrewWord (already imported from hebrewDictionary)
 const cleanWord = cleanHebrewWord;
+
+// =============================================================================
+// PRO SCHOLAR V3: Hebrew Binyan Verb Analysis
+// Detects verb patterns (Hiphil, Piel, etc.) and extracts correct root
+// This prevents wrong matches like להביא → הב (love) instead of בוא (bring)
+// =============================================================================
+
+/**
+ * Try to analyze a Hebrew word as a conjugated verb
+ * Handles cases like להביא where prefix stripping could match wrong roots
+ *
+ * @param {string} word - Cleaned Hebrew word
+ * @returns {object|null} - { root, binyan, translation, ... } or null
+ */
+const tryHebrewVerbAnalysis = (word) => {
+  if (!word || word.length < 3) return null;
+
+  const cleanedWord = word.replace(/[\u0591-\u05C7]/g, ''); // Remove vowels
+
+  // Common prefixes to try stripping
+  const VERB_PREFIXES = ['ל', 'ה', 'ו', 'וה', 'ול', 'וב', 'ומ', 'וכ'];
+
+  // Try the word as-is first
+  let verbResult = extractHebrewRoot(cleanedWord);
+
+  // If no result, try stripping prefixes
+  if (!verbResult || verbResult.uncertain) {
+    for (const prefix of VERB_PREFIXES) {
+      if (cleanedWord.startsWith(prefix) && cleanedWord.length > prefix.length + 2) {
+        const stem = cleanedWord.slice(prefix.length);
+        const stemResult = extractHebrewRoot(stem);
+
+        if (stemResult && stemResult.root && stemResult.confidence > 60) {
+          verbResult = {
+            ...stemResult,
+            strippedPrefix: prefix
+          };
+          break;
+        }
+      }
+    }
+  }
+
+  // If we found a valid verb with good confidence
+  if (verbResult && verbResult.root && verbResult.confidence >= 65) {
+    const rootInfo = ROOT_MEANINGS[verbResult.root];
+
+    if (rootInfo) {
+      // Determine the translation based on binyan
+      let translation = rootInfo.base || '';
+      let binyanEffect = '';
+
+      if (verbResult.binyan) {
+        const binyanName = verbResult.binyan.name || verbResult.binyan;
+
+        switch (binyanName) {
+          case 'Hifil':
+          case 'Hiphil':
+            // Causative: "come" → "bring", "know" → "make known"
+            translation = rootInfo.causative || `to cause to ${rootInfo.base}`;
+            binyanEffect = 'causative';
+            break;
+          case 'Piel':
+            // Intensive: "break" → "shatter"
+            translation = rootInfo.intensive || rootInfo.base;
+            binyanEffect = 'intensive';
+            break;
+          case 'Pual':
+            // Intensive passive
+            translation = `to be ${rootInfo.intensive || rootInfo.base}`;
+            binyanEffect = 'intensive passive';
+            break;
+          case 'Hitpael':
+            // Reflexive
+            translation = rootInfo.reflexive || `to ${rootInfo.base} oneself`;
+            binyanEffect = 'reflexive';
+            break;
+          case 'Nifal':
+            // Passive/reflexive
+            translation = rootInfo.passive || `to be ${rootInfo.base}`;
+            binyanEffect = 'passive';
+            break;
+          case 'Hufal':
+            // Causative passive
+            translation = `to be caused to ${rootInfo.base}`;
+            binyanEffect = 'causative passive';
+            break;
+          default:
+            // Qal (basic)
+            translation = rootInfo.base;
+            binyanEffect = 'basic';
+        }
+      }
+
+      // Add prefix meaning if stripped (infinitive construct)
+      if (verbResult.strippedPrefix === 'ל' && !translation.startsWith('to ')) {
+        translation = `to ${translation}`;
+      }
+
+      return {
+        root: verbResult.root,
+        binyan: verbResult.binyan || HEBREW_BINYANIM?.qal,
+        binyanEffect,
+        translation: translation,
+        fullTranslation: `${verbResult.binyan?.name || 'Qal'} of ${verbResult.root}: ${translation}`,
+        rootMeaning: rootInfo.base,
+        confidence: verbResult.confidence,
+        strippedPrefix: verbResult.strippedPrefix,
+        source: 'Root Database + Binyan',
+        etymology: rootInfo.etymology,
+        cognates: rootInfo.cognates
+      };
+    }
+  }
+
+  return null;
+};
 
 /**
  * Get cached result if available
@@ -1336,6 +1788,47 @@ export const lookupWordSync = (word, options = {}) => {
     return { english: null, french: null, source: 'none', sources: [] };
   }
 
+  // === PRO SCHOLAR V3: PRE-CLASSIFICATION ===
+  // Check for proper nouns, abbreviations, and technical terms BEFORE dictionary lookup
+  // This prevents wrong homograph matches like משה="to pull" instead of "Moses"
+  const preClassResult = preClassify(cleaned, { reference, textType: effectiveContextMode });
+  if (preClassResult) {
+    if (DEBUG_LOOKUPS) log.debug(`[PreClassify] ${cleaned} → ${preClassResult.type}: ${preClassResult.english || preClassResult.meaning}`);
+
+    // For proper names and abbreviations, return immediately without dictionary lookup
+    if (preClassResult.skipDictionary) {
+      return {
+        word: word,
+        cleanedWord: cleaned,
+        english: preClassResult.english || preClassResult.meaning,
+        fullEnglish: preClassResult.note ? `${preClassResult.english || preClassResult.meaning} - ${preClassResult.note}` : null,
+        french: null,
+        frenchSource: 'none',
+        source: preClassResult.source,
+        sources: [{
+          name: preClassResult.source,
+          fullName: preClassResult.source,
+          definition: preClassResult.english || preClassResult.meaning,
+          note: preClassResult.note,
+          recommended: true,
+          isProperNoun: preClassResult.type === 'proper_name',
+          isAbbreviation: preClassResult.type === 'abbreviation'
+        }],
+        isProperNoun: preClassResult.type === 'proper_name',
+        isAbbreviation: preClassResult.type === 'abbreviation',
+        isTechnicalTerm: preClassResult.type === 'technical_term',
+        properNounType: preClassResult.subtype,
+        expansion: preClassResult.expansion, // For abbreviations
+        language: 'Hebrew',
+        offline: true,
+        _preClassified: true
+      };
+    }
+
+    // For technical terms, continue to dictionary but mark as recommended
+    // This allows us to get additional scholarly sources
+  }
+
   // Check cache first (might have full scholarly result)
   // Skip cache in PRO SCHOLAR MODE to always get fresh multi-source results
   // Also skip cache if context is explicitly set (need context-specific results)
@@ -1345,6 +1838,60 @@ export const lookupWordSync = (word, options = {}) => {
     return cached;
   }
   // Otherwise, re-fetch to get all sources
+
+  // === PRO SCHOLAR: Check FUNCTION_WORDS first for common terms ===
+  // This catches: העומדים, נפקא, להביא, התראתו, לקמן, etc.
+  // These are curated translations that should take priority
+  const functionWordTranslation = lookupFunctionWord(cleaned);
+  if (functionWordTranslation) {
+    return {
+      word: word,
+      cleanedWord: cleaned,
+      english: functionWordTranslation,
+      source: 'Talmudic',
+      sources: [{
+        name: 'Talmudic',
+        fullName: 'Talmudic Vocabulary',
+        definition: functionWordTranslation,
+        recommended: true
+      }],
+      isAramaic: isLikelyAramaic(cleaned),
+      language: isLikelyAramaic(cleaned) ? 'Aramaic' : 'Hebrew',
+      offline: true,
+      _functionWord: true
+    };
+  }
+
+  // === PRO SCHOLAR V3: HEBREW BINYAN DETECTION ===
+  // For verbs like להביא, detect binyan pattern and extract correct root
+  // This prevents matching הב (love) instead of בוא (come) → Hiphil = bring
+  const hebrewVerbResult = tryHebrewVerbAnalysis(cleaned);
+  if (hebrewVerbResult) {
+    if (DEBUG_LOOKUPS) log.debug(`[HebrewVerb] ${cleaned} → ${hebrewVerbResult.binyan?.name} of ${hebrewVerbResult.root}: ${hebrewVerbResult.translation}`);
+    return {
+      word: word,
+      cleanedWord: cleaned,
+      english: hebrewVerbResult.translation,
+      fullEnglish: hebrewVerbResult.fullTranslation,
+      french: null,
+      frenchSource: 'none',
+      source: hebrewVerbResult.source || 'Binyan Analysis',
+      sources: [{
+        name: 'Binyan Analysis',
+        fullName: `Hebrew ${hebrewVerbResult.binyan?.name || 'Verb'} Pattern`,
+        definition: hebrewVerbResult.translation,
+        recommended: true,
+        root: hebrewVerbResult.root,
+        binyan: hebrewVerbResult.binyan?.name
+      }],
+      root: hebrewVerbResult.root,
+      binyan: hebrewVerbResult.binyan,
+      morphologyInfo: hebrewVerbResult,
+      language: 'Hebrew',
+      offline: true,
+      _hebrewVerbAnalysis: true
+    };
+  }
 
   // === PRO SCHOLAR MODE: ALWAYS query ALL sources ===
   const allSources = [];
@@ -1382,17 +1929,52 @@ export const lookupWordSync = (word, options = {}) => {
   }
 
   if (localResult?.sources?.length > 0) {
-    // Add all dictionary sources (deduplicated)
-    for (const src of localResult.sources) {
-      if (!seenNames.has(src.name) && src.definition) {
-        seenNames.add(src.name);
-        allSources.push(src);
+    // PRO SCHOLAR: Validate headword match before accepting dictionary result
+    // This prevents returning פיק (trembling) when searching for תפיקו (Aphel of נפק)
+    const headword = localResult.headword || localResult.matchedForm;
+    let isValidMatch = true;
+
+    if (headword && cleaned.length >= 3) {
+      // Calculate similarity between query and headword
+      const stripVowels = (s) => s.replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '');
+      const cleanQuery = stripVowels(cleaned);
+      const cleanHeadword = stripVowels(headword);
+
+      // Check various match criteria
+      const exactMatch = cleanQuery === cleanHeadword;
+      const containsQuery = cleanHeadword.includes(cleanQuery) || cleanQuery.includes(cleanHeadword);
+
+      // Calculate letter overlap (LCS-style)
+      let matches = 0;
+      const shorter = cleanQuery.length <= cleanHeadword.length ? cleanQuery : cleanHeadword;
+      const longer = cleanQuery.length > cleanHeadword.length ? cleanQuery : cleanHeadword;
+      for (const char of shorter) {
+        if (longer.includes(char)) matches++;
+      }
+      const similarity = matches / Math.max(cleanQuery.length, cleanHeadword.length);
+
+      // Reject if similarity is too low (< 65%) and not exact/contained
+      if (!exactMatch && !containsQuery && similarity < 0.65) {
+        isValidMatch = false;
+        if (DEBUG_LOOKUPS) {
+          log.debug(`[Lookup] Headword mismatch: "${headword}" vs query "${cleaned}" (similarity: ${(similarity * 100).toFixed(0)}%)`);
+        }
       }
     }
-    // Use local result as primary if no halachic match
-    if (!primaryEnglish && localResult.english) {
-      primaryEnglish = pickBestDefinition(localResult.english) || localResult.english;
-      primarySource = localResult.source;
+
+    if (isValidMatch) {
+      // Add all dictionary sources (deduplicated)
+      for (const src of localResult.sources) {
+        if (!seenNames.has(src.name) && src.definition) {
+          seenNames.add(src.name);
+          allSources.push(src);
+        }
+      }
+      // Use local result as primary if no halachic match
+      if (!primaryEnglish && localResult.english) {
+        primaryEnglish = pickBestDefinition(localResult.english) || localResult.english;
+        primarySource = localResult.source;
+      }
     }
   }
 
@@ -1416,6 +1998,232 @@ export const lookupWordSync = (word, options = {}) => {
       root: halachicResult?.root,
       prefix: halachicResult?.prefix,
       isLoading: true // Still trigger API for potentially better results
+    };
+  }
+
+  // PRO SCHOLAR: Try pattern analysis for Aramaic verbs (e.g., תפיקו → נפק)
+  // This is critical for weak verbs where dictionary lookup fails
+  if (checkAramaic || isLikelyAramaic(cleaned)) {
+    const rootAnalysis = extractAramaicRoot(cleaned);
+    if (rootAnalysis && rootAnalysis.confidence >= 70 && rootAnalysis.root) {
+      const computedTranslation = computeVerbTranslation(rootAnalysis);
+      if (computedTranslation) {
+        // Look up the ROOT in dictionaries for scholarly source
+        let rootDictionarySource = null;
+        let rootDictionaryDef = null;
+        const rootLookup = lookupLocalDictionaries(rootAnalysis.root);
+        if (rootLookup?.english) {
+          rootDictionaryDef = rootLookup.english;
+          rootDictionarySource = rootLookup.source || 'Dictionary';
+        }
+
+        // Build sources array
+        const patternSources = [];
+        if (rootDictionarySource && rootDictionaryDef) {
+          patternSources.push({
+            name: rootDictionarySource.replace(' (Local)', ''),
+            fullName: `Root "${rootAnalysis.root}" from ${rootDictionarySource}`,
+            definition: rootDictionaryDef,
+            isRootSource: true
+          });
+        }
+        patternSources.push({
+          name: 'Pattern Analysis',
+          fullName: 'Aramaic Verb Pattern Analysis',
+          definition: `${rootAnalysis.pattern} of root ${rootAnalysis.root}${rootAnalysis.weakType ? ` (${rootAnalysis.weakType})` : ''}`
+        });
+
+        return {
+          word: word,
+          cleanedWord: cleaned,
+          english: computedTranslation,
+          french: null,
+          frenchSource: 'none',
+          source: rootDictionarySource ? `${rootDictionarySource} + pattern` : 'pattern-analysis',
+          sources: patternSources,
+          isAramaic: true,
+          language: 'Aramaic',
+          root: rootAnalysis.root,
+          morphologyInfo: {
+            ...rootAnalysis,
+            rootSource: rootDictionarySource || 'ROOT_MEANINGS',
+            rootDefinition: rootDictionaryDef || rootAnalysis.baseMeaning
+          },
+          derivationChain: {
+            originalWord: cleaned,
+            extractedRoot: rootAnalysis.root,
+            rootSource: rootDictionarySource || 'ROOT_MEANINGS',
+            rootMeaning: rootDictionaryDef || rootAnalysis.baseMeaning,
+            pattern: rootAnalysis.pattern,
+            patternEffect: rootAnalysis.patternMeaning,
+            conjugation: rootAnalysis.conjugation,
+            finalTranslation: computedTranslation
+          },
+          confidence: rootAnalysis.confidence,
+          sefariaData: null,
+          offline: true,
+          isLoading: false // Pattern analysis complete - no need to load more
+        };
+      }
+    }
+  }
+
+  // === PRO SCHOLAR V3: MORPHOLOGICAL ANALYSIS FALLBACK ===
+  // Try systematic morphological analysis as last resort before giving up
+  // This handles Aramaic possessives, Hebrew binyanim, and complex affixes
+  const morphAnalyses = analyzeWordMorphology(cleaned, {
+    isAramaic: checkAramaic,
+    context: effectiveContextMode
+  });
+
+  // Get the best analysis from the computed results (highest confidence first)
+  const bestMorphAnalysis = morphAnalyses.length > 0 ? morphAnalyses[0] : null;
+
+  if (bestMorphAnalysis && bestMorphAnalysis.confidence >= 65) {
+    // Build comprehensive result from morphological analysis
+    const morphBreakdown = [];
+
+    if (bestMorphAnalysis.prefix) {
+      morphBreakdown.push(`${bestMorphAnalysis.prefix.text} (${bestMorphAnalysis.prefix.meaning})`);
+    }
+    if (bestMorphAnalysis.root) {
+      morphBreakdown.push(`${bestMorphAnalysis.root} (root)`);
+    }
+    if (bestMorphAnalysis.suffix) {
+      morphBreakdown.push(`${bestMorphAnalysis.suffix.text} (${bestMorphAnalysis.suffix.meaning})`);
+    }
+
+    return {
+      word: word,
+      cleanedWord: cleaned,
+      english: bestMorphAnalysis.translation,
+      french: null,
+      frenchSource: 'none',
+      source: bestMorphAnalysis.source || 'morphological_analysis',
+      sources: [{
+        name: 'Morphological Analysis',
+        tier: 'analysis',
+        definition: bestMorphAnalysis.translation,
+        analysis: bestMorphAnalysis.analysisType,
+        confidence: bestMorphAnalysis.confidence
+      }],
+      isAramaic: checkAramaic || bestMorphAnalysis.isAramaic,
+      language: (checkAramaic || bestMorphAnalysis.isAramaic) ? 'Aramaic' : 'Hebrew',
+      morphology: {
+        breakdown: morphBreakdown.join(' + '),
+        prefix: bestMorphAnalysis.prefix,
+        root: bestMorphAnalysis.root,
+        suffix: bestMorphAnalysis.suffix,
+        rootMeaning: bestMorphAnalysis.rootMeaning,
+        pattern: bestMorphAnalysis.pattern,
+        binyan: bestMorphAnalysis.binyan
+      },
+      allAnalyses: morphAnalyses.slice(0, 3), // Include top 3 possibilities
+      confidence: bestMorphAnalysis.confidence,
+      sefariaData: null,
+      offline: true,
+      isLoading: false
+    };
+  }
+
+  // === PRO SCHOLAR V5: DIRECT DICTIONARY VALIDATION ===
+  // Generate ALL possible roots using morphological patterns (not hardcoded lists!)
+  // and validate each DIRECTLY against Jastrow/BDB/Strong's (no callbacks!)
+  const multiHypResult = extractRootsWithDirectValidation(cleaned, {
+    contextType: effectiveContextMode || 'unknown',
+    skipStrongs: effectiveContextMode === 'talmudic' || effectiveContextMode === 'midrashic'
+  });
+
+  if (multiHypResult?.bestMatch) {
+    const best = multiHypResult.bestMatch;
+    if (DEBUG_LOOKUPS) {
+      log.debug(`[MultiHypothesis] ${cleaned} → root "${best.root}" (${best.confidence}%): ${best.definition}`);
+    }
+
+    // Build morphology breakdown for display
+    const morphBreakdown = [];
+    if (best.morphology?.prefixes?.length > 0) {
+      for (const p of best.morphology.prefixes) {
+        morphBreakdown.push(`${p.letters} (${p.meaning})`);
+      }
+    }
+    morphBreakdown.push(`${best.root} (root)`);
+    if (best.morphology?.suffixes?.length > 0) {
+      for (const s of best.morphology.suffixes) {
+        morphBreakdown.push(`${s.letters} (${s.meaning})`);
+      }
+    }
+
+    return {
+      word: word,
+      cleanedWord: cleaned,
+      english: best.definition,
+      french: null,
+      frenchSource: 'none',
+      source: best.source || 'Multi-Hypothesis',
+      sources: best.sources || [{
+        name: 'Multi-Hypothesis Analysis',
+        fullName: `Root "${best.root}" via ${best.note || 'pattern analysis'}`,
+        definition: best.definition,
+        confidence: best.confidence,
+        recommended: true
+      }],
+      isAramaic: checkAramaic,
+      language: checkAramaic ? 'Aramaic' : 'Hebrew',
+      root: best.root,
+      morphology: {
+        breakdown: morphBreakdown.join(' + '),
+        hypothesisId: best.id,
+        pattern: best.morphology?.pattern,
+        binyan: best.morphology?.binyan,
+        nounPattern: best.morphology?.nounPattern,
+        weakType: best.morphology?.weakType
+      },
+      alternativeRoots: multiHypResult.allMatches.slice(1, 4).map(m => ({
+        root: m.root,
+        definition: m.definition,
+        confidence: m.confidence
+      })),
+      confidence: best.confidence,
+      sefariaData: null,
+      offline: true,
+      isLoading: false,
+      _multiHypothesis: true
+    };
+  }
+
+  // PRO SCHOLAR V6.2: Fallback to preClassResult if dictionaries didn't find the word
+  // This ensures verb_form and other non-skipDictionary results are still used
+  if (preClassResult && (preClassResult.english || preClassResult.meaning)) {
+    if (DEBUG_LOOKUPS) log.debug(`[PreClassify Fallback] ${cleaned} → ${preClassResult.type}: ${preClassResult.english || preClassResult.meaning}`);
+    return {
+      word: word,
+      cleanedWord: cleaned,
+      english: preClassResult.english || preClassResult.meaning,
+      fullEnglish: preClassResult.note ? `${preClassResult.english || preClassResult.meaning} - ${preClassResult.note}` : null,
+      french: null,
+      frenchSource: 'none',
+      source: preClassResult.source || 'Pre-Classification',
+      sources: [{
+        name: preClassResult.source || 'Pre-Classification',
+        fullName: preClassResult.source || 'Morphological Analysis',
+        definition: preClassResult.english || preClassResult.meaning,
+        note: preClassResult.note,
+        recommended: true,
+        root: preClassResult.root,
+        binyan: preClassResult.binyan
+      }],
+      root: preClassResult.root,
+      binyan: preClassResult.binyan ? { name: preClassResult.binyan } : null,
+      morphologyInfo: {
+        tense: preClassResult.tense,
+        person: preClassResult.person,
+        binyan: preClassResult.binyan
+      },
+      isAramaic: checkAramaic,
+      language: checkAramaic ? 'Aramaic' : 'Hebrew',
+      offline: true,
+      _preClassifiedFallback: true
     };
   }
 

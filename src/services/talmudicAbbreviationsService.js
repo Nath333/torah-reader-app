@@ -104,7 +104,16 @@ export const ABBREVIATIONS = {
     'ס"ד': { expansion: 'סלקא דעתך', english: 'You might think', type: 'argument' },
     'ס״ד': { expansion: 'סלקא דעתך', english: 'You might think', type: 'argument' },
     'מ"מ': { expansion: 'מכל מקום', english: 'Nevertheless', type: 'concession' },
-    'מ״מ': { expansion: 'מכל מקום', english: 'Nevertheless', type: 'concession' }
+    'מ״מ': { expansion: 'מכל מקום', english: 'Nevertheless', type: 'concession' },
+    // Homeowner/domain terms (Shabbat)
+    'דבע"ה': { expansion: 'דבעל הבית', english: 'of the homeowner', type: 'term' },
+    'דבע״ה': { expansion: 'דבעל הבית', english: 'of the homeowner', type: 'term' },
+    'בע"ה': { expansion: 'בעל הבית', english: 'homeowner', type: 'term' },
+    'בע״ה': { expansion: 'בעל הבית', english: 'homeowner', type: 'term' },
+    'רה"י': { expansion: 'רשות היחיד', english: 'private domain', type: 'term' },
+    'רה״י': { expansion: 'רשות היחיד', english: 'private domain', type: 'term' },
+    'רה"ר': { expansion: 'רשות הרבים', english: 'public domain', type: 'term' },
+    'רה״ר': { expansion: 'רשות הרבים', english: 'public domain', type: 'term' }
   },
 
   // ==========================================================================

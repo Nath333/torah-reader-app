@@ -5,6 +5,7 @@ import './ErrorBoundary.css';
 /**
  * ErrorBoundary - Catches JavaScript errors in child components
  * and displays a fallback UI instead of crashing the whole app.
+ * PRO SCHOLAR V5: Enhanced with Hebrew context, accessibility, and compact mode.
  *
  * @example
  * // Basic usage
@@ -23,11 +24,17 @@ import './ErrorBoundary.css';
  * <ErrorBoundary onError={(error) => logToService(error)}>
  *   <MyComponent />
  * </ErrorBoundary>
+ *
+ * @example
+ * // Compact mode for inline errors
+ * <ErrorBoundary compact>
+ *   <InlineComponent />
+ * </ErrorBoundary>
  */
 class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { hasError: false, error: null, errorInfo: null };
   }
 
   static getDerivedStateFromError(error) {
@@ -35,7 +42,8 @@ class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('[ErrorBoundary] Caught error:', error, errorInfo);
+    console.error(`[ErrorBoundary:${this.props.name}] Caught error:`, error, errorInfo);
+    this.setState({ errorInfo });
 
     // Call optional onError callback for logging/tracking
     if (this.props.onError) {
@@ -44,17 +52,71 @@ class ErrorBoundary extends Component {
   }
 
   handleReset = () => {
-    this.setState({ hasError: false, error: null });
+    this.setState({ hasError: false, error: null, errorInfo: null });
   };
 
   handleReload = () => {
     window.location.reload();
   };
 
+  // PRO SCHOLAR V5: Copy error for bug reports
+  handleCopyError = () => {
+    const { error, errorInfo } = this.state;
+    const errorText = `Error: ${error?.toString() || 'Unknown error'}
+Component: ${this.props.name || 'Unknown'}
+Stack: ${errorInfo?.componentStack || 'No stack trace'}
+Time: ${new Date().toISOString()}
+URL: ${window.location.href}`;
+
+    navigator.clipboard.writeText(errorText)
+      .then(() => {
+        // Could add visual feedback state here if needed
+        console.log('[ErrorBoundary] Error details copied to clipboard');
+      })
+      .catch((err) => {
+        // Fallback: log the error text to console for manual copy
+        console.warn('[ErrorBoundary] Failed to copy to clipboard:', err);
+        console.log('[ErrorBoundary] Error details for manual copy:\n', errorText);
+      });
+  };
+
   render() {
     if (this.state.hasError) {
+      const { compact } = this.props;
+
+      // PRO SCHOLAR V5: Compact mode for inline errors
+      if (compact) {
+        return (
+          <div
+            className="error-boundary-compact"
+            role="alert"
+            aria-live="assertive"
+          >
+            <span className="error-compact-icon" aria-hidden="true">⚠️</span>
+            <span className="error-compact-text">
+              <span className="error-hebrew" dir="rtl">שגיאה</span>
+              {' • '}
+              <span>Error loading component</span>
+            </span>
+            <button
+              onClick={this.handleReset}
+              className="error-compact-btn"
+              aria-label="Try again"
+            >
+              ↻
+            </button>
+          </div>
+        );
+      }
+
       return (
-        <div className="error-boundary">
+        <div
+          className="error-boundary"
+          role="alert"
+          aria-live="assertive"
+          aria-labelledby="error-title"
+          aria-describedby="error-description"
+        >
           <div className="error-boundary-content">
             <svg
               className="error-icon"
@@ -62,18 +124,30 @@ class ErrorBoundary extends Component {
               fill="none"
               stroke="currentColor"
               strokeWidth="1.5"
+              aria-hidden="true"
             >
               <circle cx="12" cy="12" r="10" />
               <path d="M12 8v4M12 16h.01" />
             </svg>
 
-            <h2>Something went wrong</h2>
-            <p>We encountered an unexpected error. Please try again.</p>
+            {/* PRO SCHOLAR V5: Bilingual header for Torah study context */}
+            <h2 id="error-title" className="error-title-bilingual">
+              <span className="error-hebrew" dir="rtl">משהו השתבש</span>
+              <span className="error-english">Something went wrong</span>
+            </h2>
+            <p id="error-description">
+              We encountered an unexpected error. Please try again.
+            </p>
 
             {process.env.NODE_ENV === 'development' && this.state.error && (
               <details className="error-details">
-                <summary>Error details</summary>
+                <summary>Error details ({this.props.name})</summary>
                 <pre>{this.state.error.toString()}</pre>
+                {this.state.errorInfo?.componentStack && (
+                  <pre className="error-stack">
+                    {this.state.errorInfo.componentStack}
+                  </pre>
+                )}
               </details>
             )}
 
@@ -81,16 +155,30 @@ class ErrorBoundary extends Component {
               <button
                 onClick={this.handleReset}
                 className="error-btn secondary"
+                type="button"
               >
                 Try Again
               </button>
               <button
                 onClick={this.handleReload}
                 className="error-btn primary"
+                type="button"
               >
                 Reload Page
               </button>
             </div>
+
+            {/* PRO SCHOLAR V5: Copy error for bug reports */}
+            {process.env.NODE_ENV === 'development' && (
+              <button
+                onClick={this.handleCopyError}
+                className="error-copy-btn"
+                type="button"
+                title="Copy error details for bug report"
+              >
+                📋 Copy Error Details
+              </button>
+            )}
           </div>
         </div>
       );
@@ -142,13 +230,16 @@ ErrorBoundary.propTypes = {
   /** Callback called when an error is caught */
   onError: PropTypes.func,
   /** Optional name for this boundary (useful for logging) */
-  name: PropTypes.string
+  name: PropTypes.string,
+  /** PRO SCHOLAR V5: Use compact inline mode for smaller components */
+  compact: PropTypes.bool
 };
 
 ErrorBoundary.defaultProps = {
   fallback: null,
   onError: null,
-  name: 'ErrorBoundary'
+  name: 'ErrorBoundary',
+  compact: false
 };
 
 export default ErrorBoundary;

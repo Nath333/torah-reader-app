@@ -9,7 +9,8 @@
 // - M. Jastrow, Dictionary of Targumim, Talmud & Midrashic Literature
 // =============================================================================
 
-import { createCache } from '../utils/cache';
+// PRO SCHOLAR V6.2: Use CacheOrchestrator for unified cache management
+import { createManagedCache } from './cacheOrchestrator';
 import { cleanHebrewWord } from '../utils/hebrewUtils';
 
 // CAL API base URL
@@ -97,8 +98,8 @@ const fetchCalData = async (endpoint, proxyIndex = activeProxyIndex) => {
   }
 };
 
-// Cache for CAL lookups (24 hours - academic data doesn't change often)
-const calCache = createCache({ ttl: 24 * 60 * 60 * 1000, maxSize: 1000 });
+// PRO SCHOLAR V6.2: Cache for CAL lookups with unified telemetry
+const calCache = createManagedCache('api', { ttl: 24 * 60 * 60 * 1000, maxSize: 1000 });
 
 // =============================================================================
 // TRANSLITERATION MAPPING

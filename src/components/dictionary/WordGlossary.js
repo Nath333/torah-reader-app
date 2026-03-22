@@ -6,6 +6,7 @@
  */
 
 import React, { useState, useEffect, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { scholarlyLookup } from '../../services/scholarlyLexiconService';
 import { splitIntoWords, cleanHebrewWord } from '../../services/hebrewDictionary';
 import { cleanHtml } from '../../utils/sanitize';
@@ -14,17 +15,42 @@ import {
   RASHI_VOCABULARY,
   lookupHalachicWithPrefix
 } from '../../utils/commentaryUtils';
+// PRO SCHOLAR V6.2: Use comprehensive pre-classification for proper nouns & particles
+import { preClassify } from '../../services/preClassificationService';
 import './WordGlossary.css';
 
 /**
  * Look up a single word using shared constants from commentaryUtils
- * Priority: Abbreviations → Halachic → Rashi vocab → API
+ * Priority: PreClassification → Abbreviations → Halachic → Rashi vocab → API
  */
-const lookupWord = async (word) => {
+const lookupWord = async (word, contextType = 'talmudic') => {
   const cleaned = cleanHebrewWord(word);
   if (!cleaned || cleaned.length < 2) return null;
 
-  // Check abbreviations first (shared constants)
+  // PRO SCHOLAR V6.2: Use preClassificationService FIRST
+  // This catches proper nouns (משה=Moses), particles, and abbreviations comprehensively
+  try {
+    const preClassResult = preClassify(word, { textType: contextType });
+    if (preClassResult && preClassResult.skipDictionary) {
+      const definition = preClassResult.english || preClassResult.meaning || preClassResult.expansion;
+      if (definition) {
+        return {
+          word: cleaned,
+          definition: definition,
+          source: preClassResult.source || preClassResult.type || 'Pre-classified',
+          expansion: preClassResult.expansion,
+          isAbbreviation: preClassResult.type === 'abbreviation',
+          isProperNoun: preClassResult.type === 'proper_name',
+          root: preClassResult.root,
+          note: preClassResult.note
+        };
+      }
+    }
+  } catch (err) {
+    // Silent fail - continue to other lookups
+  }
+
+  // Check abbreviations (shared constants - fallback)
   if (TALMUDIC_ABBREVIATIONS[word]) {
     return {
       word: cleaned,
@@ -144,50 +170,61 @@ const WordGlossary = React.memo(({ text, onClose }) => {
   }, [words]);
 
   return (
-    <div className="word-glossary slide-down">
+    <div className="word-glossary slide-down" role="region" aria-label="Word definitions glossary">
       <div className="glossary-header">
-        <span className="glossary-title">Word Definitions</span>
-        <button className="glossary-close" onClick={onClose} title="Close glossary">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <span className="glossary-title" id="glossary-title">Word Definitions</span>
+        <button
+          className="glossary-close"
+          onClick={onClose}
+          aria-label="Close glossary"
+          title="Close glossary"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <path d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
 
-      <div className="glossary-content">
+      <div className="glossary-content" aria-labelledby="glossary-title">
         {loading && (
-          <div className="glossary-loading">
-            <span className="loading-spinner">&#x21BB;</span>
+          <div className="glossary-loading" role="status" aria-live="polite">
+            <span className="loading-spinner" aria-hidden="true">↻</span>
             <span>Loading definitions...</span>
           </div>
         )}
 
         {error && (
-          <div className="glossary-error">{error}</div>
+          <div className="glossary-error" role="alert">{error}</div>
         )}
 
         {!loading && !error && definitions.length === 0 && (
-          <div className="glossary-empty">
+          <div className="glossary-empty" role="status">
             No definitions found. Try clicking individual words.
           </div>
         )}
 
         {!loading && definitions.length > 0 && (
-          <div className="glossary-list">
+          <ul className="glossary-list" aria-label="Word definitions">
             {definitions.map((def, idx) => (
-              <div key={`${def.word}-${idx}`} className="glossary-item">
-                <span className="glossary-word" dir="rtl">{def.word}</span>
+              <li key={`${def.word}-${idx}`} className={`glossary-item ${def.isProperNoun ? 'proper-noun' : ''} ${def.isAbbreviation ? 'abbreviation' : ''}`}>
+                <span className="glossary-word" dir="rtl" lang="he">{def.word}</span>
                 {def.isAbbreviation && def.expansion && (
-                  <span className="glossary-expansion" dir="rtl">({def.expansion})</span>
+                  <span className="glossary-expansion" dir="rtl" lang="he">({def.expansion})</span>
                 )}
-                <span className="glossary-arrow">→</span>
+                {def.isProperNoun && (
+                  <span className="glossary-proper-noun-badge" title={def.note || 'Proper noun'}>👤</span>
+                )}
+                <span className="glossary-arrow" aria-hidden="true">→</span>
                 <span className="glossary-definition">{def.definition}</span>
-                <span className={`glossary-source ${def.source?.toLowerCase().replace(/\s+/g, '-')}`}>
+                <span
+                  className={`glossary-source ${def.source?.toLowerCase().replace(/\s+/g, '-')}`}
+                  title={`Source: ${def.source}`}
+                >
                   {def.source}
                 </span>
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
 
         <div className="glossary-footer">
@@ -199,5 +236,14 @@ const WordGlossary = React.memo(({ text, onClose }) => {
     </div>
   );
 });
+
+WordGlossary.displayName = 'WordGlossary';
+
+WordGlossary.propTypes = {
+  /** Hebrew/Aramaic text to generate glossary from */
+  text: PropTypes.string.isRequired,
+  /** Callback to close the glossary */
+  onClose: PropTypes.func.isRequired
+};
 
 export default WordGlossary;

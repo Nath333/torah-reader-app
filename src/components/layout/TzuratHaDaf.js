@@ -8,6 +8,9 @@ import { detectStructuralMarkers, TALMUDIC_PATTERNS } from '../../services/disco
 import { processHebrewText, getDisplayModeLabel } from '../../utils/hebrewUtils';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { findAbbreviations } from '../../services/talmudicAbbreviationsService';
+import { createLogger } from '../../utils/debug';
+
+const log = createLogger('TzuratHaDaf');
 
 // Layout style options
 const LAYOUT_STYLES = {
@@ -362,7 +365,7 @@ const TzuratHaDaf = ({
 
         // For Talmud, load Rashi for the entire daf at once (not per-verse)
         // Talmud commentaries are organized by daf, not by verse
-        console.log(`[TzuratHaDaf] Loading Rashi for ${selectedBook} ${selectedChapter}`);
+        log.debug(`Loading Rashi for ${selectedBook} ${selectedChapter}`);
 
         const [rashiResult, tosafot, maharsha] = await Promise.all([
           withTimeout(getRashiOnTalmud(selectedBook, selectedChapter), timeoutMs)
@@ -386,7 +389,7 @@ const TzuratHaDaf = ({
 
         // Extract comments from results
         const rashiComments = rashiResult?.comments || [];
-        console.log(`[TzuratHaDaf] Loaded ${rashiComments.length} Rashi, ${tosafot?.length || 0} Tosafot`);
+        log.debug(`Loaded ${rashiComments.length} Rashi, ${tosafot?.length || 0} Tosafot`);
 
         setRashiData(rashiComments);
         setTosafotData(tosafot || []);

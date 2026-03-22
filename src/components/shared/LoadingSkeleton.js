@@ -9,6 +9,41 @@ const hebrewMessages = [
   { hebrew: 'מחפש...', english: 'Searching...' },
 ];
 
+// PRO SCHOLAR V5: Deterministic pseudo-random widths to avoid SSR hydration mismatch
+// Uses a simple hash based on index to create varied but consistent widths
+const DETERMINISTIC_WIDTHS = {
+  verse: [
+    { hebrew: 92, english: 78 },
+    { hebrew: 88, english: 72 },
+    { hebrew: 95, english: 85 },
+    { hebrew: 90, english: 68 },
+    { hebrew: 87, english: 82 },
+    { hebrew: 93, english: 75 },
+    { hebrew: 89, english: 80 },
+    { hebrew: 91, english: 70 },
+  ],
+  search: [
+    { title: 38, text: 55 },
+    { title: 42, text: 62 },
+    { title: 35, text: 48 },
+    { title: 45, text: 58 },
+    { title: 40, text: 52 },
+  ],
+  sidebar: [72, 85, 68, 78, 90, 65, 82],
+  analysis: [85, 78, 92, 72],
+  analytics: [45, 62, 38, 85, 52, 70, 48],
+};
+
+const getWidth = (type, index, field = null) => {
+  const widths = DETERMINISTIC_WIDTHS[type];
+  if (!widths) return 75;
+  const idx = index % widths.length;
+  if (field && typeof widths[idx] === 'object') {
+    return widths[idx][field] || 75;
+  }
+  return typeof widths[idx] === 'number' ? widths[idx] : 75;
+};
+
 const LoadingSkeleton = ({ count = 5, type = 'verse', message = null }) => {
   // Verse skeleton - for Torah/Talmud text
   if (type === 'verse') {
@@ -24,8 +59,8 @@ const LoadingSkeleton = ({ count = 5, type = 'verse', message = null }) => {
                 <div className="skeleton-button" />
               </div>
             </div>
-            <div className="skeleton-hebrew" style={{ width: `${85 + Math.random() * 15}%` }} />
-            <div className="skeleton-english" style={{ width: `${65 + Math.random() * 25}%` }} />
+            <div className="skeleton-hebrew" style={{ width: `${getWidth('verse', index, 'hebrew')}%` }} />
+            <div className="skeleton-english" style={{ width: `${getWidth('verse', index, 'english')}%` }} />
           </div>
         ))}
       </div>
@@ -38,9 +73,9 @@ const LoadingSkeleton = ({ count = 5, type = 'verse', message = null }) => {
       <div className="skeleton-container">
         {Array.from({ length: count }).map((_, index) => (
           <div key={index} className="skeleton-search-result" style={{ animationDelay: `${index * 50}ms` }}>
-            <div className="skeleton-search-title" style={{ width: `${30 + Math.random() * 20}%` }} />
+            <div className="skeleton-search-title" style={{ width: `${getWidth('search', index, 'title')}%` }} />
             <div className="skeleton-search-text" />
-            <div className="skeleton-search-text short" style={{ width: `${45 + Math.random() * 20}%` }} />
+            <div className="skeleton-search-text short" style={{ width: `${getWidth('search', index, 'text')}%` }} />
           </div>
         ))}
       </div>
@@ -75,7 +110,7 @@ const LoadingSkeleton = ({ count = 5, type = 'verse', message = null }) => {
         {Array.from({ length: count }).map((_, index) => (
           <div key={index} className="skeleton-nav-item" style={{ animationDelay: `${index * 40}ms` }}>
             <div className="skeleton-nav-icon" />
-            <div className="skeleton-nav-text" style={{ width: `${60 + Math.random() * 30}%` }} />
+            <div className="skeleton-nav-text" style={{ width: `${getWidth('sidebar', index)}%` }} />
           </div>
         ))}
       </div>
@@ -84,7 +119,8 @@ const LoadingSkeleton = ({ count = 5, type = 'verse', message = null }) => {
 
   // Full page loading with Hebrew message
   if (type === 'fullpage') {
-    const msg = message || hebrewMessages[Math.floor(Math.random() * hebrewMessages.length)];
+    // Use first message for SSR consistency; message prop overrides
+    const msg = message || hebrewMessages[0];
     return (
       <div className="skeleton-fullpage">
         <div className="skeleton-fullpage-content">
@@ -162,7 +198,7 @@ const LoadingSkeleton = ({ count = 5, type = 'verse', message = null }) => {
         <div className="skeleton-analysis-content">
           {Array.from({ length: 4 }).map((_, index) => (
             <div key={index} className="skeleton-line" style={{
-              width: `${70 + Math.random() * 30}%`,
+              width: `${getWidth('analysis', index)}%`,
               animationDelay: `${index * 80}ms`
             }} />
           ))}
@@ -186,9 +222,79 @@ const LoadingSkeleton = ({ count = 5, type = 'verse', message = null }) => {
         {Array.from({ length: count }).map((_, index) => (
           <div key={index} className="skeleton-panel-item" style={{ animationDelay: `${index * 50}ms` }}>
             <div className="skeleton-icon-sm" />
-            <div className="skeleton-line" style={{ width: `${50 + Math.random() * 40}%` }} />
+            <div className="skeleton-line" style={{ width: `${getWidth('sidebar', index)}%` }} />
           </div>
         ))}
+      </div>
+    );
+  }
+
+  // PRO SCHOLAR V5: Word definition card skeleton
+  if (type === 'word-card') {
+    return (
+      <div className="skeleton-container skeleton-word-card" role="status" aria-label="Loading word definition">
+        {/* Header with Hebrew word */}
+        <div className="skeleton-word-card-header">
+          <div className="skeleton-hebrew-word" />
+          <div className="skeleton-word-badges">
+            <div className="skeleton-badge" />
+            <div className="skeleton-badge" />
+          </div>
+        </div>
+
+        {/* Source definitions */}
+        <div className="skeleton-word-card-body">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="skeleton-source-block" style={{ animationDelay: `${index * 100}ms` }}>
+              <div className="skeleton-source-header">
+                <div className="skeleton-source-badge" />
+                <div className="skeleton-source-name" />
+              </div>
+              <div className="skeleton-definition-text">
+                <div className="skeleton-line w-full" />
+                <div className="skeleton-line w-3-4" />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Footer with actions */}
+        <div className="skeleton-word-card-footer">
+          <div className="skeleton-action-btn" />
+          <div className="skeleton-action-btn" />
+        </div>
+        <span className="sr-only">Loading word definition...</span>
+      </div>
+    );
+  }
+
+  // PRO SCHOLAR V5: Analytics/stats skeleton
+  if (type === 'analytics') {
+    return (
+      <div className="skeleton-container skeleton-analytics" role="status" aria-label="Loading analytics">
+        <div className="skeleton-stats-grid">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div key={index} className="skeleton-stat-box" style={{ animationDelay: `${index * 75}ms` }}>
+              <div className="skeleton-stat-value" />
+              <div className="skeleton-stat-label" />
+            </div>
+          ))}
+        </div>
+        <div className="skeleton-chart">
+          <div className="skeleton-chart-bars">
+            {Array.from({ length: 7 }).map((_, index) => (
+              <div
+                key={index}
+                className="skeleton-chart-bar"
+                style={{
+                  height: `${getWidth('analytics', index)}%`,
+                  animationDelay: `${index * 50}ms`
+                }}
+              />
+            ))}
+          </div>
+        </div>
+        <span className="sr-only">Loading analytics...</span>
       </div>
     );
   }

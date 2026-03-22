@@ -10,14 +10,20 @@
  * - Comparison view for multiple commentaries
  * - Source citations and cross-references
  */
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, lazy, Suspense } from 'react';
 import RabbinicReferences from '../analysis/RabbinicReferences';
 import { fetchWithFallback } from '../../utils/http';
+import { createLogger } from '../../utils/debug';
 import {
   COMMENTATORS as REGISTRY_COMMENTATORS,
   ERAS,
   COMMENTATOR_CATEGORIES
 } from '../../constants/commentatorRegistry';
+
+const log = createLogger('Commentary');
+
+// Lazy-loaded RabbiInfoPanel for commentator biographies
+const RabbiInfoPanel = lazy(() => import('./RabbiInfoPanel'));
 
 // Use local proxy in development
 const SEFARIA_BASE = process.env.NODE_ENV === 'development'
@@ -259,12 +265,12 @@ async function fetchLinks(book, chapter, verse, reference) {
 
     if (!apiRef) return [];
 
-    console.log('[Commentary] Fetching:', apiRef);
+    log.debug('Fetching:', apiRef);
     const data = await fetchWithFallback(`${SEFARIA_BASE}/links/${apiRef}`, { timeout: 15000 });
-    console.log('[Commentary] Got', data?.length || 0, 'links');
+    log.debug('Got', data?.length || 0, 'links');
     return Array.isArray(data) ? data : [];
   } catch (err) {
-    console.error('[Commentary] Fetch error:', err);
+    log.error('Fetch error:', err);
     return [];
   }
 }
@@ -1081,6 +1087,7 @@ function StudyCard({ item, isOpen, onToggle, studyMode, isCompareSelected, onCom
   const [isLearned, setIsLearned] = useState(false);
   const [showQuestions, setShowQuestions] = useState(false);
   const [showSummary, setShowSummary] = useState(true);
+  const [showRabbiInfo, setShowRabbiInfo] = useState(false);
 
   // Load learned status and notes
   useEffect(() => {
@@ -1273,7 +1280,46 @@ function StudyCard({ item, isOpen, onToggle, studyMode, isCompareSelected, onCom
                       <span style={styles.infoLabel}>Style:</span>
                       <span style={styles.infoValue}>{info.style}</span>
                     </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowRabbiInfo(!showRabbiInfo);
+                      }}
+                      style={{
+                        marginLeft: 'auto',
+                        padding: '4px 10px',
+                        border: `1px solid ${showRabbiInfo ? COLORS.gold : COLORS.border}`,
+                        borderRadius: '6px',
+                        background: showRabbiInfo ? `${COLORS.gold}20` : 'transparent',
+                        color: showRabbiInfo ? COLORS.goldDark : COLORS.inkMuted,
+                        fontSize: '0.75rem',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}
+                    >
+                      <span>📜</span>
+                      <span>{showRabbiInfo ? 'Hide' : 'Show'} Biography</span>
+                    </button>
                   </div>
+
+                  {/* RabbiInfoPanel - Show detailed biography */}
+                  {showRabbiInfo && (
+                    <div style={{ marginTop: '12px' }}>
+                      <Suspense fallback={
+                        <div style={{ padding: '16px', textAlign: 'center', color: COLORS.inkMuted }}>
+                          Loading biography...
+                        </div>
+                      }>
+                        <RabbiInfoPanel
+                          rabbiName={info.heName || item.name}
+                          onClose={() => setShowRabbiInfo(false)}
+                          compact={true}
+                        />
+                      </Suspense>
+                    </div>
+                  )}
                 </div>
               )}
 

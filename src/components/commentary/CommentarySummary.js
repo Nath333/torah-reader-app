@@ -1,28 +1,64 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import mermaid from 'mermaid';
+// PRO SCHOLAR V5: Lazy load mermaid (~500KB) only when diagrams are needed
+// import mermaid from 'mermaid'; // REMOVED - now lazy loaded
 import { analyzeCommentary, ANALYSIS_MODES } from '../../services/groqService';
+// 2026 Smart Features - AI Memory & Source Credibility
+import {
+  addMessage as addToMemory,
+  trackStudy
+} from '../../services/aiMemoryService';
+import {
+  getSourceCredibility,
+  getCredibilityBadge
+} from '../../services/sourceCredibilityService';
+// Pro Scholar v4 - Unified Feature Registry
+import {
+  getCached,
+  setCached,
+  prefetchWords,
+  PRO_SCHOLAR_FEATURES
+} from '../../services/proScholarV4';
+import { useProScholarV4, useKnowledgeGraph } from '../../hooks/useProScholarV4';
 import './CommentarySummary.css';
 
-// Initialize mermaid with better settings
-mermaid.initialize({
-  startOnLoad: false,
-  theme: 'base',
-  securityLevel: 'strict',
-  flowchart: {
-    useMaxWidth: true,
-    htmlLabels: true,
-    curve: 'basis',
-    padding: 20
-  },
-  themeVariables: {
-    primaryColor: '#667eea',
-    primaryTextColor: '#fff',
-    primaryBorderColor: '#5a67d8',
-    lineColor: '#718096',
-    secondaryColor: '#e0e7ff',
-    tertiaryColor: '#f7fafc'
-  }
-});
+// PRO SCHOLAR V5: Lazy Mermaid loader with initialization
+let mermaidInstance = null;
+let mermaidLoadPromise = null;
+
+const loadMermaid = async () => {
+  if (mermaidInstance) return mermaidInstance;
+  if (mermaidLoadPromise) return mermaidLoadPromise;
+
+  mermaidLoadPromise = (async () => {
+    const { default: mermaid } = await import('mermaid');
+
+    // Initialize mermaid with better settings
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'base',
+      securityLevel: 'strict',
+      flowchart: {
+        useMaxWidth: true,
+        htmlLabels: true,
+        curve: 'basis',
+        padding: 20
+      },
+      themeVariables: {
+        primaryColor: '#667eea',
+        primaryTextColor: '#fff',
+        primaryBorderColor: '#5a67d8',
+        lineColor: '#718096',
+        secondaryColor: '#e0e7ff',
+        tertiaryColor: '#f7fafc'
+      }
+    });
+
+    mermaidInstance = mermaid;
+    return mermaid;
+  })();
+
+  return mermaidLoadPromise;
+};
 
 // ============================================================================
 // Mermaid Diagram Component with Enhanced Error Handling & Timeout
@@ -73,6 +109,9 @@ const MermaidDiagram = ({ chart, id, explanation }) => {
       }, DIAGRAM_TIMEOUT);
 
       try {
+        // PRO SCHOLAR V5: Lazy load mermaid on first diagram render
+        const mermaid = await loadMermaid();
+
         // Clean the chart syntax
         let cleanChart = chart
           .replace(/\\n/g, '\n')
@@ -85,7 +124,7 @@ const MermaidDiagram = ({ chart, id, explanation }) => {
         }
 
         // Generate unique ID to avoid conflicts
-        const uniqueId = `mermaid-${id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const uniqueId = `mermaid-${id}-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 
         const { svg: renderedSvg } = await mermaid.render(uniqueId, cleanChart);
 
@@ -284,6 +323,183 @@ const TopicTag = ({ topic, onClick }) => {
 };
 
 // ============================================================================
+// Knowledge Graph Panel - Pro Scholar v4 Rabbi Relationships
+// ============================================================================
+const KnowledgeGraphPanel = ({ entityName, onSourceClick }) => {
+  const { data: graphData, findPath } = useKnowledgeGraph(entityName);
+  const [showGraph, setShowGraph] = useState(false);
+  const [pathTarget, setPathTarget] = useState('');
+  const [pathResult, setPathResult] = useState(null);
+
+  if (!graphData || !PRO_SCHOLAR_FEATURES?.KNOWLEDGE_GRAPH) return null;
+
+  const handleFindPath = () => {
+    if (pathTarget && findPath) {
+      const result = findPath(pathTarget);
+      setPathResult(result);
+    }
+  };
+
+  return (
+    <div className="knowledge-graph-panel">
+      <button
+        className="kg-toggle"
+        onClick={() => setShowGraph(!showGraph)}
+        aria-expanded={showGraph}
+      >
+        <span className="kg-icon">🔗</span>
+        <span className="kg-label">
+          {entityName} - Knowledge Graph
+        </span>
+        <span className={`kg-chevron ${showGraph ? 'expanded' : ''}`}>▼</span>
+      </button>
+
+      {showGraph && (
+        <div className="kg-content">
+          {/* Entity Info */}
+          {graphData.period && (
+            <div className="kg-meta">
+              <span className="kg-period">{graphData.period}</span>
+              {graphData.location && <span className="kg-location">📍 {graphData.location}</span>}
+            </div>
+          )}
+
+          {/* Connections */}
+          {graphData.connections && graphData.connections.length > 0 && (
+            <div className="kg-connections">
+              <h5>Connections</h5>
+              <div className="kg-connection-list">
+                {graphData.connections.map((conn, i) => (
+                  <div
+                    key={i}
+                    className={`kg-connection ${conn.type}`}
+                    onClick={() => onSourceClick?.(conn.name)}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <span className="kg-conn-type">
+                      {conn.type === 'teacher' ? '👨‍🏫' : '📚'}
+                    </span>
+                    <span className="kg-conn-name">{conn.name}</span>
+                    <span className="kg-conn-label">
+                      {conn.type === 'teacher' ? 'Teacher' : 'Student'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Path Finder */}
+          {findPath && (
+            <div className="kg-path-finder">
+              <input
+                type="text"
+                placeholder="Find path to..."
+                value={pathTarget}
+                onChange={(e) => setPathTarget(e.target.value)}
+                className="kg-path-input"
+              />
+              <button className="kg-path-btn" onClick={handleFindPath}>
+                Find Path
+              </button>
+              {pathResult && (
+                <div className="kg-path-result">
+                  {pathResult.map((node, i) => (
+                    <React.Fragment key={i}>
+                      <span
+                        className="kg-path-node"
+                        onClick={() => onSourceClick?.(node)}
+                      >
+                        {node}
+                      </span>
+                      {i < pathResult.length - 1 && <span className="kg-path-arrow">→</span>}
+                    </React.Fragment>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ============================================================================
+// RAG Sources Panel - Shows grounding sources used by AI
+// ============================================================================
+const RAGSourcesPanel = ({ ragMetadata, onSourceClick }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  if (!ragMetadata || !ragMetadata.sources || ragMetadata.sources.length === 0) {
+    return null;
+  }
+
+  const { sources, sourcesCount, reference } = ragMetadata;
+
+  return (
+    <div className="rag-sources-panel">
+      <button
+        className="rag-toggle"
+        onClick={() => setExpanded(!expanded)}
+        aria-expanded={expanded}
+      >
+        <span className="rag-icon">📚</span>
+        <span className="rag-label">
+          Grounded in {sourcesCount} sources
+          {reference && <span className="rag-ref">({reference})</span>}
+        </span>
+        <span className={`rag-chevron ${expanded ? 'expanded' : ''}`}>▼</span>
+      </button>
+
+      {expanded && (
+        <div className="rag-sources-list">
+          {sources.slice(0, 8).map((src, i) => {
+            // Get credibility for this source
+            const credibility = getSourceCredibility(src.source);
+            const badge = credibility ? getCredibilityBadge(credibility.authorityScore) : null;
+
+            return (
+              <div key={i} className="rag-source-item">
+                <div className="rag-source-header">
+                  <span
+                    className="rag-source-name clickable"
+                    onClick={() => onSourceClick?.(src.source)}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    {src.source}
+                  </span>
+                  {badge && (
+                    <span
+                      className="rag-credibility-badge"
+                      style={{ color: credibility?.category?.color }}
+                      title={`Authority: ${credibility?.authorityScore}/100`}
+                    >
+                      {badge.emoji}
+                    </span>
+                  )}
+                  <span className="rag-source-type">{src.type}</span>
+                </div>
+                {src.preview && (
+                  <p className="rag-source-preview" dir={src.isHebrew ? 'rtl' : 'ltr'}>
+                    {src.preview.length > 150 ? src.preview.slice(0, 150) + '...' : src.preview}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+          {sources.length > 8 && (
+            <p className="rag-more">+ {sources.length - 8} more sources</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ============================================================================
 // Info Card Component
 // ============================================================================
 const InfoCard = ({ icon, title, children, className = '', highlight = false }) => (
@@ -297,6 +513,49 @@ const InfoCard = ({ icon, title, children, className = '', highlight = false }) 
     </div>
   </div>
 );
+
+// ============================================================================
+// Commentator Badge - Shows credibility info for rabbinical sources
+// ============================================================================
+const CommentatorBadge = ({ name, onClick, showDetails = false }) => {
+  const credibility = useMemo(() => getSourceCredibility(name), [name]);
+  const badge = useMemo(() => credibility ? getCredibilityBadge(credibility.authorityScore) : null, [credibility]);
+
+  if (!credibility) {
+    return (
+      <span className="commentator-name" onClick={onClick}>{name}</span>
+    );
+  }
+
+  const periodLabels = {
+    'tannaim': 'Tanna',
+    'amoraim': 'Amora',
+    'geonim': 'Gaon',
+    'rishonim': 'Rishon',
+    'acharonim': 'Acharon'
+  };
+
+  return (
+    <span
+      className={`commentator-badge ${onClick ? 'clickable' : ''}`}
+      onClick={onClick}
+      title={`${credibility.fullName || name} | ${periodLabels[credibility.period] || credibility.period} | Authority: ${credibility.authorityScore}/100`}
+    >
+      <span className="commentator-name">{name}</span>
+      {badge && (
+        <span
+          className="credibility-indicator"
+          style={{ color: credibility.category?.color }}
+        >
+          {badge.emoji}
+        </span>
+      )}
+      {showDetails && credibility.period && (
+        <span className="commentator-period">{periodLabels[credibility.period] || credibility.period}</span>
+      )}
+    </span>
+  );
+};
 
 // ============================================================================
 // Mode Selector - Professional Jewish Study Modes
@@ -489,13 +748,15 @@ const CompareView = ({ data, showDiagram, diagramId, onSourceClick }) => {
                 {approach.representative && (
                   <span
                     className={`representative ${onSourceClick ? 'clickable' : ''}`}
-                    onClick={() => handleRepresentativeClick(approach.representative)}
-                    onKeyDown={(e) => handleRepresentativeKeyDown(e, approach.representative)}
                     role={onSourceClick ? 'button' : undefined}
                     tabIndex={onSourceClick ? 0 : undefined}
-                    title={onSourceClick ? `Learn about ${approach.representative}` : undefined}
+                    onKeyDown={(e) => handleRepresentativeKeyDown(e, approach.representative)}
                   >
-                    — {approach.representative}
+                    — <CommentatorBadge
+                      name={approach.representative}
+                      onClick={onSourceClick ? () => handleRepresentativeClick(approach.representative) : undefined}
+                      showDetails
+                    />
                   </span>
                 )}
               </div>
@@ -618,13 +879,13 @@ const PardesView = ({ data, showDiagram, diagramId, onWordLookup, onSourceClick 
 
                 {levelData.commentator && (
                   <div className="level-source">
-                    <ClickableElement
-                      className="source-badge"
-                      onClick={() => onSourceClick?.(levelData.commentator)}
-                      title={`Learn about ${levelData.commentator}`}
-                    >
-                      📚 {levelData.commentator}
-                    </ClickableElement>
+                    <span className="source-badge">
+                      📚 <CommentatorBadge
+                        name={levelData.commentator}
+                        onClick={onSourceClick ? () => onSourceClick(levelData.commentator) : undefined}
+                        showDetails
+                      />
+                    </span>
                   </div>
                 )}
 
@@ -890,8 +1151,18 @@ const CommentarySummary = ({
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [showDiagram, setShowDiagram] = useState(true);
+  const [selectedCommentator, setSelectedCommentator] = useState(null);
+  // Follow-up question state for conversational AI analysis
+  const [followUpQuestion, setFollowUpQuestion] = useState('');
+  const [followUpLoading, setFollowUpLoading] = useState(false);
+  const [conversationHistory, setConversationHistory] = useState([]);
 
-  // PERFORMANCE: Cache results per mode to avoid re-fetching when switching
+  // Pro Scholar v4 hooks
+  const { features: v4Features } = useProScholarV4({
+    preloadServices: false // Only load when needed
+  });
+
+  // PERFORMANCE: Cache results per mode using v4 unified cache
   const modeResultsCache = useRef(new Map());
 
   // Context detection for smart mode analysis
@@ -907,7 +1178,7 @@ const CommentarySummary = ({
     if (!verse) return { book: null, chapter: null, verseNum: null };
 
     // Handle formats: "Genesis 1:1", "Genesis.1.1", "Berakhot 2a", etc.
-    const match = verse.match(/^([A-Za-z\u0590-\u05FF]+)\s*\.?\s*(\d+)[:\.]?(\d+)?/);
+    const match = verse.match(/^([A-Za-z\u0590-\u05FF]+)\s*\.?\s*(\d+)[:.]?(\d+)?/);
     if (match) {
       return {
         book: match[1],
@@ -929,13 +1200,27 @@ const CommentarySummary = ({
       return;
     }
 
-    // Check cache first (unless force refresh)
-    const cacheKey = selectedMode;
-    if (!forceRefresh && modeResultsCache.current.has(cacheKey)) {
-      const cached = modeResultsCache.current.get(cacheKey);
-      setData({ ...cached, fromCache: true });
-      setError(null);
-      return;
+    // PRO SCHOLAR v4: Check unified cache first (unless force refresh)
+    const v4CacheKey = `${source}:${verse}:${selectedMode}`;
+    if (!forceRefresh) {
+      // Try v4 unified cache first
+      const v4Cached = getCached('commentaryAnalysis', v4CacheKey);
+      if (v4Cached) {
+        setData({ ...v4Cached, fromCache: true, cacheType: 'v4-unified' });
+        setError(null);
+        // Prefetch keywords for anticipated lookups
+        if (v4Cached.keyTerms && PRO_SCHOLAR_FEATURES?.PREFETCH) {
+          prefetchWords(v4Cached.keyTerms.slice(0, 5));
+        }
+        return;
+      }
+      // Fallback to local cache
+      if (modeResultsCache.current.has(selectedMode)) {
+        const cached = modeResultsCache.current.get(selectedMode);
+        setData({ ...cached, fromCache: true });
+        setError(null);
+        return;
+      }
     }
 
     setLoading(true);
@@ -960,9 +1245,36 @@ const CommentarySummary = ({
         }
       );
       if (result.success) {
-        // Cache successful results
-        modeResultsCache.current.set(cacheKey, result);
+        // Cache successful results in both local and v4 unified cache
+        modeResultsCache.current.set(selectedMode, result);
+        setCached('commentaryAnalysis', v4CacheKey, result);
         setData(result);
+
+        // PRO SCHOLAR v4: Prefetch keywords for word lookup
+        if (result.keyTerms && PRO_SCHOLAR_FEATURES?.PREFETCH) {
+          prefetchWords(result.keyTerms.slice(0, 5));
+        }
+
+        // Track analysis in AI memory for context building
+        addToMemory({
+          role: 'assistant',
+          content: result.summary || 'AI analysis completed',
+          metadata: {
+            type: 'commentary_analysis',
+            mode: selectedMode,
+            source,
+            verse,
+            topics: result.topics || []
+          }
+        });
+
+        // Track study activity
+        trackStudy({
+          type: 'ai_analysis',
+          mode: selectedMode,
+          reference: verse,
+          source
+        });
       } else {
         setError(result.error || 'Analysis failed');
       }
@@ -981,6 +1293,73 @@ const CommentarySummary = ({
     setMode(newMode);
     // Don't clear data - cache will provide instant results if available
   };
+
+  // Follow-up question handler for conversational AI
+  const handleFollowUp = useCallback(async () => {
+    if (!followUpQuestion.trim() || followUpLoading || !data) return;
+
+    const question = followUpQuestion.trim();
+    setFollowUpQuestion('');
+    setFollowUpLoading(true);
+
+    // Add user question to conversation history
+    const userMessage = { role: 'user', content: question };
+    setConversationHistory(prev => [...prev, userMessage]);
+
+    // Track to AI memory
+    addToMemory({
+      role: 'user',
+      content: question,
+      metadata: {
+        type: 'follow_up_question',
+        context: mode,
+        reference: verse
+      }
+    });
+
+    try {
+      // Build context from current analysis and conversation
+      const contextPrompt = `Based on this ${mode} analysis of "${verse}":
+${data.summary || ''}
+
+Previous context: ${conversationHistory.slice(-4).map(m => `${m.role}: ${m.content}`).join('\n')}
+
+User asks: ${question}
+
+Provide a concise, scholarly response in the style of the current analysis mode.`;
+
+      const result = await analyzeCommentary(contextPrompt, {
+        mode: ANALYSIS_MODES.SUMMARY,
+        maxTokens: 500
+      });
+
+      if (result && !result.error) {
+        const aiResponse = {
+          role: 'assistant',
+          content: result.summary || result.answer || 'I could not generate a response.'
+        };
+        setConversationHistory(prev => [...prev, aiResponse]);
+
+        // Track AI response
+        addToMemory({
+          role: 'assistant',
+          content: aiResponse.content,
+          metadata: {
+            type: 'follow_up_response',
+            reference: verse
+          }
+        });
+      }
+    } catch (err) {
+      console.error('Follow-up question error:', err);
+      setConversationHistory(prev => [...prev, {
+        role: 'assistant',
+        content: 'Sorry, I could not process your question. Please try again.'
+      }]);
+    } finally {
+      setFollowUpLoading(false);
+    }
+  }, [followUpQuestion, followUpLoading, data, mode, verse, conversationHistory]);
 
   const diagramId = useMemo(() =>
     `${source}-${verse}-${mode}`.replace(/[^a-zA-Z0-9]/g, '-'),
@@ -1079,15 +1458,88 @@ const CommentarySummary = ({
         )}
 
         {/* Main Content */}
-        {!loading && !error && data && renderContent()}
+        {!loading && !error && data && (
+          <>
+            {/* RAG Sources Panel - Show grounding sources */}
+            {data.ragMetadata && (
+              <RAGSourcesPanel
+                ragMetadata={data.ragMetadata}
+                onSourceClick={(src) => {
+                  setSelectedCommentator(src);
+                  onSourceClick?.(src);
+                }}
+              />
+            )}
+
+            {/* PRO SCHOLAR v4: Knowledge Graph Panel */}
+            {selectedCommentator && v4Features?.KNOWLEDGE_GRAPH && (
+              <KnowledgeGraphPanel
+                entityName={selectedCommentator}
+                onSourceClick={(src) => {
+                  setSelectedCommentator(src);
+                  onSourceClick?.(src);
+                }}
+              />
+            )}
+
+            {renderContent()}
+
+            {/* Follow-up Question Section */}
+            {conversationHistory.length > 0 && (
+              <div className="follow-up-conversation">
+                {conversationHistory.map((msg, i) => (
+                  <div key={i} className={`follow-up-message ${msg.role}`}>
+                    <span className="message-icon">
+                      {msg.role === 'user' ? '👤' : '🤖'}
+                    </span>
+                    <p className="message-content">{msg.content}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Follow-up Input */}
+            <div className="follow-up-input-section">
+              <div className="follow-up-input-wrapper">
+                <input
+                  type="text"
+                  className="follow-up-input"
+                  placeholder="Ask a follow-up question..."
+                  value={followUpQuestion}
+                  onChange={(e) => setFollowUpQuestion(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleFollowUp()}
+                  disabled={followUpLoading}
+                />
+                <button
+                  className="follow-up-send-btn"
+                  onClick={handleFollowUp}
+                  disabled={followUpLoading || !followUpQuestion.trim()}
+                  title="Send follow-up question"
+                >
+                  {followUpLoading ? (
+                    <span className="loading-spinner">⏳</span>
+                  ) : (
+                    <span>➤</span>
+                  )}
+                </button>
+              </div>
+              <p className="follow-up-hint">
+                Press Enter to ask about this analysis
+              </p>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Footer */}
       {data && !loading && (
         <div className="summary-footer">
           <span className="footer-info">
-            {data.fromCache ? '⚡ Cached' : `🤖 ${data.model || 'Llama 3.3'}`}
+            {data.fromCache
+              ? `⚡ ${data.cacheType === 'v4-unified' ? 'v4 Cache' : 'Cached'}`
+              : `🤖 ${data.model || 'Llama 3.3'}`}
           </span>
+          {v4Features && <span className="footer-v4-badge">Pro v4</span>}
           {data.usage && !data.fromCache && (
             <span className="footer-tokens">{data.usage.total_tokens} tokens</span>
           )}

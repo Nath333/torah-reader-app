@@ -289,6 +289,8 @@ const CommentaryDisplay = ({ source, commentaries, showTranslation, enableClicka
             className={`info-toggle ${showMetadata ? 'active' : ''}`}
             onClick={() => setShowMetadata(!showMetadata)}
             title="Show commentator info"
+            aria-expanded={showMetadata}
+            aria-label={showMetadata ? 'Hide commentator info' : 'Show commentator info'}
           >
             ℹ️
           </button>
@@ -310,6 +312,8 @@ const CommentaryDisplay = ({ source, commentaries, showTranslation, enableClicka
             className={`dict-test-btn ${showDictTest ? 'active' : ''}`}
             onClick={() => setShowDictTest(!showDictTest)}
             title="Toggle Dictionary Test Card"
+            aria-expanded={showDictTest}
+            aria-label={showDictTest ? 'Hide dictionary test' : 'Show dictionary test'}
             style={{
               background: showDictTest ? '#f59e0b' : 'transparent',
               border: '1px solid #f59e0b',
@@ -327,6 +331,8 @@ const CommentaryDisplay = ({ source, commentaries, showTranslation, enableClicka
               className={`ai-btn ${showSummary ? 'active' : ''}`}
               onClick={() => setShowSummary(!showSummary)}
               title="AI Analysis"
+              aria-expanded={showSummary}
+              aria-label={showSummary ? 'Hide AI analysis' : 'Show AI analysis'}
             >
               🤖
             </button>
@@ -547,11 +553,21 @@ const CommentaryViewer = ({
             <span className="verse-ref">{verseRef}</span>
           </div>
           <div className="header-controls">
-            <div className="view-toggle">
-              <button className={viewMode === 'single' ? 'active' : ''} onClick={() => setViewMode('single')} title="Single">
+            <div className="view-toggle" role="group" aria-label="View mode">
+              <button
+                className={viewMode === 'single' ? 'active' : ''}
+                onClick={() => setViewMode('single')}
+                title="Single view"
+                aria-pressed={viewMode === 'single'}
+              >
                 ▣
               </button>
-              <button className={viewMode === 'compare' ? 'active' : ''} onClick={() => setViewMode('compare')} title="Compare">
+              <button
+                className={viewMode === 'compare' ? 'active' : ''}
+                onClick={() => setViewMode('compare')}
+                title="Compare view"
+                aria-pressed={viewMode === 'compare'}
+              >
                 ▤
               </button>
             </div>
@@ -559,10 +575,12 @@ const CommentaryViewer = ({
               className={`translate-btn ${showTranslation ? 'active' : ''}`}
               onClick={() => setShowTranslation(!showTranslation)}
               title="Toggle translation"
+              aria-pressed={showTranslation}
+              aria-label={showTranslation ? 'Hide translation' : 'Show translation'}
             >
               🌐
             </button>
-            <button className="close-viewer" onClick={onClose}>✕</button>
+            <button className="close-viewer" onClick={onClose} aria-label="Close commentary viewer">✕</button>
           </div>
         </div>
 

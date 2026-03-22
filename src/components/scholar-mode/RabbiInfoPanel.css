@@ -1,0 +1,608 @@
+/**
+ * RabbiInfoPanel Styles
+ * Professional scholar biography display
+ */
+
+.rabbi-info-panel {
+  background: var(--card-bg, #ffffff);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  max-width: 400px;
+  font-size: 14px;
+}
+
+.rabbi-info-panel.compact {
+  max-width: 320px;
+  font-size: 13px;
+}
+
+/* Header */
+.rabbi-info-panel .panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 3px solid #3b82f6;
+}
+
+.rabbi-info-panel .header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rabbi-info-panel .header-icon {
+  font-size: 18px;
+}
+
+.rabbi-info-panel .header-title {
+  font-weight: 600;
+  color: #374151;
+}
+
+.rabbi-info-panel .back-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: #6b7280;
+  transition: all 0.2s;
+}
+
+.rabbi-info-panel .back-btn:hover {
+  background: #e5e7eb;
+  color: #1f2937;
+}
+
+.rabbi-info-panel .close-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #9ca3af;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.rabbi-info-panel .close-btn:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* Main Name Display */
+.rabbi-info-panel .rabbi-main {
+  padding: 16px;
+  text-align: center;
+  background: linear-gradient(180deg, #f8fafc 0%, transparent 100%);
+}
+
+.rabbi-info-panel .rabbi-name {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin: 0 0 4px 0;
+  font-family: 'SBL Hebrew', 'Frank Ruhl Libre', serif;
+}
+
+.rabbi-info-panel .rabbi-english {
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 4px 0;
+}
+
+.rabbi-info-panel .rabbi-fullname {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+  font-style: italic;
+}
+
+/* Era Section */
+.rabbi-info-panel .era-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 16px 16px;
+  justify-content: center;
+}
+
+.rabbi-info-panel .era-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.rabbi-info-panel .generation-badge,
+.rabbi-info-panel .dates-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: #f3f4f6;
+  color: #4b5563;
+  font-size: 11px;
+}
+
+/* Info Rows */
+.rabbi-info-panel .info-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #f9fafb;
+}
+
+.rabbi-info-panel .row-icon {
+  font-size: 14px;
+}
+
+.rabbi-info-panel .row-label {
+  font-weight: 600;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.rabbi-info-panel .row-value {
+  color: #374151;
+}
+
+/* Relationship Sections */
+.rabbi-info-panel .relationship-section {
+  padding: 12px 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.rabbi-info-panel .relationship-section h5 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 10px 0;
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.rabbi-info-panel .section-icon {
+  font-size: 14px;
+}
+
+.rabbi-info-panel .persons-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Person Chips */
+.person-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  font-size: 12px;
+  cursor: default;
+  transition: all 0.2s;
+}
+
+.person-chip.has-data {
+  cursor: pointer;
+  border-color: #93c5fd;
+  background: #eff6ff;
+}
+
+.person-chip.has-data:hover {
+  background: #dbeafe;
+  border-color: #3b82f6;
+  transform: translateY(-1px);
+}
+
+.person-chip.teacher.has-data {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.person-chip.teacher.has-data:hover {
+  background: #dcfce7;
+  border-color: #22c55e;
+}
+
+.person-chip .person-icon {
+  font-size: 12px;
+}
+
+.person-chip .person-name {
+  color: #374151;
+}
+
+.person-chip .person-arrow {
+  font-size: 10px;
+  color: #9ca3af;
+}
+
+.person-chip:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Teaching Section */
+.rabbi-info-panel .teaching-section {
+  padding: 12px 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.rabbi-info-panel .teaching-section h5 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 10px 0;
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.rabbi-info-panel .key-teaching {
+  margin: 0;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 8px;
+  border-left: 3px solid #f59e0b;
+  color: #78350f;
+  font-style: italic;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Methodology Section */
+.rabbi-info-panel .methodology-section {
+  padding: 12px 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.rabbi-info-panel .methodology-section h5 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.rabbi-info-panel .methodology-text {
+  margin: 0;
+  color: #374151;
+  line-height: 1.5;
+  font-size: 13px;
+}
+
+/* Works Section */
+.rabbi-info-panel .works-section {
+  padding: 12px 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.rabbi-info-panel .works-section h5 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.rabbi-info-panel .works-list {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.rabbi-info-panel .works-list li {
+  color: #374151;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+/* Links Section */
+.rabbi-info-panel .links-section {
+  padding: 12px 16px;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.rabbi-info-panel .external-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #2563eb;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.rabbi-info-panel .external-link:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+/* Not Found State */
+.rabbi-info-panel.not-found .not-found-content {
+  padding: 24px;
+  text-align: center;
+}
+
+.rabbi-info-panel .not-found-icon {
+  font-size: 36px;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.rabbi-info-panel .not-found-content p {
+  margin: 0 0 8px 0;
+  color: #6b7280;
+}
+
+.rabbi-info-panel .not-found-hint {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* =============================================================================
+   PRO SCHOLAR V5: Accessibility & Focus States
+   ============================================================================= */
+
+/* Focus visible for interactive elements */
+.rabbi-info-panel .back-btn:focus-visible,
+.rabbi-info-panel .close-btn:focus-visible {
+  outline: 2px solid var(--primary, #3b82f6);
+  outline-offset: 2px;
+}
+
+.person-chip:focus-visible {
+  outline: 2px solid var(--primary, #3b82f6);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+}
+
+.rabbi-info-panel .external-link:focus-visible {
+  outline: 2px solid var(--primary, #2563eb);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* =============================================================================
+   PRO SCHOLAR V5: Reduced Motion Support
+   ============================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .rabbi-info-panel .back-btn,
+  .rabbi-info-panel .close-btn,
+  .person-chip,
+  .rabbi-info-panel .external-link {
+    transition: opacity 0.15s ease !important;
+  }
+
+  .person-chip:hover,
+  .person-chip.has-data:hover {
+    transform: none !important;
+  }
+}
+
+/* =============================================================================
+   PRO SCHOLAR V5: High Contrast Mode
+   ============================================================================= */
+
+@media (prefers-contrast: more) {
+  .rabbi-info-panel {
+    border: 2px solid #000;
+  }
+
+  .rabbi-info-panel .panel-header {
+    border-bottom-width: 3px;
+    border-bottom-color: #000;
+  }
+
+  .rabbi-info-panel .relationship-section,
+  .rabbi-info-panel .teaching-section,
+  .rabbi-info-panel .methodology-section,
+  .rabbi-info-panel .works-section,
+  .rabbi-info-panel .links-section {
+    border-top-width: 2px;
+    border-color: #000;
+  }
+
+  .person-chip {
+    border-width: 2px;
+  }
+
+  .rabbi-info-panel .key-teaching {
+    border-left-width: 4px;
+  }
+}
+
+/* =============================================================================
+   Dark Mode (using CSS variables for better integration)
+   ============================================================================= */
+
+.app.dark-mode .rabbi-info-panel,
+.dark-mode .rabbi-info-panel {
+  background: var(--card-bg, #1f2937);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.app.dark-mode .rabbi-info-panel .panel-header,
+.dark-mode .rabbi-info-panel .panel-header {
+  background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+}
+
+.app.dark-mode .rabbi-info-panel .header-title,
+.dark-mode .rabbi-info-panel .header-title {
+  color: var(--text-primary, #f3f4f6);
+}
+
+.app.dark-mode .rabbi-info-panel .back-btn,
+.dark-mode .rabbi-info-panel .back-btn {
+  color: #9ca3af;
+}
+
+.app.dark-mode .rabbi-info-panel .back-btn:hover,
+.dark-mode .rabbi-info-panel .back-btn:hover {
+  background: #374151;
+  color: #f3f4f6;
+}
+
+.app.dark-mode .rabbi-info-panel .close-btn:hover,
+.dark-mode .rabbi-info-panel .close-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.app.dark-mode .rabbi-info-panel .rabbi-main,
+.dark-mode .rabbi-info-panel .rabbi-main {
+  background: linear-gradient(180deg, #374151 0%, transparent 100%);
+}
+
+.app.dark-mode .rabbi-info-panel .rabbi-name,
+.dark-mode .rabbi-info-panel .rabbi-name {
+  color: #93c5fd;
+}
+
+.app.dark-mode .rabbi-info-panel .rabbi-english,
+.dark-mode .rabbi-info-panel .rabbi-english {
+  color: var(--text-primary, #e5e7eb);
+}
+
+.app.dark-mode .rabbi-info-panel .rabbi-fullname,
+.dark-mode .rabbi-info-panel .rabbi-fullname {
+  color: #9ca3af;
+}
+
+.app.dark-mode .rabbi-info-panel .info-row,
+.dark-mode .rabbi-info-panel .info-row {
+  background: #374151;
+}
+
+.app.dark-mode .rabbi-info-panel .row-label,
+.dark-mode .rabbi-info-panel .row-label {
+  color: #9ca3af;
+}
+
+.app.dark-mode .rabbi-info-panel .row-value,
+.app.dark-mode .rabbi-info-panel .methodology-text,
+.dark-mode .rabbi-info-panel .row-value,
+.dark-mode .rabbi-info-panel .methodology-text {
+  color: var(--text-primary, #e5e7eb);
+}
+
+.app.dark-mode .rabbi-info-panel .generation-badge,
+.app.dark-mode .rabbi-info-panel .dates-badge,
+.dark-mode .rabbi-info-panel .generation-badge,
+.dark-mode .rabbi-info-panel .dates-badge {
+  background: #374151;
+  color: #d1d5db;
+}
+
+.app.dark-mode .person-chip,
+.dark-mode .person-chip {
+  background: #374151;
+  border-color: #4b5563;
+}
+
+.app.dark-mode .person-chip .person-name,
+.dark-mode .person-chip .person-name {
+  color: var(--text-primary, #e5e7eb);
+}
+
+.app.dark-mode .person-chip.has-data,
+.dark-mode .person-chip.has-data {
+  border-color: #60a5fa;
+  background: rgba(59, 130, 246, 0.15);
+}
+
+.app.dark-mode .person-chip.has-data:hover,
+.dark-mode .person-chip.has-data:hover {
+  background: rgba(59, 130, 246, 0.25);
+  border-color: #93c5fd;
+}
+
+.app.dark-mode .person-chip.teacher.has-data,
+.dark-mode .person-chip.teacher.has-data {
+  border-color: #4ade80;
+  background: rgba(34, 197, 94, 0.15);
+}
+
+.app.dark-mode .person-chip.teacher.has-data:hover,
+.dark-mode .person-chip.teacher.has-data:hover {
+  background: rgba(34, 197, 94, 0.25);
+  border-color: #86efac;
+}
+
+.app.dark-mode .rabbi-info-panel .relationship-section,
+.app.dark-mode .rabbi-info-panel .teaching-section,
+.app.dark-mode .rabbi-info-panel .methodology-section,
+.app.dark-mode .rabbi-info-panel .works-section,
+.dark-mode .rabbi-info-panel .relationship-section,
+.dark-mode .rabbi-info-panel .teaching-section,
+.dark-mode .rabbi-info-panel .methodology-section,
+.dark-mode .rabbi-info-panel .works-section {
+  border-color: #374151;
+}
+
+.app.dark-mode .rabbi-info-panel .relationship-section h5,
+.app.dark-mode .rabbi-info-panel .teaching-section h5,
+.app.dark-mode .rabbi-info-panel .methodology-section h5,
+.app.dark-mode .rabbi-info-panel .works-section h5,
+.dark-mode .rabbi-info-panel .relationship-section h5,
+.dark-mode .rabbi-info-panel .teaching-section h5,
+.dark-mode .rabbi-info-panel .methodology-section h5,
+.dark-mode .rabbi-info-panel .works-section h5 {
+  color: #d1d5db;
+}
+
+.app.dark-mode .rabbi-info-panel .key-teaching,
+.dark-mode .rabbi-info-panel .key-teaching {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.2) 0%, rgba(245, 158, 11, 0.15) 100%);
+  border-left-color: #fbbf24;
+  color: #fcd34d;
+}
+
+.app.dark-mode .rabbi-info-panel .works-list li,
+.dark-mode .rabbi-info-panel .works-list li {
+  color: #d1d5db;
+}
+
+.app.dark-mode .rabbi-info-panel .links-section,
+.dark-mode .rabbi-info-panel .links-section {
+  background: #111827;
+  border-color: #374151;
+}
+
+.app.dark-mode .rabbi-info-panel .external-link,
+.dark-mode .rabbi-info-panel .external-link {
+  color: #60a5fa;
+}
+
+.app.dark-mode .rabbi-info-panel .external-link:hover,
+.dark-mode .rabbi-info-panel .external-link:hover {
+  color: #93c5fd;
+}
+
+.app.dark-mode .rabbi-info-panel .not-found-content p,
+.dark-mode .rabbi-info-panel .not-found-content p {
+  color: #9ca3af;
+}
+
+.app.dark-mode .rabbi-info-panel .not-found-hint,
+.dark-mode .rabbi-info-panel .not-found-hint {
+  color: #6b7280;
+}

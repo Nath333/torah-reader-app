@@ -1,0 +1,805 @@
+/**
+ * ProScholarV6Panel.css - PRO SCHOLAR V6 Analysis Panel Styles
+ *
+ * Professional scholarly design with:
+ * - Clean hierarchy and visual grouping
+ * - Color-coded badges for different analysis types
+ * - Responsive layout
+ * - Dark mode support
+ */
+
+/* =============================================================================
+   BASE PANEL
+   ============================================================================= */
+
+.pro-scholar-v6-panel {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.pro-scholar-v6-panel.compact {
+  padding: 12px;
+}
+
+/* =============================================================================
+   HEADER
+   ============================================================================= */
+
+.v6-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.v6-title-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.v6-badge {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.v6-word {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  font-family: 'David Libre', 'SBL Hebrew', 'Frank Ruhl Libre', serif;
+}
+
+.v6-root-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f3f4f6;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+.root-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.root-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #3b82f6;
+  font-family: 'David Libre', 'SBL Hebrew', serif;
+}
+
+/* =============================================================================
+   CONFIDENCE METER
+   ============================================================================= */
+
+.confidence-meter {
+  margin-bottom: 16px;
+}
+
+.confidence-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.confidence-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.confidence-score {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.confidence-meter.confidence-high .confidence-score { color: #16a34a; }
+.confidence-meter.confidence-medium .confidence-score { color: #ca8a04; }
+.confidence-meter.confidence-low .confidence-score { color: #dc2626; }
+
+.confidence-bar {
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.confidence-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.confidence-meter.confidence-high .confidence-fill { background: linear-gradient(90deg, #16a34a, #22c55e); }
+.confidence-meter.confidence-medium .confidence-fill { background: linear-gradient(90deg, #ca8a04, #eab308); }
+.confidence-meter.confidence-low .confidence-fill { background: linear-gradient(90deg, #dc2626, #ef4444); }
+
+/* =============================================================================
+   BADGES ROW
+   ============================================================================= */
+
+.v6-badges-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+/* Semantic Field Badge */
+.semantic-field-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: #f3f4f6;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.field-icon {
+  font-size: 0.875rem;
+}
+
+.field-name {
+  color: inherit;
+}
+
+/* Dialect Badge */
+.dialect-badge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 6px 10px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border-left: 3px solid;
+  font-size: 0.75rem;
+}
+
+.dialect-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dialect-icon {
+  font-size: 0.875rem;
+}
+
+.dialect-name {
+  font-weight: 500;
+  color: #374151;
+}
+
+.dialect-confidence {
+  margin-left: 4px;
+  color: #6b7280;
+  font-size: 0.65rem;
+}
+
+.dialect-hebrew {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+/* =============================================================================
+   BINYAN BADGE
+   ============================================================================= */
+
+.binyan-badge {
+  background: #f9fafb;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #e5e7eb;
+}
+
+.binyan-badge.aramaic {
+  border-left: 4px solid #059669;
+}
+
+.binyan-badge.hebrew {
+  border-left: 4px solid #3b82f6;
+}
+
+.binyan-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.binyan-icon {
+  font-size: 1rem;
+}
+
+.binyan-title {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.binyan-content {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.binyan-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.binyan-hebrew {
+  font-size: 1rem;
+  color: #3b82f6;
+  font-family: 'David Libre', 'SBL Hebrew', serif;
+}
+
+.binyan-meaning {
+  font-size: 0.8rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* =============================================================================
+   WEAK VERB BADGE
+   ============================================================================= */
+
+.weak-verb-badge {
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 2px solid;
+}
+
+.weak-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.weak-icon {
+  font-size: 1rem;
+}
+
+.weak-title {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.weak-content {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.weak-hebrew {
+  font-size: 1.2rem;
+  font-weight: 600;
+  font-family: 'David Libre', 'SBL Hebrew', serif;
+}
+
+.weak-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.weak-description {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* =============================================================================
+   ROOT HYPOTHESES
+   ============================================================================= */
+
+.v6-hypotheses {
+  background: #f9fafb;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.hypotheses-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.hypotheses-icon {
+  font-size: 0.9rem;
+}
+
+.hypotheses-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.hypotheses-count {
+  margin-left: auto;
+  font-size: 0.7rem;
+  background: #e5e7eb;
+  padding: 2px 6px;
+  border-radius: 10px;
+  color: #6b7280;
+}
+
+.hypotheses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.root-hypothesis {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
+
+.root-hypothesis.top-hypothesis {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.1);
+}
+
+.hypothesis-root {
+  font-size: 1.1rem;
+  font-weight: 600;
+  font-family: 'David Libre', 'SBL Hebrew', serif;
+  color: #1f2937;
+}
+
+.hypothesis-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hypothesis-confidence {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.hypothesis-sources {
+  display: flex;
+  gap: 4px;
+}
+
+.source-tag {
+  font-size: 0.6rem;
+  background: #e5e7eb;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #6b7280;
+}
+
+.top-badge {
+  font-size: 0.6rem;
+  background: #3b82f6;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+/* =============================================================================
+   SOURCE TIERS
+   ============================================================================= */
+
+.source-tier-section {
+  margin-bottom: 16px;
+}
+
+.tier-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.tier-icon {
+  font-size: 0.9rem;
+}
+
+.tier-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.tier-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tier-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.tier-badge-icon {
+  font-size: 0.8rem;
+}
+
+.tier-name {
+  color: #374151;
+}
+
+/* =============================================================================
+   ROOT FAMILY
+   ============================================================================= */
+
+.root-family-section {
+  background: #f9fafb;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.family-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.family-icon {
+  font-size: 0.9rem;
+}
+
+.family-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.family-count {
+  margin-left: auto;
+  font-size: 0.7rem;
+  background: #e5e7eb;
+  padding: 2px 6px;
+  border-radius: 10px;
+  color: #6b7280;
+}
+
+.family-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.family-item {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 10px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.family-item:hover {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.family-word {
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: 'David Libre', 'SBL Hebrew', serif;
+  color: #1f2937;
+}
+
+.family-meaning {
+  font-size: 0.65rem;
+  color: #6b7280;
+}
+
+.family-toggle {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: #3b82f6;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.family-toggle:hover {
+  text-decoration: underline;
+}
+
+/* =============================================================================
+   TELEMETRY
+   ============================================================================= */
+
+.telemetry-section {
+  background: #fef3c7;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px dashed #f59e0b;
+}
+
+.telemetry-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.telemetry-icon {
+  font-size: 0.9rem;
+}
+
+.telemetry-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #b45309;
+  font-weight: 600;
+}
+
+.telemetry-version {
+  margin-left: auto;
+  font-size: 0.6rem;
+  background: #f59e0b;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.telemetry-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.telemetry-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: white;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.stat-label {
+  font-size: 0.6rem;
+  color: #6b7280;
+  text-transform: uppercase;
+}
+
+.stat-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.telemetry-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.telemetry-btn {
+  flex: 1;
+  padding: 6px 12px;
+  background: white;
+  border: 1px solid #f59e0b;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  color: #b45309;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.telemetry-btn:hover {
+  background: #fffbeb;
+}
+
+/* =============================================================================
+   FOOTER
+   ============================================================================= */
+
+.v6-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+
+.v6-version {
+  font-family: monospace;
+}
+
+.v6-cache-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #f59e0b;
+}
+
+/* =============================================================================
+   LOADING & ERROR STATES
+   ============================================================================= */
+
+.pro-scholar-v6-panel.loading,
+.pro-scholar-v6-panel.error {
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.v6-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: #6b7280;
+}
+
+.v6-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: v6-spin 0.8s linear infinite;
+}
+
+@keyframes v6-spin {
+  to { transform: rotate(360deg); }
+}
+
+.v6-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #dc2626;
+}
+
+.error-icon {
+  width: 24px;
+  height: 24px;
+  background: #fee2e2;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+/* =============================================================================
+   DARK MODE
+   ============================================================================= */
+
+@media (prefers-color-scheme: dark) {
+  .pro-scholar-v6-panel {
+    background: #1f2937;
+    border-color: #374151;
+  }
+
+  .v6-header {
+    border-color: #374151;
+  }
+
+  .v6-word {
+    color: #f3f4f6;
+  }
+
+  .v6-root-display {
+    background: #374151;
+  }
+
+  .root-label {
+    color: #9ca3af;
+  }
+
+  .binyan-badge,
+  .v6-hypotheses,
+  .root-family-section {
+    background: #374151;
+    border-color: #4b5563;
+  }
+
+  .binyan-name,
+  .hypothesis-root,
+  .family-word,
+  .weak-hebrew,
+  .stat-value {
+    color: #f3f4f6;
+  }
+
+  .root-hypothesis,
+  .family-item,
+  .telemetry-item {
+    background: #1f2937;
+    border-color: #4b5563;
+  }
+
+  .family-item:hover {
+    background: #374151;
+  }
+
+  .confidence-bar {
+    background: #374151;
+  }
+}
+
+/* =============================================================================
+   RESPONSIVE
+   ============================================================================= */
+
+@media (max-width: 480px) {
+  .v6-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .v6-root-display {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .telemetry-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

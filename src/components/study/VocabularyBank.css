@@ -6,7 +6,7 @@
   background: var(--bg-elevated);
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
-  overflow: hidden;
+  overflow: visible;
   box-shadow: var(--shadow-sm);
 }
 
@@ -173,6 +173,15 @@
   direction: rtl;
 }
 
+.word-hebrew.clickable {
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.word-hebrew.clickable:hover {
+  color: var(--primary);
+}
+
 .word-translations {
   display: flex;
   flex-direction: column;
@@ -320,9 +329,35 @@
 }
 
 .flashcard-progress {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: var(--space-lg);
   font-size: 14px;
   color: var(--text-muted);
+}
+
+.flashcard-progress .keyboard-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  opacity: 0.7;
+  padding: 4px 8px;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-sm);
+}
+
+@media (max-width: 600px) {
+  .flashcard-progress .keyboard-hint {
+    display: none;
+  }
+}
+
+.flashcard-container:focus {
+  outline: none;
+}
+
+.flashcard-container:focus .flashcard {
+  box-shadow: 0 0 0 3px var(--primary-light), var(--shadow-md);
 }
 
 .flashcard {
@@ -374,6 +409,17 @@
   color: var(--text-primary);
   direction: rtl;
   margin-bottom: var(--space-md);
+}
+
+.flashcard-hebrew.clickable {
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.flashcard-hebrew.clickable:hover {
+  color: var(--primary);
+  text-decoration: underline;
+  text-decoration-style: dotted;
 }
 
 .flashcard-hint {
@@ -852,5 +898,345 @@
 
   .forecast-day {
     min-width: 50px;
+  }
+}
+
+/* ============================================================================
+   LEARNING RECOMMENDATIONS TAB (PRO SCHOLAR)
+   ============================================================================ */
+
+.learning-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xl);
+  gap: var(--space-md);
+  color: var(--text-muted);
+}
+
+.learning-recommendations {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: var(--space-md);
+}
+
+/* Level Card */
+.learning-level-card {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark, #4f46e5) 100%);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  color: white;
+}
+
+.level-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+
+.level-hebrew {
+  font-size: 2rem;
+  font-weight: 700;
+  font-family: var(--font-hebrew);
+}
+
+.level-english {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.level-progress .progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  opacity: 0.9;
+  margin-bottom: var(--space-xs);
+}
+
+.level-progress .progress-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.level-progress .progress-fill {
+  height: 100%;
+  background: white;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* Study Focus Card */
+.study-focus-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+}
+
+.study-focus-card h4 {
+  margin: 0 0 var(--space-sm) 0;
+  color: var(--text-primary);
+}
+
+.focus-main {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  margin: 0 0 var(--space-md) 0;
+}
+
+.secondary-goals {
+  background: var(--background);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius);
+  margin-bottom: var(--space-sm);
+}
+
+.goals-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: var(--space-xs);
+}
+
+.secondary-goals ul {
+  margin: 0;
+  padding-left: var(--space-lg);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.secondary-goals li {
+  margin-bottom: var(--space-xs);
+}
+
+.best-time {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Milestones Card */
+.milestones-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+}
+
+.milestones-card h4 {
+  margin: 0 0 var(--space-md) 0;
+  color: var(--text-primary);
+}
+
+.milestones-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.milestone {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--background);
+  border-radius: var(--radius);
+  opacity: 0.7;
+}
+
+.milestone.achieved {
+  opacity: 1;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.milestone-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+.milestone.achieved .milestone-icon {
+  color: var(--success);
+  font-weight: bold;
+}
+
+.milestone-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.milestone-name {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.milestone-hebrew {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-family: var(--font-hebrew);
+}
+
+.milestone-progress {
+  font-size: 0.8rem;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* Root Gaps Card */
+.root-gaps-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+}
+
+.root-gaps-card h4 {
+  margin: 0 0 var(--space-xs) 0;
+  color: var(--text-primary);
+}
+
+.gaps-description {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0 0 var(--space-md) 0;
+}
+
+.root-gaps-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.root-gap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--background);
+  border-radius: var(--radius);
+}
+
+.root-hebrew {
+  font-size: 1.2rem;
+  font-family: var(--font-hebrew);
+  font-weight: 600;
+  color: var(--primary);
+  min-width: 50px;
+  text-align: center;
+}
+
+.root-meaning {
+  flex: 1;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.root-mastery {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: var(--surface);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+/* Learning Actions */
+.learning-actions {
+  display: flex;
+  justify-content: center;
+  padding-top: var(--space-md);
+}
+
+.learning-actions .action-btn {
+  padding: var(--space-md) var(--space-2xl);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.learning-actions .action-btn.primary {
+  background: var(--primary);
+  color: white;
+}
+
+.learning-actions .action-btn.primary:hover {
+  background: var(--primary-dark, #4f46e5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+/* =============================================================================
+   PRO SCHOLAR V5: Accessibility - Reduced Motion
+   Respects user preferences for reduced motion
+   ============================================================================= */
+@media (prefers-reduced-motion: reduce) {
+  .flashcard,
+  .flashcard-front,
+  .flashcard-back {
+    transition: none;
+    transform: none !important;
+  }
+
+  .flashcard.flipped .flashcard-front,
+  .flashcard.flipped .flashcard-back {
+    transform: none !important;
+  }
+
+  /* Show both sides stacked instead of flip animation */
+  .flashcard.flipped .flashcard-front {
+    opacity: 0;
+    position: absolute;
+  }
+
+  .flashcard.flipped .flashcard-back {
+    position: relative;
+    opacity: 1;
+  }
+
+  .learning-actions .action-btn:hover,
+  .learning-actions .action-btn.primary:hover {
+    transform: none;
+  }
+
+  /* Disable perspective for users who prefer reduced motion */
+  .flashcard {
+    perspective: none;
+  }
+}
+
+/* =============================================================================
+   PRO SCHOLAR V5: Responsive - Tablet breakpoint (768px)
+   ============================================================================= */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .vocab-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .flashcard {
+    max-width: 450px;
+  }
+
+  .vocab-list-item {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-md);
   }
 }

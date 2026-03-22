@@ -16,6 +16,14 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useStudyMode } from '../../context/StudyModeContext';
 import { askQuestion } from '../../services/aiService';
+// 2026 Smart Features - AI Memory for persistent conversation intelligence
+import {
+  initializeMemory,
+  addMessage as addToMemory,
+  getConversationContext,
+  startNewSession,
+  trackStudy
+} from '../../services/aiMemoryService';
 import './ChavrutaAI.css';
 
 // =============================================================================
@@ -81,6 +89,31 @@ const ChavrutaAI = ({
   const [understandingScore, setUnderstandingScore] = useState(0);
 
   const conversationRef = useRef(null);
+  const memoryInitialized = useRef(false);
+
+  // Initialize AI Memory when chavruta session starts
+  useEffect(() => {
+    if (chavrutaActive && !memoryInitialized.current) {
+      initializeMemory();
+      startNewSession({
+        mode: 'chavruta',
+        book: currentReference?.split(' ')[0] || 'Unknown',
+        studyMode: 'chavruta_challenge'
+      });
+      memoryInitialized.current = true;
+
+      // Track study activity
+      trackStudy({
+        type: 'chavruta_start',
+        reference: currentReference,
+        timestamp: Date.now()
+      });
+    }
+    // Reset when session ends
+    if (!chavrutaActive) {
+      memoryInitialized.current = false;
+    }
+  }, [chavrutaActive, currentReference]);
 
   // Auto-scroll conversation
   useEffect(() => {
@@ -137,6 +170,16 @@ Respond as if speaking directly to your chavruta.`;
       setConversation(prev => [...prev, exchange]);
       addChavrutaExchange(response, null);
 
+      // Track AI message to memory for context building
+      addToMemory({
+        role: 'assistant',
+        content: response,
+        metadata: {
+          questionType,
+          reference: currentReference
+        }
+      });
+
     } catch (error) {
       console.error('Chavruta error:', error);
       setConversation(prev => [...prev, {
@@ -156,6 +199,15 @@ Respond as if speaking directly to your chavruta.`;
     setUserInput('');
     setIsThinking(true);
 
+    // Track user message to memory
+    addToMemory({
+      role: 'user',
+      content: myResponse,
+      metadata: {
+        reference: currentReference
+      }
+    });
+
     // Update last exchange with user response
     setConversation(prev => {
       const updated = [...prev];
@@ -165,12 +217,17 @@ Respond as if speaking directly to your chavruta.`;
       return updated;
     });
 
+    // Get conversation context from memory (includes entity tracking, topic extraction)
+    const memoryContext = getConversationContext({ maxMessages: 10 });
+
     // Get AI follow-up
     const conversationContext = conversation.map(ex =>
       `Chavruta: ${ex.question}\n${ex.userResponse ? `Student: ${ex.userResponse}` : ''}`
     ).join('\n\n');
 
     const followUpPrompt = `You are continuing a chavruta study session.
+
+${memoryContext.topTopics?.length > 0 ? `Key topics discussed: ${memoryContext.topTopics.join(', ')}` : ''}
 
 Text being studied: "${currentText}"
 
@@ -202,6 +259,12 @@ Your response:`;
 
       if (showsUnderstanding) {
         setUnderstandingScore(prev => Math.min(prev + 1, 5));
+        // Track learning progress
+        trackStudy({
+          type: 'understanding_gained',
+          reference: currentReference,
+          score: understandingScore + 1
+        });
       }
 
       setConversation(prev => [...prev, {
@@ -213,12 +276,22 @@ Your response:`;
 
       addChavrutaExchange(response, myResponse);
 
+      // Track AI follow-up to memory
+      addToMemory({
+        role: 'assistant',
+        content: response,
+        metadata: {
+          type: 'followup',
+          reference: currentReference
+        }
+      });
+
     } catch (error) {
       console.error('Chavruta follow-up error:', error);
     } finally {
       setIsThinking(false);
     }
-  }, [userInput, conversation, currentText, isThinking, addChavrutaExchange]);
+  }, [userInput, conversation, currentText, currentReference, isThinking, understandingScore, addChavrutaExchange]);
 
   // =============================================================================
   // Kushya Integration

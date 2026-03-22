@@ -84,3 +84,48 @@ export {
   getByEra,
   getSorted
 } from './commentatorRegistry';
+
+// =============================================================================
+// Word Lookup Constants
+// =============================================================================
+export {
+  SOURCES,
+  MIN_WORD_LENGTH,
+  MAX_DEFINITION_LENGTH,
+  CLICK_DEBOUNCE_MS,
+  HEBREW_SOURCE_PRIORITY,
+  ARAMAIC_SOURCE_PRIORITY,
+  SCHOLARLY_PATTERNS,
+  EMPTY_SOURCES,
+  EMPTY_OBJECT
+} from './clickableTextConstants';
+
+// =============================================================================
+// PRO SCHOLAR V6: Morphology Patterns - SINGLE SOURCE OF TRUTH
+// =============================================================================
+export {
+  // Weak verb definitions (comprehensive with display config)
+  WEAK_VERB_RULES,
+  WEAK_VERB_DISPLAY,
+  WEAK_VERB_BY_CODE,
+  WEAK_VERB_LETTERS,
+  getWeakVerbDisplay,
+
+  // Binyanim (verb patterns)
+  BINYANIM,
+  ARAMAIC_BINYANIM,
+
+  // Tense patterns
+  TENSE_PATTERNS,
+  ARAMAIC_TENSE,
+
+  // Conjugation markers
+  CONJUGATION_PREFIXES,
+  CONJUGATION_SUFFIXES,
+
+  // Helper functions
+  detectWeakVerbType,
+  reconstructWeakRoots,
+  getBinyanInfo,
+  detectBinyan
+} from './morphologyPatterns';

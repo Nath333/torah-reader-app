@@ -1,0 +1,429 @@
+/* =============================================================================
+   STUDY INSIGHTS PANEL - PRO SCHOLAR V6 Styles
+   ============================================================================= */
+
+.study-insights-panel {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* =============================================================================
+   HEADER
+   ============================================================================= */
+
+.study-insights-panel .insights-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.study-insights-panel .insights-icon {
+  font-size: 1.4rem;
+}
+
+.study-insights-panel .insights-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e0e7ff;
+  flex: 1;
+}
+
+.study-insights-panel .insights-badge {
+  background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 10px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* =============================================================================
+   TAB NAVIGATION
+   ============================================================================= */
+
+.study-insights-panel .insights-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.study-insights-panel .insights-tabs .tab {
+  flex: 1;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: #a5b4fc;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.study-insights-panel .insights-tabs .tab:hover {
+  background: rgba(139, 92, 246, 0.2);
+  color: #e0e7ff;
+}
+
+.study-insights-panel .insights-tabs .tab.active {
+  background: rgba(139, 92, 246, 0.4);
+  color: white;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+/* =============================================================================
+   CONTENT AREA
+   ============================================================================= */
+
+.study-insights-panel .insights-content {
+  min-height: 150px;
+}
+
+/* =============================================================================
+   SEMANTIC FIELDS GRID
+   ============================================================================= */
+
+.study-insights-panel .semantic-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+/* Semantic Field Card */
+.semantic-field-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--field-color, rgba(139, 92, 246, 0.3));
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.semantic-field-card:hover {
+  background: rgba(0, 0, 0, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-color: var(--field-color);
+}
+
+.semantic-field-card .field-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.semantic-field-card .field-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.semantic-field-card .field-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #e0e7ff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.semantic-field-card .field-hebrew {
+  font-size: 0.75rem;
+  color: #a5b4fc;
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  direction: rtl;
+}
+
+.semantic-field-card .field-words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.semantic-field-card .field-word {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  color: #c4b5fd;
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  direction: rtl;
+}
+
+.semantic-field-card .field-more {
+  font-size: 0.7rem;
+  color: #a5b4fc;
+  font-style: italic;
+}
+
+.semantic-field-card .field-count {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--field-color, #a5b4fc);
+  flex-shrink: 0;
+  min-width: 28px;
+  text-align: center;
+}
+
+/* =============================================================================
+   FREQUENCY ANALYSIS
+   ============================================================================= */
+
+.study-insights-panel .frequency-analysis {
+  padding: 8px 0;
+}
+
+.study-insights-panel .frequency-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Word Frequency Bar */
+.word-frequency-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.word-frequency-bar .freq-word {
+  min-width: 80px;
+  font-size: 0.9rem;
+  color: #e0e7ff;
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  direction: rtl;
+  text-align: right;
+}
+
+.word-frequency-bar .freq-bar-container {
+  flex: 1;
+  height: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.word-frequency-bar .freq-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8B5CF6 0%, #6366F1 100%);
+  border-radius: 10px;
+  transition: width 0.3s ease;
+  min-width: 4px;
+}
+
+.word-frequency-bar .freq-count {
+  min-width: 30px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #a5b4fc;
+  text-align: right;
+}
+
+/* =============================================================================
+   PROGRESS SECTION
+   ============================================================================= */
+
+.study-insights-panel .progress-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.study-insights-panel .progress-rings {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  padding: 10px 0;
+}
+
+/* Learning Progress Ring */
+.progress-ring-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.progress-ring-container .progress-ring {
+  transform: rotate(-90deg);
+}
+
+.progress-ring-container .progress-ring-bg {
+  stroke: rgba(139, 92, 246, 0.2);
+}
+
+.progress-ring-container .progress-ring-fill {
+  stroke: #8B5CF6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+.progress-ring-container .progress-text {
+  font-size: 1.2rem;
+  font-weight: 700;
+  fill: #e0e7ff;
+  transform: rotate(90deg);
+  transform-origin: center;
+}
+
+.progress-ring-container .progress-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #e0e7ff;
+}
+
+.progress-ring-container .progress-detail {
+  font-size: 0.75rem;
+  color: #a5b4fc;
+}
+
+/* =============================================================================
+   PERFORMANCE STATS
+   ============================================================================= */
+
+.performance-stats {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  padding: 14px;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.performance-stats .stats-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.performance-stats .stats-icon {
+  font-size: 1.1rem;
+}
+
+.performance-stats .stats-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #e0e7ff;
+}
+
+.performance-stats .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.performance-stats .stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.performance-stats .stat-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #a5b4fc;
+}
+
+.performance-stats .stat-label {
+  font-size: 0.7rem;
+  color: #818cf8;
+  margin-top: 2px;
+}
+
+/* =============================================================================
+   EMPTY STATE
+   ============================================================================= */
+
+.study-insights-panel .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+  text-align: center;
+}
+
+.study-insights-panel .empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.study-insights-panel .empty-text {
+  font-size: 0.9rem;
+  color: #a5b4fc;
+  max-width: 200px;
+}
+
+/* =============================================================================
+   RESPONSIVE
+   ============================================================================= */
+
+@media (max-width: 600px) {
+  .study-insights-panel {
+    padding: 12px;
+  }
+
+  .study-insights-panel .semantic-fields-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .performance-stats .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .study-insights-panel .progress-rings {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* =============================================================================
+   COMPACT MODE
+   ============================================================================= */
+
+.study-insights-panel.compact {
+  padding: 12px;
+}
+
+.study-insights-panel.compact .insights-header {
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+}
+
+.study-insights-panel.compact .insights-tabs {
+  margin-bottom: 10px;
+}
+
+.study-insights-panel.compact .insights-tabs .tab {
+  padding: 6px 10px;
+  font-size: 0.8rem;
+}
+
+.study-insights-panel.compact .semantic-fields-grid {
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 6px;
+}
+
+.study-insights-panel.compact .semantic-field-card {
+  padding: 8px;
+}
+
+.study-insights-panel.compact .semantic-field-card .field-icon {
+  font-size: 1.2rem;
+}

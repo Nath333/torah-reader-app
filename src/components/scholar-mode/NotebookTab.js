@@ -10,12 +10,24 @@
  * This is your personal "machberet" (notebook) for Torah study.
  */
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, lazy, Suspense } from 'react';
 import PropTypes from 'prop-types';
 import { useStudyMode, STUDY_MODE_CONFIG } from '../../context/StudyModeContext';
 import useLocalStorage from '../../hooks/useLocalStorage';
 import useMastery, { MASTERY_LEVELS } from '../../hooks/useMastery';
 import './NotebookTab.css';
+
+// PRO SCHOLAR V6: Lazy-loaded analytics panel
+const StudyInsightsPanel = lazy(() => import('../study/StudyInsightsPanel'));
+
+// Loading fallback
+const AnalyticsFallback = () => (
+  <div className="analytics-loading">
+    <div className="skeleton-bar" style={{ width: '80%', height: '24px', marginBottom: '16px' }} />
+    <div className="skeleton-bar" style={{ width: '60%', height: '18px', marginBottom: '12px' }} />
+    <div className="skeleton-bar" style={{ width: '70%', height: '18px' }} />
+  </div>
+);
 
 // =============================================================================
 // Sub-tab configurations
@@ -24,6 +36,7 @@ const SUB_TABS = [
   { id: 'questions', label: 'קושיות', sublabel: 'Questions', icon: '❓', description: 'Track your questions' },
   { id: 'insights', label: 'חידושים', sublabel: 'Insights', icon: '✨', description: 'Record novel insights' },
   { id: 'progress', label: 'התקדמות', sublabel: 'Progress', icon: '📈', description: 'Track mastery' },
+  { id: 'analytics', label: 'ניתוח', sublabel: 'Analytics', icon: '📊', description: 'Study analytics' },
   { id: 'chazara', label: 'חזרה', sublabel: 'Chazara', icon: '🔄', description: 'Spaced repetition review' },
   { id: 'today', label: 'היום', sublabel: 'Today', icon: '📅', description: "Today's summary" }
 ];
@@ -1113,6 +1126,15 @@ const NotebookTab = ({
             totalVerses={totalVerses}
             onNavigateToVerse={onNavigateToVerse}
           />
+        )}
+
+        {activeSubTab === 'analytics' && (
+          <Suspense fallback={<AnalyticsFallback />}>
+            <StudyInsightsPanel
+              currentBook={selectedBook}
+              currentChapter={selectedChapter}
+            />
+          </Suspense>
         )}
 
         {activeSubTab === 'chazara' && (

@@ -40,3 +40,10 @@ export { default as EntitiesTab } from './EntitiesTab';
 export { default as DisagreementVisualization } from './DisagreementVisualization';
 export { default as HalachicChainVisualization } from './HalachicChainVisualization';
 export { default as KnowledgeGraph } from './KnowledgeGraph';
+
+// Scholar info panels
+export { default as RabbiInfoPanel, findRabbi } from './RabbiInfoPanel';
+export { default as RealiaPanel, findRealia, detectRealiaInText, getRealiaByCategory } from './RealiaPanel';
+
+// PRO SCHOLAR V6 Analysis Panel
+export { default as ProScholarV6Panel } from './ProScholarV6Panel';

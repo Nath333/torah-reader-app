@@ -3365,3 +3365,129 @@
     padding: 4px 8px;
   }
 }
+
+/* =============================================================================
+   PRO SCHOLAR V6: Enhanced Analysis Badges
+   ============================================================================= */
+
+/* V6 Badges Row Container */
+.wic-v6-badges-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+/* V6 Semantic Field Badge */
+.wic-semantic-field-v6 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 2px solid;
+  background: white;
+}
+
+.wic-semantic-field-v6 .semantic-icon {
+  font-size: 1.2em;
+}
+
+.wic-semantic-field-v6 .semantic-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.wic-semantic-field-v6 .semantic-name {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.wic-semantic-field-v6 .semantic-hebrew {
+  font-size: 0.75em;
+  color: var(--text-secondary, #666);
+  font-family: 'David Libre', 'SBL Hebrew', serif;
+}
+
+/* V6 Dialect Indicator */
+.wic-dialect-v6 {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--surface-secondary, #f5f5f5);
+  border-radius: 8px;
+  font-size: 0.8em;
+  border: 1px solid var(--border-light, #e0e0e0);
+}
+
+.wic-dialect-v6 .dialect-icon {
+  font-size: 1em;
+}
+
+.wic-dialect-v6 .dialect-name {
+  font-weight: 500;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.wic-dialect-v6 .dialect-confidence {
+  font-size: 0.75em;
+  color: var(--text-tertiary, #999);
+  background: var(--surface, #fff);
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: 4px;
+}
+
+/* V6 Dictionary Tier Badge */
+.wic-tier-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.8em;
+  margin-left: 6px;
+}
+
+/* V6 Source Badge Enhancement */
+.wic-definitions .def-primary .wic-tier-badge,
+.wic-definitions .def-alt .wic-tier-badge {
+  margin-left: 8px;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .wic-semantic-field-v6 {
+    background: var(--surface-dark, #2d2d2d);
+  }
+
+  .wic-dialect-v6 {
+    background: var(--surface-dark, #2d2d2d);
+    border-color: var(--border-dark, #404040);
+  }
+
+  .wic-dialect-v6 .dialect-confidence {
+    background: var(--surface-darker, #1a1a1a);
+  }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .wic-v6-badges-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .wic-semantic-field-v6 {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .wic-dialect-v6 {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}

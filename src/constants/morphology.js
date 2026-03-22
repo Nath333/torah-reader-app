@@ -117,12 +117,15 @@ export const HEBREW_SUFFIXES_ORDERED = [
   'נא', 'תא',
   // Verb conjugation endings (Hebrew)
   'תי', 'תם', 'תן', 'נו',
-  // Possessive suffixes
+  // CONSTRUCT + POSSESSIVE compound suffixes (שגגתו = שגגה + ת + ו)
+  // These must come BEFORE single possessives for greedy matching
+  'תו', 'תי', 'תך', 'תם', 'תן', 'תנו',  // construct ת + possessive
+  // Possessive suffixes (2-letter)
   'יו', 'יה', 'הו', 'הם', 'הן',
   // "Your" suffixes
   'ך', 'כם', 'כן',
-  // Single suffixes: "my", "her" / directional heh
-  'י', 'ה', 'א',  // א for Aramaic emphatic
+  // Single possessive suffixes: "his", "my", "her" / directional heh
+  'ו', 'י', 'ה', 'א',  // ו = his/him (was missing!), א for Aramaic emphatic
 ];
 
 /**
@@ -292,6 +295,11 @@ export const STOP_WORDS = new Set([
   'בעי', 'בעיא', 'בעינן', // "needs/asks" - NOT "ב + עי"
   'ברם', // "but" - NOT "ב + רם"
   'בהדי', // "together with" - NOT "ב + הדי"
+  // PRO SCHOLAR V4.2: Aramaic positional words - don't strip ב prefix
+  'ברישא', 'ברישיה', 'ברישי', // "at the beginning/head" - NOT "ב + רישא"
+  'בסיפא', 'בסיפיה', // "at the end" - NOT "ב + סיפא"
+  'בגוה', 'בגויה', // "inside it" - NOT "ב + גוה"
+  'בתרא', 'בתראה', // "final/latter" - NOT "ב + תרא"
 
   // === ARAMAIC WORDS starting with כ (kaf) ===
   // כ looks like Hebrew "like" prefix but these are complete Aramaic words
@@ -823,9 +831,16 @@ export const computeVerbTranslation = (rootAnalysis) => {
   if (!rootMeaning) return null;
 
   // Get base or causative meaning based on pattern
+  // PRO SCHOLAR V6.2: Check both Aramaic (Aphel) and Hebrew (Hifil) causatives
   const isCausative = rootAnalysis.pattern?.includes('Aphel') ||
-                      rootAnalysis.pattern?.includes('causative');
-  const verbMeaning = isCausative ? rootMeaning.causative : rootMeaning.base;
+                      rootAnalysis.pattern?.includes('causative') ||
+                      rootAnalysis.pattern?.includes('Hifil') ||
+                      rootAnalysis.pattern?.includes('HIFIL') ||
+                      rootAnalysis.binyan === 'HIFIL' ||
+                      rootAnalysis.binyan === 'Hifil';
+  const verbMeaning = isCausative
+    ? (rootMeaning.causative || rootMeaning.base)
+    : rootMeaning.base;
 
   // Get person from conjugation prefix
   const conjPrefix = CONJUGATION_PREFIXES[rootAnalysis.conjugationPrefix];
@@ -2195,6 +2210,9 @@ export const FUNCTION_WORDS = {
   'היושב': 'the one sitting',
   'בעה"ב': 'homeowner',
   'בע"ה': 'homeowner',
+  // Hebrew gershayim (״) variants - same abbreviations with proper Hebrew quotation mark
+  'בעה״ב': 'homeowner',
+  'בע״ה': 'homeowner',
   "בעל הבית": 'homeowner',
 
   // === DOMAIN ABBREVIATIONS ===
@@ -2220,6 +2238,76 @@ export const FUNCTION_WORDS = {
   'עלה': 'on it/her',
   'בהדיה': 'with him',
   'גביה': 'with him/at him',
+
+  // === ADDITIONAL TALMUDIC REFERENCE TERMS ===
+  // (Unique additions - duplicates removed)
+  'כדאמרינן': 'as we say',
+  'כדתנן': 'as we learned',
+  'כדאמר': 'as says',
+  'ואזיל': 'and goes/continues',
+  'אזיל': 'goes',
+
+  // === DOMAIN/RESHUT TERMS ===
+  'רשות': 'domain',
+  'רשויות': 'domains',
+  'עקירה': 'uprooting/lifting',
+  'הנחה': 'placing/setting down',
+  'עקר': 'uprooted',
+  'הניח': 'placed',
+
+  // === ARAMAIC POSITIONAL TERMS (ריש/סיפא) ===
+  // CRITICAL: These are complete words, NOT "ב + ריש" - don't match ברא (create)!
+  'ברישא': 'at the beginning',
+  'ברישיה': 'at its beginning',
+  'ברישי': 'at the beginnings',
+  'רישא': 'the beginning',
+  'רישיה': 'its beginning',
+  'בסיפא': 'at the end',
+  'בסיפיה': 'at its end',
+  'סיפא': 'the end',
+
+  // === PARTICIPLES (common) ===
+  'הזורק': 'the one who throws',
+  'זורק': 'throws/throwing',
+  'העוקר': 'the one who uproots',
+  'עוקר': 'uproots/uprooting',
+  'המניח': 'the one who places',
+  'מניח': 'places/placing',
+
+  // === VERB FORMS (common Talmudic) ===
+  'הוסיפו': 'they added',
+  'הוסיף': 'he added',
+  'ויעבירו': 'and they proclaimed',  // Hiphil of עבר - "caused to pass/proclaimed"
+  'ויעביר': 'and he proclaimed',     // Hiphil singular
+  'העבירו': 'they proclaimed',       // Hiphil perfect
+  'העביר': 'he proclaimed',          // Hiphil perfect singular
+  'מויצו': 'and they commanded',     // ויצו with prefix
+  'תפיקו': 'you shall bring out',    // Future plural from נפק
+
+  // === COMMON TALMUDIC PHRASES ===
+  'אי הכי': 'if so',
+  'מאי טעמא': 'what is the reason',
+  'מנא לן': 'from where do we know',
+  'לכתחלה': 'from the outset',
+  'לכתחילה': 'from the outset',
+  'בדיעבד': 'after the fact',
+  'מדאורייתא': 'by Torah law',
+  'מדרבנן': 'by Rabbinic law',
+
+  // === CHAPTER/SECTION REFERENCES ===
+  'ובפ\'': 'and in chapter',      // Common abbreviation
+  'בפ\'': 'in chapter',
+  'פ\'': 'chapter',
+  'ד\'': 'page',
+  'דף': 'page',
+
+  // === COMMON VERB CONJUGATIONS ===
+  'דבע"ה': 'of homeowner',        // Common shorthand (ASCII quotes)
+  'דבע״ה': 'of homeowner',        // Hebrew gershayim variant
+  'שעשאוה': 'who did it',
+  'שעשאוהו': 'who did it (to him)',
+  'פטורים': 'exempt (pl)',
+  'חייבים': 'liable (pl)',
 };
 
 // =============================================================================
@@ -2234,7 +2322,7 @@ export const ABBREVIATION_EXPANSIONS = {
   "ד'": { expansion: 'דף', meaning: 'page' },
   "פ'": { expansion: 'פרק', meaning: 'chapter' },
 
-  // Common acronyms
+  // Common acronyms (ASCII quotes)
   'רש"י': { expansion: 'רבי שלמה יצחקי', meaning: 'Rashi' },
   'רמב"ם': { expansion: 'רבי משה בן מימון', meaning: 'Maimonides' },
   'רמב"ן': { expansion: 'רבי משה בן נחמן', meaning: 'Nachmanides' },
@@ -2243,8 +2331,22 @@ export const ABBREVIATION_EXPANSIONS = {
   'ר"ה': { expansion: 'ראש השנה / רשות הרבים', meaning: 'Rosh Hashanah / Public domain' },
   'רה"י': { expansion: 'רשות היחיד', meaning: 'Private domain' },
   'רה"ר': { expansion: 'רשות הרבים', meaning: 'Public domain' },
+  'בע"ה': { expansion: 'בעל הבית', meaning: 'homeowner' },
+  'דבע"ה': { expansion: 'דבעל הבית', meaning: 'of homeowner' },
   "וגו'": { expansion: 'וגומר', meaning: 'etc.' },
   "וכו'": { expansion: 'וכולי', meaning: 'etc.' },
+
+  // Hebrew gershayim (״) variants - same acronyms with proper Hebrew quotation mark
+  'רש״י': { expansion: 'רבי שלמה יצחקי', meaning: 'Rashi' },
+  'רמב״ם': { expansion: 'רבי משה בן מימון', meaning: 'Maimonides' },
+  'רמב״ן': { expansion: 'רבי משה בן נחמן', meaning: 'Nachmanides' },
+  'ב״ה': { expansion: 'בית הלל', meaning: 'Beit Hillel' },
+  'ב״ש': { expansion: 'בית שמאי', meaning: 'Beit Shammai' },
+  'ר״ה': { expansion: 'ראש השנה / רשות הרבים', meaning: 'Rosh Hashanah / Public domain' },
+  'רה״י': { expansion: 'רשות היחיד', meaning: 'Private domain' },
+  'רה״ר': { expansion: 'רשות הרבים', meaning: 'Public domain' },
+  'בע״ה': { expansion: 'בעל הבית', meaning: 'homeowner' },
+  'דבע״ה': { expansion: 'דבעל הבית', meaning: 'of homeowner' },
 };
 
 /**

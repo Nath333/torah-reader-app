@@ -1,12 +1,16 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, lazy, Suspense } from 'react';
 import { removeHtmlTags } from '../../utils/sanitize';
 import { getStoredApiKey } from '../../services/groqService';
 import { getCommentaryIcon } from '../../config/commentaryConfig';
+import { getSourceCredibility, getCredibilityBadge } from '../../services/sourceCredibilityService';
 import ClickableText from '../core/ClickableText';
 import CommentarySummary from './CommentarySummary';
 import WordGlossary from '../dictionary/WordGlossary';
 import InterlinearText from '../dictionary/InterlinearText';
 import './CommentaryBlock.css';
+
+// PRO SCHOLAR V6: Lazy-loaded rabbi biographical info panel
+const RabbiInfoPanel = lazy(() => import('../scholar-mode/RabbiInfoPanel'));
 
 /**
  * CommentaryGroup - Displays a group of commentaries from a single source
@@ -15,12 +19,16 @@ export const CommentaryGroup = React.memo(({
   commentaries,
   source,
   showClickableText = true,
-  verse = ''
+  verse = '',
+  reference = null // PRO SCHOLAR V3: For context-aware lookups
 }) => {
   const [showTranslation, setShowTranslation] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [showGlossary, setShowGlossary] = useState(false);
   const [showInterlinear, setShowInterlinear] = useState(false);
+  const [showRabbiInfo, setShowRabbiInfo] = useState(false);
+  // PRO SCHOLAR V6: Track which rabbi to display (allows navigation to teachers/students)
+  const [displayedRabbi, setDisplayedRabbi] = useState(source);
   const hebrewCommentaries = commentaries.filter(c => c.language === 'hebrew');
   const englishCommentaries = commentaries.filter(c => c.language === 'english');
 
@@ -28,6 +36,15 @@ export const CommentaryGroup = React.memo(({
   const hasHebrewOnly = hebrewCommentaries.length > 0 && englishCommentaries.length === 0;
   const icon = getCommentaryIcon(source);
   const hasApiKey = !!getStoredApiKey();
+
+  // Get source credibility for trust badge (with null check)
+  const credibility = useMemo(() => getSourceCredibility(source), [source]);
+  const badge = useMemo(() => {
+    if (!credibility || credibility.overallScore === undefined) {
+      return { label: 'Unknown', color: '#6b7280', icon: '❓' };
+    }
+    return getCredibilityBadge(credibility.overallScore);
+  }, [credibility]);
 
   // Get combined text for summarization
   const getCommentaryText = useCallback(() => {
@@ -41,7 +58,23 @@ export const CommentaryGroup = React.memo(({
       <div className="commentary-header">
         <div className="commentary-source">
           <span className="source-icon">{icon}</span>
-          <span className="source-name">{source}</span>
+          <button
+            className={`source-name source-name-btn ${showRabbiInfo ? 'active' : ''}`}
+            onClick={() => setShowRabbiInfo(!showRabbiInfo)}
+            title={`Click to learn about ${source}`}
+          >
+            {source}
+            <span className="source-info-icon">ℹ️</span>
+          </button>
+          {credibility.overallScore >= 75 && (
+            <span
+              className="credibility-badge"
+              style={{ color: badge.color }}
+              title={`${badge.label} - ${credibility.categoryInfo?.description || ''} (${credibility.dates || ''})`}
+            >
+              {badge.icon}
+            </span>
+          )}
         </div>
         <div className="commentary-actions">
           {hasApiKey && hebrewCommentaries.length + englishCommentaries.length > 0 && (
@@ -98,6 +131,36 @@ export const CommentaryGroup = React.memo(({
         </div>
       </div>
 
+      {/* PRO SCHOLAR V6: Rabbi Biographical Info Panel */}
+      {showRabbiInfo && (
+        <div className="rabbi-info-section">
+          <Suspense fallback={<div className="rabbi-loading">Loading biographical info...</div>}>
+            <RabbiInfoPanel
+              rabbiName={displayedRabbi}
+              onClose={() => {
+                setShowRabbiInfo(false);
+                setDisplayedRabbi(source); // Reset to original source
+              }}
+              onNavigate={(name) => {
+                // PRO SCHOLAR V6: Navigate to teacher/student biography
+                setDisplayedRabbi(name);
+              }}
+              compact={true}
+            />
+            {/* Back button when viewing a different rabbi */}
+            {displayedRabbi !== source && (
+              <button
+                className="rabbi-back-btn"
+                onClick={() => setDisplayedRabbi(source)}
+                type="button"
+              >
+                ← Back to {source}
+              </button>
+            )}
+          </Suspense>
+        </div>
+      )}
+
       {/* AI Summary Section */}
       {showSummary && (
         <CommentarySummary
@@ -135,6 +198,7 @@ export const CommentaryGroup = React.memo(({
                 language="hebrew"
                 text={removeHtmlTags(commentary.text, ['i', 'sup'])}
                 className="commentary-text hebrew-commentary"
+                reference={reference || `${source} on ${verse}`}
               />
             ) : (
               <div className="commentary-text hebrew-commentary" dir="rtl" lang="he">
@@ -163,7 +227,7 @@ export const CommentaryGroup = React.memo(({
 /**
  * CommentaryContent - Container that groups commentaries by source
  */
-export const CommentaryContent = React.memo(({ commentaries, verse = '' }) => {
+export const CommentaryContent = React.memo(({ commentaries, verse = '', reference = null }) => {
   const groupedSources = useMemo(() => {
     const grouped = {};
     commentaries.forEach(c => {
@@ -184,6 +248,7 @@ export const CommentaryContent = React.memo(({ commentaries, verse = '' }) => {
           source={source}
           commentaries={commentaries}
           verse={verse}
+          reference={reference}
         />
       ))}
     </div>

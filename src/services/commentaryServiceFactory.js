@@ -1,7 +1,8 @@
 // Commentary Service Factory - Unified factory for all commentary services
 // Consolidates Rashi, Ramban, Tosafot, and Maharsha into a single pattern
 
-import { createCache } from '../utils/cache';
+// PRO SCHOLAR V6.2: Use CacheOrchestrator for unified cache management
+import { createManagedCache } from './cacheOrchestrator';
 import { fetchWithFallback } from '../utils/http';
 import { cleanHtml } from '../utils/sanitize';
 import {
@@ -193,15 +194,15 @@ const COMMENTARY_CONFIGS = {
   }
 };
 
-// Create caches for each commentary type
+// PRO SCHOLAR V6.2: Create managed caches for each commentary type (unified telemetry)
 const caches = {};
 Object.keys(COMMENTARY_CONFIGS).forEach(key => {
-  caches[key] = createCache(DEFAULT_CACHE_CONFIG);
+  caches[key] = createManagedCache(`commentary_${key}`, DEFAULT_CACHE_CONFIG);
 });
 // Shared maharsha cache
-caches.maharsha = createCache(DEFAULT_CACHE_CONFIG);
+caches.maharsha = createManagedCache('commentary_maharsha', DEFAULT_CACHE_CONFIG);
 // Ramban introduction cache
-caches.rambanIntro = createCache(DEFAULT_CACHE_CONFIG);
+caches.rambanIntro = createManagedCache('commentary_rambanIntro', DEFAULT_CACHE_CONFIG);
 
 /**
  * Get book type availability for a given book

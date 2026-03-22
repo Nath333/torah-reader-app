@@ -259,7 +259,174 @@
   }
 }
 
-/* Reduced motion */
+/* =============================================================================
+   PRO SCHOLAR V5: Bilingual Title
+   ============================================================================= */
+
+.error-title-bilingual {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0 0 var(--space-sm);
+}
+
+.error-title-bilingual .error-hebrew {
+  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+}
+
+.error-title-bilingual .error-english {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* Error Stack (component trace) */
+.error-stack {
+  margin-top: var(--space-2);
+  font-size: 11px;
+  opacity: 0.8;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* =============================================================================
+   PRO SCHOLAR V5: Copy Error Button (Dev Mode)
+   ============================================================================= */
+
+.error-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.error-copy-btn:hover {
+  background: var(--bg-subtle);
+  border-style: solid;
+  color: var(--text-secondary);
+}
+
+.error-copy-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.error-copy-btn:active {
+  transform: scale(0.98);
+}
+
+/* =============================================================================
+   PRO SCHOLAR V5: Compact Mode (Inline Errors)
+   ============================================================================= */
+
+.error-boundary-compact {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(249, 115, 22, 0.1) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius);
+  font-size: 13px;
+}
+
+.error-compact-icon {
+  font-size: 14px;
+}
+
+.error-compact-text {
+  color: var(--text-secondary);
+}
+
+.error-compact-text .error-hebrew {
+  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
+  color: var(--error);
+  font-weight: 600;
+}
+
+.error-compact-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.error-compact-btn:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.error-compact-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Dark mode for compact */
+.app.dark-mode .error-boundary-compact,
+.dark-mode .error-boundary-compact {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(249, 115, 22, 0.1) 100%);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.app.dark-mode .error-compact-btn,
+.dark-mode .error-compact-btn {
+  background: var(--bg-elevated);
+  border-color: var(--border);
+}
+
+/* =============================================================================
+   PRO SCHOLAR V5: High Contrast Mode
+   ============================================================================= */
+
+@media (prefers-contrast: more) {
+  .error-boundary-content {
+    border-width: 3px;
+    border-color: #000;
+  }
+
+  .error-boundary-content::before {
+    height: 6px;
+  }
+
+  .error-btn {
+    border-width: 2px;
+  }
+
+  .error-details {
+    border-width: 2px;
+  }
+
+  .error-boundary-compact {
+    border-width: 2px;
+  }
+}
+
+/* =============================================================================
+   Reduced Motion
+   ============================================================================= */
+
 @media (prefers-reduced-motion: reduce) {
   .error-boundary,
   .error-boundary-content,
@@ -271,7 +438,14 @@
     animation: none;
   }
 
-  .error-btn {
-    transition: none;
+  .error-btn,
+  .error-copy-btn,
+  .error-compact-btn {
+    transition: opacity 0.15s ease;
+  }
+
+  .error-btn:hover,
+  .error-btn:active {
+    transform: none;
   }
 }

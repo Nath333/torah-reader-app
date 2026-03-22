@@ -25,3 +25,21 @@ export {
   TIME_RANGES,
   CHART_COLORS
 } from './StudyAnalyticsDashboard';
+
+// PRO SCHOLAR V6 - Advanced Study Features
+export {
+  default as CitationHighlighter,
+  CitationLegend,
+  HighlightedCitation,
+  CitationTooltip,
+  CITATION_TYPES
+} from './CitationHighlighter';
+
+export {
+  default as StudyInsightsPanel,
+  SemanticFieldCard,
+  PerformanceStats,
+  WordFrequencyBar,
+  LearningProgressRing,
+  SEMANTIC_FIELDS
+} from './StudyInsightsPanel';

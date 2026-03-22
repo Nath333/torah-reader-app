@@ -37,7 +37,8 @@ export {
 // Commentary Context - centralized commentary data with caching
 export {
   CommentaryProvider,
-  useCommentary
+  useCommentary,
+  useCommentaryForVerse
 } from './CommentaryContext';
 
 // Modal Context - centralized modal state management

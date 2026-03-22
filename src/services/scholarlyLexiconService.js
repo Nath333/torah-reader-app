@@ -4,7 +4,8 @@
 // Integrates: BDB, Jastrow, Strong's, Klein Etymology, Gesenius, HALOT refs
 // =============================================================================
 
-import { createCache } from '../utils/cache';
+// PRO SCHOLAR V6.2: Use CacheOrchestrator for unified cache management
+import { createManagedCache } from './cacheOrchestrator';
 import { cleanHtml } from '../utils/sanitize';
 import { fetchWithFallback } from '../utils/http';
 import { cleanHebrewWord } from '../utils/hebrewUtils';
@@ -17,11 +18,15 @@ import {
   HEBREW_PREFIXES_ORDERED,
   HEBREW_SUFFIXES_ORDERED
 } from '../constants/morphology';
+// PRO SCHOLAR V7: Unified dictionary loader (single source of truth for dictionary data)
+import * as dictionaryLoader from './dictionaryLoader';
 
 const log = createLogger('ScholarlyLexicon');
 
 // =============================================================================
 // LOCAL DICTIONARY DATA (Offline-First)
+// PRO SCHOLAR V7: Now uses unified dictionaryLoader (single source of truth)
+// This avoids duplicate loading and reduces memory usage
 // Combined: ~42,000 entries for instant lookups without API calls
 // - Jastrow: 25,224 entries (Aramaic/Rabbinic Hebrew - Talmud, Midrash)
 // - BDB: 8,050 Strong's numbers / 6,000 unique words (Biblical Hebrew)
@@ -29,105 +34,47 @@ const log = createLogger('ScholarlyLexicon');
 // Sources: openscriptures/strongs (CC-BY-SA), eliranwong/unabridged-BDB (PD)
 // =============================================================================
 
-// Local dictionary state
-const localDictionaries = {
-  jastrow: { data: null, loading: false, promise: null, count: 0 },
-  bdb: { data: null, loading: false, promise: null, count: 0 },
-  strongs: { data: null, loading: false, promise: null, count: 0 }
-};
-
-// Track preload status
-let preloadStarted = false;
-let preloadComplete = false;
-
-/**
- * Load a local dictionary file
- * @param {string} name - Dictionary name (jastrow, bdb, strongs)
- * @param {string} filename - JSON filename
- * @param {function} parser - Optional parser for data structure
- */
-const loadLocalDictionary = async (name, filename, parser = null) => {
-  const dict = localDictionaries[name];
-  if (dict.data) return dict.data;
-  if (dict.loading) return dict.promise;
-
-  dict.loading = true;
-  dict.promise = (async () => {
-    try {
-      const response = await fetch(`${process.env.PUBLIC_URL || ''}/data/${filename}`);
-      if (response.ok) {
-        const raw = await response.json();
-        dict.data = parser ? parser(raw) : raw;
-        dict.count = Object.keys(dict.data).length;
-        log.debug(`${name}: Loaded ${dict.count} local entries`);
-      }
-    } catch (e) {
-      log.warn(`${name}: Could not load local dictionary:`, e.message);
-    }
-    dict.loading = false;
-    return dict.data;
-  })();
-
-  return dict.promise;
-};
-
 /**
  * Load local Jastrow dictionary (Aramaic/Rabbinic Hebrew)
  * 25,224 entries - best for Talmud, Midrash, Targumim
+ * PRO SCHOLAR V7: Now delegates to unified dictionaryLoader
  */
-const loadLocalJastrow = () => loadLocalDictionary('jastrow', 'jastrowComplete.json');
+const loadLocalJastrow = () => dictionaryLoader.getJastrow();
 
 /**
  * Load local BDB dictionary (Brown-Driver-Briggs)
  * 8,050 Strong's numbers / 6,000 unique words - best for Biblical Hebrew
  * Source: eliranwong/unabridged-BDB-Hebrew-lexicon (Public Domain)
+ * PRO SCHOLAR V7: Now delegates to unified dictionaryLoader
  */
-const loadLocalBDB = () => loadLocalDictionary('bdb', 'bdbComplete.json',
-  (raw) => raw.byWord || raw
-);
+const loadLocalBDB = async () => {
+  const data = await dictionaryLoader.getBDB();
+  return data?.byWord || data;
+};
 
 /**
  * Load local Strong's dictionary
  * 8,674 Strong's numbers / 6,242 unique words - Strong's Concordance
  * Source: openscriptures/strongs (CC-BY-SA)
+ * PRO SCHOLAR V7: Now delegates to unified dictionaryLoader
  */
-const loadLocalStrongs = () => loadLocalDictionary('strongs', 'strongsComplete.json',
-  (raw) => raw.byWord || raw
-);
+const loadLocalStrongs = async () => {
+  const data = await dictionaryLoader.getStrongs();
+  return data?.byWord || data;
+};
 
 /**
  * Preload ALL local dictionaries at app startup
  * Call this early in app initialization for instant lookups
+ * PRO SCHOLAR V7: Now delegates to unified dictionaryLoader
  * @returns {Promise<object>} Stats about loaded dictionaries
  */
 export const preloadDictionaries = async () => {
-  if (preloadComplete) {
-    return getDictionaryStats();
-  }
-
-  if (preloadStarted) {
-    // Wait for existing preload to complete
-    await Promise.all([
-      localDictionaries.jastrow.promise,
-      localDictionaries.bdb.promise,
-      localDictionaries.strongs.promise
-    ].filter(Boolean));
-    return getDictionaryStats();
-  }
-
-  preloadStarted = true;
-  log.debug('Preloading local dictionaries...');
-
+  log.debug('Preloading local dictionaries via dictionaryLoader...');
   const startTime = Date.now();
 
-  // Load all dictionaries in parallel
-  await Promise.all([
-    loadLocalJastrow(),
-    loadLocalBDB(),
-    loadLocalStrongs()
-  ]);
+  await dictionaryLoader.preloadDictionaries();
 
-  preloadComplete = true;
   const loadTime = Date.now() - startTime;
   const stats = getDictionaryStats();
 
@@ -138,14 +85,26 @@ export const preloadDictionaries = async () => {
 
 /**
  * Get statistics about loaded dictionaries
+ * PRO SCHOLAR V7: Now uses dictionaryLoader cache status
  */
-export const getDictionaryStats = () => ({
-  jastrow: { loaded: !!localDictionaries.jastrow.data, entries: localDictionaries.jastrow.count },
-  bdb: { loaded: !!localDictionaries.bdb.data, entries: localDictionaries.bdb.count },
-  strongs: { loaded: !!localDictionaries.strongs.data, entries: localDictionaries.strongs.count },
-  totalEntries: localDictionaries.jastrow.count + localDictionaries.bdb.count + localDictionaries.strongs.count,
-  preloadComplete
-});
+export const getDictionaryStats = () => {
+  const cacheStatus = dictionaryLoader.getCacheStatus();
+  const bdbData = dictionaryLoader.getBDBData();
+  const jastrowData = dictionaryLoader.getJastrowData();
+  const strongsData = dictionaryLoader.getStrongsData();
+
+  const jastrowCount = jastrowData ? Object.keys(jastrowData).length : 0;
+  const bdbCount = bdbData?.byWord ? Object.keys(bdbData.byWord).length : (bdbData ? Object.keys(bdbData).length : 0);
+  const strongsCount = strongsData?.byWord ? Object.keys(strongsData.byWord).length : (strongsData ? Object.keys(strongsData).length : 0);
+
+  return {
+    jastrow: { loaded: cacheStatus.jastrow, entries: jastrowCount },
+    bdb: { loaded: cacheStatus.bdb, entries: bdbCount },
+    strongs: { loaded: cacheStatus.strongs, entries: strongsCount },
+    totalEntries: jastrowCount + bdbCount + strongsCount,
+    preloadComplete: cacheStatus.bdb && cacheStatus.jastrow && cacheStatus.strongs
+  };
+};
 
 // cleanWordForLookup - use cleanHebrewWord from ../utils/hebrewUtils
 const cleanWordForLookup = cleanHebrewWord;
@@ -264,6 +223,9 @@ const lookupLocalJastrow = async (word, _depth = 0) => {
   }
 
   // 3. Try stripping suffixes (ים, ות, ין, etc.)
+  // Construct+possessive suffixes that need ה restoration: תו, תי, תך, תם, תן, תנו
+  const CONSTRUCT_POSSESSIVE_SUFFIXES = new Set(['תו', 'תי', 'תך', 'תם', 'תן', 'תנו']);
+
   for (const suffix of HEBREW_SUFFIXES_ORDERED) {
     if (cleaned.endsWith(suffix) && cleaned.length > suffix.length + 2) {
       const stem = cleaned.slice(0, -suffix.length);
@@ -276,6 +238,22 @@ const lookupLocalJastrow = async (word, _depth = 0) => {
           _matchType: 'suffix-stripped'
         };
       }
+
+      // PRO SCHOLAR: Construct-state ה restoration
+      // For construct+possessive suffixes (תו, תי, etc.), try adding ה to stem
+      // Example: שגגתו → strip תו → שגג → try שגגה ✓
+      if (CONSTRUCT_POSSESSIVE_SUFFIXES.has(suffix)) {
+        result = tryLookup(stem + 'ה');
+        if (result) {
+          return {
+            ...result.entry,
+            _matchedForm: result.matchedForm,
+            _strippedSuffix: suffix,
+            _matchType: 'construct-to-absolute'
+          };
+        }
+      }
+
       // For feminine plural (ות), try singular with ה
       if (suffix === 'ות') {
         result = tryLookup(stem + 'ה');
@@ -285,6 +263,22 @@ const lookupLocalJastrow = async (word, _depth = 0) => {
             _matchedForm: result.matchedForm,
             _strippedSuffix: suffix,
             _matchType: 'plural-to-singular'
+          };
+        }
+      }
+
+      // PRO SCHOLAR: For possessive suffixes where stem ends in ת (construct state)
+      // Try replacing ת with ה to get absolute form
+      // Example: מלאכת + ו = מלאכתו → strip ו → מלאכת → מלאכה ✓
+      if (['ו', 'י', 'ך', 'ה'].includes(suffix) && stem.endsWith('ת') && stem.length >= 3) {
+        const absoluteForm = stem.slice(0, -1) + 'ה';
+        result = tryLookup(absoluteForm);
+        if (result) {
+          return {
+            ...result.entry,
+            _matchedForm: result.matchedForm,
+            _strippedSuffix: suffix,
+            _matchType: 'construct-to-absolute'
           };
         }
       }
@@ -353,6 +347,17 @@ const lookupLocalJastrow = async (word, _depth = 0) => {
     result = tryLookup(root);
     if (result) {
       return { ...result.entry, _matchedForm: result.matchedForm, _matchType: 'piel-root' };
+    }
+  }
+
+  // PRO SCHOLAR: Qal active participle pattern: CוCC → root CCC
+  // Example: זורק (throwing) → root זרק (to throw)
+  // Pattern: 4 letters with ו as second letter = Qal active participle (בינוני פועל)
+  if (cleaned.length === 4 && cleaned[1] === 'ו') {
+    const root = cleaned[0] + cleaned.slice(2); // Remove the ו
+    result = tryLookup(root);
+    if (result) {
+      return { ...result.entry, _matchedForm: result.matchedForm, _matchType: 'qal-participle-root' };
     }
   }
 
@@ -921,7 +926,8 @@ const isGarbageText = (text) => {
 };
 
 // Cache for scholarly lookups (longer TTL for academic data)
-const scholarlyCache = createCache({ ttl: 48 * 60 * 60 * 1000, maxSize: 1000 }); // 48 hours
+// PRO SCHOLAR V6.2: Use CacheOrchestrator for unified telemetry
+const scholarlyCache = createManagedCache('semanticField', { ttl: 48 * 60 * 60 * 1000, maxSize: 1000 }); // 48 hours
 
 // =============================================================================
 // CACHE VERSIONING - Automatically invalidates old cached results

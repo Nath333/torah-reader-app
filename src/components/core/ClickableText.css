@@ -74,12 +74,23 @@
   flex-direction: column;
   gap: 10px;
   width: 100%;
+  position: relative;
 }
 
 /* Card styling when open - clean compact style */
 .clickable-text.has-card-open .word-definition-card {
   margin-top: 8px;
   z-index: 100;
+  position: relative;
+  clear: both;
+}
+
+/* Ensure word definition cards don't overlap with nearby content */
+.word-definition-card-container {
+  position: relative;
+  z-index: 100;
+  clear: both;
+  width: 100%;
 }
 
 .text-words {
@@ -360,14 +371,15 @@
   transform: translateX(-50%);
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   color: #f1f5f9;
-  padding: 6px 12px;
+  padding: 8px 14px;
   border-radius: 8px;
   font-size: 0.85rem;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  white-space: nowrap;
-  max-width: 280px;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  max-width: 320px;
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   z-index: 1000;
   pointer-events: none;
   box-shadow:
@@ -437,8 +449,11 @@
   justify-content: center;
   padding: 10px 16px;
   min-width: 60px;
-  max-width: 320px;
-  white-space: nowrap;
+  max-width: 360px;
+  white-space: normal;
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   border-radius: 10px;
   animation: cleanTooltipPop 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
   backdrop-filter: blur(16px);
@@ -2962,7 +2977,13 @@
   max-width: none;
   position: relative;
   z-index: 100;
-  overflow: hidden;
+  overflow: visible;
+}
+
+/* Ensure word cards don't get clipped by parent containers */
+.torah-reader-wrapper.with-scholar-panel .word-definition-card,
+.torah-reader-wrapper.with-panel .word-definition-card {
+  z-index: 200;
 }
 
 /* Remove the old accent bar */
@@ -2985,8 +3006,18 @@
 }
 
 @keyframes cardSlideDown {
-  0% { opacity: 0; transform: translateY(-8px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.98);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(2px) scale(1.005);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* =============================================================================
@@ -4963,13 +4994,48 @@
   outline-width: 2px;
 }
 
-/* Reduce motion for users who prefer it */
+/* =============================================================================
+   PRO SCHOLAR V5: Comprehensive Reduced Motion Support
+   ============================================================================= */
 @media (prefers-reduced-motion: reduce) {
+  /* Disable all animations for motion-sensitive users */
   .clickable-word,
   .word-definition-card,
-  .inline-gloss-tooltip {
-    animation: none;
-    transition: none;
+  .inline-gloss-tooltip,
+  .hover-preview-tooltip,
+  .wdc-tag,
+  .wdc-badge,
+  .morph-prefix,
+  .morph-suffix,
+  .source-dot {
+    animation: none !important;
+    transition: opacity 0.15s ease !important;
+  }
+
+  /* Keep minimal opacity transitions for state changes */
+  .clickable-word:hover,
+  .clickable-word.active,
+  .clickable-word.hovered {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Instant card appearance */
+  .word-definition-card {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  /* Disable touch ripple effect */
+  .clickable-word::after {
+    display: none !important;
+  }
+
+  /* Simple focus indicator instead of animated */
+  .clickable-word.keyboard-focused {
+    animation: none !important;
+    outline: 2px solid var(--primary, #4f46e5) !important;
+    outline-offset: 2px !important;
   }
 }
 
@@ -6921,6 +6987,32 @@
   background: linear-gradient(135deg, rgba(14, 165, 233, 0.25) 0%, rgba(6, 182, 212, 0.2) 100%);
 }
 
+/* Source Credibility Badge - 2026 Smart Feature */
+.credibility-badge {
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  margin-left: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  cursor: help;
+  transition: all 0.2s ease;
+}
+
+.credibility-badge:hover {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(139, 92, 246, 0.2) 100%);
+  transform: scale(1.05);
+}
+
+.dark-mode .credibility-badge {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(139, 92, 246, 0.15) 100%);
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
 .source-text {
   font-size: 0.9rem;
   line-height: 1.5;
@@ -7190,16 +7282,17 @@
   bottom: calc(100% + 6px);
   left: 50%;
   transform: translateX(-50%);
-  padding: 6px 10px;
+  padding: 8px 12px;
   background: #1e293b;
   color: white;
   font-size: 0.8rem;
   font-family: system-ui, sans-serif;
   border-radius: 6px;
-  white-space: nowrap;
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  max-width: 280px;
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   z-index: 1000;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   pointer-events: none;
@@ -8927,4 +9020,1099 @@
 
 .app.dark-mode .binyan-quick-ref .quick-ref-item:hover:not(.active) {
   background: rgba(99, 102, 241, 0.2);
+}
+
+/* =============================================================================
+   PRO SCHOLAR: Root Confidence & Transparency Styles
+   Shows how root was derived with confidence indicators
+   ============================================================================= */
+
+/* Root item with confidence badge */
+.wdc-root-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wdc-root-val {
+  font-weight: 600;
+  color: #4f46e5;
+}
+
+.word-definition-card.aramaic .wdc-root-val {
+  color: #059669;
+}
+
+/* Confidence badge - color coded */
+.wdc-confidence-badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 8px;
+  cursor: help;
+}
+
+.wdc-confidence-badge.high {
+  background: rgba(34, 197, 94, 0.15);
+  color: #16a34a;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.wdc-confidence-badge.medium {
+  background: rgba(234, 179, 8, 0.15);
+  color: #ca8a04;
+  border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+.wdc-confidence-badge.low {
+  background: rgba(239, 68, 68, 0.15);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Weak verb type badge (פ"נ, ע"ו, etc.) */
+.wdc-weak-badge {
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(168, 85, 247, 0.12);
+  color: #7c3aed;
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  font-family: var(--font-ktav-merouba, 'David Libre', serif);
+  cursor: help;
+}
+
+/* Pattern indicator */
+.wdc-pattern-item {
+  margin-left: auto;
+}
+
+.wdc-pattern-val {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #6366f1;
+  background: rgba(99, 102, 241, 0.08);
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+/* Verb Breakdown Section */
+.wdc-verb-breakdown {
+  padding: 10px 12px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.04) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.verb-breakdown-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.verb-icon {
+  font-size: 0.9rem;
+}
+
+.verb-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4f46e5;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.verb-weak-badge {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(168, 85, 247, 0.12);
+  color: #7c3aed;
+  margin-left: auto;
+}
+
+.verb-breakdown-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.verb-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+}
+
+.verb-label {
+  color: #64748b;
+  min-width: 40px;
+  text-align: right;
+  font-family: var(--font-ktav-merouba, 'David Libre', serif);
+}
+
+.verb-value {
+  font-weight: 500;
+}
+
+.verb-value.root {
+  font-family: var(--font-ktav-merouba, 'David Libre', serif);
+  color: #4f46e5;
+  font-weight: 700;
+}
+
+.verb-value.pattern {
+  color: #6366f1;
+}
+
+.verb-meaning {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.verb-value.conj {
+  color: #64748b;
+}
+
+.verb-row.translation-row {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(99, 102, 241, 0.2);
+}
+
+.verb-value.computed-translation {
+  color: #059669;
+  font-weight: 600;
+  font-style: italic;
+}
+
+/* Transparency Section */
+.wdc-transparency {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(248, 250, 252, 0.5);
+  font-size: 0.7rem;
+  color: #64748b;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.transparency-label {
+  font-weight: 500;
+  font-family: var(--font-ktav-merouba, 'David Libre', serif);
+}
+
+.transparency-path {
+  font-family: monospace;
+  background: rgba(99, 102, 241, 0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.transparency-warning {
+  font-size: 0.8rem;
+  cursor: help;
+}
+
+/* Rejected Alternative Section */
+.wdc-rejected-alternative {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.rejected-details {
+  font-size: 0.75rem;
+}
+
+.rejected-summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  color: #64748b;
+  background: rgba(234, 179, 8, 0.05);
+}
+
+.rejected-summary:hover {
+  background: rgba(234, 179, 8, 0.1);
+}
+
+.rejected-icon {
+  font-size: 0.8rem;
+}
+
+.rejected-text {
+  font-weight: 500;
+}
+
+.rejected-content {
+  padding: 8px 12px;
+  background: rgba(248, 250, 252, 0.5);
+}
+
+.rejected-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.rejected-label {
+  font-weight: 500;
+  color: #64748b;
+  min-width: 70px;
+}
+
+.rejected-value {
+  font-family: var(--font-ktav-merouba, 'David Libre', serif);
+  color: #94a3b8;
+}
+
+.rejected-def {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.rejected-reason {
+  font-family: monospace;
+  font-size: 0.7rem;
+  color: #f59e0b;
+}
+
+.rejected-source {
+  color: #94a3b8;
+}
+
+/* Dark mode for Pro Scholar components */
+.app.dark-mode .wdc-root-val {
+  color: #a5b4fc;
+}
+
+.app.dark-mode .word-definition-card.aramaic .wdc-root-val {
+  color: #6ee7b7;
+}
+
+.app.dark-mode .wdc-confidence-badge.high {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+  border-color: rgba(34, 197, 94, 0.4);
+}
+
+.app.dark-mode .wdc-confidence-badge.medium {
+  background: rgba(234, 179, 8, 0.2);
+  color: #facc15;
+  border-color: rgba(234, 179, 8, 0.4);
+}
+
+.app.dark-mode .wdc-confidence-badge.low {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.app.dark-mode .wdc-weak-badge {
+  background: rgba(168, 85, 247, 0.2);
+  color: #c4b5fd;
+  border-color: rgba(168, 85, 247, 0.4);
+}
+
+.app.dark-mode .wdc-pattern-val {
+  background: rgba(99, 102, 241, 0.15);
+  color: #a5b4fc;
+}
+
+.app.dark-mode .wdc-verb-breakdown {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, transparent 100%);
+  border-bottom-color: rgba(99, 102, 241, 0.15);
+}
+
+.app.dark-mode .verb-title {
+  color: #a5b4fc;
+}
+
+.app.dark-mode .verb-value.root {
+  color: #a5b4fc;
+}
+
+.app.dark-mode .verb-value.computed-translation {
+  color: #6ee7b7;
+}
+
+.app.dark-mode .wdc-transparency {
+  background: rgba(30, 41, 59, 0.4);
+  color: #94a3b8;
+}
+
+.app.dark-mode .transparency-path {
+  background: rgba(99, 102, 241, 0.15);
+  color: #a5b4fc;
+}
+
+.app.dark-mode .rejected-summary {
+  background: rgba(234, 179, 8, 0.1);
+  color: #94a3b8;
+}
+
+.app.dark-mode .rejected-content {
+  background: rgba(30, 41, 59, 0.4);
+}
+
+/* =============================================================================
+   PRO SCHOLAR: Derivation Chain Styles
+   Shows the scholarly workflow: Word → Root → Pattern → Translation
+   ============================================================================= */
+
+.wdc-derivation-chain {
+  margin: 12px 0;
+  padding: 12px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.03) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.derivation-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.derivation-icon {
+  font-size: 1.1rem;
+}
+
+.derivation-title {
+  font-weight: 600;
+  color: #6366f1;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.derivation-steps {
+  position: relative;
+  padding-left: 20px;
+}
+
+/* Vertical connecting line */
+.derivation-steps::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 12px;
+  bottom: 12px;
+  width: 2px;
+  background: linear-gradient(to bottom, #6366f1, #8b5cf6);
+  border-radius: 1px;
+}
+
+.derivation-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 6px 0;
+  position: relative;
+}
+
+.step-num {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #6366f1;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-left: -20px;
+  z-index: 1;
+  box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+}
+
+.step-num.final {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  box-shadow: 0 2px 4px rgba(34, 197, 94, 0.3);
+}
+
+.step-content {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.step-label {
+  color: #64748b;
+  font-size: 0.8rem;
+  min-width: 70px;
+}
+
+.step-value {
+  font-weight: 500;
+  color: #334155;
+}
+
+.step-value.word,
+.step-value.root {
+  font-family: 'SBL Hebrew', 'Ezra SIL', 'Frank Ruehl CLM', 'Times New Roman', serif;
+  font-size: 1.1rem;
+  color: #6366f1;
+  direction: rtl;
+}
+
+.step-value.source,
+.step-source {
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 4px;
+  color: #6366f1;
+}
+
+.step-value.pattern {
+  color: #8b5cf6;
+  font-style: italic;
+}
+
+.step-value.meaning {
+  color: #475569;
+  font-style: italic;
+}
+
+.step-value.conj {
+  color: #0891b2;
+  font-weight: 500;
+}
+
+.step-effect {
+  color: #64748b;
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+.step-value.translation {
+  color: #22c55e;
+  font-weight: 600;
+}
+
+.derivation-step.final {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(34, 197, 94, 0.3);
+}
+
+.derivation-step.final .step-num {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  box-shadow: 0 2px 4px rgba(34, 197, 94, 0.3);
+}
+
+.step-arrow {
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+/* Dark mode for derivation chain */
+.app.dark-mode .wdc-derivation-chain {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+  border-color: rgba(99, 102, 241, 0.25);
+}
+
+.app.dark-mode .derivation-header {
+  border-bottom-color: rgba(99, 102, 241, 0.2);
+}
+
+.app.dark-mode .derivation-title {
+  color: #a5b4fc;
+}
+
+.app.dark-mode .derivation-steps::before {
+  background: linear-gradient(to bottom, #818cf8, #a78bfa);
+}
+
+.app.dark-mode .step-num {
+  background: #818cf8;
+}
+
+.app.dark-mode .step-num.final {
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+}
+
+.app.dark-mode .step-label {
+  color: #94a3b8;
+}
+
+.app.dark-mode .step-value {
+  color: #e2e8f0;
+}
+
+.app.dark-mode .step-value.word,
+.app.dark-mode .step-value.root {
+  color: #a5b4fc;
+}
+
+.app.dark-mode .step-value.source,
+.app.dark-mode .step-source {
+  background: rgba(99, 102, 241, 0.2);
+  color: #c4b5fd;
+}
+
+.app.dark-mode .step-value.pattern {
+  color: #c4b5fd;
+}
+
+.app.dark-mode .step-value.meaning {
+  color: #94a3b8;
+}
+
+.app.dark-mode .step-value.conj {
+  color: #22d3ee;
+}
+
+.app.dark-mode .step-effect {
+  color: #94a3b8;
+}
+
+.app.dark-mode .derivation-step.final {
+  border-top-color: rgba(74, 222, 128, 0.3);
+}
+
+.app.dark-mode .step-value.translation {
+  color: #6ee7b7;
+}
+
+/* =============================================================================
+   PRO SCHOLAR V4: Multi-Hypothesis Root Display
+   Shows multiple possible roots with confidence scores and scholarly sources
+   ============================================================================= */
+
+.wdc-multi-hypotheses {
+  margin: 12px 0;
+}
+
+.hypotheses-details {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(16, 185, 129, 0.03) 100%);
+  border: 1px solid rgba(34, 197, 94, 0.15);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.hypotheses-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #047857;
+  background: transparent;
+  transition: background-color 0.2s ease;
+}
+
+.hypotheses-summary:hover {
+  background: rgba(34, 197, 94, 0.08);
+}
+
+.hypotheses-icon {
+  font-size: 1rem;
+}
+
+.hypotheses-title {
+  font-size: 0.85rem;
+  letter-spacing: 0.3px;
+}
+
+.hypotheses-list {
+  padding: 0 14px 14px;
+}
+
+.hypothesis-item {
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 6px;
+  border-left: 3px solid #d1d5db;
+  transition: all 0.2s ease;
+}
+
+.hypothesis-item:last-child {
+  margin-bottom: 0;
+}
+
+.hypothesis-item.primary {
+  border-left-color: #22c55e;
+  background: rgba(34, 197, 94, 0.08);
+}
+
+.hypothesis-item:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateX(-2px);
+}
+
+.hyp-root-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.hyp-rank {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #94a3b8;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.hypothesis-item.primary .hyp-rank {
+  background: #22c55e;
+}
+
+.hyp-root {
+  font-family: 'David Libre', 'Frank Ruhl Libre', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e40af;
+}
+
+.hyp-confidence {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.hyp-confidence.high {
+  background: rgba(34, 197, 94, 0.15);
+  color: #166534;
+}
+
+.hyp-confidence.medium {
+  background: rgba(251, 191, 36, 0.15);
+  color: #b45309;
+}
+
+.hyp-confidence.low {
+  background: rgba(239, 68, 68, 0.15);
+  color: #b91c1c;
+}
+
+.hyp-weak-badge {
+  font-size: 0.65rem;
+  padding: 2px 5px;
+  border-radius: 3px;
+  background: rgba(139, 92, 246, 0.15);
+  color: #6d28d9;
+  font-weight: 500;
+}
+
+.hyp-meaning-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.hyp-definition {
+  font-size: 0.85rem;
+  color: #475569;
+  font-style: italic;
+}
+
+.hyp-source {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 500;
+}
+
+.hyp-source.tier-gold {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.2) 0%, rgba(245, 158, 11, 0.15) 100%);
+  color: #b45309;
+}
+
+.hyp-source.tier-silver {
+  background: rgba(148, 163, 184, 0.15);
+  color: #64748b;
+}
+
+.hyp-source.tier-bronze {
+  background: rgba(180, 83, 9, 0.1);
+  color: #78350f;
+}
+
+.hyp-morph-line {
+  margin-top: 4px;
+}
+
+.hyp-morph {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+}
+
+/* Dark mode for multi-hypothesis */
+.app.dark-mode .hypotheses-details {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+  border-color: rgba(34, 197, 94, 0.25);
+}
+
+.app.dark-mode .hypotheses-summary {
+  color: #4ade80;
+}
+
+.app.dark-mode .hypotheses-summary:hover {
+  background: rgba(34, 197, 94, 0.15);
+}
+
+.app.dark-mode .hypothesis-item {
+  background: rgba(30, 41, 59, 0.5);
+  border-left-color: #475569;
+}
+
+.app.dark-mode .hypothesis-item.primary {
+  border-left-color: #4ade80;
+  background: rgba(34, 197, 94, 0.12);
+}
+
+.app.dark-mode .hypothesis-item:hover {
+  background: rgba(30, 41, 59, 0.8);
+}
+
+.app.dark-mode .hyp-rank {
+  background: #64748b;
+}
+
+.app.dark-mode .hypothesis-item.primary .hyp-rank {
+  background: #22c55e;
+}
+
+.app.dark-mode .hyp-root {
+  color: #a5b4fc;
+}
+
+.app.dark-mode .hyp-confidence.high {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+}
+
+.app.dark-mode .hyp-confidence.medium {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fcd34d;
+}
+
+.app.dark-mode .hyp-confidence.low {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.app.dark-mode .hyp-weak-badge {
+  background: rgba(139, 92, 246, 0.25);
+  color: #c4b5fd;
+}
+
+.app.dark-mode .hyp-definition {
+  color: #94a3b8;
+}
+
+.app.dark-mode .hyp-source.tier-gold {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.25) 0%, rgba(245, 158, 11, 0.2) 100%);
+  color: #fcd34d;
+}
+
+.app.dark-mode .hyp-source.tier-silver {
+  background: rgba(148, 163, 184, 0.2);
+  color: #94a3b8;
+}
+
+.app.dark-mode .hyp-source.tier-bronze {
+  background: rgba(180, 83, 9, 0.15);
+  color: #d97706;
+}
+
+.app.dark-mode .hyp-morph {
+  color: #64748b;
+}
+
+/* =============================================================================
+   PRO SCHOLAR V5: Enhanced Hypothesis Metadata & Source Tiers
+   ============================================================================= */
+
+/* Hypothesis metadata bar (shows count of generated/validated hypotheses) */
+.hypothesis-metadata {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  background: rgba(99, 102, 241, 0.05);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+  font-size: 0.75rem;
+  color: #6366f1;
+}
+
+.hyp-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hyp-meta-label {
+  color: #94a3b8;
+}
+
+.hyp-meta-value {
+  font-weight: 600;
+}
+
+.hyp-meta-value.validated {
+  color: #22c55e;
+}
+
+/* Source tier badges with icons */
+.source-tier-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.source-tier-badge.gold {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+.source-tier-badge.gold::before {
+  content: '🏅';
+  font-size: 0.65rem;
+}
+
+.source-tier-badge.silver {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  color: #475569;
+  border: 1px solid rgba(100, 116, 139, 0.2);
+}
+
+.source-tier-badge.silver::before {
+  content: '🥈';
+  font-size: 0.65rem;
+}
+
+.source-tier-badge.bronze {
+  background: linear-gradient(135deg, #fef7ed 0%, #fed7aa 100%);
+  color: #9a3412;
+  border: 1px solid rgba(180, 83, 9, 0.2);
+}
+
+.source-tier-badge.bronze::before {
+  content: '🥉';
+  font-size: 0.65rem;
+}
+
+/* Pattern badge for verb patterns */
+.hyp-pattern-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  background: rgba(99, 102, 241, 0.1);
+  color: #4f46e5;
+}
+
+.hyp-pattern-badge::before {
+  content: '⊡';
+  font-size: 0.6rem;
+  opacity: 0.7;
+}
+
+/* Hypothesis validation indicator */
+.hyp-validation-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font-size: 0.6rem;
+}
+
+.hyp-validation-icon.validated {
+  background: rgba(34, 197, 94, 0.15);
+  color: #16a34a;
+}
+
+.hyp-validation-icon.unvalidated {
+  background: rgba(251, 191, 36, 0.15);
+  color: #d97706;
+}
+
+/* Pro Scholar footer with source summary */
+.wdc-pro-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: linear-gradient(to right, rgba(99, 102, 241, 0.03) 0%, rgba(139, 92, 246, 0.03) 100%);
+  border-top: 1px solid rgba(99, 102, 241, 0.08);
+  font-size: 0.7rem;
+  color: #64748b;
+}
+
+.wdc-pro-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+  color: #6366f1;
+}
+
+.wdc-pro-label::before {
+  content: '📚';
+  font-size: 0.75rem;
+}
+
+.wdc-source-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wdc-tier-count {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.wdc-tier-count .tier-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.wdc-tier-count .tier-dot.gold {
+  background: #eab308;
+}
+
+.wdc-tier-count .tier-dot.silver {
+  background: #94a3b8;
+}
+
+.wdc-tier-count .tier-dot.bronze {
+  background: #d97706;
+}
+
+/* Dark mode for PRO SCHOLAR V5 */
+.app.dark-mode .hypothesis-metadata {
+  background: rgba(99, 102, 241, 0.1);
+  border-bottom-color: rgba(99, 102, 241, 0.2);
+  color: #a5b4fc;
+}
+
+.app.dark-mode .hyp-meta-label {
+  color: #64748b;
+}
+
+.app.dark-mode .hyp-meta-value.validated {
+  color: #4ade80;
+}
+
+.app.dark-mode .source-tier-badge.gold {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.2) 0%, rgba(245, 158, 11, 0.15) 100%);
+  color: #fcd34d;
+  border-color: rgba(234, 179, 8, 0.4);
+}
+
+.app.dark-mode .source-tier-badge.silver {
+  background: linear-gradient(135deg, rgba(100, 116, 139, 0.2) 0%, rgba(71, 85, 105, 0.15) 100%);
+  color: #cbd5e1;
+  border-color: rgba(100, 116, 139, 0.3);
+}
+
+.app.dark-mode .source-tier-badge.bronze {
+  background: linear-gradient(135deg, rgba(180, 83, 9, 0.2) 0%, rgba(217, 119, 6, 0.15) 100%);
+  color: #fed7aa;
+  border-color: rgba(180, 83, 9, 0.3);
+}
+
+.app.dark-mode .hyp-pattern-badge {
+  background: rgba(99, 102, 241, 0.2);
+  color: #a5b4fc;
+}
+
+.app.dark-mode .hyp-validation-icon.validated {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+}
+
+.app.dark-mode .hyp-validation-icon.unvalidated {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fcd34d;
+}
+
+.app.dark-mode .wdc-pro-footer {
+  background: linear-gradient(to right, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
+  border-top-color: rgba(99, 102, 241, 0.15);
+  color: #94a3b8;
+}
+
+.app.dark-mode .wdc-pro-label {
+  color: #a5b4fc;
+}
+
+/* =============================================================================
+   PRO SCHOLAR V5: Lookup Error Feedback
+   ============================================================================= */
+
+.wdc-lookup-error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  margin: 0.5rem 0;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(245, 158, 11, 0.08) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: var(--radius, 6px);
+  font-size: 0.8rem;
+}
+
+.wdc-error-icon {
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.wdc-error-text {
+  color: var(--text-secondary, #64748b);
+  line-height: 1.4;
+}
+
+/* Dark mode */
+.app.dark-mode .wdc-lookup-error,
+.dark-mode .wdc-lookup-error {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(245, 158, 11, 0.1) 100%);
+  border-color: rgba(251, 191, 36, 0.4);
+}
+
+.app.dark-mode .wdc-error-text,
+.dark-mode .wdc-error-text {
+  color: #fcd34d;
 }

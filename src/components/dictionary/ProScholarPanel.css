@@ -1,0 +1,1110 @@
+/* =============================================================================
+   PRO SCHOLAR V6 PANEL - Advanced Linguistic Analysis Styles
+   ============================================================================= */
+
+.pro-scholar-panel {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 12px;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.pro-scholar-panel.compact {
+  padding: 10px;
+  margin-top: 8px;
+}
+
+/* Panel Header */
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.panel-icon {
+  font-size: 1.2em;
+}
+
+.panel-title {
+  font-weight: 600;
+  color: #e0e7ff;
+  font-size: 0.95rem;
+}
+
+.panel-version {
+  background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 700;
+  margin-left: auto;
+}
+
+/* Panel Content */
+.panel-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* =============================================================================
+   SEMANTIC FIELD BADGE
+   ============================================================================= */
+
+.semantic-field-badge {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--field-color, #6B7280);
+}
+
+.semantic-field-badge .field-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  color: #e0e7ff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.semantic-field-badge .field-header:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.semantic-field-badge .field-icon {
+  color: var(--field-color, #8B5CF6);
+  font-size: 1.1em;
+}
+
+.semantic-field-badge .field-name {
+  font-weight: 600;
+}
+
+.semantic-field-badge .field-chevron {
+  margin-left: auto;
+  font-size: 0.7em;
+  color: #a5b4fc;
+}
+
+.semantic-field-badge .field-concepts {
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.semantic-field-badge .concepts-label {
+  font-size: 0.75rem;
+  color: #a5b4fc;
+  margin-right: 4px;
+}
+
+.semantic-field-badge .concept-chip {
+  background: var(--field-color, #6B7280);
+  color: white;
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+}
+
+/* =============================================================================
+   ROOT FAMILY PANEL
+   ============================================================================= */
+
+.root-family-panel {
+  background: rgba(34, 197, 94, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.root-family-panel .family-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  color: #e0e7ff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.root-family-panel .family-header:hover {
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.root-family-panel .family-icon {
+  font-size: 1.1em;
+}
+
+.root-family-panel .family-title {
+  font-weight: 600;
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+}
+
+.root-family-panel .family-count {
+  color: #86efac;
+  font-size: 0.8rem;
+}
+
+.root-family-panel .family-chevron {
+  margin-left: auto;
+  font-size: 0.7em;
+  color: #86efac;
+}
+
+.root-family-panel .family-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 6px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.root-family-panel .family-word {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.root-family-panel .family-word:hover {
+  background: rgba(34, 197, 94, 0.25);
+  transform: translateY(-1px);
+}
+
+.root-family-panel .word-hebrew {
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  font-size: 1.1rem;
+  color: #e0e7ff;
+  direction: rtl;
+}
+
+.root-family-panel .word-pattern {
+  font-size: 0.65rem;
+  color: #86efac;
+  margin-top: 2px;
+}
+
+.root-family-panel .word-meaning {
+  font-size: 0.7rem;
+  color: #a5b4fc;
+  margin-top: 2px;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 90px;
+}
+
+/* =============================================================================
+   BINYAN ANALYSIS BADGE
+   ============================================================================= */
+
+.binyan-analysis-badge {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--binyan-color, #6B7280);
+}
+
+.binyan-analysis-badge .binyan-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  color: #e0e7ff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.binyan-analysis-badge .binyan-header:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.binyan-analysis-badge .binyan-hebrew {
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  font-size: 1.1rem;
+  color: var(--binyan-color, #8B5CF6);
+  direction: rtl;
+}
+
+.binyan-analysis-badge .binyan-name {
+  font-weight: 600;
+}
+
+.binyan-analysis-badge .binyan-confidence {
+  margin-left: auto;
+  background: var(--binyan-color, #6B7280);
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.binyan-analysis-badge .binyan-details {
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.binyan-analysis-badge .detail-row {
+  display: flex;
+  gap: 8px;
+  font-size: 0.8rem;
+}
+
+.binyan-analysis-badge .detail-label {
+  color: #a5b4fc;
+}
+
+.binyan-analysis-badge .detail-value {
+  color: #e0e7ff;
+}
+
+.binyan-analysis-badge .detail-value.pattern {
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  direction: rtl;
+}
+
+/* =============================================================================
+   DIALECT MARKER
+   ============================================================================= */
+
+.dialect-marker {
+  display: inline-block;
+}
+
+.dialect-marker .dialect-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.2) 100%);
+  border: 1px solid var(--dialect-color, #6B7280);
+  border-radius: 20px;
+  color: #e0e7ff;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.dialect-marker .dialect-badge:hover {
+  background: rgba(0, 0, 0, 0.4);
+  transform: translateY(-1px);
+}
+
+.dialect-marker .dialect-flag {
+  font-size: 1em;
+}
+
+.dialect-marker .dialect-name {
+  font-weight: 600;
+  color: var(--dialect-color, #e0e7ff);
+}
+
+.dialect-marker .dialect-confidence {
+  background: var(--dialect-color, #6B7280);
+  color: white;
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  border-radius: 8px;
+}
+
+.dialect-marker .dialect-markers-list {
+  margin-top: 6px;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.dialect-marker .markers-title {
+  font-size: 0.7rem;
+  color: #a5b4fc;
+  margin-right: 6px;
+}
+
+.dialect-marker .marker-chip {
+  background: var(--dialect-color, #6B7280);
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  direction: rtl;
+}
+
+/* =============================================================================
+   SOURCE TIER BADGE
+   ============================================================================= */
+
+.source-tiers {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.source-tiers .tiers-label {
+  font-size: 0.75rem;
+  color: #a5b4fc;
+}
+
+.source-tier-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--tier-color, #6B7280);
+  border-radius: 12px;
+  font-size: 0.75rem;
+  color: #e0e7ff;
+}
+
+.source-tier-badge .tier-icon {
+  font-size: 0.9em;
+}
+
+.source-tier-badge .tier-source {
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =============================================================================
+   TELEMETRY MINI DISPLAY
+   ============================================================================= */
+
+.telemetry-toggle {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.telemetry-toggle:hover {
+  background: rgba(139, 92, 246, 0.2);
+  transform: scale(1.1);
+}
+
+.telemetry-mini {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 8px;
+  background: #1e1b4b;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 10px;
+  padding: 12px;
+  min-width: 180px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 100;
+}
+
+.telemetry-mini .telemetry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  color: #e0e7ff;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.telemetry-mini .telemetry-header button {
+  background: none;
+  border: none;
+  color: #a5b4fc;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0;
+  line-height: 1;
+}
+
+.telemetry-mini .telemetry-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.telemetry-mini .stat {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+}
+
+.telemetry-mini .stat-label {
+  color: #a5b4fc;
+}
+
+.telemetry-mini .stat-value {
+  color: #86efac;
+  font-weight: 600;
+}
+
+.telemetry-mini .telemetry-refresh {
+  width: 100%;
+  margin-top: 10px;
+  padding: 6px;
+  background: rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 6px;
+  color: #e0e7ff;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: background 0.2s;
+}
+
+.telemetry-mini .telemetry-refresh:hover {
+  background: rgba(139, 92, 246, 0.3);
+}
+
+.telemetry-mini .telemetry-loading {
+  color: #a5b4fc;
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 10px 0;
+}
+
+/* =============================================================================
+   PRO SCHOLAR V6.1: HISTORICAL LAYER BADGE
+   ============================================================================= */
+
+.historical-layer-badge {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--layer-color, #6B7280);
+}
+
+.historical-layer-badge .layer-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  color: #e0e7ff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.historical-layer-badge .layer-header:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.historical-layer-badge .layer-icon {
+  font-size: 1.1em;
+}
+
+.historical-layer-badge .layer-name {
+  font-weight: 600;
+  color: var(--layer-color, #e0e7ff);
+}
+
+.historical-layer-badge .layer-period {
+  font-size: 0.75rem;
+  color: #a5b4fc;
+}
+
+.historical-layer-badge .loanword-tag {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 8px;
+  margin-left: auto;
+}
+
+/* V6.2: Loanword Etymology Display */
+.historical-layer-badge .loanword-etymology {
+  padding: 10px 12px;
+  background: rgba(245, 158, 11, 0.08);
+  border-top: 1px solid rgba(245, 158, 11, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.historical-layer-badge .etymology-header {
+  font-size: 0.75rem;
+  color: #fbbf24;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.historical-layer-badge .etymology-source {
+  font-size: 0.85rem;
+  color: #e0e7ff;
+  font-style: italic;
+}
+
+.historical-layer-badge .etymology-arrow {
+  color: #9ca3af;
+  margin: 0 4px;
+}
+
+.historical-layer-badge .etymology-meaning {
+  font-size: 0.8rem;
+  color: #a5b4fc;
+}
+
+.historical-layer-badge .layer-chevron {
+  font-size: 0.7em;
+  color: #a5b4fc;
+  margin-left: 8px;
+}
+
+.historical-layer-badge .evolution-timeline {
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.historical-layer-badge .evolution-title {
+  font-size: 0.75rem;
+  color: #a5b4fc;
+  margin-bottom: 4px;
+}
+
+.historical-layer-badge .evolution-step {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: baseline;
+  padding-left: 12px;
+  border-left: 2px solid var(--layer-color, #6B7280);
+}
+
+.historical-layer-badge .evo-period {
+  font-size: 0.75rem;
+  color: #a5b4fc;
+  text-transform: capitalize;
+}
+
+.historical-layer-badge .evo-meaning {
+  font-size: 0.8rem;
+  color: #e0e7ff;
+  font-style: italic;
+}
+
+.historical-layer-badge .evo-context {
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+
+/* =============================================================================
+   PRO SCHOLAR V6.1: GRAMMATICAL ANOMALY BADGE
+   ============================================================================= */
+
+.anomaly-badge {
+  background: rgba(234, 179, 8, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+.anomaly-badge .anomaly-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  color: #fbbf24;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.anomaly-badge .anomaly-header:hover {
+  background: rgba(234, 179, 8, 0.1);
+}
+
+.anomaly-badge .anomaly-icon {
+  font-size: 1.1em;
+}
+
+.anomaly-badge .anomaly-type {
+  font-weight: 600;
+}
+
+.anomaly-badge .anomaly-chevron {
+  margin-left: auto;
+  font-size: 0.7em;
+}
+
+.anomaly-badge .anomaly-details {
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(234, 179, 8, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.anomaly-badge .anomaly-row {
+  display: flex;
+  gap: 8px;
+  font-size: 0.8rem;
+}
+
+.anomaly-badge .anomaly-label {
+  color: #fbbf24;
+  min-width: 60px;
+}
+
+.anomaly-badge .anomaly-value {
+  color: #e0e7ff;
+  text-transform: capitalize;
+}
+
+.anomaly-badge .anomaly-value.note {
+  font-style: italic;
+}
+
+.anomaly-badge .anomaly-row.scholarly {
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.anomaly-badge .scholarly-ref {
+  font-size: 0.75rem;
+  color: #a5b4fc;
+  font-style: italic;
+}
+
+/* =============================================================================
+   PRO SCHOLAR V6.1: COGNATE LANGUAGES PANEL
+   ============================================================================= */
+
+.cognate-panel {
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.cognate-panel .cognate-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  color: #e0e7ff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.cognate-panel .cognate-header:hover {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.cognate-panel .cognate-icon {
+  font-size: 1.1em;
+}
+
+.cognate-panel .cognate-title {
+  font-weight: 600;
+  color: #34d399;
+}
+
+.cognate-panel .cognate-count {
+  color: #6ee7b7;
+  font-size: 0.8rem;
+}
+
+.cognate-panel .cognate-chevron {
+  margin-left: auto;
+  font-size: 0.7em;
+  color: #6ee7b7;
+}
+
+.cognate-panel .cognate-content {
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(16, 185, 129, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cognate-panel .cognate-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 6px;
+}
+
+.cognate-panel .cog-flag {
+  font-size: 1em;
+}
+
+.cognate-panel .cog-lang {
+  font-size: 0.7rem;
+  color: #6ee7b7;
+  text-transform: capitalize;
+  min-width: 60px;
+}
+
+.cognate-panel .cog-word {
+  font-size: 0.9rem;
+  color: #e0e7ff;
+  font-weight: 500;
+}
+
+.cognate-panel .cog-meaning {
+  font-size: 0.8rem;
+  color: #a5b4fc;
+  font-style: italic;
+  margin-left: auto;
+}
+
+.cognate-panel .cognate-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 8px;
+  background: rgba(16, 185, 129, 0.15);
+  border-radius: 6px;
+  margin-top: 4px;
+}
+
+.cognate-panel .note-icon {
+  font-size: 0.9em;
+}
+
+.cognate-panel .note-text {
+  font-size: 0.75rem;
+  color: #d1d5db;
+  line-height: 1.4;
+}
+
+/* =============================================================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================================================= */
+
+@media (max-width: 600px) {
+  .pro-scholar-panel {
+    padding: 12px;
+  }
+
+  .root-family-panel .family-grid {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  }
+
+  .telemetry-mini {
+    right: -10px;
+  }
+}
+
+/* =============================================================================
+   HYPOTHESIS RANKING PANEL - PRO SCHOLAR V5
+   ============================================================================= */
+
+.hypothesis-ranking-panel {
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.hypothesis-ranking-panel .hypothesis-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  color: #e0e7ff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.hypothesis-ranking-panel .hypothesis-header:hover {
+  background: rgba(59, 130, 246, 0.15);
+}
+
+.hypothesis-ranking-panel .hypothesis-icon {
+  font-size: 1.1em;
+}
+
+.hypothesis-ranking-panel .hypothesis-title {
+  font-weight: 600;
+}
+
+.hypothesis-ranking-panel .hypothesis-count {
+  color: #93c5fd;
+  font-size: 0.8rem;
+}
+
+.hypothesis-ranking-panel .hypothesis-chevron {
+  margin-left: auto;
+  font-size: 0.7em;
+  color: #93c5fd;
+}
+
+.hypothesis-ranking-panel .hypothesis-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.hypothesis-ranking-panel .hypothesis-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  background: var(--hyp-bg, rgba(59, 130, 246, 0.1));
+  border: 1px solid var(--hyp-border, rgba(59, 130, 246, 0.3));
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  width: 100%;
+}
+
+.hypothesis-ranking-panel .hypothesis-item:hover {
+  transform: translateX(2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.hypothesis-ranking-panel .hypothesis-item.primary {
+  border-width: 2px;
+  background: linear-gradient(135deg, var(--hyp-bg) 0%, rgba(0,0,0,0.15) 100%);
+}
+
+.hypothesis-ranking-panel .hyp-rank-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  gap: 2px;
+}
+
+.hypothesis-ranking-panel .hyp-rank {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #e0e7ff;
+}
+
+.hypothesis-ranking-panel .hyp-tier-icon {
+  font-size: 0.75rem;
+}
+
+.hypothesis-ranking-panel .hyp-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.hypothesis-ranking-panel .hyp-root-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.hypothesis-ranking-panel .hyp-root {
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  font-size: 1.15rem;
+  color: #e0e7ff;
+  font-weight: 600;
+}
+
+.hypothesis-ranking-panel .hyp-weak-tag,
+.hypothesis-ranking-panel .hyp-pattern-tag {
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: rgba(139, 92, 246, 0.3);
+  color: #c4b5fd;
+}
+
+.hypothesis-ranking-panel .hyp-pattern-tag {
+  background: rgba(34, 197, 94, 0.3);
+  color: #86efac;
+}
+
+.hypothesis-ranking-panel .hyp-def-row {
+  font-size: 0.8rem;
+  color: #a5b4fc;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hypothesis-ranking-panel .hyp-definition {
+  font-style: italic;
+}
+
+.hypothesis-ranking-panel .hyp-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.7rem;
+}
+
+.hypothesis-ranking-panel .hyp-confidence {
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.hypothesis-ranking-panel .hyp-confidence.high {
+  background: rgba(34, 197, 94, 0.3);
+  color: #86efac;
+}
+
+.hypothesis-ranking-panel .hyp-confidence.medium {
+  background: rgba(234, 179, 8, 0.3);
+  color: #fde68a;
+}
+
+.hypothesis-ranking-panel .hyp-confidence.low {
+  background: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+.hypothesis-ranking-panel .hyp-source {
+  color: #9ca3af;
+  font-size: 0.65rem;
+}
+
+/* =============================================================================
+   ANIMATIONS
+   ============================================================================= */
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px var(--field-color, #8B5CF6); }
+  50% { box-shadow: 0 0 15px var(--field-color, #8B5CF6); }
+}
+
+.semantic-field-badge:hover,
+.binyan-analysis-badge:hover {
+  animation: pulse-glow 2s infinite;
+}
+
+/* =============================================================================
+   PRO SCHOLAR V6: TELEMETRY DETAILS (Collapsible Dashboard)
+   ============================================================================= */
+
+.telemetry-details {
+  margin-top: 12px;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.telemetry-details[open] {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.telemetry-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(139, 92, 246, 0.1);
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  transition: background 0.2s ease;
+}
+
+.telemetry-summary::-webkit-details-marker {
+  display: none;
+}
+
+.telemetry-summary:hover {
+  background: rgba(139, 92, 246, 0.2);
+}
+
+.telemetry-summary .summary-icon {
+  font-size: 1rem;
+}
+
+.telemetry-summary .summary-text {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #c4b5fd;
+}
+
+.telemetry-details[open] .telemetry-summary {
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.telemetry-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  color: #a5b4fc;
+  font-size: 0.85rem;
+  font-style: italic;
+}

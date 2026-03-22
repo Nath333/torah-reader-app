@@ -78,3 +78,28 @@ export {
   usePrefetch,
   useSmartStudy
 } from './useSmartData';
+
+// ============================================================================
+// PRO SCHOLAR v4 Hooks
+// ============================================================================
+export {
+  default as useProScholarV4,
+  useWordAnalysis,
+  useCrossRefs,
+  useSRSCard,
+  useKnowledgeGraph
+} from './useProScholarV4';
+
+// ============================================================================
+// PRO SCHOLAR V6 Hooks (Unified Root Service Integration)
+// ============================================================================
+export {
+  default as useProScholarV6,
+  useProScholarTelemetry,
+  useRootFamily,
+  useDialectDetection,
+  WEAK_VERB_DISPLAY,
+  TIER_DISPLAY,
+  DIALECT_DISPLAY,
+  SEMANTIC_FIELD_DISPLAY
+} from './useProScholarV6';

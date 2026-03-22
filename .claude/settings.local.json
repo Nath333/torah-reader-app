@@ -118,7 +118,23 @@
       "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npm run build:*)",
       "Bash(gzip:*)",
       "Bash(git restore:*)",
-      "Bash(git commit -m \"$\\(cat <<''EOF''\nRefactor codebase architecture with modular component structure\n\nReorganize components into domain-specific directories \\(ai-tutor, analysis,\ncommentary, core, dictionary, layout, navigation, scholar-mode, settings,\nshared, study, visualization\\). Add new services for AI tutoring, dictionary\nlookup, morphology analysis, and scholarly features. Introduce new contexts\nand hooks for improved state management.\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nRefactor codebase architecture with modular component structure\n\nReorganize components into domain-specific directories \\(ai-tutor, analysis,\ncommentary, core, dictionary, layout, navigation, scholar-mode, settings,\nshared, study, visualization\\). Add new services for AI tutoring, dictionary\nlookup, morphology analysis, and scholarly features. Introduce new contexts\nand hooks for improved state management.\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(timeout 60 npm run build:*)",
+      "Bash(node -e:*)",
+      "Bash(timeout 30 npm run build:*)",
+      "Bash(for f in src/data/*.js)",
+      "Bash(timeout 20 npm start)",
+      "Bash(powershell -Command \"\\(Get-Content ''c:\\\\Users\\\\natha\\\\Desktop\\\\App_N\\\\torah-reader-app\\\\src\\\\components\\\\ClickableText.js''\\).Count\")",
+      "Bash(git status:*)",
+      "Bash(xargs ls:*)",
+      "Bash(for f in FamilyTree ProScholarFeatures)",
+      "Bash(do test:*)",
+      "Bash(for f in AnnotatedTranslationInline CommentaryGroup CommentaryContent extractDibburTranslation findRabbi detectRealiaInText getRealiaByCategory)",
+      "Bash(do grep -l \"$f\" src/**/*.js)",
+      "Bash(powershell -Command \"\\(Get-Content ''c:\\\\Users\\\\natha\\\\Desktop\\\\App_N\\\\torah-reader-app\\\\src\\\\data\\\\rootDatabase.js''\\).Count\")",
+      "Bash(timeout 90 npm run build:*)",
+      "Bash(npm run build:dev:*)",
+      "Bash(npm run lint)"
     ]
   }
 }

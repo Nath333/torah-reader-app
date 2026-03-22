@@ -157,6 +157,49 @@ try {
   analyzeVerbGrammar = () => null;
 }
 
+// =============================================================================
+// PRO SCHOLAR V6: Unified Root Service Integration
+// =============================================================================
+let extractRootsEnhanced, analyzeBinyan, detectDialect, getSemanticField, DICTIONARY_TIERS;
+try {
+  const unifiedRoot = require('../../services/unifiedRootService');
+  extractRootsEnhanced = unifiedRoot.extractRootsEnhanced;
+  analyzeBinyan = unifiedRoot.analyzeBinyan;
+  detectDialect = unifiedRoot.detectDialect;
+  getSemanticField = unifiedRoot.getSemanticField;
+  DICTIONARY_TIERS = unifiedRoot.DICTIONARY_TIERS || {};
+} catch (e) {
+  // eslint-disable-next-line no-unused-vars
+  extractRootsEnhanced = () => null;
+  // eslint-disable-next-line no-unused-vars
+  analyzeBinyan = () => null;
+  detectDialect = () => null;
+  getSemanticField = () => null;
+  // eslint-disable-next-line no-unused-vars
+  DICTIONARY_TIERS = {};
+}
+
+/** Semantic field display configuration - PRO SCHOLAR V6 */
+const SEMANTIC_FIELD_DISPLAY = {
+  LEGAL: { name: 'Legal/Halachic', hebrew: 'הלכתי', icon: '⚖️', color: '#1d4ed8', bg: '#dbeafe' },
+  DIALECTIC: { name: 'Dialectical', hebrew: 'סוגייתי', icon: '💬', color: '#7c3aed', bg: '#ede9fe' },
+  RITUAL: { name: 'Ritual/Temple', hebrew: 'פולחני', icon: '🕯️', color: '#b45309', bg: '#fef3c7' },
+  AGRICULTURAL: { name: 'Agricultural', hebrew: 'חקלאי', icon: '🌾', color: '#16a34a', bg: '#dcfce7' },
+  COMMERCIAL: { name: 'Commercial', hebrew: 'מסחרי', icon: '💰', color: '#ca8a04', bg: '#fef9c3' },
+  FAMILY: { name: 'Family/Social', hebrew: 'משפחתי', icon: '👨‍👩‍👧', color: '#ec4899', bg: '#fce7f3' },
+  RELIGIOUS: { name: 'Religious', hebrew: 'דתי', icon: '✡️', color: '#6366f1', bg: '#e0e7ff' },
+  ANATOMICAL: { name: 'Anatomical', hebrew: 'אנטומי', icon: '🫀', color: '#ef4444', bg: '#fee2e2' },
+  TEMPORAL: { name: 'Temporal', hebrew: 'זמני', icon: '⏰', color: '#0891b2', bg: '#cffafe' },
+  SPATIAL: { name: 'Spatial', hebrew: 'מרחבי', icon: '📍', color: '#84cc16', bg: '#ecfccb' }
+};
+
+/** Dictionary tier display - PRO SCHOLAR V6 */
+const TIER_DISPLAY = {
+  gold: { icon: '🥇', label: 'Gold Standard', color: '#b8860b', bg: '#fef3c7' },
+  silver: { icon: '🥈', label: 'Standard', color: '#6b7280', bg: '#f3f4f6' },
+  bronze: { icon: '🥉', label: 'Supplementary', color: '#b45309', bg: '#fef3c7' }
+};
+
 // Confidence calculation
 let calculateConfidence, getConfidenceDisplay;
 try {
@@ -237,10 +280,12 @@ try {
 
 // =============================================================================
 // PERFORMANCE: Cross-Refs Cache (avoids repeated API calls)
+// PRO SCHOLAR V5: Enhanced with TTL-based cleanup to prevent memory leaks
 // =============================================================================
 const _crossRefsCache = new Map();
 const CROSS_REFS_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 const CROSS_REFS_CACHE_MAX = 100;
+const CROSS_REFS_CLEANUP_INTERVAL = 5 * 60 * 1000; // Cleanup every 5 minutes
 
 const getCachedCrossRefs = (key) => {
   const cached = _crossRefsCache.get(key);
@@ -252,13 +297,32 @@ const getCachedCrossRefs = (key) => {
 };
 
 const setCachedCrossRefs = (key, data) => {
-  // Limit cache size
+  // Limit cache size - evict expired entries first, then oldest
   if (_crossRefsCache.size >= CROSS_REFS_CACHE_MAX) {
-    const oldestKey = _crossRefsCache.keys().next().value;
-    _crossRefsCache.delete(oldestKey);
+    cleanupExpiredCrossRefs();
+    // If still over limit after cleanup, remove oldest
+    if (_crossRefsCache.size >= CROSS_REFS_CACHE_MAX) {
+      const oldestKey = _crossRefsCache.keys().next().value;
+      _crossRefsCache.delete(oldestKey);
+    }
   }
   _crossRefsCache.set(key, { data, timestamp: Date.now() });
 };
+
+// PRO SCHOLAR V5: Cleanup expired entries to prevent memory leaks
+const cleanupExpiredCrossRefs = () => {
+  const now = Date.now();
+  for (const [key, entry] of _crossRefsCache.entries()) {
+    if (now - entry.timestamp >= CROSS_REFS_CACHE_TTL) {
+      _crossRefsCache.delete(key);
+    }
+  }
+};
+
+// Auto-cleanup interval (only runs if module is loaded)
+if (typeof window !== 'undefined') {
+  setInterval(cleanupExpiredCrossRefs, CROSS_REFS_CLEANUP_INTERVAL);
+}
 
 // =============================================================================
 // CONSTANTS
@@ -385,6 +449,9 @@ const ConfidenceDisplay = memo(function ConfidenceDisplay({ confidence, showFact
         onClick={() => showFactors && setExpanded(!expanded)}
         role={showFactors ? 'button' : undefined}
         tabIndex={showFactors ? 0 : undefined}
+        aria-expanded={showFactors ? expanded : undefined}
+        aria-label={showFactors ? `Confidence ${confidence.score}%, ${expanded ? 'collapse' : 'expand'} details` : undefined}
+        onKeyDown={showFactors ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setExpanded(!expanded); } } : undefined}
       >
         <div className="confidence-main">
           <span className="confidence-icon">
@@ -481,6 +548,102 @@ const DomainBadge = memo(function DomainBadge({ domain }) {
       <span className="domain-hebrew">{domainInfo.hebrewName}</span>
       <span className="domain-name">{domainInfo.name}</span>
     </span>
+  );
+});
+
+/**
+ * PRO SCHOLAR V6: Semantic Field Badge with enhanced display
+ * @param {Object} props
+ * @param {string} props.field - Semantic field key
+ * @param {string} [props.root] - Root for semantic field lookup
+ */
+const SemanticFieldBadgeV6 = memo(function SemanticFieldBadgeV6({ field, root }) {
+  // If no field provided, try to detect from root
+  const detectedField = field || (root ? getSemanticField?.(root) : null);
+  if (!detectedField) return null;
+
+  const display = SEMANTIC_FIELD_DISPLAY[detectedField];
+  if (!display) return null;
+
+  return (
+    <div
+      className="wic-semantic-field-v6"
+      style={{ backgroundColor: display.bg, borderColor: display.color }}
+    >
+      <span className="semantic-icon">{display.icon}</span>
+      <div className="semantic-content">
+        <span className="semantic-name">{display.name}</span>
+        <span className="semantic-hebrew" dir="rtl">{display.hebrew}</span>
+      </div>
+    </div>
+  );
+});
+
+/**
+ * PRO SCHOLAR V6: Dictionary Tier Badge
+ * @param {Object} props
+ * @param {string} props.source - Source name
+ */
+// eslint-disable-next-line no-unused-vars
+const DictionaryTierBadge = memo(function DictionaryTierBadge({ source }) {
+  if (!source) return null;
+
+  // Determine tier from source name
+  const sourceKey = source.toLowerCase().replace(/[^a-z]/g, '');
+  let tierKey = 'silver'; // default
+
+  if (sourceKey.includes('jastrow') || sourceKey.includes('bdb') || sourceKey.includes('cal') || sourceKey.includes('klein')) {
+    tierKey = 'gold';
+  }
+
+  const tier = TIER_DISPLAY[tierKey];
+  if (!tier) return null;
+
+  return (
+    <span
+      className="wic-tier-badge"
+      style={{ backgroundColor: tier.bg, color: tier.color }}
+      title={tier.label}
+    >
+      {tier.icon}
+    </span>
+  );
+});
+
+/**
+ * PRO SCHOLAR V6: Dialect Detection Display
+ * @param {Object} props
+ * @param {string} props.word - Word to analyze for dialect
+ */
+const DialectIndicatorV6 = memo(function DialectIndicatorV6({ word }) {
+  const dialectResult = useMemo(() => {
+    try {
+      return detectDialect?.(word);
+    } catch {
+      return null;
+    }
+  }, [word]);
+
+  if (!dialectResult || dialectResult.dialect === 'unknown') return null;
+
+  const dialectNames = {
+    'biblical_hebrew': { name: 'Biblical Hebrew', hebrew: 'עברית מקראית', icon: '📜' },
+    'mishnaic_hebrew': { name: 'Mishnaic Hebrew', hebrew: 'עברית משנאית', icon: '📚' },
+    'talmudic_aramaic': { name: 'Talmudic Aramaic', hebrew: 'ארמית תלמודית', icon: '📖' },
+    'targumic_aramaic': { name: 'Targumic Aramaic', hebrew: 'ארמית תרגומית', icon: '🎯' }
+  };
+
+  const dialectInfo = dialectNames[dialectResult.dialect];
+  if (!dialectInfo) return null;
+
+  return (
+    <div className="wic-dialect-v6" title={`Detected: ${dialectInfo.name} (${dialectResult.confidence}% confidence)`}>
+      <span className="dialect-icon">{dialectInfo.icon}</span>
+      <span className="dialect-name">{dialectInfo.name}</span>
+      {dialectResult.confidence >= 80 && (
+        <span className="dialect-confidence">{dialectResult.confidence}%</span>
+      )}
+    </div>
   );
 });
 
@@ -1275,14 +1438,16 @@ const ManuscriptVariantsIndicator = memo(function ManuscriptVariantsIndicator({ 
       <button
         className="variants-toggle"
         onClick={() => setExpanded(!expanded)}
+        aria-expanded={expanded}
+        aria-label={`Manuscript variants: ${variantCount} variant${variantCount !== 1 ? 's' : ''}${hasSignificant ? ' with significant differences' : ''}`}
       >
-        <span className="variants-icon">📜</span>
+        <span className="variants-icon" aria-hidden="true">📜</span>
         <span className="variants-title">Manuscript Variants</span>
         <span className={`variants-count ${hasSignificant ? 'significant' : ''}`}>
           {variantCount} variant{variantCount !== 1 ? 's' : ''}
-          {hasSignificant && ' ⚠️'}
+          {hasSignificant && <span aria-hidden="true"> ⚠️</span>}
         </span>
-        <span className={`variants-arrow ${expanded ? 'expanded' : ''}`}>▼</span>
+        <span className={`variants-arrow ${expanded ? 'expanded' : ''}`} aria-hidden="true">▼</span>
       </button>
 
       {expanded && (
@@ -1853,9 +2018,19 @@ function WordIntelligenceCard({
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/* DOMAIN BADGE */}
+      {/* PRO SCHOLAR V6: SEMANTIC FIELD & DIALECT ROW */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {domain && (
+      <div className="wic-v6-badges-row">
+        {/* Semantic Field Badge */}
+        <SemanticFieldBadgeV6 root={root} />
+        {/* Dialect Indicator */}
+        <DialectIndicatorV6 word={word} />
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* DOMAIN BADGE (Legacy - kept for backward compatibility) */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {domain && !root && (
         <div className="wic-domain-row">
           <DomainBadge domain={domain} />
         </div>

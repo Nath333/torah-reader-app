@@ -22,7 +22,7 @@ export {
   getSuffixInfo,
 } from './suffixes';
 
-// Verb patterns - binyanim, tenses (unique to this module)
+// Verb patterns - binyanim, tenses (re-exports from morphologyPatterns.js)
 export {
   BINYANIM,
   ARAMAIC_BINYANIM,
@@ -31,6 +31,14 @@ export {
   HEBREW_VERB_REGEX,
   ARAMAIC_VERB_REGEX,
   WEAK_VERB_LETTERS,
+  WEAK_VERB_RULES,
+  WEAK_VERB_BY_CODE,
+  CONJUGATION_PREFIXES,
+  CONJUGATION_SUFFIXES,
+  detectWeakVerbType,
+  reconstructWeakRoots,
+  getBinyanInfo,
+  detectBinyan,
 } from './verbPatterns';
 
 // Analysis functions and stop words (from main morphology.js)

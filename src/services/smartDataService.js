@@ -4,7 +4,8 @@
  * @module smartDataService
  */
 
-import { createCache } from '../utils/cache';
+// PRO SCHOLAR V6.2: Use CacheOrchestrator for unified cache management
+import { createManagedCache } from './cacheOrchestrator';
 
 // =============================================================================
 // Connectivity Detection & Management
@@ -251,11 +252,11 @@ const getOffline = async (storeName, key) => {
 // Smart Memory Cache with LRU
 // =============================================================================
 
-// In-memory caches with different TTLs
+// PRO SCHOLAR V6.2: In-memory caches with CacheOrchestrator integration
 const memoryCache = {
-  lookup: createCache({ ttl: 60 * 60 * 1000, maxSize: 500 }),    // 1 hour, 500 words
-  rag: createCache({ ttl: 60 * 60 * 1000, maxSize: 200 }),       // 1 hour, 200 contexts
-  prefetch: createCache({ ttl: 5 * 60 * 1000, maxSize: 50 })     // 5 min, 50 prefetches
+  lookup: createManagedCache('smartLookup', { ttl: 60 * 60 * 1000, maxSize: 500 }),     // 1 hour, 500 words
+  rag: createManagedCache('smartRAG', { ttl: 60 * 60 * 1000, maxSize: 200 }),           // 1 hour, 200 contexts
+  prefetch: createManagedCache('smartPrefetch', { ttl: 5 * 60 * 1000, maxSize: 50 })    // 5 min, 50 prefetches
 };
 
 // =============================================================================

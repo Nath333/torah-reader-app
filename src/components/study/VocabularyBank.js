@@ -1,26 +1,38 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import srsService, { QUALITY, getMasteryLevel } from '../../services/srsService';
-import learningService, {
+import {
   LEARNING_LEVELS,
   calculateLevel,
   getStudyFocus,
   generateMilestones,
-  analyzeRootFamilyGaps,
-  createOptimizedSession
+  analyzeRootFamilyGaps
 } from '../../services/learningRecommendationService';
+import { useStudy } from '../../context/StudyContext';
+import { useWordDetail } from '../dictionary/WordIntelligenceModal';
+import EmptyState from '../shared/EmptyState';
+import LoadingSkeleton from '../shared/LoadingSkeleton';
 import './VocabularyBank.css';
 
-const VocabularyBank = ({
-  vocabulary,
-  onRemoveWord,
-  onUpdateWord,
-  onMarkReviewed,
-  onClear,
-  onExport,
-  onImport,
-  getWordsForReview,
-  getStats: getPropsStats
-}) => {
+/**
+ * VocabularyBank - Comprehensive vocabulary learning component
+ * Uses StudyContext for data, eliminating prop drilling.
+ */
+const VocabularyBank = () => {
+  // Get vocabulary data and handlers from context
+  const {
+    vocabulary,
+    removeWord,
+    updateWord,
+    markReviewed,
+    clearVocabulary,
+    exportVocabulary,
+    importVocabulary,
+    getWordsForReview,
+    getStats: getContextStats
+  } = useStudy();
+
+  // Word detail modal for deep word analysis
+  const { openWordDetail } = useWordDetail();
   const [activeTab, setActiveTab] = useState('list'); // 'list', 'review', 'stats', 'learn'
   const [reviewIndex, setReviewIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
@@ -32,8 +44,11 @@ const VocabularyBank = ({
   const [srsStats, setSrsStats] = useState(null);
   const [forecast, setForecast] = useState([]);
   const [dueCards, setDueCards] = useState([]);
-  // Learning recommendations state
   const [learningData, setLearningData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Ref for flashcard keyboard navigation
+  const flashcardRef = useRef(null);
 
   // Initialize SRS and sync vocabulary
   useEffect(() => {
@@ -48,9 +63,12 @@ const VocabularyBank = ({
     const currentStats = srsService.getStats();
     setSrsStats(currentStats);
     setForecast(srsService.getReviewForecast(7));
-    setDueCards(srsService.getDueCards({ limit: 50 }));
 
-    // Calculate learning recommendations
+    // Get due cards fresh (don't use stale state to avoid dependency issues)
+    const freshDueCards = srsService.getDueCards({ limit: 50 });
+    setDueCards(freshDueCards);
+
+    // Calculate learning recommendations using fresh data
     try {
       const masteredWords = vocabulary?.filter(w => w.mastered).map(w => w.hebrew) || [];
       const studyHistory = vocabulary?.map(w => ({
@@ -66,7 +84,7 @@ const VocabularyBank = ({
       });
 
       const focus = getStudyFocus({
-        srsCards: dueCards,
+        srsCards: freshDueCards, // Use fresh data directly
         studyHistory,
         masteredWords
       });
@@ -89,7 +107,49 @@ const VocabularyBank = ({
     } catch (err) {
       console.warn('Learning recommendations failed:', err);
     }
-  }, [vocabulary, dueCards]);
+    setIsLoading(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- dueCards is set inside this effect
+  }, [vocabulary]);
+
+  // Keyboard navigation for flashcard review
+  useEffect(() => {
+    if (activeTab !== 'review') return;
+
+    const handleKeyDown = (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+      switch (e.key) {
+        case ' ':
+        case 'Enter':
+          e.preventDefault();
+          if (!showAnswer) {
+            setShowAnswer(true);
+          } else if (!showQualityPicker) {
+            setShowQualityPicker(true);
+          }
+          break;
+        case 'Escape':
+          if (showQualityPicker) {
+            setShowQualityPicker(false);
+          } else if (showAnswer) {
+            setShowAnswer(false);
+          }
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeTab, showAnswer, showQualityPicker]);
+
+  // Focus flashcard container when in review mode
+  useEffect(() => {
+    if (activeTab === 'review' && flashcardRef.current) {
+      flashcardRef.current.focus();
+    }
+  }, [activeTab, reviewIndex]);
 
   // Get combined stats (SRS-enhanced)
   const stats = useMemo(() => {
@@ -106,8 +166,9 @@ const VocabularyBank = ({
         dueTomorrow: srsStats.dueTomorrow
       };
     }
-    return getPropsStats?.() || { total: 0, mastered: 0, needsReview: 0 };
-  }, [srsStats, getPropsStats, vocabulary]);
+    return getContextStats?.() || { total: 0, mastered: 0, needsReview: 0 };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [srsStats, vocabulary]);
 
   // Use SRS due cards for review, fallback to props
   const reviewWords = useMemo(() => {
@@ -160,8 +221,8 @@ const VocabularyBank = ({
         // Process review with SM-2 algorithm
         srsService.processReview(currentWord.id, quality);
 
-        // Also notify parent for any additional tracking
-        onMarkReviewed?.(currentWord.id, quality >= QUALITY.CORRECT_DIFFICULT);
+        // Track review in context
+        markReviewed?.(currentWord.id, quality >= QUALITY.CORRECT_DIFFICULT);
 
         // Refresh SRS data
         setSrsStats(srsService.getStats());
@@ -174,11 +235,14 @@ const VocabularyBank = ({
     setShowAnswer(false);
     setShowQualityPicker(false);
 
-    // Move to next card (remove reviewed card from current session)
-    if (reviewIndex >= reviewWords.length - 1) {
+    // Move to next card
+    if (reviewIndex < reviewWords.length - 1) {
+      setReviewIndex(reviewIndex + 1);
+    } else {
+      // Wrap around to beginning when reaching the end
       setReviewIndex(0);
     }
-  }, [reviewIndex, reviewWords, onMarkReviewed]);
+  }, [reviewIndex, reviewWords, markReviewed]);
 
   // Legacy handler for simple correct/incorrect (maps to SRS quality)
   const handleNextCard = useCallback((correct) => {
@@ -193,14 +257,19 @@ const VocabularyBank = ({
   }, []);
 
   const handleSaveEdit = useCallback((wordId) => {
-    onUpdateWord?.(wordId, { french: editFrench });
+    updateWord?.(wordId, { french: editFrench });
     setEditingWord(null);
     setEditFrench('');
-  }, [editFrench, onUpdateWord]);
+  }, [editFrench, updateWord]);
+
+  // Click Hebrew word to show full details
+  const handleWordClick = useCallback((word) => {
+    openWordDetail(word.hebrew || word.original);
+  }, [openWordDetail]);
 
   // Export/Import handlers
   const handleExport = useCallback(() => {
-    const data = onExport?.();
+    const data = exportVocabulary?.();
     if (data) {
       const blob = new Blob([data], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -210,18 +279,18 @@ const VocabularyBank = ({
       a.click();
       URL.revokeObjectURL(url);
     }
-  }, [onExport]);
+  }, [exportVocabulary]);
 
   const handleImport = useCallback((e) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        onImport?.(event.target.result);
+        importVocabulary?.(event.target.result);
       };
       reader.readAsText(file);
     }
-  }, [onImport]);
+  }, [importVocabulary]);
 
   // Render word list
   const renderWordList = () => (
@@ -246,20 +315,31 @@ const VocabularyBank = ({
         </select>
       </div>
 
-      {filteredVocabulary.length === 0 ? (
-        <div className="empty-vocabulary">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-          </svg>
-          <p>No words saved yet</p>
-          <span>Click on Hebrew words while reading to add them here</span>
-        </div>
+      {isLoading ? (
+        <LoadingSkeleton type="list" count={5} />
+      ) : filteredVocabulary.length === 0 ? (
+        <EmptyState
+          icon="vocabulary"
+          title={searchQuery ? 'No matching words' : 'No words saved yet'}
+          description={
+            searchQuery
+              ? `No words match "${searchQuery}". Try a different search.`
+              : 'Click on Hebrew words while reading to add them to your vocabulary bank.'
+          }
+          compact
+        />
       ) : (
         <div className="vocabulary-list">
           {filteredVocabulary.map((word) => (
             <div key={word.id} className={`vocabulary-item ${word.mastered ? 'mastered' : ''}`}>
               <div className="word-main">
-                <span className="word-hebrew">{word.original || word.hebrew}</span>
+                <span
+                  className="word-hebrew clickable"
+                  onClick={() => handleWordClick(word)}
+                  title="Click for full word details"
+                >
+                  {word.original || word.hebrew}
+                </span>
                 <div className="word-translations">
                   <span className="word-english">{word.english || '—'}</span>
                   {editingWord === word.id ? (
@@ -288,7 +368,7 @@ const VocabularyBank = ({
                 {word.mastered && <span className="mastered-badge">Mastered</span>}
                 <button
                   className="remove-word"
-                  onClick={() => onRemoveWord?.(word.id)}
+                  onClick={() => removeWord?.(word.id)}
                   title="Remove word"
                 >
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -307,27 +387,39 @@ const VocabularyBank = ({
   const renderReview = () => {
     if (reviewWords.length === 0) {
       return (
-        <div className="no-review-words">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <p>All caught up!</p>
-          <span>Add more words or review mastered ones</span>
-        </div>
+        <EmptyState
+          icon="vocabulary"
+          title="All caught up!"
+          description="No words due for review. Add more words while reading or come back later."
+        >
+          <button
+            className="btn btn-secondary"
+            onClick={() => setActiveTab('list')}
+          >
+            View All Words
+          </button>
+        </EmptyState>
       );
     }
 
     const currentWord = reviewWords[reviewIndex];
 
     return (
-      <div className="flashcard-container">
+      <div className="flashcard-container" ref={flashcardRef} tabIndex={-1}>
         <div className="flashcard-progress">
-          Card {reviewIndex + 1} of {reviewWords.length}
+          <span>Card {reviewIndex + 1} of {reviewWords.length}</span>
+          <span className="keyboard-hint">Space to flip • ← Wrong • → Correct</span>
         </div>
 
         <div className={`flashcard ${showAnswer ? 'flipped' : ''}`} onClick={() => setShowAnswer(!showAnswer)}>
           <div className="flashcard-front">
-            <span className="flashcard-hebrew">{currentWord.original || currentWord.hebrew}</span>
+            <span
+              className="flashcard-hebrew clickable"
+              onClick={(e) => { e.stopPropagation(); handleWordClick(currentWord); }}
+              title="Click for full word details"
+            >
+              {currentWord.original || currentWord.hebrew}
+            </span>
             <span className="flashcard-hint">Click to reveal</span>
           </div>
           <div className="flashcard-back">
@@ -482,7 +574,7 @@ const VocabularyBank = ({
           <input type="file" accept=".json" onChange={handleImport} hidden />
         </label>
         {vocabulary?.length > 0 && (
-          <button onClick={onClear} className="clear-btn">
+          <button onClick={clearVocabulary} className="clear-btn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>

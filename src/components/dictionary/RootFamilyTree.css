@@ -1,0 +1,509 @@
+/**
+ * RootFamilyTree.css - PRO SCHOLAR V6 Root Family Visualization Styles
+ *
+ * Professional scholarly design with:
+ * - Tree-like visual hierarchy
+ * - Color-coded categories
+ * - Collapsible sections
+ * - Responsive layout
+ */
+
+/* =============================================================================
+   BASE PANEL
+   ============================================================================= */
+
+.root-family-tree {
+  background: var(--surface, #fff);
+  border-radius: 12px;
+  border: 1px solid var(--border-light, #e5e7eb);
+  padding: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.root-family-tree.compact {
+  padding: 12px;
+}
+
+/* =============================================================================
+   HEADER
+   ============================================================================= */
+
+.family-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-light, #e5e7eb);
+  flex-wrap: wrap;
+}
+
+.family-icon {
+  font-size: 1.2em;
+}
+
+.family-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary, #6b7280);
+  font-weight: 600;
+}
+
+.family-root {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--accent, #3b82f6);
+  font-family: 'David Libre', 'SBL Hebrew', serif;
+}
+
+.family-count {
+  font-size: 0.75rem;
+  background: var(--surface-secondary, #f3f4f6);
+  padding: 4px 10px;
+  border-radius: 12px;
+  color: var(--text-secondary, #6b7280);
+}
+
+.family-language {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  background: var(--accent-light, #dbeafe);
+  color: var(--accent, #3b82f6);
+  border-radius: 6px;
+  margin-left: auto;
+}
+
+/* =============================================================================
+   TREE VISUALIZATION
+   ============================================================================= */
+
+.tree-visualization {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: var(--surface-secondary, #f9fafb);
+  border-radius: 10px;
+}
+
+.tree-root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, var(--accent, #3b82f6), #8b5cf6);
+  color: white;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+.root-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.85;
+}
+
+.root-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: 'David Libre', 'SBL Hebrew', serif;
+  margin: 4px 0;
+}
+
+.root-count {
+  font-size: 0.75rem;
+  opacity: 0.85;
+}
+
+.tree-branches {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.tree-branch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.branch-line {
+  width: 2px;
+  height: 20px;
+  background: var(--branch-color, #6b7280);
+  margin-bottom: 8px;
+}
+
+.branch-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: white;
+  border: 2px solid var(--branch-color, #6b7280);
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.branch-icon {
+  font-size: 1em;
+}
+
+.branch-count {
+  font-weight: 600;
+  color: var(--branch-color, #6b7280);
+}
+
+/* =============================================================================
+   CATEGORY SECTIONS
+   ============================================================================= */
+
+.family-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.family-category {
+  border: 1px solid var(--border-light, #e5e7eb);
+  border-radius: 10px;
+  overflow: hidden;
+  border-left: 4px solid var(--category-color, #6b7280);
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--surface-secondary, #f9fafb);
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.category-header:hover {
+  background: var(--surface-tertiary, #f3f4f6);
+}
+
+.category-icon {
+  font-size: 1rem;
+}
+
+.category-name {
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+  font-size: 0.9rem;
+}
+
+.category-hebrew {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #6b7280);
+  font-family: 'David Libre', 'SBL Hebrew', serif;
+}
+
+.category-count {
+  margin-left: auto;
+  font-size: 0.75rem;
+  background: var(--category-color, #6b7280);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.category-arrow {
+  font-size: 0.7rem;
+  color: var(--text-secondary, #6b7280);
+  transition: transform 0.2s ease;
+}
+
+.category-arrow.expanded {
+  transform: rotate(180deg);
+}
+
+.category-content {
+  padding: 12px 14px;
+  background: white;
+}
+
+/* =============================================================================
+   SUBCATEGORIES
+   ============================================================================= */
+
+.subcategory {
+  margin-bottom: 12px;
+}
+
+.subcategory:last-child {
+  margin-bottom: 0;
+}
+
+.subcategory-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed var(--border-light, #e5e7eb);
+}
+
+.subcategory-name {
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--text-primary, #374151);
+}
+
+.subcategory-hebrew {
+  font-size: 0.85rem;
+  color: var(--accent, #3b82f6);
+  font-family: 'David Libre', 'SBL Hebrew', serif;
+}
+
+.subcategory-desc {
+  font-size: 0.7rem;
+  color: var(--text-tertiary, #9ca3af);
+  font-style: italic;
+}
+
+.subcategory-words,
+.category-words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* =============================================================================
+   WORD ITEMS
+   ============================================================================= */
+
+.family-word-item {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--surface-secondary, #f9fafb);
+  border: 1px solid var(--border-light, #e5e7eb);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 60px;
+}
+
+.family-word-item:hover {
+  background: var(--accent-light, #dbeafe);
+  border-color: var(--accent, #3b82f6);
+  transform: translateY(-1px);
+}
+
+.family-word-item.highlighted {
+  background: var(--accent, #3b82f6);
+  border-color: var(--accent, #3b82f6);
+  color: white;
+}
+
+.family-word-item .word-text {
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: 'David Libre', 'SBL Hebrew', serif;
+  color: var(--text-primary, #1f2937);
+}
+
+.family-word-item.highlighted .word-text {
+  color: white;
+}
+
+.family-word-item .word-meaning {
+  font-size: 0.7rem;
+  color: var(--text-secondary, #6b7280);
+  margin-top: 2px;
+  text-align: center;
+}
+
+.family-word-item.highlighted .word-meaning {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.family-word-item .word-binyan {
+  font-size: 0.6rem;
+  background: var(--surface, #fff);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-top: 4px;
+  color: var(--text-secondary, #6b7280);
+}
+
+.family-word-item.highlighted .word-binyan {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.family-word-item .word-frequency {
+  font-size: 0.6rem;
+  color: var(--text-tertiary, #9ca3af);
+  margin-top: 2px;
+}
+
+.family-word-item.highlighted .word-frequency {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* =============================================================================
+   LOADING & EMPTY STATES
+   ============================================================================= */
+
+.root-family-tree.loading,
+.root-family-tree.empty {
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.family-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-secondary, #6b7280);
+}
+
+.family-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--border-light, #e5e7eb);
+  border-top-color: var(--accent, #3b82f6);
+  border-radius: 50%;
+  animation: family-spin 0.8s linear infinite;
+}
+
+@keyframes family-spin {
+  to { transform: rotate(360deg); }
+}
+
+.family-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary, #6b7280);
+}
+
+.empty-icon {
+  font-size: 2rem;
+  opacity: 0.5;
+}
+
+.empty-text {
+  font-size: 0.85rem;
+}
+
+/* =============================================================================
+   COMPACT MODE
+   ============================================================================= */
+
+.root-family-tree.compact .family-header {
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+}
+
+.root-family-tree.compact .family-root {
+  font-size: 1.1rem;
+}
+
+.root-family-tree.compact .category-header {
+  padding: 10px 12px;
+}
+
+.root-family-tree.compact .family-word-item {
+  padding: 6px 10px;
+  min-width: 50px;
+}
+
+.root-family-tree.compact .word-text {
+  font-size: 0.9rem;
+}
+
+/* =============================================================================
+   DARK MODE
+   ============================================================================= */
+
+@media (prefers-color-scheme: dark) {
+  .root-family-tree {
+    background: var(--surface-dark, #1f2937);
+    border-color: var(--border-dark, #374151);
+  }
+
+  .family-header {
+    border-color: var(--border-dark, #374151);
+  }
+
+  .tree-visualization {
+    background: var(--surface-darker, #111827);
+  }
+
+  .category-header {
+    background: var(--surface-darker, #111827);
+  }
+
+  .category-header:hover {
+    background: var(--surface-dark, #1f2937);
+  }
+
+  .category-content {
+    background: var(--surface-dark, #1f2937);
+  }
+
+  .family-word-item {
+    background: var(--surface-darker, #111827);
+    border-color: var(--border-dark, #374151);
+  }
+
+  .family-word-item:hover {
+    background: var(--accent-dark, #1e40af);
+  }
+
+  .family-word-item .word-text {
+    color: var(--text-light, #f3f4f6);
+  }
+
+  .branch-label {
+    background: var(--surface-dark, #1f2937);
+  }
+}
+
+/* =============================================================================
+   RESPONSIVE
+   ============================================================================= */
+
+@media (max-width: 480px) {
+  .family-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .family-language {
+    margin-left: 0;
+  }
+
+  .tree-branches {
+    gap: 12px;
+  }
+
+  .subcategory-header {
+    flex-wrap: wrap;
+  }
+
+  .family-word-item {
+    flex-grow: 1;
+    min-width: calc(33% - 6px);
+  }
+}

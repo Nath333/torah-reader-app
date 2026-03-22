@@ -18,6 +18,7 @@ import { lookupWordSync, clearCaches as clearServiceCaches } from '../../service
 import { useSettings } from '../../context/SettingsContext';
 import { getSourceReliability } from '../../constants/dictionarySources';
 import { lookupFunctionWord } from '../../constants/morphology';
+import { preClassify } from '../../services/preClassificationService';
 import { analyzeVerbGrammar, formatVerbGrammar, calculateConfidence } from '../../utils/morphologyAnalyzer';
 import './GlossedText.css';
 
@@ -27,7 +28,9 @@ import './GlossedText.css';
 // v4: Added Aramaic verb patterns, emphatic state detection, Aphel conjugations
 // v5: Fixed cleanGloss to remove trailing numbers (house4→house) and (b. h.) notation
 // v6: Added verb grammar parsing (binyan, tense, person) and confidence scores
-const CACHE_VERSION = 6;
+// v7: PRO SCHOLAR V6 - Extended FUNCTION_WORDS, daf reference detection, proper noun fixes
+// v8: PRO SCHOLAR V4 - Fixed preClassify priority: ברישיה, והכנסה, משה, להו etc.
+const CACHE_VERSION = 8;
 
 // Global cache for word glosses (persists across renders)
 const glossCache = new Map();
@@ -137,6 +140,37 @@ const getWordGloss = (word, showFrench = false, contextMode = null, reference = 
       };
       glossCache.set(cacheKey, glossData);
       return glossData;
+    }
+
+    // === PRIORITY 1.5: Pre-classification for proper nouns, abbreviations, daf references ===
+    // PRO SCHOLAR V6: Check for משה=Moses, רה"י=private domain, צו:=daf 96b BEFORE dictionary
+    // IMPORTANT: Pass ORIGINAL word for daf detection (needs :/) then cleaned for other checks
+    const preClassResult = preClassify(word, { textType: 'talmudic' });
+    if (preClassResult && preClassResult.skipDictionary) {
+      const definition = preClassResult.english || preClassResult.meaning;
+      if (definition) {
+        const glossData = {
+          gloss: definition,
+          source: preClassResult.source || 'Pre-Classification',
+          sources: [{
+            name: preClassResult.source || preClassResult.type,
+            fullName: preClassResult.source || `${preClassResult.type} (${preClassResult.subtype || 'detected'})`,
+            definition: definition
+          }],
+          sourceCount: 1,
+          tier: 'gold',
+          reliability: { level: 1, name: preClassResult.source || 'Pre-Classification' },
+          root: null,
+          headword: word,
+          isAramaic: preClassResult.type === 'aramaic_particle',
+          grammar: null,
+          confidence: { score: 100, level: 'high', emoji: '✓', factors: [`${preClassResult.type}: ${definition}`] },
+          preClassified: true,
+          preClassType: preClassResult.type
+        };
+        glossCache.set(cacheKey, glossData);
+        return glossData;
+      }
     }
 
     // === PRIORITY 2: Full dictionary lookup ===

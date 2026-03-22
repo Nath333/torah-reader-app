@@ -8,6 +8,7 @@ import useMastery from '../../hooks/useMastery';
 import useCommentaryLoader from '../../hooks/useCommentaryLoader';
 import useTranslationLoading from '../../hooks/useTranslationLoading';
 import { useVerseSelection } from '../../hooks/useVerseSelection';
+import useLocalStorage from '../../hooks/useLocalStorage';
 import { useSettings } from '../../context';
 
 // Components
@@ -84,7 +85,8 @@ const TorahReader = ({
   // Local UI state
   const [showTranslation, setShowTranslation] = useState(true);
   const [enableClickableText, setEnableClickableText] = useState(true);
-  const [fontSize, setFontSize] = useState(18);
+  // PRO SCHOLAR V5: Persist font size preference to localStorage
+  const [fontSize, setFontSize] = useLocalStorage('torah-reader-font-size', 18);
   const [copiedVerse, setCopiedVerse] = useState(null);
   const [editingNote, setEditingNote] = useState(null);
   const [speakingVerse, setSpeakingVerse] = useState(null);
@@ -122,6 +124,16 @@ const TorahReader = ({
     selectedChapter,
     verses
   });
+
+  // PRO SCHOLAR V5: Memoized selection order map - prevents O(n²) findIndex on every render
+  // This optimization prevents ~30 unnecessary findIndex calls per render
+  const selectionOrderMap = useMemo(() => {
+    const map = {};
+    selection.selectedVerses.forEach((v, idx) => {
+      map[v.id] = idx + 1;
+    });
+    return map;
+  }, [selection.selectedVerses]);
 
   // Commentary loading hook
   const commentaryData = useCommentaryLoader({
@@ -395,7 +407,9 @@ const TorahReader = ({
             const hasNote = verseNotes?.hasNote(selectedBook, selectedChapter, verse.verse);
             const noteText = verseNotes?.getNote(selectedBook, selectedChapter, verse.verse);
             const isSelected = selection.isVerseSelected(verse.verse);
-            const selectionOrder = selection.selectedVerses.findIndex(v => v.id === `${selectedBook}:${selectedChapter}:${verse.verse}`) + 1;
+            // PRO SCHOLAR V5: O(1) lookup instead of O(n) findIndex
+            const verseId = `${selectedBook}:${selectedChapter}:${verse.verse}`;
+            const selectionOrder = selectionOrderMap[verseId] || 0;
 
             // Enhanced mode rendering
             if (displayMode !== 'simple') {

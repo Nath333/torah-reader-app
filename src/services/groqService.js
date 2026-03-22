@@ -4,7 +4,8 @@
  * @module groqService
  */
 
-import { createCache } from '../utils/cache';
+// PRO SCHOLAR V6.2: Use CacheOrchestrator for unified cache management
+import { createManagedCache } from './cacheOrchestrator';
 import {
   GROQ_API_URL,
   getStoredApiKey,
@@ -62,9 +63,9 @@ export const ANALYSIS_MODES = {
 };
 
 // =============================================================================
-// Cache Management
+// Cache Management - PRO SCHOLAR V6.2: Unified via CacheOrchestrator
 // =============================================================================
-const analysisCache = createCache({ ttl: 30 * 60 * 1000, maxSize: 100 });
+const analysisCache = createManagedCache('groqAnalysis', { ttl: 30 * 60 * 1000, maxSize: 100 });
 
 const getCacheKey = (text, source, verse, mode) =>
   `${text.slice(0, 100)}|${text.length}|${source}|${verse}|${mode}`;

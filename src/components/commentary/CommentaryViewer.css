@@ -1066,6 +1066,9 @@
   background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
   border-radius: 10px;
   border-left: 4px solid #4f46e5;
+  flex-wrap: wrap;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .dark-mode .dibur-hamatchil-section {
@@ -1096,6 +1099,9 @@
   color: #1e293b;
   line-height: 1.5;
   flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .dark-mode .dh-text {

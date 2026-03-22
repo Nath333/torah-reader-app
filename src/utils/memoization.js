@@ -371,7 +371,7 @@ export function memoize(fn, options = {}) {
   };
 }
 
-export default {
+const MemoizationUtils = {
   // Component helpers
   withDeepMemo,
   withPropCheck,
@@ -394,3 +394,5 @@ export default {
   createLRUCache,
   memoize
 };
+
+export default MemoizationUtils;

@@ -29,6 +29,8 @@ import { analyzePhrase, GRAMMAR_CONSTANTS } from '../../services/grammarAnalysis
 import MorphologyBreakdown from '../dictionary/MorphologyBreakdown';
 import { getRootInfo } from '../../data/rootDatabase';
 import { extractAramaicRoot } from '../../constants/morphology';
+// PRO SCHOLAR V6: Advanced linguistic components
+import { WeakVerbIndicator, ProScholarPanel, BinyanConjugationPanel, V6TelemetryDashboard, SourceComparisonView } from '../dictionary';
 import './ScholarModeEnhancements.css';
 
 // LocalStorage key for search history
@@ -1062,6 +1064,29 @@ const LexiconLookupSection = React.memo(function LexiconLookupSection({ onClose,
             >
               🔬 Morphology
             </button>
+            {/* PRO SCHOLAR V6: Advanced analysis tab */}
+            <button
+              className={`section-tab section-tab-v6 ${activeSection === 'v6analysis' ? 'active' : ''}`}
+              onClick={() => setActiveSection('v6analysis')}
+            >
+              ⚡ V6 Analysis
+            </button>
+            {/* PRO SCHOLAR V6: Binyan conjugation tab - show for verbs */}
+            {(result?.grammar?.partOfSpeech === 'verb' || result?.sources?.bdb?.pos?.includes('verb') || result?.root) && (
+              <button
+                className={`section-tab section-tab-conjugation ${activeSection === 'conjugation' ? 'active' : ''}`}
+                onClick={() => setActiveSection('conjugation')}
+              >
+                📊 Conjugation
+              </button>
+            )}
+            {/* PRO SCHOLAR V6: Source comparison view */}
+            <button
+              className={`section-tab section-tab-compare ${activeSection === 'compare' ? 'active' : ''}`}
+              onClick={() => setActiveSection('compare')}
+            >
+              ⚖️ Compare
+            </button>
           </div>
 
           {/* PRO SCHOLAR: Morphology Section - ALWAYS FIRST when active */}
@@ -1258,6 +1283,70 @@ const LexiconLookupSection = React.memo(function LexiconLookupSection({ onClose,
               derivedWords={derivedWords}
               loading={loadingRoot}
             />
+          )}
+
+          {/* PRO SCHOLAR V6: Advanced Analysis Section */}
+          {activeSection === 'v6analysis' && (
+            <div className="lexicon-v6-section">
+              <ProScholarPanel
+                word={result.cleaned}
+                root={result.root}
+                translationData={result}
+                isAramaic={!!result.sources?.jastrow || !!calResult}
+                contextType={result.contextType || (result.sources?.jastrow ? 'talmudic' : 'biblical')}
+                onWordClick={(clickedWord) => {
+                  if (clickedWord && clickedWord !== result.cleaned) {
+                    setWord(clickedWord);
+                    handleLookup(clickedWord);
+                  }
+                }}
+                compact={false}
+                showTelemetry={process.env.NODE_ENV === 'development'}
+              />
+              {/* WeakVerbIndicator for additional pattern info */}
+              {result.root && (
+                <WeakVerbIndicator
+                  root={result.root}
+                  word={result.cleaned}
+                  showDetails={true}
+                />
+              )}
+            </div>
+          )}
+
+          {/* PRO SCHOLAR V6: Binyan Conjugation Panel - Full verb paradigms */}
+          {activeSection === 'conjugation' && (
+            <div className="lexicon-conjugation-section">
+              <BinyanConjugationPanel
+                binyan={result?.grammar?.binyan?.toLowerCase() || 'qal'}
+                root={result.root}
+                isAramaic={!!result.sources?.jastrow || !!calResult}
+                highlightForm={result.cleaned}
+                onFormClick={(form, info) => {
+                  // PRO SCHOLAR V6: Trigger actual lookup for conjugated form
+                  if (form && form !== result.cleaned) {
+                    setWord(form);
+                    handleLookup(form);
+                    setActiveSection('definitions'); // Switch to definitions view
+                  }
+                }}
+                compact={false}
+              />
+            </div>
+          )}
+
+          {/* PRO SCHOLAR V6: Source Comparison View - Side-by-side lexicon comparison */}
+          {activeSection === 'compare' && (
+            <div className="lexicon-compare-section">
+              <SourceComparisonView
+                word={result.cleaned}
+                sources={result.sources}
+                calData={calResult}
+                localLexicons={localLexicons}
+                etymology={etymology}
+                showDifferences={true}
+              />
+            </div>
           )}
 
           {/* Save to Vocabulary Button */}
@@ -1562,6 +1651,12 @@ const WordsTab = React.memo(function WordsTab({ onClose, showFrench = false, ver
         <button className={`words-subtab ${activeSubTab === 'textual' ? 'active' : ''}`} onClick={() => setActiveSubTab('textual')}>
           <span className="subtab-icon">📜</span><span className="subtab-label">Text</span>
         </button>
+        {/* PRO SCHOLAR V6: Debug/Telemetry tab (development only) */}
+        {process.env.NODE_ENV === 'development' && (
+          <button className={`words-subtab words-subtab-debug ${activeSubTab === 'debug' ? 'active' : ''}`} onClick={() => setActiveSubTab('debug')}>
+            <span className="subtab-icon">📊</span><span className="subtab-label">Debug</span>
+          </button>
+        )}
       </div>
       <div className="words-subtab-content">
         {activeSubTab === 'lookup' && (
@@ -1575,6 +1670,16 @@ const WordsTab = React.memo(function WordsTab({ onClose, showFrench = false, ver
         {activeSubTab === 'mywords' && <MyWordsSection showFrench={showFrench} />}
         {activeSubTab === 'trop' && <CantillationAnalysis verseText={verseText} verseRef={verseRef} />}
         {activeSubTab === 'textual' && <TextualAnalysisSection verseText={verseText} verseRef={verseRef} />}
+        {/* PRO SCHOLAR V6: Telemetry Dashboard (development only) */}
+        {activeSubTab === 'debug' && process.env.NODE_ENV === 'development' && (
+          <div className="debug-section">
+            <V6TelemetryDashboard
+              autoRefresh={true}
+              refreshInterval={5000}
+              compact={false}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

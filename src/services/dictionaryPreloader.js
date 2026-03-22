@@ -155,14 +155,19 @@ export const markPreloadComplete = () => {
  * Initialize preloading (call from App.js useEffect)
  * Loads ALL local dictionaries (Jastrow + BDB + Strong's = ~30k entries)
  * Only preloads common words if cache is cold
+ *
+ * PRO SCHOLAR V7: Uses unified dictionaryLoader (single source of truth)
+ * This avoids duplicate loading between scholarlyLexiconService and dictionaryLoader
  */
 export const initializePreload = async () => {
-  // PRIORITY 1: Load ALL local dictionaries in background
+  // PRIORITY 1: Load ALL local dictionaries via unified dictionaryLoader
   // This gives instant offline lookups for ~30,000 words
+  // NOTE: dictionaryLoader is the single source of truth for dictionary data
   try {
-    const { preloadDictionaries } = await import('./scholarlyLexiconService');
-    const stats = await preloadDictionaries();
-    log.info(`[Preload] Local dictionaries loaded: ${stats.totalEntries} entries (Jastrow: ${stats.jastrow.entries}, BDB: ${stats.bdb.entries}, Strong's: ${stats.strongs.entries})`);
+    const dictionaryLoader = await import('./dictionaryLoader');
+    await dictionaryLoader.preloadDictionaries();
+    const status = dictionaryLoader.getCacheStatus();
+    log.info(`[Preload] Local dictionaries loaded via dictionaryLoader: BDB=${status.bdb}, Jastrow=${status.jastrow}, Strongs=${status.strongs}`);
   } catch (e) {
     log.warn('[Preload] Could not load local dictionaries:', e.message);
   }

@@ -21,10 +21,25 @@
  * - Summary builder for each sugya
  * - Track mastery progress
  */
-import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, useRef, useEffect, lazy, Suspense } from 'react';
 import PropTypes from 'prop-types';
 import { findAbbreviations, expandAllAbbreviations } from '../../services/talmudicAbbreviationsService';
 import { detectStructuralMarkers, TALMUDIC_PATTERNS } from '../../services/discoursePatternService';
+
+// PRO SCHOLAR V6: Lazy-loaded advanced components for bundle optimization
+const CitationHighlighter = lazy(() => import('../study/CitationHighlighter'));
+// PRO SCHOLAR V6: Sage biographies and historical context panels
+const RabbiInfoPanel = lazy(() => import('./RabbiInfoPanel'));
+const RealiaPanel = lazy(() => import('./RealiaPanel'));
+
+// Loading fallback for lazy components
+const LazyLoadFallback = () => (
+  <div className="lazy-load-skeleton">
+    <div className="skeleton-bar" style={{ width: '60%', height: '20px', marginBottom: '8px' }} />
+    <div className="skeleton-bar" style={{ width: '80%', height: '16px', marginBottom: '8px' }} />
+    <div className="skeleton-bar" style={{ width: '70%', height: '16px' }} />
+  </div>
+);
 
 // =============================================================================
 // Constants - Hebrew Labels for Scholarly Interface
@@ -1913,6 +1928,256 @@ const BekiusSummary = React.memo(function BekiusSummary({ patterns, text, sugyaK
 });
 
 // =============================================================================
+// Realia Browser - Detects and displays measures/currency from text
+// =============================================================================
+
+const RealiaBrowser = React.memo(function RealiaBrowser({ text }) {
+  const [selectedTerm, setSelectedTerm] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Import detectRealiaInText from RealiaPanel
+  const detectedTerms = useMemo(() => {
+    if (!text) return [];
+    // Common Talmudic measures to search for
+    const commonTerms = [
+      'אמה', 'טפח', 'זרת', 'מיל', 'פרסה', 'ריס',
+      'סאה', 'קב', 'לוג', 'רביעית', 'כור', 'איפה',
+      'ככר', 'מנה', 'שקל', 'דינר', 'פרוטה', 'זוז', 'מעה',
+      'ליטרא', 'סלע'
+    ];
+    const found = [];
+    for (const term of commonTerms) {
+      if (text.includes(term)) {
+        found.push(term);
+      }
+    }
+    return [...new Set(found)];
+  }, [text]);
+
+  if (!text) {
+    return (
+      <div className="empty-state scholarly">
+        <div className="empty-icon">📏</div>
+        <div className="empty-title">מידות ומטבעות</div>
+        <p className="empty-text">נווט לטקסט תלמודי לזיהוי מידות, משקלות ומטבעות.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="realia-browser" dir="rtl">
+      <div className="browser-header">
+        <span className="header-icon">📏</span>
+        <span className="header-title">מידות ומטבעות</span>
+        {detectedTerms.length > 0 && (
+          <span className="header-count">נמצאו {detectedTerms.length}</span>
+        )}
+      </div>
+
+      {/* Search input */}
+      <div className="browser-search">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="חפש מידה או מטבע..."
+          className="search-input"
+          dir="rtl"
+        />
+      </div>
+
+      {/* Detected terms from text */}
+      {detectedTerms.length > 0 && (
+        <div className="detected-section">
+          <div className="section-title">נמצא בטקסט:</div>
+          <div className="term-chips">
+            {detectedTerms.map((term, i) => (
+              <button
+                key={i}
+                className={`term-chip ${selectedTerm === term ? 'active' : ''}`}
+                onClick={() => setSelectedTerm(selectedTerm === term ? null : term)}
+              >
+                {term}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Selected term panel */}
+      {selectedTerm && (
+        <Suspense fallback={<LazyLoadFallback />}>
+          <RealiaPanel
+            term={selectedTerm}
+            onClose={() => setSelectedTerm(null)}
+            onTermClick={(term) => setSelectedTerm(term)}
+            compact={false}
+          />
+        </Suspense>
+      )}
+
+      {/* Quick reference if no selection */}
+      {!selectedTerm && (
+        <div className="quick-reference">
+          <div className="ref-section">
+            <div className="ref-title">💰 מטבעות</div>
+            <div className="ref-list">
+              {['פרוטה', 'מעה', 'איסר', 'דינר', 'שקל', 'מנה', 'ככר'].map(term => (
+                <button key={term} className="ref-btn" onClick={() => setSelectedTerm(term)}>{term}</button>
+              ))}
+            </div>
+          </div>
+          <div className="ref-section">
+            <div className="ref-title">📏 אורך</div>
+            <div className="ref-list">
+              {['אצבע', 'טפח', 'זרת', 'אמה', 'מיל', 'פרסה'].map(term => (
+                <button key={term} className="ref-btn" onClick={() => setSelectedTerm(term)}>{term}</button>
+              ))}
+            </div>
+          </div>
+          <div className="ref-section">
+            <div className="ref-title">🫗 נפח</div>
+            <div className="ref-list">
+              {['רביעית', 'לוג', 'קב', 'סאה', 'כור'].map(term => (
+                <button key={term} className="ref-btn" onClick={() => setSelectedTerm(term)}>{term}</button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+});
+
+// =============================================================================
+// Rabbi Browser - Detects and displays sage biographies from text
+// =============================================================================
+
+const RabbiBrowser = React.memo(function RabbiBrowser({ text }) {
+  const [selectedRabbi, setSelectedRabbi] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Detect rabbi names in text
+  const detectedRabbis = useMemo(() => {
+    if (!text) return [];
+    // Common rabbi name patterns
+    const patterns = [
+      /רבי\s+[\u0590-\u05FF]+/g,
+      /רב\s+[\u0590-\u05FF]+/g,
+      /ר׳\s+[\u0590-\u05FF]+/g,
+      /רבן\s+[\u0590-\u05FF]+/g,
+      /אביי/g, /רבא/g, /רבינא/g, /רב אשי/g,
+      /הלל/g, /שמאי/g, /עקיבא/g
+    ];
+    const found = new Set();
+    for (const pattern of patterns) {
+      const matches = text.match(pattern);
+      if (matches) {
+        matches.forEach(m => found.add(m.trim()));
+      }
+    }
+    return [...found].slice(0, 10); // Limit to first 10
+  }, [text]);
+
+  if (!text) {
+    return (
+      <div className="empty-state scholarly">
+        <div className="empty-icon">👤</div>
+        <div className="empty-title">חכמי התלמוד</div>
+        <p className="empty-text">נווט לטקסט תלמודי לזיהוי שמות חכמים ותולדותיהם.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rabbi-browser" dir="rtl">
+      <div className="browser-header">
+        <span className="header-icon">👤</span>
+        <span className="header-title">חכמי התלמוד</span>
+        {detectedRabbis.length > 0 && (
+          <span className="header-count">נמצאו {detectedRabbis.length}</span>
+        )}
+      </div>
+
+      {/* Search input */}
+      <div className="browser-search">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && searchQuery.trim()) {
+              setSelectedRabbi(searchQuery.trim());
+            }
+          }}
+          placeholder="חפש חכם..."
+          className="search-input"
+          dir="rtl"
+        />
+        <button
+          className="search-btn"
+          onClick={() => searchQuery.trim() && setSelectedRabbi(searchQuery.trim())}
+        >
+          🔍
+        </button>
+      </div>
+
+      {/* Detected rabbis from text */}
+      {detectedRabbis.length > 0 && (
+        <div className="detected-section">
+          <div className="section-title">נמצא בטקסט:</div>
+          <div className="rabbi-chips">
+            {detectedRabbis.map((rabbi, i) => (
+              <button
+                key={i}
+                className={`rabbi-chip ${selectedRabbi === rabbi ? 'active' : ''}`}
+                onClick={() => setSelectedRabbi(selectedRabbi === rabbi ? null : rabbi)}
+              >
+                {rabbi}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Selected rabbi panel */}
+      {selectedRabbi && (
+        <Suspense fallback={<LazyLoadFallback />}>
+          <RabbiInfoPanel
+            rabbiName={selectedRabbi}
+            onClose={() => setSelectedRabbi(null)}
+            onNavigate={(name) => setSelectedRabbi(name)}
+            compact={false}
+          />
+        </Suspense>
+      )}
+
+      {/* Quick reference if no selection */}
+      {!selectedRabbi && detectedRabbis.length === 0 && (
+        <div className="quick-reference">
+          <div className="ref-section">
+            <div className="ref-title">📜 תנאים</div>
+            <div className="ref-list">
+              {['הלל', 'שמאי', 'רבי עקיבא', 'רבי מאיר', 'רבי יהודה'].map(name => (
+                <button key={name} className="ref-btn" onClick={() => setSelectedRabbi(name)}>{name}</button>
+              ))}
+            </div>
+          </div>
+          <div className="ref-section">
+            <div className="ref-title">📖 אמוראים</div>
+            <div className="ref-list">
+              {['אביי', 'רבא', 'רב', 'שמואל', 'רבינא', 'רב אשי'].map(name => (
+                <button key={name} className="ref-btn" onClick={() => setSelectedRabbi(name)}>{name}</button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+});
+
+// =============================================================================
 // Main TalmudToolsTab Component
 // =============================================================================
 
@@ -1975,6 +2240,14 @@ const TalmudToolsTab = React.memo(function TalmudToolsTab({ text, reference }) {
               {patternsCount > 0 && <span className="tab-badge">{patternsCount}</span>}
             </button>
             <button
+              className={`tab-btn ${activeView === 'citations' ? 'active' : ''}`}
+              onClick={() => setActiveView('citations')}
+              type="button"
+            >
+              <span className="tab-icon">📖</span>
+              <span className="tab-label">מקורות</span>
+            </button>
+            <button
               className={`tab-btn ${activeView === 'abbr' ? 'active' : ''}`}
               onClick={() => setActiveView('abbr')}
               type="button"
@@ -1991,12 +2264,43 @@ const TalmudToolsTab = React.memo(function TalmudToolsTab({ text, reference }) {
               <span className="tab-icon">📝</span>
               <span className="tab-label">הערות</span>
             </button>
+            <button
+              className={`tab-btn ${activeView === 'realia' ? 'active' : ''}`}
+              onClick={() => setActiveView('realia')}
+              type="button"
+            >
+              <span className="tab-icon">📏</span>
+              <span className="tab-label">מידות</span>
+            </button>
+            <button
+              className={`tab-btn ${activeView === 'rabbis' ? 'active' : ''}`}
+              onClick={() => setActiveView('rabbis')}
+              type="button"
+            >
+              <span className="tab-icon">👤</span>
+              <span className="tab-label">חכמים</span>
+            </button>
           </div>
 
           <div className="tab-content">
             {activeView === 'flow' && <SugyaFlowSection text={text} />}
+            {activeView === 'citations' && (
+              <Suspense fallback={<LazyLoadFallback />}>
+                <CitationHighlighter text={text} reference={reference} />
+              </Suspense>
+            )}
             {activeView === 'abbr' && <AbbreviationsSection text={text} />}
             {activeView === 'notes' && <StudyNotesPanel sugyaKey={sugyaKey} text={text} />}
+            {activeView === 'realia' && (
+              <Suspense fallback={<LazyLoadFallback />}>
+                <RealiaBrowser text={text} />
+              </Suspense>
+            )}
+            {activeView === 'rabbis' && (
+              <Suspense fallback={<LazyLoadFallback />}>
+                <RabbiBrowser text={text} />
+              </Suspense>
+            )}
           </div>
         </>
       )}

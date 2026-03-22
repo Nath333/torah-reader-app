@@ -1,0 +1,404 @@
+/* =============================================================================
+   WEAK VERB INDICATOR - PRO SCHOLAR V6 Styles
+   ============================================================================= */
+
+.weak-verb-indicator {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 12px 0;
+}
+
+/* =============================================================================
+   HEADER
+   ============================================================================= */
+
+.weak-verb-indicator .indicator-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.weak-verb-indicator .header-icon {
+  font-size: 1.3rem;
+}
+
+.weak-verb-indicator .header-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e0e7ff;
+  flex: 1;
+}
+
+.weak-verb-indicator .pattern-count {
+  font-size: 0.75rem;
+  color: #a5b4fc;
+  padding: 3px 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+}
+
+/* =============================================================================
+   COMPACT MODE
+   ============================================================================= */
+
+.weak-verb-indicator.compact {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  margin: 0;
+  border-radius: 20px;
+  background: rgba(30, 27, 75, 0.8);
+}
+
+.weak-verb-indicator.compact .indicator-label {
+  font-size: 0.75rem;
+  color: #a5b4fc;
+  font-weight: 500;
+}
+
+.weak-verb-indicator.compact .pattern-badges {
+  display: flex;
+  gap: 4px;
+}
+
+/* =============================================================================
+   PATTERN BADGE
+   ============================================================================= */
+
+.weak-verb-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--pattern-color, #8B5CF6);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.weak-verb-badge:hover {
+  background: rgba(0, 0, 0, 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.weak-verb-badge .badge-icon {
+  font-size: 0.85rem;
+}
+
+.weak-verb-badge .badge-code {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--pattern-color, #a5b4fc);
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  direction: rtl;
+}
+
+/* =============================================================================
+   TRANSFORMATION DIAGRAM
+   ============================================================================= */
+
+.transformation-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  margin-bottom: 14px;
+}
+
+.transformation-diagram .transform-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.transformation-diagram .step-label {
+  font-size: 0.7rem;
+  color: #a5b4fc;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.transformation-diagram .step-form {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #e0e7ff;
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  direction: rtl;
+  padding: 8px 16px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+}
+
+.transformation-diagram .original .step-form {
+  border: 2px solid rgba(139, 92, 246, 0.4);
+}
+
+.transformation-diagram .result .step-form {
+  border: 2px solid var(--pattern-color, #8B5CF6);
+  color: var(--pattern-color, #e0e7ff);
+}
+
+.transformation-diagram .transform-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.transformation-diagram .arrow-icon {
+  font-size: 1.5rem;
+  color: #a5b4fc;
+}
+
+.transformation-diagram .arrow-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--pattern-color, #a5b4fc);
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  direction: rtl;
+}
+
+/* =============================================================================
+   PATTERN DETAIL CARD
+   ============================================================================= */
+
+.pattern-detail-card {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--pattern-color, rgba(139, 92, 246, 0.3));
+  border-radius: 10px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.pattern-detail-card.expanded {
+  border-color: var(--pattern-color);
+}
+
+.pattern-detail-card .card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 14px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.pattern-detail-card .card-header:hover {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.pattern-detail-card .header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pattern-detail-card .pattern-icon {
+  font-size: 1.3rem;
+}
+
+.pattern-detail-card .pattern-titles {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.pattern-detail-card .pattern-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e0e7ff;
+}
+
+.pattern-detail-card .pattern-hebrew {
+  font-size: 0.8rem;
+  color: var(--pattern-color, #a5b4fc);
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  direction: rtl;
+}
+
+.pattern-detail-card .expand-icon {
+  font-size: 0.7rem;
+  color: #a5b4fc;
+  transition: transform 0.2s ease;
+}
+
+.pattern-detail-card .expand-icon.rotated {
+  transform: rotate(180deg);
+}
+
+/* Card Content */
+.pattern-detail-card .card-content {
+  padding: 0 14px 14px;
+  border-top: 1px solid rgba(139, 92, 246, 0.15);
+  animation: slide-down 0.2s ease;
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pattern-detail-card .pattern-description {
+  font-size: 0.85rem;
+  color: #c4b5fd;
+  margin: 12px 0;
+  line-height: 1.5;
+}
+
+.pattern-detail-card .pattern-explanation {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.pattern-detail-card .explanation-label {
+  font-size: 0.7rem;
+  color: #a5b4fc;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pattern-detail-card .explanation-text {
+  font-size: 0.85rem;
+  color: #e0e7ff;
+  line-height: 1.4;
+}
+
+/* Example Section */
+.pattern-detail-card .pattern-example {
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 12px;
+}
+
+.pattern-detail-card .example-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.pattern-detail-card .example-root {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--pattern-color, #e0e7ff);
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  direction: rtl;
+}
+
+.pattern-detail-card .example-meaning {
+  font-size: 0.85rem;
+  color: #a5b4fc;
+  font-style: italic;
+}
+
+.pattern-detail-card .example-forms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pattern-detail-card .example-form {
+  padding: 4px 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  font-size: 1rem;
+  color: #e0e7ff;
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  direction: rtl;
+}
+
+/* Common Verbs */
+.pattern-detail-card .common-verbs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pattern-detail-card .common-label {
+  font-size: 0.7rem;
+  color: #a5b4fc;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pattern-detail-card .common-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pattern-detail-card .common-verb {
+  padding: 3px 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #c4b5fd;
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  direction: rtl;
+}
+
+/* =============================================================================
+   PATTERN CARDS CONTAINER
+   ============================================================================= */
+
+.weak-verb-indicator .pattern-cards {
+  display: flex;
+  flex-direction: column;
+}
+
+/* =============================================================================
+   RESPONSIVE
+   ============================================================================= */
+
+@media (max-width: 600px) {
+  .weak-verb-indicator {
+    padding: 12px;
+  }
+
+  .transformation-diagram {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .transformation-diagram .transform-arrow {
+    flex-direction: row;
+  }
+
+  .transformation-diagram .arrow-icon {
+    transform: rotate(90deg);
+  }
+
+  .pattern-detail-card .example-forms {
+    flex-direction: column;
+  }
+}

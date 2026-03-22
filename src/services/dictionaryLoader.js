@@ -62,7 +62,7 @@ async function loadDictionary(name) {
 
   // Start loading
   loadingState[name] = true;
-  log(`Loading ${name} dictionary...`);
+  log.debug(`Loading ${name} dictionary...`);
 
   const fileName = {
     bdb: 'bdbComplete.json',
@@ -81,7 +81,7 @@ async function loadDictionary(name) {
       cache[name] = data;
       loadingState[name] = false;
       loadingPromises[name] = null;
-      log(`Loaded ${name}: ${Object.keys(data.byWord || data).length} entries`);
+      log.debug(`Loaded ${name}: ${Object.keys(data.byWord || data).length} entries`);
       return data;
     })
     .catch(error => {
@@ -239,13 +239,13 @@ export function lookupStrongsSync(word) {
  * @returns {Promise<void>}
  */
 export async function preloadDictionaries() {
-  log('Preloading all dictionaries...');
+  log.debug('Preloading all dictionaries...');
   await Promise.all([
     loadDictionary('bdb').catch(() => null),
     loadDictionary('jastrow').catch(() => null),
     loadDictionary('strongs').catch(() => null)
   ]);
-  log('All dictionaries preloaded');
+  log.debug('All dictionaries preloaded');
 }
 
 /**
@@ -293,13 +293,42 @@ export function getCacheStatus() {
 export function clearCache(name) {
   if (name) {
     cache[name] = null;
-    log(`Cleared ${name} cache`);
+    log.debug(`Cleared ${name} cache`);
   } else {
     cache.bdb = null;
     cache.jastrow = null;
     cache.strongs = null;
-    log('Cleared all dictionary caches');
+    log.debug('Cleared all dictionary caches');
   }
+}
+
+// =============================================================================
+// RAW DATA ACCESS (for morphological analysis)
+// =============================================================================
+
+/**
+ * Get raw BDB dictionary data (for morphological lookups)
+ * Returns null if not yet loaded - use preloadDictionaries() first
+ * @returns {Object|null} BDB dictionary with byWord and byStrongs indexes
+ */
+export function getBDBData() {
+  return cache.bdb;
+}
+
+/**
+ * Get raw Jastrow dictionary data (for morphological lookups)
+ * @returns {Object|null} Jastrow dictionary
+ */
+export function getJastrowData() {
+  return cache.jastrow;
+}
+
+/**
+ * Get raw Strong's dictionary data (for morphological lookups)
+ * @returns {Object|null} Strong's dictionary with byWord and byNumber indexes
+ */
+export function getStrongsData() {
+  return cache.strongs;
 }
 
 // =============================================================================
@@ -340,17 +369,20 @@ const dictionaryLoader = {
   lookupBDBByWord,
   lookupBDBByStrongs,
   lookupBDBSync,
+  getBDBData,
 
   // Jastrow
   getJastrow,
   lookupJastrowByWord,
   lookupJastrowSync,
+  getJastrowData,
 
   // Strong's
   getStrongs,
   lookupStrongsByWord,
   lookupStrongsByNumber,
   lookupStrongsSync,
+  getStrongsData,
 
   // Utilities
   preloadDictionaries,
