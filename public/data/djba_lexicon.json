@@ -6,7 +6,7 @@
     "year": 2002,
     "publisher": "Johns Hopkins University Press",
     "description": "Comprehensive dictionary of Babylonian Talmud Aramaic - essential for Talmud study",
-    "entries": 400,
+    "entries": 450,
     "tier": 1,
     "note": "Academic Tier 1 - Primary source for Talmudic Aramaic"
   },
@@ -624,6 +624,360 @@
     "definition": "according to everyone",
     "fullDefinition": "According to everyone's opinion, universally agreed",
     "examples": "דכולי עלמא לא פליגי - according to everyone there is no dispute",
+    "source": "DJBA"
+  },
+  "נפק": {
+    "lemma": "נְפַק",
+    "key": "נפק",
+    "pos": "verb",
+    "definition": "to go out, exit, derive",
+    "fullDefinition": "Peal: to go out, exit, leave, emerge. Aphel (אפיק/תפיק): to bring out, remove, derive. Pe-Nun verb (פ״נ): the initial נ assimilates in Aphel forms.",
+    "binyanim": {
+      "peal": { "meaning": "go out, exit", "forms": ["נפק", "נפיק", "נפקי", "נפקא", "נפקינן"] },
+      "aphel": { "meaning": "bring out, remove, derive", "forms": ["אפיק", "תפיק", "מפיק", "תפיקו", "מפקינן", "לאפוקי"] }
+    },
+    "weakVerbType": "פ״נ",
+    "talmudic_usage": "Extremely common. נפקא מינה = practical difference; נפקא לן = we derive; לאפוקי = to exclude",
+    "examples": "מאי נפקא מינה - what practical difference?; תפיקו - you shall bring out; לאפוקי מאי - to exclude what?",
+    "related": ["נפקא מינה", "לאפוקי", "מפיק"],
+    "hebrewEquivalent": "יצא",
+    "source": "DJBA"
+  },
+  "אפיק": {
+    "lemma": "אַפֵּיק",
+    "key": "אפיק",
+    "pos": "verb",
+    "definition": "to bring out, remove (Aphel of נפק)",
+    "fullDefinition": "Aphel (causative) of נפק: to bring out, remove, derive, exclude. Common in halachic discourse.",
+    "binyan": "aphel",
+    "root": "נפק",
+    "weakVerbType": "פ״נ",
+    "talmudic_usage": "Used for exclusion in legal reasoning",
+    "examples": "לאפוקי - to exclude; אפיק ליה - he removed it",
+    "source": "DJBA"
+  },
+  "תפיק": {
+    "lemma": "תַּפֵּיק",
+    "key": "תפיק",
+    "pos": "verb form",
+    "definition": "you will bring out, it will bring out (Aphel of נפק)",
+    "fullDefinition": "Aphel imperfect of נפק: 2ms/3fs 'you/it will bring out'. Common in Biblical quotations in Talmud.",
+    "binyan": "aphel",
+    "root": "נפק",
+    "conjugation": "imperfect 2ms/3fs",
+    "weakVerbType": "פ״נ",
+    "examples": "לא תפיקו - you shall not bring out",
+    "source": "DJBA"
+  },
+  "מפיק": {
+    "lemma": "מַפֵּיק",
+    "key": "מפיק",
+    "pos": "verb form",
+    "definition": "one who brings out, bringing out (Aphel participle of נפק)",
+    "fullDefinition": "Aphel participle of נפק: one who brings out, derives. Also grammatical term for mappiq (dot in final ה).",
+    "binyan": "aphel",
+    "root": "נפק",
+    "conjugation": "participle",
+    "weakVerbType": "פ״נ",
+    "examples": "מפיק לה - he derives it",
+    "source": "DJBA"
+  },
+  "לאפוקי": {
+    "lemma": "לְאַפּוּקֵי",
+    "key": "לאפוקי",
+    "pos": "expression",
+    "definition": "to exclude, to the exclusion of",
+    "fullDefinition": "Infinitive of Aphel נפק with preposition: to exclude, to the exclusion of. Extremely common in Talmudic reasoning.",
+    "root": "נפק",
+    "talmudic_usage": "Technical term for exclusionary reasoning",
+    "examples": "לאפוקי מאי - to exclude what?; לאפוקי רבי יהודה - to exclude Rabbi Yehuda's opinion",
+    "source": "DJBA"
+  },
+  "נפקא": {
+    "lemma": "נָפְקָא",
+    "key": "נפקא",
+    "pos": "verb form",
+    "definition": "it goes out, it derives (3fs of נפק)",
+    "fullDefinition": "Third person feminine singular of נפק. In Talmudic usage: 'it derives', 'the result is'.",
+    "binyan": "peal",
+    "root": "נפק",
+    "conjugation": "perfect 3fs",
+    "talmudic_usage": "Used in derivational contexts - נפקא לן = we derive",
+    "examples": "נפקא לן מהכא - we derive from here; נפקא מינה - the practical difference",
+    "source": "DJBA"
+  },
+  "עבד": {
+    "lemma": "עֲבַד",
+    "key": "עבד",
+    "pos": "verb",
+    "definition": "to do, make, work, act",
+    "fullDefinition": "Peal: to do, make, work. Ithpael: to be done. Aramaic equivalent of Hebrew עשה.",
+    "binyanim": {
+      "peal": { "meaning": "do, make", "forms": ["עבד", "עביד", "עבדי", "עבדינן"] },
+      "ithpael": { "meaning": "be done", "forms": ["איתעביד", "מתעביד"] }
+    },
+    "talmudic_usage": "מאי עביד - what does he do?; עובדא הוה - there was an incident",
+    "examples": "עביד - he does; הכי עבדינן - thus we do",
+    "hebrewEquivalent": "עשה",
+    "source": "DJBA"
+  },
+  "עביד": {
+    "lemma": "עָבֵיד",
+    "key": "עביד",
+    "pos": "verb form",
+    "definition": "does, makes (participle of עבד)",
+    "fullDefinition": "Active participle of עבד: doing, making. Very common form.",
+    "binyan": "peal",
+    "root": "עבד",
+    "conjugation": "participle",
+    "examples": "עביד הכי - he does thus; מאי עביד - what is he doing?",
+    "source": "DJBA"
+  },
+  "אזל": {
+    "lemma": "אֲזַל",
+    "key": "אזל",
+    "pos": "verb",
+    "definition": "to go, walk, proceed",
+    "fullDefinition": "Peal: to go, walk, proceed, depart. Aramaic equivalent of Hebrew הלך.",
+    "binyanim": {
+      "peal": { "meaning": "go, walk", "forms": ["אזל", "אזיל", "אזלי", "אזלינן"] }
+    },
+    "talmudic_usage": "Narrative verb for motion",
+    "examples": "אזל - he went; אזיל - he goes",
+    "hebrewEquivalent": "הלך",
+    "source": "DJBA"
+  },
+  "אתא": {
+    "lemma": "אֲתָא",
+    "key": "אתא",
+    "pos": "verb",
+    "definition": "to come, arrive",
+    "fullDefinition": "Peal: to come, arrive, approach. Aramaic equivalent of Hebrew בא.",
+    "binyanim": {
+      "peal": { "meaning": "come, arrive", "forms": ["אתא", "אתי", "אתו", "אתינן"] }
+    },
+    "talmudic_usage": "Common in narrative and derivation (מהכא אתי - from here it comes)",
+    "examples": "אתא - he came; אתי למימר - it comes to say",
+    "hebrewEquivalent": "בא",
+    "source": "DJBA"
+  },
+  "יהב": {
+    "lemma": "יְהַב",
+    "key": "יהב",
+    "pos": "verb",
+    "definition": "to give, place, set",
+    "fullDefinition": "Peal: to give, place, put. Aramaic equivalent of Hebrew נתן.",
+    "binyanim": {
+      "peal": { "meaning": "give, place", "forms": ["יהב", "יהיב", "יהבי", "יהבינן"] }
+    },
+    "talmudic_usage": "Common verb for giving, placing",
+    "examples": "יהב ליה - he gave to him; יהבינן - we give",
+    "hebrewEquivalent": "נתן",
+    "source": "DJBA"
+  },
+  "נסב": {
+    "lemma": "נְסַב",
+    "key": "נסב",
+    "pos": "verb",
+    "definition": "to take, marry, receive",
+    "fullDefinition": "Peal: to take, take in marriage, receive. Aramaic equivalent of Hebrew לקח.",
+    "binyanim": {
+      "peal": { "meaning": "take, marry", "forms": ["נסב", "נסיב", "נסבי", "נסיבנא"] }
+    },
+    "talmudic_usage": "נסיב איתתא - he married a woman",
+    "examples": "נסב - he took; נסיב - he takes/marries",
+    "hebrewEquivalent": "לקח",
+    "source": "DJBA"
+  },
+  "חזא": {
+    "lemma": "חֲזָא",
+    "key": "חזא",
+    "pos": "verb",
+    "definition": "to see, perceive, understand",
+    "fullDefinition": "Peal: to see, perceive, understand. Common in TA (תא חזי - come and see).",
+    "binyanim": {
+      "peal": { "meaning": "see, perceive", "forms": ["חזא", "חזי", "חזינן", "חזית"] }
+    },
+    "talmudic_usage": "תא חזי - come and see (introducing proof)",
+    "examples": "חזי - see!; חזינן - we see",
+    "hebrewEquivalent": "ראה",
+    "source": "DJBA"
+  },
+  "ידע": {
+    "lemma": "יְדַע",
+    "key": "ידע",
+    "pos": "verb",
+    "definition": "to know, understand, recognize",
+    "fullDefinition": "Peal: to know, understand. Very common in Talmudic argumentation.",
+    "binyanim": {
+      "peal": { "meaning": "know, understand", "forms": ["ידע", "ידעי", "ידעינן", "ידעת"] }
+    },
+    "talmudic_usage": "ידעינן - we know; מנא ידעינן - from where do we know?",
+    "examples": "ידע - he knows; לא ידענא - I don't know",
+    "hebrewEquivalent": "ידע",
+    "source": "DJBA"
+  },
+  "בעא": {
+    "lemma": "בְּעָא",
+    "key": "בעא",
+    "pos": "verb",
+    "definition": "to seek, ask, request, want",
+    "fullDefinition": "Peal: to seek, ask, request. Common in בעא מיניה (he asked him) and איבעיא להו (they asked).",
+    "binyanim": {
+      "peal": { "meaning": "seek, ask", "forms": ["בעא", "בעי", "בעינן", "מיבעיא"] }
+    },
+    "talmudic_usage": "בעא מיניה - he asked him; איבעיא להו - it was asked",
+    "examples": "בעא - he sought/asked; מיבעיא - it is asked",
+    "hebrewEquivalent": "בקש",
+    "source": "DJBA"
+  },
+  "יתב": {
+    "lemma": "יְתַב",
+    "key": "יתב",
+    "pos": "verb",
+    "definition": "to sit, dwell, settle",
+    "fullDefinition": "Peal: to sit, dwell. Aphel (אותיב): to seat, cause to sit, raise an objection (figuratively 'seat' a problem).",
+    "binyanim": {
+      "peal": { "meaning": "sit, dwell", "forms": ["יתב", "יתיב", "יתבי"] },
+      "aphel": { "meaning": "seat, object", "forms": ["אותיב", "מותיב", "מותבינן"] }
+    },
+    "talmudic_usage": "יתיב וקאמר - he sat and said; מותיב - he raised an objection",
+    "examples": "יתיב - he sits; מותבינן - we raise an objection",
+    "hebrewEquivalent": "ישב",
+    "source": "DJBA"
+  },
+  "קום": {
+    "lemma": "קוּם",
+    "key": "קום",
+    "pos": "verb",
+    "definition": "to stand, rise, establish",
+    "fullDefinition": "Peal: to stand, rise, exist. Common in קאי (he stands) and קיימא לן (it is established for us).",
+    "binyanim": {
+      "peal": { "meaning": "stand, rise", "forms": ["קם", "קאי", "קיימי", "קיימא"] }
+    },
+    "talmudic_usage": "קיימא לן - we hold (as established law)",
+    "examples": "קאי - he stands; קיימא לן - we hold",
+    "hebrewEquivalent": "קם",
+    "source": "DJBA"
+  },
+  "סבר": {
+    "lemma": "סְבַר",
+    "key": "סבר",
+    "pos": "verb",
+    "definition": "to think, hold, be of opinion",
+    "fullDefinition": "Peal: to think, hold an opinion, reason. Fundamental verb for expressing legal opinions.",
+    "binyanim": {
+      "peal": { "meaning": "think, hold opinion", "forms": ["סבר", "סברי", "סבירא ליה"] }
+    },
+    "talmudic_usage": "סבר לה כוותיה - he holds like him; סבירא ליה - he is of the opinion",
+    "examples": "סבר - he thinks; מאי סבר - what does he think?",
+    "related": ["סברא"],
+    "source": "DJBA"
+  },
+  "קרי": {
+    "lemma": "קְרִי",
+    "key": "קרי",
+    "pos": "verb",
+    "definition": "to read, call, recite Scripture",
+    "fullDefinition": "Peal: to read, call, recite. Common for citing Scripture and Mishnah.",
+    "binyanim": {
+      "peal": { "meaning": "read, call", "forms": ["קרי", "קרא", "קרינן"] }
+    },
+    "talmudic_usage": "קרי ליה - he calls it; קרינן ביה - we read in it (apply the verse)",
+    "examples": "קרי - he reads/calls; קרינן - we read",
+    "related": ["קריאה", "מקרא"],
+    "source": "DJBA"
+  },
+  "עאל": {
+    "lemma": "עָאֵל",
+    "key": "עאל",
+    "pos": "verb",
+    "definition": "to enter, go in",
+    "fullDefinition": "Peal: to enter, go in. Opposite of נפק (go out).",
+    "binyanim": {
+      "peal": { "meaning": "enter", "forms": ["עאל", "עייל", "עיילי", "עיילינן"] }
+    },
+    "talmudic_usage": "עייל ונפיק - he goes in and out",
+    "examples": "עאל - he entered; עייל - he enters",
+    "hebrewEquivalent": "בא/נכנס",
+    "related": ["נפק"],
+    "source": "DJBA"
+  },
+  "שמע": {
+    "lemma": "שְׁמַע",
+    "key": "שמע",
+    "pos": "verb",
+    "definition": "to hear, listen, obey",
+    "fullDefinition": "Peal: to hear, listen, accept. Common in תא שמע (come and hear) introducing proof.",
+    "binyanim": {
+      "peal": { "meaning": "hear, listen", "forms": ["שמע", "שמעי", "שמעינן", "שמעת"] }
+    },
+    "talmudic_usage": "תא שמע - come and hear (introducing proof text)",
+    "examples": "שמע מינה - learn from this; תא שמע - come and hear",
+    "related": ["שמעתא", "שמעתתא"],
+    "source": "DJBA"
+  },
+  "אמרי": {
+    "lemma": "אָמְרִי",
+    "key": "אמרי",
+    "pos": "verb form",
+    "definition": "they say, we say (plural of אמר)",
+    "fullDefinition": "Plural form of אמר: they say, we say. Very common in Talmudic discourse.",
+    "binyan": "peal",
+    "root": "אמר",
+    "conjugation": "perfect 3cp/1cp",
+    "talmudic_usage": "אמרי לה - some say; אמרי במערבא - they say in the West (Israel)",
+    "examples": "אמרי - they say; איכא דאמרי - some say",
+    "source": "DJBA"
+  },
+  "הוה": {
+    "lemma": "הֲוָה",
+    "key": "הוה",
+    "pos": "verb",
+    "definition": "to be, exist, become, happen",
+    "fullDefinition": "Peal: to be, exist, happen, become. Fundamental existential verb in Aramaic.",
+    "binyanim": {
+      "peal": { "meaning": "be, become", "forms": ["הוה", "הוי", "הויא", "הוו", "להוי"] }
+    },
+    "talmudic_usage": "עובדא הוה - there was an incident; הכי הוה - thus it was",
+    "examples": "הוה אמינא - I would have said; מהו דתימא - what might you have thought",
+    "hebrewEquivalent": "היה",
+    "source": "DJBA"
+  },
+  "אית": {
+    "lemma": "אִית",
+    "key": "אית",
+    "pos": "particle",
+    "definition": "there is, there are; to have (with ל)",
+    "fullDefinition": "Existential particle: there is/are. With dative: to have (אית ליה = he has).",
+    "talmudic_usage": "אית ליה - he has; אית דאמרי - there are those who say",
+    "examples": "אית ליה - he has; אית לן למימר - we can say",
+    "opposite": "לית",
+    "source": "DJBA"
+  },
+  "לית": {
+    "lemma": "לֵית",
+    "key": "לית",
+    "pos": "particle",
+    "definition": "there is not, there are not; to not have",
+    "fullDefinition": "Negative existential particle: there is not. With dative: to not have (לית ליה = he doesn't have).",
+    "talmudic_usage": "לית ליה - he doesn't have; לית הלכתא - the halacha is not",
+    "examples": "לית ליה - he doesn't have; ליתא - it is not so",
+    "opposite": "אית",
+    "source": "DJBA"
+  },
+  "גמר": {
+    "lemma": "גְּמַר",
+    "key": "גמר",
+    "pos": "verb",
+    "definition": "to learn, derive, complete",
+    "fullDefinition": "Peal: to learn, derive (by gezera shava or other hermeneutic); to complete. Root of גמרא.",
+    "binyanim": {
+      "peal": { "meaning": "learn, complete", "forms": ["גמר", "גמיר", "גמרי", "גמרינן"] }
+    },
+    "talmudic_usage": "גמירי - we learned by tradition; גזירה שוה גמיר - he derives by gezera shava",
+    "examples": "גמר מיניה - he learned from him; גמרינן - we learn",
+    "related": ["גמרא"],
     "source": "DJBA"
   }
 }

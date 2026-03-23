@@ -5,10 +5,18 @@
 // =============================================================================
 
 import { createCache } from '../utils/cache';
-import * as pdfjsLib from 'pdfjs-dist';
 
-// Configure PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+// PDF.js is lazy-loaded only when needed for PDF parsing
+// This saves ~500KB from the initial bundle
+let pdfjsLib = null;
+
+async function loadPdfJs() {
+  if (pdfjsLib) return pdfjsLib;
+  pdfjsLib = await import('pdfjs-dist');
+  // Configure PDF.js worker after lazy load
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+  return pdfjsLib;
+}
 
 // =============================================================================
 // TRACTATE MAPPINGS - halakhah.com URL paths
@@ -419,6 +427,9 @@ const fetchAndParsePdf = async (tractate, daf) => {
   console.log(`[Soncino] Fetching PDF from: ${pdfUrl}`);
 
   try {
+    // Lazy-load PDF.js only when needed
+    const pdfjs = await loadPdfJs();
+
     // Fetch PDF as ArrayBuffer
     const response = await fetch(pdfUrl);
     if (!response.ok) {
@@ -428,7 +439,7 @@ const fetchAndParsePdf = async (tractate, daf) => {
     const arrayBuffer = await response.arrayBuffer();
 
     // Load PDF with pdf.js
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
     console.log(`[Soncino] PDF loaded: ${pdf.numPages} pages`);
 
     // Calculate which page in the PDF corresponds to our daf

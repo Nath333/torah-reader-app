@@ -10,6 +10,8 @@ import './App.css';
 
 // Services - PRO SCHOLAR V8: Use dictionaryLoader (consolidated from dictionaryPreloader)
 import { initializePreload } from './services/dictionaryLoader';
+// PRO SCHOLAR V7: Preload common words for faster lookup
+import { preloadCommonWords } from './services/unifiedLookupService';
 
 // Context
 import { useTorah } from './context/TorahContext';
@@ -115,6 +117,10 @@ function App() {
   // Initialize dictionary preloading on mount
   useEffect(() => {
     initializePreload();
+    // PRO SCHOLAR V7: Preload common words for faster lookups
+    preloadCommonWords().catch(err => {
+      console.debug('[App] Preload error:', err.message);
+    });
   }, []);
 
   // =============================================================================

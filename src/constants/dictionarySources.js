@@ -41,7 +41,7 @@ export const RELIABILITY_TIERS = {
     bgColor: 'rgba(5, 150, 105, 0.08)',
     description: 'Published scholarly dictionary, peer-reviewed',
     explanation: 'Primary research sources cited in academic papers',
-    examples: ['Jastrow', 'BDB', 'CAL', 'HALOT'],
+    examples: ['Jastrow', 'BDB', 'CAL', 'HALOT', 'DJBA', 'DJPA'],
     baseConfidence: 95
   },
   scholarly: {
@@ -55,7 +55,7 @@ export const RELIABILITY_TIERS = {
     bgColor: 'rgba(8, 145, 178, 0.08)',
     description: 'Academic concordance or reference work',
     explanation: 'Widely used in academic and religious study',
-    examples: ["Strong's", 'Klein', 'Steinsaltz'],
+    examples: ["Strong's", 'Klein', 'Steinsaltz', 'TWOT', 'Targum'],
     baseConfidence: 85
   },
   curated: {
@@ -281,6 +281,69 @@ export const DICTIONARY_SOURCES = {
     specialization: 'Biblical Hebrew grammar',
     citations: 'Foundational Hebrew grammar reference',
     language: ['hebrew']
+  },
+
+  // PRO SCHOLAR V11: New Tier 1 Academic Sources (Sokoloff)
+  djba: {
+    name: 'DJBA',
+    fullName: 'Dictionary of Jewish Babylonian Aramaic',
+    shortName: 'DJBA',
+    author: 'Michael Sokoloff',
+    year: 2002,
+    type: SOURCE_TYPES.LEXICON,
+    reliability: 'academic',
+    color: '#7c3aed',
+    specialization: 'Babylonian Talmud Aramaic',
+    entries: '~15,000',
+    citations: 'Definitive modern Babylonian Aramaic dictionary',
+    isAramaic: true,
+    language: ['aramaic']
+  },
+
+  djpa: {
+    name: 'DJPA',
+    fullName: 'Dictionary of Jewish Palestinian Aramaic',
+    shortName: 'DJPA',
+    author: 'Michael Sokoloff',
+    year: 2002,
+    type: SOURCE_TYPES.LEXICON,
+    reliability: 'academic',
+    color: '#0891b2',
+    specialization: 'Jerusalem Talmud & Midrash Aramaic',
+    entries: '~12,000',
+    citations: 'Definitive modern Palestinian Aramaic dictionary',
+    isAramaic: true,
+    language: ['aramaic']
+  },
+
+  // PRO SCHOLAR V11: New Tier 2 Scholarly Sources
+  twot: {
+    name: 'TWOT',
+    fullName: 'Theological Wordbook of the Old Testament',
+    shortName: 'TWOT',
+    author: 'Harris, Archer, Waltke',
+    year: 1980,
+    type: SOURCE_TYPES.LEXICON,
+    reliability: 'scholarly',
+    color: '#059669',
+    specialization: 'Theological word studies',
+    entries: '~2,000',
+    citations: 'Standard for theological word analysis',
+    language: ['hebrew']
+  },
+
+  targum: {
+    name: 'Targum',
+    fullName: 'Targum Lexicon',
+    shortName: 'Targum',
+    year: 2024,
+    type: SOURCE_TYPES.LEXICON,
+    reliability: 'scholarly',
+    color: '#ea580c',
+    specialization: 'Targumic Aramaic vocabulary',
+    citations: 'Vocabulary from Aramaic Bible translations',
+    isAramaic: true,
+    language: ['aramaic']
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -566,6 +629,10 @@ export const getSourceInfo = (sourceName) => {
     'cal': 'cal',
     'halot': 'halot',
     'gesenius': 'gesenius',
+    'djba': 'djba',
+    'djpa': 'djpa',
+    'twot': 'twot',
+    'targum': 'targum',
     'klein': 'klein',
     'steinsaltz': 'steinsaltz',
     'sefaria': 'sefaria',

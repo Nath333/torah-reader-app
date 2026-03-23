@@ -32,6 +32,13 @@ const cache = {
   strongLexicon: null,
   calAramaic: null,
   jastrowAramaic: null,
+  // PRO SCHOLAR V11: New Academic Sources
+  halotLexicon: null,     // HALOT - Modern academic standard (Tier 1)
+  djbaLexicon: null,      // DJBA - Sokoloff's Babylonian Aramaic (Tier 1)
+  djpaLexicon: null,      // DJPA - Sokoloff's Palestinian Aramaic (Tier 1)
+  geseniusLexicon: null,  // Gesenius - Classical Hebrew grammar (Tier 2)
+  twotLexicon: null,      // TWOT - Theological wordbook (Tier 2)
+  targumLexicon: null,    // Targum vocabulary (Tier 2)
   // Scholarly data (lazy-loaded from JSON)
   rootMeanings: null,
   semanticFields: null,
@@ -51,6 +58,13 @@ const loadingPromises = {
   strongLexicon: null,
   calAramaic: null,
   jastrowAramaic: null,
+  // PRO SCHOLAR V11: New Academic Sources
+  halotLexicon: null,
+  djbaLexicon: null,
+  djpaLexicon: null,
+  geseniusLexicon: null,
+  twotLexicon: null,
+  targumLexicon: null,
   rootMeanings: null,
   semanticFields: null,
   rabbiBiographies: null,
@@ -69,6 +83,13 @@ const loadingState = {
   strongLexicon: false,
   calAramaic: false,
   jastrowAramaic: false,
+  // PRO SCHOLAR V11: New Academic Sources
+  halotLexicon: false,
+  djbaLexicon: false,
+  djpaLexicon: false,
+  geseniusLexicon: false,
+  twotLexicon: false,
+  targumLexicon: false,
   rootMeanings: false,
   semanticFields: false,
   rabbiBiographies: false,
@@ -111,6 +132,13 @@ async function loadDictionary(name) {
     strongLexicon: 'strong_lexicon.json',
     calAramaic: 'cal_aramaic.json',
     jastrowAramaic: 'jastrow_aramaic.json',
+    // PRO SCHOLAR V11: New Academic Sources (Tier 1 & 2)
+    halotLexicon: 'halot_lexicon.json',       // HALOT - Modern academic standard
+    djbaLexicon: 'djba_lexicon.json',         // DJBA - Sokoloff's Babylonian Aramaic
+    djpaLexicon: 'djpa_lexicon.json',         // DJPA - Sokoloff's Palestinian Aramaic
+    geseniusLexicon: 'gesenius_lexicon.json', // Gesenius - Classical Hebrew grammar
+    twotLexicon: 'twot_lexicon.json',         // TWOT - Theological wordbook
+    targumLexicon: 'targum_lexicon.json',     // Targum vocabulary
     // Scholarly data extracted from data/*.js
     rootMeanings: 'root_meanings.json',
     semanticFields: 'semantic_fields.json',
@@ -350,6 +378,73 @@ export function getCALAramaicData() { return cache.calAramaic; }
 export function getJastrowAramaicData() { return cache.jastrowAramaic; }
 
 // =============================================================================
+// PRO SCHOLAR V11: NEW ACADEMIC SOURCES
+// =============================================================================
+
+/**
+ * Get HALOT data - Modern academic standard (Tier 1)
+ * Hebrew and Aramaic Lexicon of the Old Testament (Koehler-Baumgartner)
+ * @returns {Promise<Object>} HALOT dictionary
+ */
+export async function getHALOTLexicon() {
+  return loadDictionary('halotLexicon');
+}
+
+/**
+ * Get DJBA data - Sokoloff's Dictionary of Jewish Babylonian Aramaic (Tier 1)
+ * Essential for Talmud Bavli study
+ * @returns {Promise<Object>} DJBA dictionary
+ */
+export async function getDJBALexicon() {
+  return loadDictionary('djbaLexicon');
+}
+
+/**
+ * Get DJPA data - Sokoloff's Dictionary of Jewish Palestinian Aramaic (Tier 1)
+ * Essential for Jerusalem Talmud and Midrash
+ * @returns {Promise<Object>} DJPA dictionary
+ */
+export async function getDJPALexicon() {
+  return loadDictionary('djpaLexicon');
+}
+
+/**
+ * Get Gesenius data - Classical Hebrew grammar reference (Tier 2)
+ * @returns {Promise<Object>} Gesenius dictionary
+ */
+export async function getGeseniusLexicon() {
+  return loadDictionary('geseniusLexicon');
+}
+
+/**
+ * Get TWOT data - Theological Wordbook of OT (Tier 2)
+ * Shows theological and semantic development
+ * @returns {Promise<Object>} TWOT dictionary
+ */
+export async function getTWOTLexicon() {
+  return loadDictionary('twotLexicon');
+}
+
+/**
+ * Get Targum Lexicon data (Tier 2)
+ * Vocabulary from Aramaic Bible translations
+ * @returns {Promise<Object>} Targum dictionary
+ */
+export async function getTargumLexicon() {
+  return loadDictionary('targumLexicon');
+}
+
+/**
+ * Synchronous access to PRO SCHOLAR V11 cached lexicons (returns null if not loaded)
+ */
+export function getHALOTLexiconData() { return cache.halotLexicon; }
+export function getDJBALexiconData() { return cache.djbaLexicon; }
+export function getDJPALexiconData() { return cache.djpaLexicon; }
+export function getGeseniusLexiconData() { return cache.geseniusLexicon; }
+export function getTWOTLexiconData() { return cache.twotLexicon; }
+export function getTargumLexiconData() { return cache.targumLexicon; }
+
+// =============================================================================
 // SCHOLARLY DATA (lazy-loaded from extracted JSON)
 // =============================================================================
 
@@ -428,6 +523,26 @@ export async function preloadLexicons() {
 }
 
 /**
+ * PRO SCHOLAR V11: Preload new academic sources (call for Pro Scholar mode)
+ * These are Tier 1 & 2 academic lexicons for advanced study
+ * @returns {Promise<void>}
+ */
+export async function preloadAcademicSources() {
+  log.debug('Preloading PRO SCHOLAR V11 academic sources...');
+  await Promise.all([
+    // Tier 1 - Peer-Reviewed Academic
+    loadDictionary('halotLexicon').catch(() => null),
+    loadDictionary('djbaLexicon').catch(() => null),
+    loadDictionary('djpaLexicon').catch(() => null),
+    // Tier 2 - Established Scholarly
+    loadDictionary('geseniusLexicon').catch(() => null),
+    loadDictionary('twotLexicon').catch(() => null),
+    loadDictionary('targumLexicon').catch(() => null)
+  ]);
+  log.debug('PRO SCHOLAR V11 academic sources preloaded');
+}
+
+/**
  * Check if a dictionary is loaded
  * @param {'bdb' | 'jastrow' | 'strongs'} name - Dictionary name
  * @returns {boolean}
@@ -459,14 +574,24 @@ export function getLoadingStatus() {
  */
 export function getCacheStatus() {
   return {
+    // Core dictionaries
     bdb: cache.bdb !== null,
     jastrow: cache.jastrow !== null,
     strongs: cache.strongs !== null,
+    // Additional lexicons
     kleinLexicon: cache.kleinLexicon !== null,
     calAramaic: cache.calAramaic !== null,
     jastrowAramaic: cache.jastrowAramaic !== null,
     bdbLexicon: cache.bdbLexicon !== null,
     bdbAramaic: cache.bdbAramaic !== null,
+    // PRO SCHOLAR V11: Academic sources
+    halotLexicon: cache.halotLexicon !== null,
+    djbaLexicon: cache.djbaLexicon !== null,
+    djpaLexicon: cache.djpaLexicon !== null,
+    geseniusLexicon: cache.geseniusLexicon !== null,
+    twotLexicon: cache.twotLexicon !== null,
+    targumLexicon: cache.targumLexicon !== null,
+    // Scholarly data
     rootMeanings: cache.rootMeanings !== null,
     semanticFields: cache.semanticFields !== null,
     rabbiBiographies: cache.rabbiBiographies !== null,
@@ -647,6 +772,14 @@ export async function initializePreload() {
     log.debug('[Preload] Additional lexicons preload skipped');
   });
 
+  // PRIORITY 2.5: PRO SCHOLAR V11 - Preload academic sources (DJBA, DJPA, HALOT, etc.)
+  // These are Tier 1 academic sources essential for scholarly Aramaic lookups
+  preloadAcademicSources().then(() => {
+    log.debug('[Preload] Academic sources loaded (DJBA, DJPA, HALOT, etc.)');
+  }).catch(() => {
+    log.debug('[Preload] Academic sources preload skipped');
+  });
+
   // PRIORITY 3: Preload common words into translation cache (if cache is cold)
   if (shouldPreload()) {
     try {
@@ -696,6 +829,21 @@ const dictionaryLoader = {
   getCALAramaicData,
   getJastrowAramaicData,
   preloadLexicons,
+
+  // PRO SCHOLAR V11: Academic Sources (lazy-loaded)
+  getHALOTLexicon,
+  getDJBALexicon,
+  getDJPALexicon,
+  getGeseniusLexicon,
+  getTWOTLexicon,
+  getTargumLexicon,
+  getHALOTLexiconData,
+  getDJBALexiconData,
+  getDJPALexiconData,
+  getGeseniusLexiconData,
+  getTWOTLexiconData,
+  getTargumLexiconData,
+  preloadAcademicSources,
 
   // Scholarly Data (lazy-loaded)
   getRootMeanings,

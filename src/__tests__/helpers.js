@@ -296,3 +296,59 @@ export default {
   // Cleanup
   cleanupAll
 };
+
+// =============================================================================
+// VALIDATION TESTS FOR HELPERS
+// =============================================================================
+
+describe('Test Helpers', () => {
+  describe('localStorage mock', () => {
+    it('should create a functioning localStorage mock', () => {
+      const mock = createLocalStorageMock();
+      mock.setItem('key', 'value');
+      expect(mock.getItem('key')).toBe('value');
+    });
+  });
+
+  describe('matchMedia mock', () => {
+    it('should create a functioning matchMedia mock', () => {
+      const mock = createMatchMediaMock(true);
+      const result = mock('(prefers-color-scheme: dark)');
+      expect(result.matches).toBe(true);
+    });
+  });
+
+  describe('fetch mock', () => {
+    it('should create a functioning fetch mock', async () => {
+      const mock = createFetchMock({ data: 'test' });
+      const response = await mock();
+      const json = await response.json();
+      expect(json.data).toBe('test');
+    });
+  });
+
+  describe('observer mocks', () => {
+    it('should create IntersectionObserver mock', () => {
+      const Mock = createIntersectionObserverMock();
+      const observer = new Mock();
+      expect(observer.observe).toBeDefined();
+      expect(observer.disconnect).toBeDefined();
+    });
+
+    it('should create ResizeObserver mock', () => {
+      const Mock = createResizeObserverMock();
+      const observer = new Mock();
+      expect(observer.observe).toBeDefined();
+      expect(observer.disconnect).toBeDefined();
+    });
+  });
+
+  describe('speechSynthesis mock', () => {
+    it('should create speechSynthesis mock with voices', () => {
+      const mock = createSpeechSynthesisMock();
+      const voices = mock.getVoices();
+      expect(voices.length).toBeGreaterThan(0);
+      expect(voices.some(v => v.lang === 'he-IL')).toBe(true);
+    });
+  });
+});

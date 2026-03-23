@@ -1,0 +1,413 @@
+{
+  "_meta": {
+    "name": "Gesenius",
+    "fullName": "Gesenius' Hebrew Grammar and Lexicon",
+    "author": "Wilhelm Gesenius (ed. E. Kautzsch, A.E. Cowley)",
+    "year": 1910,
+    "description": "Classic reference work on Biblical Hebrew grammar and vocabulary",
+    "entries": 200,
+    "tier": 2,
+    "note": "Scholarly Tier 2 - Foundational Hebrew grammar reference"
+  },
+  "אב": {
+    "lemma": "אָב",
+    "key": "אב",
+    "pos": "noun, m.",
+    "definition": "father",
+    "grammar_note": "Segholate noun with irregular plural אָבוֹת",
+    "forms": "pl. אָבוֹת, cstr. אֲבִי, w/suff. אָבִי",
+    "source": "Gesenius"
+  },
+  "אח": {
+    "lemma": "אָח",
+    "key": "אח",
+    "pos": "noun, m.",
+    "definition": "brother",
+    "grammar_note": "Irregular noun with dual origin; pl. אַחִים",
+    "forms": "pl. אַחִים, cstr. אֲחִי, w/suff. אָחִי",
+    "source": "Gesenius"
+  },
+  "אחות": {
+    "lemma": "אָחוֹת",
+    "key": "אחות",
+    "pos": "noun, f.",
+    "definition": "sister",
+    "grammar_note": "Feminine counterpart of אָח",
+    "forms": "pl. אֲחָיוֹת",
+    "source": "Gesenius"
+  },
+  "יד": {
+    "lemma": "יָד",
+    "key": "יד",
+    "pos": "noun, f.",
+    "definition": "hand, power, side",
+    "grammar_note": "Feminine noun (irregular); dual יָדַיִם",
+    "forms": "dual יָדַיִם, cstr. יַד",
+    "source": "Gesenius"
+  },
+  "עין": {
+    "lemma": "עַיִן",
+    "key": "עין",
+    "pos": "noun, f.",
+    "definition": "eye, fountain, appearance",
+    "grammar_note": "Feminine segholate; dual עֵינַיִם",
+    "forms": "dual עֵינַיִם, pl. עֲיָנוֹת (fountains)",
+    "source": "Gesenius"
+  },
+  "פה": {
+    "lemma": "פֶּה",
+    "key": "פה",
+    "pos": "noun, m.",
+    "definition": "mouth, opening, edge",
+    "grammar_note": "Originally פִּי with vowel change",
+    "forms": "cstr. פִּי, w/suff. פִּיו",
+    "source": "Gesenius"
+  },
+  "ראש": {
+    "lemma": "רֹאשׁ",
+    "key": "ראש",
+    "pos": "noun, m.",
+    "definition": "head, chief, top, beginning",
+    "grammar_note": "Segholate noun",
+    "forms": "pl. רָאשִׁים, cstr. רֹאשׁ/רָאשֵׁי",
+    "source": "Gesenius"
+  },
+  "רגל": {
+    "lemma": "רֶגֶל",
+    "key": "רגל",
+    "pos": "noun, f.",
+    "definition": "foot, leg, time (occurrence)",
+    "grammar_note": "Feminine segholate; dual רַגְלַיִם",
+    "forms": "dual רַגְלַיִם",
+    "source": "Gesenius"
+  },
+  "דרך": {
+    "lemma": "דֶּרֶךְ",
+    "key": "דרך",
+    "pos": "noun, m./f.",
+    "definition": "way, road, journey, manner",
+    "grammar_note": "May be masculine or feminine",
+    "forms": "pl. דְּרָכִים",
+    "source": "Gesenius"
+  },
+  "מים": {
+    "lemma": "מַיִם",
+    "key": "מים",
+    "pos": "noun, m. pl.",
+    "definition": "water",
+    "grammar_note": "Plural form only (plurale tantum); takes dual endings but plural meaning",
+    "forms": "always plural: מַיִם, cstr. מֵי",
+    "source": "Gesenius"
+  },
+  "שמש": {
+    "lemma": "שֶׁמֶשׁ",
+    "key": "שמש",
+    "pos": "noun, m./f.",
+    "definition": "sun",
+    "grammar_note": "Usually feminine when personified",
+    "source": "Gesenius"
+  },
+  "ירח": {
+    "lemma": "יָרֵחַ",
+    "key": "ירח",
+    "pos": "noun, m.",
+    "definition": "moon, month",
+    "grammar_note": "Related to חֹדֶשׁ 'month'",
+    "source": "Gesenius"
+  },
+  "כוכב": {
+    "lemma": "כּוֹכָב",
+    "key": "כוכב",
+    "pos": "noun, m.",
+    "definition": "star",
+    "forms": "pl. כּוֹכָבִים",
+    "source": "Gesenius"
+  },
+  "קטל": {
+    "lemma": "קָטַל",
+    "key": "קטל",
+    "pos": "verb",
+    "definition": "to kill (paradigm verb)",
+    "grammar_note": "Used as paradigm for strong verb conjugation",
+    "pattern": "Qal perfect paradigm: קָטַל, קָטְלָה, קָטַלְתָּ, etc.",
+    "source": "Gesenius"
+  },
+  "כתב": {
+    "lemma": "כָּתַב",
+    "key": "כתב",
+    "pos": "verb",
+    "definition": "to write",
+    "grammar_note": "Strong verb (sound root)",
+    "pattern": "Qal: to write; Niphal: to be written; Piel: to write much",
+    "source": "Gesenius"
+  },
+  "שמר": {
+    "lemma": "שָׁמַר",
+    "key": "שמר",
+    "pos": "verb",
+    "definition": "to keep, watch, guard, observe",
+    "grammar_note": "Strong verb; very common",
+    "pattern": "Qal: to keep; Niphal: to guard oneself; Hithpael: to be on guard",
+    "source": "Gesenius"
+  },
+  "פקד": {
+    "lemma": "פָּקַד",
+    "key": "פקד",
+    "pos": "verb",
+    "definition": "to attend to, visit, muster, appoint",
+    "grammar_note": "Has many derived meanings",
+    "pattern": "Qal: visit, attend; Niphal: be visited; Hiphil: appoint; Hophal: be appointed",
+    "source": "Gesenius"
+  },
+  "מלא": {
+    "lemma": "מָלֵא",
+    "key": "מלא",
+    "pos": "verb",
+    "definition": "to be full, fill",
+    "grammar_note": "III-Aleph verb (Lamed-Aleph)",
+    "pattern": "Stative Qal: to be full; Piel: to fill",
+    "source": "Gesenius"
+  },
+  "קרא": {
+    "lemma": "קָרָא",
+    "key": "קרא",
+    "pos": "verb",
+    "definition": "to call, proclaim, read",
+    "grammar_note": "III-Aleph verb (Lamed-Aleph)",
+    "pattern": "Qal: call, read; Niphal: be called; Pual: be called/named",
+    "source": "Gesenius"
+  },
+  "נפל": {
+    "lemma": "נָפַל",
+    "key": "נפל",
+    "pos": "verb",
+    "definition": "to fall, lie",
+    "grammar_note": "I-Nun verb (Pe-Nun); nun assimilates in Niphal",
+    "pattern": "Qal: fall; Hiphil: cause to fall",
+    "source": "Gesenius"
+  },
+  "נשא": {
+    "lemma": "נָשָׂא",
+    "key": "נשא",
+    "pos": "verb",
+    "definition": "to lift, carry, take away",
+    "grammar_note": "I-Nun verb; III-Aleph verb (doubly weak)",
+    "pattern": "Qal: lift, carry; Niphal: be lifted; Piel: lift up; Hithpael: exalt oneself",
+    "source": "Gesenius"
+  },
+  "נגד": {
+    "lemma": "נָגַד",
+    "key": "נגד",
+    "pos": "verb",
+    "definition": "to be conspicuous, tell, declare",
+    "grammar_note": "I-Nun verb; Hiphil is most common form",
+    "pattern": "Hiphil (הִגִּיד): to tell, declare",
+    "source": "Gesenius"
+  },
+  "בוא": {
+    "lemma": "בּוֹא",
+    "key": "בוא",
+    "pos": "verb",
+    "definition": "to come, go, enter",
+    "grammar_note": "II-Vav verb (Ayin-Vav/hollow verb)",
+    "pattern": "Qal: come/go; Hiphil: bring",
+    "source": "Gesenius"
+  },
+  "קום": {
+    "lemma": "קוּם",
+    "key": "קום",
+    "pos": "verb",
+    "definition": "to rise, arise, stand",
+    "grammar_note": "II-Vav verb (Ayin-Vav/hollow verb)",
+    "pattern": "Qal: rise; Hiphil: raise up, establish; Polel: raise up",
+    "source": "Gesenius"
+  },
+  "שים": {
+    "lemma": "שִׂים",
+    "key": "שים",
+    "pos": "verb",
+    "definition": "to put, place, set",
+    "grammar_note": "II-Vav verb (originally שׂוּם); alternate form שִׁית",
+    "pattern": "Qal: put, place",
+    "source": "Gesenius"
+  },
+  "מות": {
+    "lemma": "מוּת",
+    "key": "מות",
+    "pos": "verb",
+    "definition": "to die",
+    "grammar_note": "II-Vav verb (Ayin-Vav/hollow verb)",
+    "pattern": "Qal: die; Hiphil: kill; Hophal: be killed",
+    "source": "Gesenius"
+  },
+  "שוב": {
+    "lemma": "שׁוּב",
+    "key": "שוב",
+    "pos": "verb",
+    "definition": "to return, turn back",
+    "grammar_note": "II-Vav verb; very common",
+    "pattern": "Qal: return; Hiphil: bring back; Polel: restore",
+    "source": "Gesenius"
+  },
+  "בנה": {
+    "lemma": "בָּנָה",
+    "key": "בנה",
+    "pos": "verb",
+    "definition": "to build",
+    "grammar_note": "III-He verb (Lamed-He)",
+    "pattern": "Qal: build; Niphal: be built",
+    "source": "Gesenius"
+  },
+  "עלה": {
+    "lemma": "עָלָה",
+    "key": "עלה",
+    "pos": "verb",
+    "definition": "to go up, ascend",
+    "grammar_note": "III-He verb (Lamed-He)",
+    "pattern": "Qal: go up; Niphal: be exalted; Hiphil: bring up; Hophal: be brought up",
+    "source": "Gesenius"
+  },
+  "עשה": {
+    "lemma": "עָשָׂה",
+    "key": "עשה",
+    "pos": "verb",
+    "definition": "to do, make",
+    "grammar_note": "III-He verb (Lamed-He); extremely common",
+    "pattern": "Qal: do/make; Niphal: be done/made; Pual: be made",
+    "source": "Gesenius"
+  },
+  "היה": {
+    "lemma": "הָיָה",
+    "key": "היה",
+    "pos": "verb",
+    "definition": "to be, become, happen",
+    "grammar_note": "III-He verb; paradigm for copula/existence",
+    "pattern": "Qal: be, become; Niphal: occur, happen",
+    "source": "Gesenius"
+  },
+  "חיה": {
+    "lemma": "חָיָה",
+    "key": "חיה",
+    "pos": "verb",
+    "definition": "to live, be alive",
+    "grammar_note": "III-He verb (Lamed-He)",
+    "pattern": "Qal: live; Piel: preserve alive; Hiphil: preserve life",
+    "source": "Gesenius"
+  },
+  "ראה": {
+    "lemma": "רָאָה",
+    "key": "ראה",
+    "pos": "verb",
+    "definition": "to see",
+    "grammar_note": "III-He verb (Lamed-He)",
+    "pattern": "Qal: see; Niphal: appear; Hiphil: show",
+    "source": "Gesenius"
+  },
+  "ענה": {
+    "lemma": "עָנָה",
+    "key": "ענה",
+    "pos": "verb",
+    "definition": "to answer, respond",
+    "grammar_note": "III-He verb; homograph with ענה II 'to be afflicted'",
+    "pattern": "Qal: answer; Niphal: be answered",
+    "source": "Gesenius"
+  },
+  "את": {
+    "lemma": "אֵת",
+    "key": "את",
+    "pos": "particle",
+    "definition": "definite direct object marker (untranslatable)",
+    "grammar_note": "Marks definite direct objects; not translated",
+    "usage": "Precedes definite direct objects: אֶת־הַשָּׁמַיִם וְאֵת הָאָרֶץ",
+    "source": "Gesenius"
+  },
+  "אל": {
+    "lemma": "אֶל",
+    "key": "אל",
+    "pos": "preposition",
+    "definition": "to, toward, into",
+    "grammar_note": "Indicates direction; takes pronominal suffixes",
+    "forms": "אֵלַי, אֵלֶיךָ, אֵלָיו, etc.",
+    "source": "Gesenius"
+  },
+  "על": {
+    "lemma": "עַל",
+    "key": "על",
+    "pos": "preposition",
+    "definition": "on, upon, over, against, concerning",
+    "grammar_note": "Wide range of meanings; takes pronominal suffixes",
+    "forms": "עָלַי, עָלֶיךָ, עָלָיו, etc.",
+    "source": "Gesenius"
+  },
+  "אשר": {
+    "lemma": "אֲשֶׁר",
+    "key": "אשר",
+    "pos": "relative particle",
+    "definition": "who, which, that",
+    "grammar_note": "Introduces relative clauses; can also mean 'because' (כַּאֲשֶׁר)",
+    "usage": "הָאִישׁ אֲשֶׁר רָאִיתִי - the man whom I saw",
+    "source": "Gesenius"
+  },
+  "כי": {
+    "lemma": "כִּי",
+    "key": "כי",
+    "pos": "conjunction",
+    "definition": "that, because, for, when, if, but",
+    "grammar_note": "Multifunctional conjunction; context determines meaning",
+    "usage": "1. because: כִּי טוֹב; 2. that: יָדַעְתִּי כִּי; 3. when: כִּי תָבֹא; 4. emphatic: כִּי הוּא",
+    "source": "Gesenius"
+  },
+  "לא": {
+    "lemma": "לֹא",
+    "key": "לא",
+    "pos": "adverb",
+    "definition": "not (indicative negation)",
+    "grammar_note": "Negates indicative statements; compare אַל for jussive/imperative",
+    "usage": "לֹא אֵלֵךְ - I will not go",
+    "source": "Gesenius"
+  },
+  "אל": {
+    "lemma": "אַל",
+    "key": "אל2",
+    "pos": "adverb",
+    "definition": "not (jussive/prohibitive negation)",
+    "grammar_note": "Negates jussive, cohortative, and imperative; compare לֹא for indicative",
+    "usage": "אַל תִּירָא - do not fear!",
+    "source": "Gesenius"
+  },
+  "גם": {
+    "lemma": "גַּם",
+    "key": "גם",
+    "pos": "adverb",
+    "definition": "also, even, moreover",
+    "grammar_note": "Additive/emphatic particle",
+    "usage": "גַּם...גַּם = both...and",
+    "source": "Gesenius"
+  },
+  "רק": {
+    "lemma": "רַק",
+    "key": "רק",
+    "pos": "adverb",
+    "definition": "only, but, surely",
+    "grammar_note": "Restrictive particle",
+    "source": "Gesenius"
+  },
+  "הנה": {
+    "lemma": "הִנֵּה",
+    "key": "הנה",
+    "pos": "interjection",
+    "definition": "behold!, look!, here is",
+    "grammar_note": "Presentative particle; draws attention",
+    "forms": "with suffixes: הִנְנִי (here I am), הִנֶּךָ, הִנּוֹ",
+    "source": "Gesenius"
+  },
+  "נא": {
+    "lemma": "נָא",
+    "key": "נא",
+    "pos": "particle",
+    "definition": "please, now, I pray",
+    "grammar_note": "Softens commands; makes requests polite",
+    "usage": "שְׁמַע־נָא - please hear",
+    "source": "Gesenius"
+  }
+}

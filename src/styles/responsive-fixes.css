@@ -1,11 +1,10 @@
 /* =============================================================================
-   Responsive Fixes v3.0 - Dynamic UI Overlap Prevention
-   Clean, modern CSS for handling screen resize & dev console scenarios
+   Responsive Fixes v4.0 - Dynamic UI Overlap Prevention
+   Modern, performant CSS for all screen sizes and scenarios
    ============================================================================= */
 
 /* =============================================================================
-   SECTION 1: CORE OVERFLOW PREVENTION
-   The fundamental fix for flex/grid overflow issues
+   SECTION 1: FOUNDATION - OVERFLOW & BOX MODEL
    ============================================================================= */
 
 *, *::before, *::after {
@@ -13,7 +12,16 @@
   box-sizing: border-box;
 }
 
-html { overflow-x: hidden; }
+html {
+  overflow-x: hidden;
+  /* Use dynamic viewport height for mobile browsers */
+  --vh: 1vh;
+}
+
+/* Support for dynamic viewport units */
+@supports (height: 100dvh) {
+  html { --vh: 1dvh; }
+}
 
 .app,
 .app-main,
@@ -24,43 +32,58 @@ html { overflow-x: hidden; }
 }
 
 /* =============================================================================
-   SECTION 2: CSS CUSTOM PROPERTIES FOR RESPONSIVE BEHAVIOR
-   Centralized values that change at breakpoints
+   SECTION 2: RESPONSIVE DESIGN TOKENS
    ============================================================================= */
 
 :root {
-  /* Fluid spacing using clamp */
-  --responsive-padding: clamp(0.5rem, 2vw, 2rem);
-  --responsive-gap: clamp(0.5rem, 1.5vw, 1.5rem);
+  /* Fluid spacing */
+  --r-space-xs: clamp(0.25rem, 0.5vw, 0.5rem);
+  --r-space-sm: clamp(0.5rem, 1vw, 0.75rem);
+  --r-space-md: clamp(0.75rem, 1.5vw, 1.25rem);
+  --r-space-lg: clamp(1rem, 2vw, 2rem);
+  --r-space-xl: clamp(1.5rem, 3vw, 3rem);
 
-  /* Card constraints */
-  --card-max-width: min(400px, calc(100vw - 2rem));
-  --modal-max-width: min(640px, calc(100vw - 2rem));
-  --panel-max-height: min(80vh, calc(100vh - 8rem));
+  /* Fluid typography */
+  --r-text-sm: clamp(0.8rem, 0.9vw, 0.9rem);
+  --r-text-base: clamp(0.9rem, 1vw, 1rem);
+  --r-text-lg: clamp(1.1rem, 1.3vw, 1.3rem);
+  --r-text-xl: clamp(1.3rem, 1.8vw, 1.8rem);
+  --r-text-2xl: clamp(1.8rem, 2.5vw, 2.5rem);
+  --r-text-3xl: clamp(2rem, 3.5vw, 3.5rem);
 
-  /* Column behavior flags (1 = show, 0 = stack) */
-  --show-multi-column: 1;
+  /* Constraints */
+  --r-card-width: min(400px, calc(100vw - 2rem));
+  --r-modal-width: min(640px, calc(100vw - 2rem));
+  --r-panel-height: min(80vh, calc(var(--vh, 1vh) * 80));
+
+  /* Touch targets (WCAG 2.2 minimum) */
+  --r-touch-min: 44px;
+
+  /* Layout state */
+  --r-columns: 3;
 }
 
-@media (max-width: 1100px) {
-  :root {
-    --show-multi-column: 0;
-  }
-}
+@media (max-width: 1400px) { :root { --r-columns: 3; } }
+@media (max-width: 1100px) { :root { --r-columns: 1; } }
 
 /* =============================================================================
-   SECTION 3: TEXT OVERFLOW HANDLING
-   Prevent long text from breaking layouts
+   SECTION 3: TEXT & CONTENT OVERFLOW
    ============================================================================= */
 
 h1, h2, h3, h4, h5, h6,
 p, li, td, th,
 [class*="title"],
 [class*="text"],
-[class*="content"],
-[class*="body"] {
+[class*="content"] {
   overflow-wrap: break-word;
-  word-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+/* Hebrew text - disable auto hyphens */
+[lang="he"], .hebrew-text, .he {
+  hyphens: none;
+  word-break: keep-all;
 }
 
 .truncate {
@@ -69,16 +92,68 @@ p, li, td, th,
   text-overflow: ellipsis;
 }
 
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 /* =============================================================================
-   SECTION 4: RESPONSIVE CARDS & POPUPS
-   Word cards, settings panels, and floating elements
+   SECTION 4: TOUCH & INTERACTION
    ============================================================================= */
 
-/* --- Word Card --- */
+/* Ensure touch targets meet accessibility standards */
+button,
+[role="button"],
+a,
+input,
+select,
+.clickable {
+  min-height: var(--r-touch-min);
+  min-width: var(--r-touch-min);
+}
+
+/* Only apply hover styles on devices that support hover */
+@media (hover: hover) and (pointer: fine) {
+  .card:hover,
+  .word-card:hover,
+  .verse-card:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* Remove hover effects on touch devices */
+@media (hover: none) {
+  .card:hover,
+  .word-card:hover,
+  .verse-card:hover {
+    transform: none;
+  }
+}
+
+/* Improve tap highlighting on mobile */
+@media (pointer: coarse) {
+  button, a, .clickable {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* =============================================================================
+   SECTION 5: WORD CARDS & POPUPS
+   ============================================================================= */
+
 .word-card {
-  width: var(--card-max-width);
-  max-width: var(--card-max-width);
-  max-height: var(--panel-max-height);
+  width: var(--r-card-width);
+  max-width: var(--r-card-width);
+  max-height: var(--r-panel-height);
   overflow: hidden auto;
   overscroll-behavior: contain;
 }
@@ -90,28 +165,48 @@ p, li, td, th,
     top: 50% !important;
     transform: translateY(-50%);
     width: auto !important;
+    max-height: calc(var(--vh, 1vh) * 80);
     z-index: 600;
   }
 }
 
 @media (max-width: 480px) {
   .word-card {
-    inset: 10vh 0.5rem auto !important;
+    inset: calc(var(--vh, 1vh) * 10) 0.5rem auto !important;
     transform: none;
-    max-height: 80vh;
+    max-height: calc(var(--vh, 1vh) * 80);
+    border-radius: 16px 16px 0 0;
   }
 
   .word-card__header,
-  .word-card__body { padding: 10px 12px; }
-  .word-card__stats { padding: 8px 12px; flex-wrap: wrap; gap: 4px; }
-  .word-card__badge { font-size: 0.6rem; padding: 2px 5px; }
+  .word-card__body {
+    padding: var(--r-space-sm) var(--r-space-md);
+  }
+
+  .word-card__stats {
+    padding: var(--r-space-xs) var(--r-space-sm);
+    flex-wrap: wrap;
+    gap: var(--r-space-xs);
+  }
+
+  .word-card__badge {
+    font-size: var(--r-text-sm);
+    padding: 2px 6px;
+  }
+
+  .word-card__source {
+    padding: var(--r-space-sm);
+  }
 }
 
-/* --- Settings Panel --- */
+/* =============================================================================
+   SECTION 6: PANELS & OVERLAYS
+   ============================================================================= */
+
 .daf-settings-panel,
 .daf-style-menu {
-  max-width: var(--card-max-width);
-  max-height: var(--panel-max-height);
+  max-width: var(--r-card-width);
+  max-height: var(--r-panel-height);
   overflow: hidden auto;
   overscroll-behavior: contain;
 }
@@ -123,31 +218,44 @@ p, li, td, th,
     inset: auto 0 0 0 !important;
     width: 100% !important;
     max-width: 100%;
-    max-height: 80vh;
+    max-height: calc(var(--vh, 1vh) * 80);
     border-radius: 20px 20px 0 0;
     z-index: 400;
-    animation: slideUp 0.3s ease-out;
+    animation: slideUp 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  /* Backdrop for mobile panels */
+  .daf-settings-panel::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: -1;
+    animation: fadeIn 0.2s ease;
   }
 }
 
 @keyframes slideUp {
-  from { transform: translateY(100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* =============================================================================
-   SECTION 5: LAYOUT GRIDS - RESPONSIVE COLUMN HANDLING
-   TzuratHaDaf, Mikraot Gedolot, Mishnah layouts
+   SECTION 7: LAYOUT GRIDS - BASE STYLES
    ============================================================================= */
 
-/* --- Base Layout Styles --- */
 .tzurat-hadaf,
 .mikraot-gedolot-pro,
 .mishnah-layout {
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
-  padding: var(--responsive-padding);
+  padding: var(--r-space-lg);
 }
 
 .daf-three-columns,
@@ -155,71 +263,113 @@ p, li, td, th,
 .mgp-lower-row,
 .ml-commentary-row {
   width: 100%;
-  transition: grid-template-columns 0.25s ease;
+  transition: grid-template-columns 0.3s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .daf-column,
 .mgp-commentary-box,
 .ml-commentary-box {
   min-width: 0;
-  transition: padding 0.2s ease, max-height 0.25s ease;
+  transition:
+    padding 0.2s ease,
+    max-height 0.3s ease,
+    opacity 0.2s ease;
 }
 
-/* --- TzuratHaDaf (3-Column Talmud) --- */
+/* =============================================================================
+   SECTION 8: TZURAT HADAF (3-Column Talmud)
+   ============================================================================= */
+
 @media (max-width: 1600px) {
-  .tzurat-hadaf { margin: 1rem; max-width: calc(100vw - 2rem); }
+  .tzurat-hadaf {
+    margin: var(--r-space-md);
+    max-width: calc(100vw - var(--r-space-lg) * 2);
+  }
 }
 
 @media (max-width: 1400px) {
   .daf-three-columns { grid-template-columns: 1fr 1.5fr 1fr; }
-  .daf-column { padding: 1.25rem 1.5rem; }
-  .daf-gemara-text { font-size: 1.4rem; }
+  .daf-column { padding: var(--r-space-md); }
+  .daf-gemara-text { font-size: var(--r-text-xl); }
 }
 
 @media (max-width: 1200px) {
   .daf-three-columns { grid-template-columns: 1fr 1.4fr 1fr; }
-  .daf-gemara-text { font-size: 1.3rem; }
-  .daf-col-content { font-size: 0.95rem; }
+  .daf-gemara-text { font-size: var(--r-text-lg); }
+  .daf-col-content { font-size: var(--r-text-sm); }
 }
 
 @media (max-width: 1100px) {
-  .daf-three-columns { grid-template-columns: 1fr; gap: 0; }
-  .daf-column { max-height: none; padding: 1.5rem; }
+  .daf-three-columns {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .daf-column {
+    max-height: none;
+    padding: var(--r-space-lg);
+  }
+
   .daf-column:not(:last-child) {
     border-bottom: 2px solid var(--gold-light, #c4a77d);
-    padding-bottom: 1.5rem;
+    padding-bottom: var(--r-space-lg);
   }
+
   .daf-tosafot-col::after,
   .daf-rashi-col::before { display: none; }
 }
 
 @media (max-width: 900px) {
-  .tzurat-hadaf { margin: 0.5rem; }
-  .daf-page-header { padding: 1rem; gap: 1.5rem; flex-wrap: wrap; }
+  .tzurat-hadaf { margin: var(--r-space-sm); }
+
+  .daf-page-header {
+    padding: var(--r-space-md);
+    gap: var(--r-space-md);
+    flex-wrap: wrap;
+  }
+
   .daf-page-controls {
     position: relative;
     inset: auto;
     width: 100%;
     justify-content: center;
+    gap: var(--r-space-sm);
   }
-  .daf-masechet { font-size: 2.5rem; }
-  .daf-value { font-size: 2.2rem; }
+
+  .daf-masechet { font-size: var(--r-text-2xl); }
+  .daf-value { font-size: var(--r-text-xl); }
 }
 
 @media (max-width: 600px) {
-  .tzurat-hadaf { margin: 0.25rem; border-radius: 0; }
-  .daf-page-header { flex-direction: column; gap: 0.75rem; }
-  .daf-masechet { font-size: 2rem; }
-  .daf-value { font-size: 1.8rem; }
-  .daf-gemara-text { font-size: 1.15rem; line-height: 2; }
-  .daf-col-content { font-size: 0.9rem; line-height: 1.8; }
-  .daf-page-footer { flex-direction: column; gap: 0.5rem; font-size: 0.9rem; }
+  .tzurat-hadaf {
+    margin: var(--r-space-xs);
+    border-radius: 0;
+  }
+
+  .daf-page-header {
+    flex-direction: column;
+    gap: var(--r-space-sm);
+  }
+
+  .daf-masechet { font-size: var(--r-text-xl); }
+  .daf-value { font-size: var(--r-text-lg); }
+  .daf-gemara-text { font-size: var(--r-text-base); line-height: 2; }
+  .daf-col-content { font-size: var(--r-text-sm); line-height: 1.8; }
+
+  .daf-page-footer {
+    flex-direction: column;
+    gap: var(--r-space-sm);
+    font-size: var(--r-text-sm);
+  }
 }
 
-/* --- Mikraot Gedolot --- */
+/* =============================================================================
+   SECTION 9: MIKRAOT GEDOLOT
+   ============================================================================= */
+
 @media (max-width: 1500px) {
   .mgp-upper-row { grid-template-columns: 1fr 1.3fr; }
-  .mgp-torah-content { font-size: 1.6rem; column-gap: 2rem; }
+  .mgp-torah-content { font-size: var(--r-text-xl); column-gap: var(--r-space-lg); }
 }
 
 @media (max-width: 1400px) {
@@ -229,7 +379,7 @@ p, li, td, th,
 
 @media (max-width: 1200px) {
   .mgp-upper-row { grid-template-columns: 1fr 1fr; }
-  .mgp-torah-content { font-size: 1.5rem; column-count: 1; }
+  .mgp-torah-content { font-size: var(--r-text-lg); column-count: 1; }
   .mgp-torah-english { column-count: 1; }
   .mgp-commentary-box { max-height: 350px; }
 }
@@ -237,73 +387,95 @@ p, li, td, th,
 @media (max-width: 1000px) {
   .mgp-upper-row,
   .mgp-lower-row { grid-template-columns: 1fr; }
+
   .mgp-lower-row .mgp-commentary-box:nth-child(3) { grid-column: auto; }
+
   .mgp-commentary-box {
     border-right: none;
     border-bottom: 1px solid var(--mgp-border, #c4a87a);
     max-height: 300px;
   }
+
   .mgp-commentary-box:last-child { border-bottom: none; }
 }
 
 @media (max-width: 768px) {
-  .mikraot-gedolot-pro { padding: 0.5rem; }
-  .mgp-header { padding: 1rem; gap: 1rem; }
-  .mgp-sefer { font-size: 2.2rem; }
-  .mgp-torah-content { font-size: 1.3rem; }
-  .mgp-box-content { padding: 0.75rem; font-size: 0.9rem; }
+  .mikraot-gedolot-pro { padding: var(--r-space-sm); }
+  .mgp-header { padding: var(--r-space-md); gap: var(--r-space-md); }
+  .mgp-sefer { font-size: var(--r-text-2xl); }
+  .mgp-torah-content { font-size: var(--r-text-lg); }
+  .mgp-box-content { padding: var(--r-space-sm); font-size: var(--r-text-sm); }
 }
 
 @media (max-width: 500px) {
-  .mgp-sefer { font-size: 1.8rem; }
-  .mgp-perek-num { font-size: 1.8rem; width: 2.2rem; height: 2.2rem; }
-  .mgp-torah-content { font-size: 1.15rem; }
+  .mgp-sefer { font-size: var(--r-text-xl); }
+  .mgp-perek-num { font-size: var(--r-text-xl); width: 2.2rem; height: 2.2rem; }
+  .mgp-torah-content { font-size: var(--r-text-base); }
 }
 
-/* --- Mishnah Layout --- */
+/* =============================================================================
+   SECTION 10: MISHNAH LAYOUT
+   ============================================================================= */
+
 @media (max-width: 1200px) {
   .ml-commentary-row { grid-template-columns: 1fr; }
+
   .ml-commentary-box {
     border-right: none;
     border-bottom: 1px solid var(--ml-border, #c4b896);
     max-height: 350px;
   }
+
   .ml-commentary-box:last-child { border-bottom: none; }
 }
 
 @media (max-width: 900px) {
-  .ml-header { grid-template-columns: 1fr; text-align: center; gap: 0.75rem; }
-  .ml-nav-btn { margin: 0.5rem auto; }
+  .ml-header {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: var(--r-space-sm);
+  }
+
+  .ml-nav-btn { margin: var(--r-space-xs) auto; }
 }
 
 @media (max-width: 768px) {
-  .mishnah-layout { padding: 0.5rem; }
-  .ml-tractate { font-size: 2rem; }
-  .ml-mishnah-content { font-size: 1.2rem; }
-  .ml-box-content { font-size: 0.9rem; }
+  .mishnah-layout { padding: var(--r-space-sm); }
+  .ml-tractate { font-size: var(--r-text-2xl); }
+  .ml-mishnah-content { font-size: var(--r-text-lg); }
+  .ml-box-content { font-size: var(--r-text-sm); }
 }
 
 @media (max-width: 500px) {
-  .ml-tractate { font-size: 1.7rem; }
-  .ml-mishnah-content { font-size: 1.1rem; }
+  .ml-tractate { font-size: var(--r-text-xl); }
+  .ml-mishnah-content { font-size: var(--r-text-base); }
   .ml-commentary-box { max-height: 260px; }
 }
 
 /* =============================================================================
-   SECTION 6: HEADER & TOOLBAR
-   Responsive header that adapts without breaking
+   SECTION 11: HEADER & TOOLBAR
    ============================================================================= */
 
 .app-header {
   flex-wrap: wrap;
-  gap: var(--space-2, 8px);
+  gap: var(--r-space-sm);
   min-height: var(--header-height, 64px);
   height: auto;
   overflow: hidden;
 }
 
-.header-brand { flex: 0 1 auto; overflow: hidden; }
-.header-toolbar { flex: 0 1 auto; flex-wrap: wrap; gap: var(--space-1, 4px); }
+.header-brand {
+  flex: 0 1 auto;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.header-toolbar {
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  gap: var(--r-space-xs);
+}
+
 .toolbar-group { flex-wrap: wrap; }
 
 @media (max-width: 1100px) {
@@ -311,27 +483,32 @@ p, li, td, th,
 }
 
 @media (max-width: 900px) {
-  .app-header { padding-inline: var(--space-3, 12px); }
+  .app-header { padding-inline: var(--r-space-md); }
   .toolbar-group { gap: 2px; }
+
   .smart-search-btn .search-label,
   .smart-search-btn .search-kbd { display: none; }
 }
 
 @media (max-width: 768px) {
-  .app-header { height: 56px; min-height: 56px; }
-  .app-header h1 { font-size: 1.1rem; }
+  .app-header {
+    height: 56px;
+    min-height: 56px;
+  }
+
+  .app-header h1 { font-size: var(--r-text-base); }
+
   .header-subtitle,
   .toolbar-divider { display: none; }
 }
 
 @media (max-width: 480px) {
-  .app-header { padding-inline: var(--space-2, 8px); }
-  .app-header h1 { font-size: 1rem; }
+  .app-header { padding-inline: var(--r-space-sm); }
+  .app-header h1 { font-size: var(--r-text-sm); }
 }
 
 /* =============================================================================
-   SECTION 7: CARDS & LISTS
-   Ensure cards adapt to any container
+   SECTION 12: CARDS & LISTS
    ============================================================================= */
 
 .card,
@@ -348,16 +525,19 @@ p, li, td, th,
 .card-list {
   display: flex;
   flex-direction: column;
-  gap: var(--responsive-gap);
+  gap: var(--r-space-md);
   width: 100%;
 }
 
-.card-list > * { width: 100%; }
+.card-list > * {
+  width: 100%;
+  min-width: 0;
+}
 
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
-  gap: var(--space-4, 16px);
+  gap: var(--r-space-md);
 }
 
 @media (max-width: 640px) {
@@ -365,60 +545,76 @@ p, li, td, th,
 }
 
 /* =============================================================================
-   SECTION 8: MODALS & TOASTS
-   Overlay elements that stay within bounds
+   SECTION 13: MODALS & TOASTS
    ============================================================================= */
 
 .toast-container {
-  max-width: calc(100vw - 2rem);
+  max-width: calc(100vw - var(--r-space-lg) * 2);
   z-index: 900;
 }
 
 .toast {
-  max-width: calc(100vw - 3rem);
-  min-width: min(300px, calc(100vw - 3rem));
+  max-width: calc(100vw - var(--r-space-xl));
+  min-width: min(300px, calc(100vw - var(--r-space-xl)));
 }
 
 .smart-search-modal-overlay {
   overflow-y: auto;
-  padding: clamp(1rem, 3vw, 2rem);
+  padding: var(--r-space-lg);
 }
 
 .smart-search-modal {
-  max-width: var(--modal-max-width);
-  max-height: calc(100vh - 4rem);
+  max-width: var(--r-modal-width);
+  max-height: calc(var(--vh, 1vh) * 90);
   overflow: hidden;
   overscroll-behavior: contain;
 }
 
 @media (max-width: 768px) {
-  .toast-container { inset: auto 1rem 1rem 1rem; width: auto; }
-  .toast { width: 100%; max-width: 100%; }
+  .toast-container {
+    inset: auto var(--r-space-md) var(--r-space-md) var(--r-space-md);
+    width: auto;
+  }
+
+  .toast {
+    width: 100%;
+    max-width: 100%;
+  }
 }
 
 @media (max-width: 640px) {
-  .smart-search-modal-overlay { padding: 1rem 0.5rem; align-items: flex-start; }
+  .smart-search-modal-overlay {
+    padding: var(--r-space-sm);
+    align-items: flex-start;
+  }
+
   .smart-search-modal {
-    width: calc(100vw - 1rem);
+    width: calc(100vw - var(--r-space-md));
     max-width: none;
     border-radius: 12px;
+    max-height: calc(var(--vh, 1vh) * 85);
   }
 }
 
 /* =============================================================================
-   SECTION 9: SIDEBAR & MAIN CONTENT
-   Smooth transitions when layout changes
+   SECTION 14: SIDEBAR & MAIN CONTENT
    ============================================================================= */
 
 .app-main {
-  transition: margin-left 0.25s ease, width 0.25s ease;
+  transition: margin-left 0.3s cubic-bezier(0.32, 0.72, 0, 1),
+              width 0.3s cubic-bezier(0.32, 0.72, 0, 1);
   width: calc(100% - var(--sidebar-width, 280px));
 }
 
-.app.sidebar-collapsed .app-main { width: calc(100% - 60px); }
+.app.sidebar-collapsed .app-main {
+  width: calc(100% - 60px);
+}
 
 @media (max-width: 1024px) {
-  .app-main { margin-left: 60px; width: calc(100% - 60px); }
+  .app-main {
+    margin-left: 60px;
+    width: calc(100% - 60px);
+  }
 }
 
 @media (max-width: 768px) {
@@ -427,30 +623,36 @@ p, li, td, th,
     width: 100%;
     margin-bottom: 60px;
   }
-  .app.sidebar-collapsed .app-main { margin-left: 0; width: 100%; }
+
+  .app.sidebar-collapsed .app-main {
+    margin-left: 0;
+    width: 100%;
+  }
 }
 
 /* =============================================================================
-   SECTION 10: FIXED ELEMENTS
-   Buttons and progress bars that don't overlap
+   SECTION 15: FIXED ELEMENTS
    ============================================================================= */
 
 .scroll-to-top {
-  bottom: max(var(--space-6, 24px), env(safe-area-inset-bottom, 24px));
-  right: max(var(--space-6, 24px), env(safe-area-inset-right, 24px));
+  bottom: max(var(--r-space-lg), env(safe-area-inset-bottom, 24px));
+  right: max(var(--r-space-lg), env(safe-area-inset-right, 24px));
+  width: var(--r-touch-min);
+  height: var(--r-touch-min);
   z-index: 200;
 }
 
 @media (max-width: 768px) {
   .scroll-to-top {
     bottom: calc(70px + env(safe-area-inset-bottom, 0px));
-    right: var(--space-4, 16px);
-    width: 44px;
-    height: 44px;
+    right: var(--r-space-md);
   }
 }
 
-.reading-progress-container { inset: auto 0; width: auto; }
+.reading-progress-container {
+  inset: auto 0;
+  width: auto;
+}
 
 @media (min-width: 769px) {
   .reading-progress-container { left: var(--sidebar-width, 280px); }
@@ -460,32 +662,48 @@ p, li, td, th,
 /* Navigation buttons */
 .daf-nav-btn,
 .mgp-nav-btn,
-.ml-nav-btn { flex-shrink: 0; z-index: 10; }
+.ml-nav-btn {
+  flex-shrink: 0;
+  z-index: 10;
+  min-width: var(--r-touch-min);
+  min-height: var(--r-touch-min);
+}
 
 @media (max-width: 600px) {
   .daf-nav-btn,
   .mgp-nav-btn,
-  .ml-nav-btn { width: 38px; height: 38px; }
+  .ml-nav-btn {
+    width: 40px;
+    height: 40px;
+  }
 
   .daf-nav-btn svg,
   .mgp-nav-btn svg,
-  .ml-nav-btn svg { width: 18px; height: 18px; }
+  .ml-nav-btn svg {
+    width: 20px;
+    height: 20px;
+  }
 }
 
 /* =============================================================================
-   SECTION 11: CONTAINER QUERIES
-   Modern CSS - components respond to their container, not viewport
+   SECTION 16: CONTAINER QUERIES
    ============================================================================= */
 
 @supports (container-type: inline-size) {
-  .main-content { container-type: inline-size; }
-  .tzurat-hadaf { container-type: inline-size; }
-  .mikraot-gedolot-pro { container-type: inline-size; }
-  .mishnah-layout { container-type: inline-size; }
+  .main-content,
+  .tzurat-hadaf,
+  .mikraot-gedolot-pro,
+  .mishnah-layout {
+    container-type: inline-size;
+  }
 
   @container (max-width: 900px) {
     .content-header,
-    .navigation { flex-direction: column; gap: var(--space-3, 12px); }
+    .navigation {
+      flex-direction: column;
+      gap: var(--r-space-md);
+    }
+
     .book-selector,
     .chapter-selector { width: 100%; }
   }
@@ -493,11 +711,20 @@ p, li, td, th,
   @container (max-width: 600px) {
     .card-grid { grid-template-columns: 1fr; }
   }
+
+  @container (max-width: 1100px) {
+    .daf-three-columns { grid-template-columns: 1fr; }
+  }
+
+  @container (max-width: 1000px) {
+    .mgp-upper-row,
+    .mgp-lower-row,
+    .ml-commentary-row { grid-template-columns: 1fr; }
+  }
 }
 
 /* =============================================================================
-   SECTION 12: SCROLL BEHAVIOR
-   Prevent scroll issues and improve touch scrolling
+   SECTION 17: SCROLL BEHAVIOR
    ============================================================================= */
 
 .daf-col-content,
@@ -506,6 +733,7 @@ p, li, td, th,
   overflow: hidden auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+  scroll-behavior: smooth;
 }
 
 .word-card,
@@ -514,9 +742,22 @@ p, li, td, th,
   overscroll-behavior: contain;
 }
 
+/* Scrollbar styling for webkit */
+.daf-col-content::-webkit-scrollbar,
+.mgp-box-content::-webkit-scrollbar,
+.ml-box-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.daf-col-content::-webkit-scrollbar-thumb,
+.mgp-box-content::-webkit-scrollbar-thumb,
+.ml-box-content::-webkit-scrollbar-thumb {
+  background: var(--border, #ccc);
+  border-radius: 3px;
+}
+
 /* =============================================================================
-   SECTION 13: Z-INDEX SCALE
-   Proper stacking order for all layers
+   SECTION 18: Z-INDEX SCALE
    ============================================================================= */
 
 .app-main { z-index: 1; }
@@ -529,42 +770,90 @@ p, li, td, th,
 .toast-container { z-index: 900; }
 
 /* =============================================================================
-   SECTION 14: SAFE AREA INSETS
-   Support for notched devices (iPhone, etc.)
+   SECTION 19: SAFE AREA INSETS
    ============================================================================= */
 
 @supports (padding: env(safe-area-inset-top)) {
   .app-header {
     padding-top: env(safe-area-inset-top);
-    padding-left: max(var(--space-6, 24px), env(safe-area-inset-left));
-    padding-right: max(var(--space-6, 24px), env(safe-area-inset-right));
+    padding-left: max(var(--r-space-lg), env(safe-area-inset-left));
+    padding-right: max(var(--r-space-lg), env(safe-area-inset-right));
   }
 
   .main-content {
-    padding-left: max(var(--space-6, 24px), env(safe-area-inset-left));
-    padding-right: max(var(--space-6, 24px), env(safe-area-inset-right));
+    padding-left: max(var(--r-space-lg), env(safe-area-inset-left));
+    padding-right: max(var(--r-space-lg), env(safe-area-inset-right));
   }
 
   @media (max-width: 768px) {
-    .app-main { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }
+    .app-main {
+      padding-bottom: calc(60px + env(safe-area-inset-bottom));
+    }
   }
 }
 
 /* =============================================================================
-   SECTION 15: REDUCED MOTION
-   Respect user preferences
+   SECTION 20: ORIENTATION HANDLING
+   ============================================================================= */
+
+@media (orientation: landscape) and (max-height: 500px) {
+  /* Compact mode for landscape phones */
+  .app-header {
+    height: 48px;
+    min-height: 48px;
+  }
+
+  .daf-page-header {
+    padding: var(--r-space-sm);
+    gap: var(--r-space-sm);
+  }
+
+  .daf-masechet { font-size: var(--r-text-xl); }
+
+  .daf-column,
+  .mgp-commentary-box,
+  .ml-commentary-box {
+    max-height: 60vh;
+  }
+
+  .word-card {
+    max-height: 80vh;
+  }
+}
+
+/* =============================================================================
+   SECTION 21: ACCESSIBILITY - REDUCED MOTION
    ============================================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
 /* =============================================================================
-   SECTION 16: PRINT STYLES
-   Clean output for printing
+   SECTION 22: ACCESSIBILITY - HIGH CONTRAST
+   ============================================================================= */
+
+@media (prefers-contrast: high) {
+  .card,
+  .word-card,
+  .daf-settings-panel {
+    border-width: 2px;
+  }
+
+  .daf-column:not(:last-child) {
+    border-bottom-width: 3px;
+  }
+}
+
+/* =============================================================================
+   SECTION 23: PRINT STYLES
    ============================================================================= */
 
 @media print {
@@ -582,12 +871,16 @@ p, li, td, th,
   .toast-container,
   .daf-page-controls,
   .daf-settings-panel,
-  .word-card { display: none !important; }
+  .word-card {
+    display: none !important;
+  }
 
   .daf-three-columns,
   .mgp-upper-row,
   .mgp-lower-row,
-  .ml-commentary-row { display: block !important; }
+  .ml-commentary-row {
+    display: block !important;
+  }
 
   .daf-column,
   .mgp-commentary-box,
@@ -595,18 +888,52 @@ p, li, td, th,
     max-height: none !important;
     overflow: visible !important;
     break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Ensure text is readable */
+  * {
+    color: #000 !important;
+    background: #fff !important;
   }
 }
 
 /* =============================================================================
-   SECTION 17: DARK MODE ADJUSTMENTS
-   Ensure shadows and borders look good in dark mode
+   SECTION 24: DARK MODE ADJUSTMENTS
    ============================================================================= */
 
 @media (max-width: 768px) {
   .app.dark-mode .daf-settings-panel,
   .app.dark-mode .word-card {
-    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.7);
     border-color: var(--border, #334155);
   }
+}
+
+/* Dark mode scrollbar */
+.app.dark-mode .daf-col-content::-webkit-scrollbar-thumb,
+.app.dark-mode .mgp-box-content::-webkit-scrollbar-thumb,
+.app.dark-mode .ml-box-content::-webkit-scrollbar-thumb {
+  background: var(--border, #444);
+}
+
+/* =============================================================================
+   SECTION 25: FOCUS MANAGEMENT
+   ============================================================================= */
+
+/* Visible focus for keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--primary, #3b82f6);
+  outline-offset: 2px;
+}
+
+/* Remove focus ring for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Focus trap for modals */
+.smart-search-modal-overlay:focus,
+.daf-settings-panel:focus {
+  outline: none;
 }

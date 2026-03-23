@@ -1073,7 +1073,55 @@ export const SCHOLARLY_SOURCES = {
     description: 'Premier academic Aramaic dictionary covering Targum, Talmud, and all Aramaic dialects',
     type: 'aramaic',
     language: 'Aramaic',
-    url: 'https://cal.huc.edu'
+    url: 'https://cal.huc.edu',
+    tier: 1
+  },
+  // PRO SCHOLAR V11: New Academic Sources (Sokoloff Aramaic dictionaries)
+  DJBA: {
+    id: 'djba',
+    name: 'DJBA',
+    fullName: 'Dictionary of Jewish Babylonian Aramaic',
+    abbreviation: 'DJBA',
+    year: 2002,
+    description: 'Sokoloff\'s premier academic dictionary for Talmud Bavli Aramaic',
+    type: 'aramaic',
+    language: 'Aramaic',
+    dialect: 'Jewish Babylonian Aramaic',
+    tier: 1
+  },
+  DJPA: {
+    id: 'djpa',
+    name: 'DJPA',
+    fullName: 'Dictionary of Jewish Palestinian Aramaic',
+    abbreviation: 'DJPA',
+    year: 2002,
+    description: 'Sokoloff\'s academic dictionary for Jerusalem Talmud and Midrash',
+    type: 'aramaic',
+    language: 'Aramaic',
+    dialect: 'Jewish Palestinian Aramaic',
+    tier: 1
+  },
+  TARGUM: {
+    id: 'targum',
+    name: 'Targum Lexicon',
+    fullName: 'Aramaic Targum Vocabulary',
+    abbreviation: 'Targum',
+    year: null,
+    description: 'Vocabulary and expressions from Aramaic Targum translations',
+    type: 'translation',
+    language: 'Aramaic',
+    tier: 2
+  },
+  GESENIUS_LEXICON: {
+    id: 'gesenius_lexicon',
+    name: 'Gesenius Lexicon',
+    fullName: "Gesenius' Hebrew-Chaldee Lexicon",
+    abbreviation: 'Ges-Lex',
+    year: 1847,
+    description: 'Classical Hebrew lexicon with detailed etymological analysis',
+    type: 'biblical',
+    language: 'Hebrew',
+    tier: 2
   }
   // NOTE: Modern Hebrew sources (Morfix, Pealim, Wiktionary, Milog, OpenScriptures) removed
   // Focus on scholarly Biblical/Talmudic sources only
@@ -1754,25 +1802,35 @@ const parseCALResponse = (html, word) => {
 /**
  * SMART headword filtering - algorithmic string matching
  * Uses normalized edit distance with position-aware scoring
+ * PRO SCHOLAR V11: Added error handling and length limits for safety
  */
 const filterByHeadwordMatch = (data, searchedWord) => {
+  // Defensive checks
   if (!data || !Array.isArray(data) || !searchedWord) return data || [];
 
-  const search = cleanWord(searchedWord);
-  if (!search) return data;
+  try {
+    const search = cleanWord(searchedWord);
+    if (!search) return data;
 
-  // Levenshtein distance
-  const editDist = (a, b) => {
-    const m = Array(b.length + 1).fill(null).map(() => Array(a.length + 1).fill(null));
-    for (let i = 0; i <= a.length; i++) m[0][i] = i;
-    for (let j = 0; j <= b.length; j++) m[j][0] = j;
-    for (let j = 1; j <= b.length; j++) {
-      for (let i = 1; i <= a.length; i++) {
-        m[j][i] = Math.min(m[j][i-1] + 1, m[j-1][i] + 1, m[j-1][i-1] + (a[i-1] === b[j-1] ? 0 : 1));
+    // PRO SCHOLAR V11: Limit word length to prevent memory issues with large strings
+    const MAX_WORD_LENGTH = 50;
+
+    // Levenshtein distance with length limit
+    const editDist = (a, b) => {
+      // Safety: limit input length to prevent memory overflow
+      if (a.length > MAX_WORD_LENGTH || b.length > MAX_WORD_LENGTH) {
+        return Math.abs(a.length - b.length); // Fallback to simple length difference
       }
-    }
-    return m[b.length][a.length];
-  };
+      const m = Array(b.length + 1).fill(null).map(() => Array(a.length + 1).fill(null));
+      for (let i = 0; i <= a.length; i++) m[0][i] = i;
+      for (let j = 0; j <= b.length; j++) m[j][0] = j;
+      for (let j = 1; j <= b.length; j++) {
+        for (let i = 1; i <= a.length; i++) {
+          m[j][i] = Math.min(m[j][i-1] + 1, m[j-1][i] + 1, m[j-1][i-1] + (a[i-1] === b[j-1] ? 0 : 1));
+        }
+      }
+      return m[b.length][a.length];
+    };
 
   // Longest Common Subsequence length
   const lcsLength = (a, b) => {
@@ -1826,6 +1884,11 @@ const filterByHeadwordMatch = (data, searchedWord) => {
   const threshold = Math.max(0.6, maxScore * 0.75);
 
   return scored.filter(s => s.score >= threshold).map(s => s.entry);
+  } catch (err) {
+    // PRO SCHOLAR V11: Graceful fallback on any matching error
+    log.debug('[HeadwordFilter] Matching failed, returning unfiltered:', err?.message);
+    return data || [];
+  }
 };
 
 /**

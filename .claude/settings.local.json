@@ -171,7 +171,8 @@
       "Bash(do [ ! -f \"$file%.js.test.js\" ])",
       "Bash(basename:*)",
       "Bash(for f in public/data/root_meanings.json public/data/semantic_fields.json public/data/rabbi_biographies.json public/data/realia.json)",
-      "Bash(for:*)"
+      "Bash(for:*)",
+      "Bash(dir /R \"c:\\\\Users\\\\natha\\\\Desktop\\\\App_N\\\\torah-reader-app\\\\src\\\\services\")"
     ]
   }
 }

@@ -303,14 +303,18 @@ export const createStages = (lookups) => {
     if (!translation) return;
 
     // Try to get scholarly source for the root
+    // lookupLocalDictionaries returns aggregated result: { primary: { definition, name, source }, allSources: [...] }
     const rootLookup = lookupLocalDictionaries?.(rootAnalysis.root);
+    const rootDefinition = rootLookup?.primary?.definition;
+    const rootSourceName = rootLookup?.primary?.source || rootLookup?.primary?.name || 'Dictionary';
 
-    if (rootLookup?.english) {
+    if (rootDefinition) {
       ctx.addSource({
-        name: (rootLookup.source || 'Dictionary').replace(' (Local)', ''),
-        fullName: `Root "${rootAnalysis.root}" from ${rootLookup.source}`,
-        definition: rootLookup.english,
-        isRootSource: true
+        name: rootSourceName.replace(' (Local)', ''),
+        fullName: `Root "${rootAnalysis.root}" from ${rootSourceName}`,
+        definition: rootDefinition,
+        isRootSource: true,
+        tier: rootLookup?.primary?.tier?.level || 3
       });
     }
     ctx.addSource({
@@ -319,7 +323,7 @@ export const createStages = (lookups) => {
       definition: `${rootAnalysis.pattern} of root ${rootAnalysis.root}${rootAnalysis.weakType ? ` (${rootAnalysis.weakType})` : ''}`
     });
 
-    const sourceName = rootLookup?.source ? `${rootLookup.source} + pattern` : 'pattern-analysis';
+    const sourceName = rootDefinition ? `${rootSourceName} + pattern` : 'pattern-analysis';
     ctx.setPrimary(translation, sourceName);
     ctx.complete({
       isAramaic: true,
@@ -327,8 +331,8 @@ export const createStages = (lookups) => {
       root: rootAnalysis.root,
       morphologyInfo: {
         ...rootAnalysis,
-        rootSource: rootLookup?.source || 'ROOT_MEANINGS',
-        rootDefinition: rootLookup?.english || rootAnalysis.baseMeaning
+        rootSource: rootSourceName || 'ROOT_MEANINGS',
+        rootDefinition: rootDefinition || rootAnalysis.baseMeaning
       },
       derivationChain: {
         originalWord: ctx.cleaned,

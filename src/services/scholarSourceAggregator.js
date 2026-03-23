@@ -23,14 +23,16 @@ export const SCHOLARLY_TIERS = {
     level: 1,
     name: 'Peer-Reviewed Academic',
     weight: 1.0,
-    sources: ['BDB', 'Jastrow', 'HALOT', 'CAL', 'DCPA'],
+    // PRO SCHOLAR V11: Added DJBA & DJPA (Sokoloff's definitive Aramaic dictionaries)
+    sources: ['BDB', 'Jastrow', 'HALOT', 'CAL', 'DJBA', 'DJPA'],
     description: 'Primary academic lexicons with peer review'
   },
   TIER_2_SCHOLARLY: {
     level: 2,
     name: 'Established Scholarly',
     weight: 0.85,
-    sources: ['Klein', 'Gesenius', 'TWOT', 'Koehler'],
+    // PRO SCHOLAR V11: Added Targum lexicon
+    sources: ['Klein', 'Gesenius', 'TWOT', 'Koehler', 'Targum'],
     description: 'Respected scholarly references'
   },
   TIER_3_REFERENCE: {

@@ -40,144 +40,73 @@ import './WordIntelligenceCard.css';
 import FamilyTree from './FamilyTree';
 
 // =============================================================================
-// SAFE IMPORTS - All services are optional
+// SERVICE IMPORTS - PRO SCHOLAR V10: Clean imports with fallbacks
 // =============================================================================
 
-// Word lookup services - PRO SCHOLAR V10: Use unifiedLookupService
-let lookupWord, quickLookup;
-try {
-  const unifiedService = require('../../services/unifiedLookupService');
-  lookupWord = unifiedService.lookupWord;
-  quickLookup = unifiedService.quickLookup;
-} catch (e) {
-  lookupWord = async () => null;
-  quickLookup = () => null;
-}
+// Core services (always available)
+import {
+  lookupWord,
+  quickLookup
+} from '../../services/unifiedLookupService';
 
-// Frequency service
-let getWordFrequency;
-try {
-  getWordFrequency = require('../../services/wordFrequencyService').getWordFrequency;
-} catch (e) {
-  getWordFrequency = () => null;
-}
+import { getWordFrequency } from '../../services/wordFrequencyService';
 
-// Semantic field service
-let getWordSemantics, getSynonyms, getAntonyms, SEMANTIC_DOMAINS;
-try {
-  const semanticService = require('../../services/semanticFieldService');
-  getWordSemantics = semanticService.getWordSemantics;
-  getSynonyms = semanticService.getSynonyms;
-  getAntonyms = semanticService.getAntonyms;
-  SEMANTIC_DOMAINS = semanticService.SEMANTIC_DOMAINS || {};
-} catch (e) {
-  getWordSemantics = () => null;
-  getSynonyms = () => [];
-  getAntonyms = () => [];
-  SEMANTIC_DOMAINS = {};
-}
+import {
+  getWordSemantics,
+  getSynonyms,
+  getAntonyms,
+  SEMANTIC_DOMAINS
+} from '../../services/semanticFieldService';
 
-// SRS service
-let getCard, createCard, getStats, getMasteryLevel, MASTERY_THRESHOLDS;
-try {
-  const srsService = require('../../services/srsService');
-  getCard = srsService.getCard;
-  createCard = srsService.createCard;
-  getStats = srsService.getStats;
-  getMasteryLevel = srsService.getMasteryLevel;
-  MASTERY_THRESHOLDS = srsService.MASTERY_THRESHOLDS;
-} catch (e) {
-  // Fallback constants - must stay in sync with srsService.js MASTERY_THRESHOLDS
-  MASTERY_THRESHOLDS = {
-    MASTERED: { minInterval: 21, minRepetitions: 5, label: 'mastered', icon: '⭐' },
-    LEARNING: { minRepetitions: 3, label: 'learning', icon: '📚' },
-    STARTED: { minRepetitions: 1, label: 'started', icon: '🌱' },
-    NEW: { minRepetitions: 0, label: 'new', icon: '✨' },
-  };
-  getCard = () => null;
-  createCard = () => null;
-  getStats = () => ({ total: 0, retention: 0 });
-  getMasteryLevel = (card) => {
-    if (!card) return { level: MASTERY_THRESHOLDS.NEW.label, icon: MASTERY_THRESHOLDS.NEW.icon };
-    const { interval = 0, repetitions = 0 } = card;
-    if (interval >= MASTERY_THRESHOLDS.MASTERED.minInterval &&
-        repetitions >= MASTERY_THRESHOLDS.MASTERED.minRepetitions) {
-      return { level: MASTERY_THRESHOLDS.MASTERED.label, icon: MASTERY_THRESHOLDS.MASTERED.icon };
-    }
-    if (repetitions >= MASTERY_THRESHOLDS.LEARNING.minRepetitions) {
-      return { level: MASTERY_THRESHOLDS.LEARNING.label, icon: MASTERY_THRESHOLDS.LEARNING.icon };
-    }
-    if (repetitions >= MASTERY_THRESHOLDS.STARTED.minRepetitions) {
-      return { level: MASTERY_THRESHOLDS.STARTED.label, icon: MASTERY_THRESHOLDS.STARTED.icon };
-    }
-    return { level: MASTERY_THRESHOLDS.NEW.label, icon: MASTERY_THRESHOLDS.NEW.icon };
-  };
-}
+import {
+  getCard,
+  createCard,
+  getStats,
+  getMasteryLevel
+} from '../../services/srsService';
 
-// Root database
-let ROOT_MEANINGS, getRootInfo, isPeNunVerb;
-try {
-  const rootDb = require('../../data/rootDatabase');
-  ROOT_MEANINGS = rootDb.ROOT_MEANINGS || {};
-  getRootInfo = rootDb.getRootInfo || ((r) => ROOT_MEANINGS[r]);
-  isPeNunVerb = rootDb.isPeNunVerb || (() => false);
-} catch (e) {
-  ROOT_MEANINGS = {};
-  getRootInfo = () => null;
-  isPeNunVerb = () => false;
-}
+// Data imports
+import {
+  ROOT_MEANINGS,
+  getRootInfo,
+  isPeNunVerb
+} from '../../data/rootDatabase';
 
-// Morphology functions and conjugation constants
-let extractAramaicRoot, computeVerbTranslation, getConjugationPrefixLabel, getConjugationSuffixLabel;
-try {
-  const morphology = require('../../constants/morphology');
-  extractAramaicRoot = morphology.extractAramaicRoot;
-  computeVerbTranslation = morphology.computeVerbTranslation;
-  getConjugationPrefixLabel = morphology.getConjugationPrefixLabel;
-  getConjugationSuffixLabel = morphology.getConjugationSuffixLabel;
-} catch (e) {
-  extractAramaicRoot = () => null;
-  computeVerbTranslation = () => null;
-  // Fallback label functions - must stay in sync with morphology.js CONJUGATION_PREFIXES/SUFFIXES
-  getConjugationPrefixLabel = (prefix) => {
-    const map = { 'ת': 'you', 'א': 'I', 'נ': 'we', 'י': 'he/they', 'מ': 'participle' };
-    return map[prefix] || 'prefix';
-  };
-  getConjugationSuffixLabel = (suffix) => {
-    const map = { 'ו': 'plural', 'ין': 'plural', 'י': 'feminine', 'ה': 'feminine/3fs' };
-    return map[suffix] || 'suffix';
-  };
-}
+// Morphology constants
+import {
+  extractAramaicRoot,
+  computeVerbTranslation,
+  getConjugationPrefixLabel,
+  getConjugationSuffixLabel
+} from '../../constants/morphology';
 
-// Verb grammar analysis
-let analyzeVerbGrammar;
-try {
-  analyzeVerbGrammar = require('../../utils/morphology/verbGrammar').analyzeVerbGrammar;
-} catch (e) {
-  analyzeVerbGrammar = () => null;
-}
+// Grammar analysis
+import { analyzeVerbGrammar } from '../../utils/morphology/verbGrammar';
+
+// Root extraction service
+import {
+  detectDialect,
+  getSemanticField
+} from '../../services/rootExtraction';
+
+// Confidence utilities
+import { calculateConfidence, getConfidenceDisplay } from '../../utils/morphology/confidence';
+
+// Dictionary sources
+import { getSourceInfo, RELIABILITY_TIERS } from '../../constants/dictionarySources';
+
+// Utilities
+import { cleanDefinition } from '../../utils/definitionCleaner';
+import { cleanHebrewWord } from '../../utils/hebrewUtils';
+
+// Advanced service imports
+import { extractCantillation } from '../../services/cantillationService';
+import { analyzeConstructChain, findConstructsWithWord } from '../../services/constructChainService';
+import { getVariantsForVerse, MANUSCRIPT_SOURCES } from '../../services/manuscriptVariantsService';
 
 // =============================================================================
-// PRO SCHOLAR V8: Root Extraction Service (renamed from unifiedRootService)
+// CONSTANTS
 // =============================================================================
-let extractRootsEnhanced, analyzeBinyan, detectDialect, getSemanticField, DICTIONARY_TIERS;
-try {
-  const rootExtraction = require('../../services/rootExtraction');
-  extractRootsEnhanced = rootExtraction.extractRootsEnhanced;
-  analyzeBinyan = rootExtraction.analyzeBinyan;
-  detectDialect = rootExtraction.detectDialect;
-  getSemanticField = rootExtraction.getSemanticField;
-  DICTIONARY_TIERS = rootExtraction.DICTIONARY_TIERS || {};
-} catch (e) {
-  // eslint-disable-next-line no-unused-vars
-  extractRootsEnhanced = () => null;
-  // eslint-disable-next-line no-unused-vars
-  analyzeBinyan = () => null;
-  detectDialect = () => null;
-  getSemanticField = () => null;
-  // eslint-disable-next-line no-unused-vars
-  DICTIONARY_TIERS = {};
-}
 
 /** Semantic field display configuration - PRO SCHOLAR V6 */
 const SEMANTIC_FIELD_DISPLAY = {
@@ -199,84 +128,6 @@ const TIER_DISPLAY = {
   silver: { icon: '🥈', label: 'Standard', color: '#6b7280', bg: '#f3f4f6' },
   bronze: { icon: '🥉', label: 'Supplementary', color: '#b45309', bg: '#fef3c7' }
 };
-
-// Confidence calculation
-let calculateConfidence, getConfidenceDisplay;
-try {
-  const confidence = require('../../utils/morphology/confidence');
-  calculateConfidence = confidence.calculateConfidence;
-  getConfidenceDisplay = confidence.getConfidenceDisplay || ((score) => ({
-    level: score >= 80 ? 'high' : score >= 50 ? 'medium' : 'low',
-    color: score >= 80 ? '#16a34a' : score >= 50 ? '#ca8a04' : '#dc2626'
-  }));
-} catch (e) {
-  calculateConfidence = () => null;
-  getConfidenceDisplay = (score) => ({
-    level: score >= 80 ? 'high' : score >= 50 ? 'medium' : 'low',
-    color: score >= 80 ? '#16a34a' : score >= 50 ? '#ca8a04' : '#dc2626'
-  });
-}
-
-// Dictionary sources
-let getSourceInfo, RELIABILITY_TIERS;
-try {
-  const sources = require('../../constants/dictionarySources');
-  getSourceInfo = sources.getSourceInfo || (() => null);
-  RELIABILITY_TIERS = sources.RELIABILITY_TIERS || {};
-} catch (e) {
-  getSourceInfo = () => null;
-  RELIABILITY_TIERS = {};
-}
-
-// Utilities
-let cleanDefinition;
-try {
-  cleanDefinition = require('../../utils/definitionCleaner').cleanDefinition;
-} catch (e) {
-  cleanDefinition = (d) => d;
-}
-
-let cleanHebrewWord;
-try {
-  cleanHebrewWord = require('../../utils/hebrewUtils').cleanHebrewWord;
-} catch (e) {
-  cleanHebrewWord = (w) => w;
-}
-
-// =============================================================================
-// PRO SCHOLAR v4: ADVANCED SERVICE IMPORTS
-// =============================================================================
-
-// Cantillation service for trop analysis
-let extractCantillation;
-try {
-  const cantService = require('../../services/cantillationService');
-  extractCantillation = cantService.extractCantillation;
-} catch (e) {
-  extractCantillation = () => [];
-}
-
-// Construct chain service for סמיכות detection
-let analyzeConstructChain, findConstructsWithWord;
-try {
-  const constructService = require('../../services/constructChainService');
-  analyzeConstructChain = constructService.analyzeConstructChain;
-  findConstructsWithWord = constructService.findConstructsWithWord;
-} catch (e) {
-  analyzeConstructChain = () => null;
-  findConstructsWithWord = () => [];
-}
-
-// Manuscript variants service for DSS/LXX indicators
-let getVariantsForVerse, MANUSCRIPT_SOURCES;
-try {
-  const variantsService = require('../../services/manuscriptVariantsService');
-  getVariantsForVerse = variantsService.getVariantsForVerse;
-  MANUSCRIPT_SOURCES = variantsService.MANUSCRIPT_SOURCES || {};
-} catch (e) {
-  getVariantsForVerse = () => null;
-  MANUSCRIPT_SOURCES = {};
-}
 
 // =============================================================================
 // PERFORMANCE: Cross-Refs Cache (avoids repeated API calls)

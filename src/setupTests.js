@@ -87,6 +87,22 @@ jest.mock('./services/dictionaryLoader', () => {
     // Utility functions
     isDictionaryLoaded: jest.fn(() => true),
     preloadAllDictionaries: jest.fn().mockResolvedValue(undefined),
+    // Root meanings data for rootDatabase.js lazy proxy
+    getRootMeaningsData: jest.fn(() => ({
+      'מלך': { base: 'king', causative: 'make king', semantic_field: 'governance' },
+      'ארץ': { base: 'land', semantic_field: 'geography' },
+      'כתב': { base: 'write', causative: 'dictate', semantic_field: 'communication' },
+    })),
+    getSemanticFieldsData: jest.fn(() => ({
+      'governance': ['מלך', 'שפט', 'משל'],
+      'geography': ['ארץ', 'שמים'],
+    })),
+    getRootMeanings: jest.fn().mockResolvedValue({
+      'מלך': { base: 'king', causative: 'make king' },
+    }),
+    getSemanticFields: jest.fn().mockResolvedValue({
+      'governance': ['מלך'],
+    }),
     // Common words for preloading
     COMMON_HEBREW_WORDS: ['מלך', 'ארץ', 'כל', 'בית'],
     COMMON_ARAMAIC_WORDS: ['מלכא', 'ארעא'],

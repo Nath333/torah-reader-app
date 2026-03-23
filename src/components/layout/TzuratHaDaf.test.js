@@ -90,9 +90,14 @@ describe('TzuratHaDaf', () => {
     selectedChapter: '2a',
   };
 
+  // Suppress console.error for expected error handling tests
+  const originalConsoleError = console.error;
+
   beforeEach(() => {
     jest.clearAllMocks();
     localStorage.clear();
+    // Suppress expected console.error calls during tests
+    console.error = jest.fn();
 
     // Setup default mock responses
     getRashiOnTalmud.mockResolvedValue({
@@ -107,6 +112,11 @@ describe('TzuratHaDaf', () => {
       halachot: [],
       aggadot: [],
     });
+  });
+
+  afterEach(() => {
+    // Restore console.error after each test
+    console.error = originalConsoleError;
   });
 
   describe('rendering', () => {

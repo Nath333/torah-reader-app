@@ -61,11 +61,11 @@ export const useSmartLookup = (options = {}) => {
       return null;
     }
 
-    // Cancel previous lookup
+    // Cancel previous lookup using native AbortController
     if (abortRef.current) {
-      abortRef.current.aborted = true;
+      abortRef.current.abort();
     }
-    const controller = { aborted: false };
+    const controller = new AbortController();
     abortRef.current = controller;
 
     setSelectedWord(word);
@@ -78,7 +78,7 @@ export const useSmartLookup = (options = {}) => {
         language
       });
 
-      if (!controller.aborted) {
+      if (!controller.signal.aborted) {
         if (lookupResult.success) {
           setResult(lookupResult);
           setError(null);
@@ -90,13 +90,13 @@ export const useSmartLookup = (options = {}) => {
 
       return lookupResult;
     } catch (err) {
-      if (!controller.aborted) {
+      if (!controller.signal.aborted) {
         setError(err.message);
         setResult(null);
       }
       return null;
     } finally {
-      if (!controller.aborted) {
+      if (!controller.signal.aborted) {
         setIsLoading(false);
       }
     }
@@ -104,7 +104,7 @@ export const useSmartLookup = (options = {}) => {
 
   const clear = useCallback(() => {
     if (abortRef.current) {
-      abortRef.current.aborted = true;
+      abortRef.current.abort();
     }
     setSelectedWord(null);
     setResult(null);
@@ -222,11 +222,11 @@ export const useSmartAnalysis = () => {
     mode = 'summary',
     source = 'Torah'
   }) => {
-    // Cancel previous analysis
+    // Cancel previous analysis using native AbortController
     if (abortRef.current) {
-      abortRef.current.aborted = true;
+      abortRef.current.abort();
     }
-    const controller = { aborted: false };
+    const controller = new AbortController();
     abortRef.current = controller;
 
     setIsLoading(true);
@@ -242,7 +242,7 @@ export const useSmartAnalysis = () => {
         source
       });
 
-      if (!controller.aborted) {
+      if (!controller.signal.aborted) {
         if (result.success) {
           setAnalysis(result);
           setError(null);
@@ -254,13 +254,13 @@ export const useSmartAnalysis = () => {
 
       return result;
     } catch (err) {
-      if (!controller.aborted) {
+      if (!controller.signal.aborted) {
         setError(err.message);
         setAnalysis(null);
       }
       return null;
     } finally {
-      if (!controller.aborted) {
+      if (!controller.signal.aborted) {
         setIsLoading(false);
       }
     }
@@ -268,7 +268,7 @@ export const useSmartAnalysis = () => {
 
   const clear = useCallback(() => {
     if (abortRef.current) {
-      abortRef.current.aborted = true;
+      abortRef.current.abort();
     }
     setAnalysis(null);
     setError(null);

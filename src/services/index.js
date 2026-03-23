@@ -197,6 +197,7 @@ export { default as semanticSearchService } from './semanticSearchService';
 export { default as aiMemoryService } from './aiMemoryService';
 export { default as srsService } from './srsService';
 export { default as knowledgeGraphService } from './knowledgeGraphService';
+export { default as talmudDiagramService } from './talmudDiagramService';
 export { default as learningRecommendationService } from './learningRecommendationService';
 export { default as sourceCredibilityService } from './sourceCredibilityService';
 export { default as wordRelationshipService } from './wordRelationshipService';
