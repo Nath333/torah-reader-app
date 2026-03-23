@@ -17,6 +17,8 @@
 @import './styles/animations.css';
 /* Import visual polish enhancements (micro-interactions, glass effects) */
 @import './styles/enhancements.css';
+/* Import responsive fixes for dynamic UI (console open, screen resize) */
+@import './styles/responsive-fixes.css';
 
 /* -----------------------------------------------------------------------------
    Root & Global Performance Settings

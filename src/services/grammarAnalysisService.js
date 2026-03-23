@@ -39,11 +39,22 @@ import {
 //   - CAL API (Comprehensive Aramaic Lexicon - full database)
 // =============================================================================
 
-// ARAMAIC dictionaries (for Talmud) - use sync lookup functions to avoid deprecation warnings
-import { lookupJastrowSync, lookupBDBSync, lookupStrongsSync } from './dictionaryLoader';
-import { CAL_ARAMAIC } from '../data/calAramaic';
-import { JASTROW_ARAMAIC } from '../data/jastrowAramaic';
-import { BDB_ARAMAIC, KLEIN_LEXICON } from '../data/hebrewLexicons';
+// ARAMAIC dictionaries (for Talmud) - use sync lookup functions (lazy-loaded from JSON)
+import {
+  lookupJastrowSync,
+  lookupBDBSync,
+  lookupStrongsSync,
+  getCALAramaicData,
+  getJastrowAramaicData,
+  getBDBAramaicData,
+  getKleinLexiconData
+} from './dictionaryLoader';
+
+// Helper functions to access lazy-loaded lexicons (returns null if not loaded yet)
+const getCAL = () => getCALAramaicData();
+const getJastrowAramaic = () => getJastrowAramaicData();
+const getBDBAramaic = () => getBDBAramaicData();
+const getKleinLexicon = () => getKleinLexiconData();
 
 /**
  * SMART: Check if a word exists in ANY of our dictionaries
@@ -68,22 +79,26 @@ const isValidDictionaryWord = (word) => {
   // 1. Jastrow Complete - PRIMARY for Talmudic Aramaic (25K entries)
   if (lookupJastrowSync(word)) return true;
 
-  // 2. CAL - Comprehensive Aramaic Lexicon
-  if (CAL_ARAMAIC?.[word]) return true;
+  // 2. CAL - Comprehensive Aramaic Lexicon (lazy-loaded)
+  const calData = getCAL();
+  if (calData?.[word]) return true;
 
-  // 3. BDB Aramaic section
-  if (BDB_ARAMAIC?.[word]) return true;
+  // 3. BDB Aramaic section (lazy-loaded)
+  const bdbAramaicData = getBDBAramaic();
+  if (bdbAramaicData?.[word]) return true;
 
-  // 4. Jastrow Aramaic subset (small)
-  if (JASTROW_ARAMAIC?.[word]) return true;
+  // 4. Jastrow Aramaic subset (lazy-loaded)
+  const jastrowAramaicData = getJastrowAramaic();
+  if (jastrowAramaicData?.[word]) return true;
 
   // === HEBREW DICTIONARIES ===
 
   // 5. BDB - Biblical Hebrew
   if (lookupBDBSync(word)) return true;
 
-  // 6. Klein - Etymology
-  if (KLEIN_LEXICON?.[word]) return true;
+  // 6. Klein - Etymology (lazy-loaded)
+  const kleinData = getKleinLexicon();
+  if (kleinData?.[word]) return true;
 
   // 7. Strong's - Biblical (skip for Talmud, but include for validation)
   if (lookupStrongsSync(word)) return true;
@@ -101,14 +116,24 @@ const getDictionarySource = (word) => {
   // Aramaic sources (for Talmud) - use sync lookups for main dictionaries
   const jastrowEntry = lookupJastrowSync(word);
   if (jastrowEntry) return { source: 'Jastrow', entry: jastrowEntry, isAramaic: true };
-  if (CAL_ARAMAIC?.[word]) return { source: 'CAL', entry: CAL_ARAMAIC[word], isAramaic: true };
-  if (BDB_ARAMAIC?.[word]) return { source: 'BDB-Aramaic', entry: BDB_ARAMAIC[word], isAramaic: true };
-  if (JASTROW_ARAMAIC?.[word]) return { source: 'Jastrow', entry: JASTROW_ARAMAIC[word], isAramaic: true };
+
+  // Lazy-loaded lexicons
+  const calData = getCAL();
+  if (calData?.[word]) return { source: 'CAL', entry: calData[word], isAramaic: true };
+
+  const bdbAramaicData = getBDBAramaic();
+  if (bdbAramaicData?.[word]) return { source: 'BDB-Aramaic', entry: bdbAramaicData[word], isAramaic: true };
+
+  const jastrowAramaicData = getJastrowAramaic();
+  if (jastrowAramaicData?.[word]) return { source: 'Jastrow', entry: jastrowAramaicData[word], isAramaic: true };
 
   // Hebrew sources (for Torah) - use sync lookups for main dictionaries
   const bdbEntry = lookupBDBSync(word);
   if (bdbEntry) return { source: 'BDB', entry: bdbEntry, isAramaic: false };
-  if (KLEIN_LEXICON?.[word]) return { source: 'Klein', entry: KLEIN_LEXICON[word], isAramaic: false };
+
+  const kleinData = getKleinLexicon();
+  if (kleinData?.[word]) return { source: 'Klein', entry: kleinData[word], isAramaic: false };
+
   const strongsEntry = lookupStrongsSync(word);
   if (strongsEntry) return { source: "Strong's", entry: strongsEntry, isAramaic: false };
 

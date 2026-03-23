@@ -23,21 +23,43 @@ const log = createLogger('DictionaryLoader');
 const cache = {
   bdb: null,
   jastrow: null,
-  strongs: null
+  strongs: null,
+  // Additional lexicons (lazy-loaded from JSON)
+  bdbLexicon: null,
+  bdbAramaic: null,
+  kleinLexicon: null,
+  jastrowLexicon: null,
+  strongLexicon: null,
+  calAramaic: null,
+  jastrowAramaic: null
 };
 
 /** Loading promises to prevent duplicate fetches */
 const loadingPromises = {
   bdb: null,
   jastrow: null,
-  strongs: null
+  strongs: null,
+  bdbLexicon: null,
+  bdbAramaic: null,
+  kleinLexicon: null,
+  jastrowLexicon: null,
+  strongLexicon: null,
+  calAramaic: null,
+  jastrowAramaic: null
 };
 
 /** Loading state for UI feedback */
 const loadingState = {
   bdb: false,
   jastrow: false,
-  strongs: false
+  strongs: false,
+  bdbLexicon: false,
+  bdbAramaic: false,
+  kleinLexicon: false,
+  jastrowLexicon: false,
+  strongLexicon: false,
+  calAramaic: false,
+  jastrowAramaic: false
 };
 
 // =============================================================================
@@ -67,7 +89,15 @@ async function loadDictionary(name) {
   const fileName = {
     bdb: 'bdbComplete.json',
     jastrow: 'jastrowComplete.json',
-    strongs: 'strongsComplete.json'
+    strongs: 'strongsComplete.json',
+    // Additional lexicons extracted from hebrewLexicons.js
+    bdbLexicon: 'bdb_lexicon.json',
+    bdbAramaic: 'bdb_aramaic.json',
+    kleinLexicon: 'klein_lexicon.json',
+    jastrowLexicon: 'jastrow_lexicon.json',
+    strongLexicon: 'strong_lexicon.json',
+    calAramaic: 'cal_aramaic.json',
+    jastrowAramaic: 'jastrow_aramaic.json'
   }[name];
 
   loadingPromises[name] = fetch(`${process.env.PUBLIC_URL}/data/${fileName}`)
@@ -231,21 +261,108 @@ export function lookupStrongsSync(word) {
 }
 
 // =============================================================================
+// ADDITIONAL LEXICONS (lazy-loaded from extracted JSON)
+// =============================================================================
+
+/**
+ * Get Klein lexicon data
+ * @returns {Promise<Object>} Klein dictionary
+ */
+export async function getKleinLexicon() {
+  return loadDictionary('kleinLexicon');
+}
+
+/**
+ * Get BDB Lexicon data (from hebrewLexicons.js)
+ * @returns {Promise<Object>} BDB Lexicon dictionary
+ */
+export async function getBDBLexicon() {
+  return loadDictionary('bdbLexicon');
+}
+
+/**
+ * Get BDB Aramaic data
+ * @returns {Promise<Object>} BDB Aramaic dictionary
+ */
+export async function getBDBAramaic() {
+  return loadDictionary('bdbAramaic');
+}
+
+/**
+ * Get Jastrow Lexicon data (from hebrewLexicons.js)
+ * @returns {Promise<Object>} Jastrow Lexicon dictionary
+ */
+export async function getJastrowLexicon() {
+  return loadDictionary('jastrowLexicon');
+}
+
+/**
+ * Get Strong's Lexicon data (from hebrewLexicons.js)
+ * @returns {Promise<Object>} Strong's Lexicon dictionary
+ */
+export async function getStrongLexicon() {
+  return loadDictionary('strongLexicon');
+}
+
+/**
+ * Get CAL Aramaic data
+ * @returns {Promise<Object>} CAL Aramaic dictionary
+ */
+export async function getCALAramaic() {
+  return loadDictionary('calAramaic');
+}
+
+/**
+ * Get Jastrow Aramaic data (small subset)
+ * @returns {Promise<Object>} Jastrow Aramaic dictionary
+ */
+export async function getJastrowAramaic() {
+  return loadDictionary('jastrowAramaic');
+}
+
+/**
+ * Synchronous access to cached lexicons (returns null if not loaded)
+ */
+export function getKleinLexiconData() { return cache.kleinLexicon; }
+export function getBDBLexiconData() { return cache.bdbLexicon; }
+export function getBDBAramaicData() { return cache.bdbAramaic; }
+export function getJastrowLexiconData() { return cache.jastrowLexicon; }
+export function getStrongLexiconData() { return cache.strongLexicon; }
+export function getCALAramaicData() { return cache.calAramaic; }
+export function getJastrowAramaicData() { return cache.jastrowAramaic; }
+
+// =============================================================================
 // PRELOADING & UTILITIES
 // =============================================================================
 
 /**
- * Preload all dictionaries (call on app init for better UX)
+ * Preload core dictionaries (call on app init for better UX)
  * @returns {Promise<void>}
  */
 export async function preloadDictionaries() {
-  log.debug('Preloading all dictionaries...');
+  log.debug('Preloading core dictionaries...');
   await Promise.all([
     loadDictionary('bdb').catch(() => null),
     loadDictionary('jastrow').catch(() => null),
     loadDictionary('strongs').catch(() => null)
   ]);
-  log.debug('All dictionaries preloaded');
+  log.debug('Core dictionaries preloaded');
+}
+
+/**
+ * Preload additional lexicons (call after core dictionaries for scholar mode)
+ * @returns {Promise<void>}
+ */
+export async function preloadLexicons() {
+  log.debug('Preloading additional lexicons...');
+  await Promise.all([
+    loadDictionary('kleinLexicon').catch(() => null),
+    loadDictionary('calAramaic').catch(() => null),
+    loadDictionary('jastrowAramaic').catch(() => null),
+    loadDictionary('bdbLexicon').catch(() => null),
+    loadDictionary('bdbAramaic').catch(() => null)
+  ]);
+  log.debug('Additional lexicons preloaded');
 }
 
 /**
@@ -276,13 +393,18 @@ export function getLoadingStatus() {
 
 /**
  * Get cache status for all dictionaries
- * @returns {{ bdb: boolean, jastrow: boolean, strongs: boolean }}
+ * @returns {Object} Cache status for all dictionaries and lexicons
  */
 export function getCacheStatus() {
   return {
     bdb: cache.bdb !== null,
     jastrow: cache.jastrow !== null,
-    strongs: cache.strongs !== null
+    strongs: cache.strongs !== null,
+    kleinLexicon: cache.kleinLexicon !== null,
+    calAramaic: cache.calAramaic !== null,
+    jastrowAramaic: cache.jastrowAramaic !== null,
+    bdbLexicon: cache.bdbLexicon !== null,
+    bdbAramaic: cache.bdbAramaic !== null
   };
 }
 
@@ -469,6 +591,23 @@ const dictionaryLoader = {
   lookupStrongsByNumber,
   lookupStrongsSync,
   getStrongsData,
+
+  // Additional Lexicons (lazy-loaded)
+  getKleinLexicon,
+  getBDBLexicon,
+  getBDBAramaic,
+  getJastrowLexicon,
+  getStrongLexicon,
+  getCALAramaic,
+  getJastrowAramaic,
+  getKleinLexiconData,
+  getBDBLexiconData,
+  getBDBAramaicData,
+  getJastrowLexiconData,
+  getStrongLexiconData,
+  getCALAramaicData,
+  getJastrowAramaicData,
+  preloadLexicons,
 
   // Utilities
   preloadDictionaries,

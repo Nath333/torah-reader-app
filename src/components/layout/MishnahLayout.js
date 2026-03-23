@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import './MishnahLayout.css';
-import { ClickableHebrewText } from '../core/ClickableText';
+import ClickableText from '../core/ClickableText';
 import { getBartenuraForMishnah, getTosafotYomTovForMishnah } from '../../services/sefariaApi';
 import { removeHtmlTags } from '../../utils/sanitize';
 
@@ -250,7 +250,8 @@ const MishnahLayout = ({
                 <span className="ml-dibbur">{item.dibbur} — </span>
               )}
               {enableClickableText ? (
-                <ClickableHebrewText
+                <ClickableText
+                  language="hebrew"
                   text={removeHtmlTags(item.hebrew)}
                   className="ml-commentary-text"
                   onSaveWord={onSaveWord}
@@ -351,7 +352,8 @@ const MishnahLayout = ({
               <div key={m.num} className="ml-mishnah-item">
                 <span className="ml-mishnah-num">[{m.numHebrew}]</span>
                 {enableClickableText ? (
-                  <ClickableHebrewText
+                  <ClickableText
+                    language="hebrew"
                     text={m.hebrew}
                     className="ml-mishnah-text"
                     onSaveWord={onSaveWord}

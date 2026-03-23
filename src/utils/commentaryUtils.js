@@ -1158,13 +1158,48 @@ export const processCommentArray = (hebrewData, englishData, options = {}) => {
  * @param {string} options.type - Comment type (e.g., 'halachot', 'aggadot')
  * @returns {Array} Processed comments array
  */
+/**
+ * Recursively extract paired strings from Hebrew and English nested arrays
+ * Maintains correspondence between Hebrew and English at each level
+ * @param {*} heData - Hebrew data (nested array or string)
+ * @param {*} enData - English data (nested array or string)
+ * @returns {Array<{hebrew: string, english: string}>} - Paired strings
+ */
+const flattenPairedStrings = (heData, enData) => {
+  const pairs = [];
+
+  const traverse = (he, en) => {
+    if (!he) return;
+
+    if (typeof he === 'string') {
+      pairs.push({
+        hebrew: he,
+        english: typeof en === 'string' ? en : ''
+      });
+      return;
+    }
+
+    if (Array.isArray(he)) {
+      he.forEach((item, idx) => {
+        const enItem = Array.isArray(en) ? en[idx] : undefined;
+        traverse(item, enItem);
+      });
+    }
+  };
+
+  traverse(heData, enData);
+  return pairs;
+};
+
 export const processTalmudComments = (hebrewData, englishData, options = {}) => {
   const { type = null } = options;
   const comments = [];
 
   // Debug: Log what we received
   log.verbose('processTalmudComments Input:', {
-    hebrewLength: Array.isArray(hebrewData) ? hebrewData.length : 'N/A'
+    hebrewLength: Array.isArray(hebrewData) ? hebrewData.length : 'N/A',
+    hebrewType: typeof hebrewData,
+    isNested: Array.isArray(hebrewData) && hebrewData.length > 0 && Array.isArray(hebrewData[0])
   });
 
   const heArray = Array.isArray(hebrewData) ? hebrewData : [hebrewData];
@@ -1174,36 +1209,45 @@ export const processTalmudComments = (hebrewData, englishData, options = {}) => 
     const enEntry = enArray[idx];
 
     if (Array.isArray(entry)) {
-      entry.forEach((subComment, subIdx) => {
-        if (subComment) {
-          const subEn = Array.isArray(enEntry) ? enEntry[subIdx] : '';
-          const cleanedEn = cleanHtml(subEn || '');
-          const comment = {
-            section: idx + 1,
-            commentIndex: subIdx + 1,
-            hebrew: cleanHtml(subComment),
-            english: cleanedEn,
-            dibbur: extractDibbur(subComment),
-            // Source marker: Sefaria if English exists, otherwise null (needs translation)
-            translationSource: cleanedEn ? 'Sefaria' : null
-          };
-          if (type) comment.type = type;
-          comments.push(comment);
+      // Use recursive flattening to handle deeply nested structures (Rashi on Talmud)
+      const pairs = flattenPairedStrings(entry, enEntry);
+
+      pairs.forEach((pair, subIdx) => {
+        if (pair.hebrew) {
+          const cleanedHe = cleanHtml(pair.hebrew);
+          const cleanedEn = cleanHtml(pair.english || '');
+
+          if (cleanedHe) { // Only add if we have actual Hebrew text
+            const comment = {
+              section: idx + 1,
+              commentIndex: subIdx + 1,
+              hebrew: cleanedHe,
+              english: cleanedEn,
+              dibbur: extractDibbur(pair.hebrew),
+              // Source marker: Sefaria if English exists, otherwise null (needs translation)
+              translationSource: cleanedEn ? 'Sefaria' : null
+            };
+            if (type) comment.type = type;
+            comments.push(comment);
+          }
         }
       });
     } else if (entry) {
+      const cleanedHe = cleanHtml(entry);
       const cleanedEn = cleanHtml(enEntry || '');
-      const comment = {
-        section: idx + 1,
-        commentIndex: 1,
-        hebrew: cleanHtml(entry),
-        english: cleanedEn,
-        dibbur: extractDibbur(entry),
-        // Source marker: Sefaria if English exists, otherwise null (needs translation)
-        translationSource: cleanedEn ? 'Sefaria' : null
-      };
-      if (type) comment.type = type;
-      comments.push(comment);
+      if (cleanedHe) { // Only add if we have actual Hebrew text
+        const comment = {
+          section: idx + 1,
+          commentIndex: 1,
+          hebrew: cleanedHe,
+          english: cleanedEn,
+          dibbur: extractDibbur(entry),
+          // Source marker: Sefaria if English exists, otherwise null (needs translation)
+          translationSource: cleanedEn ? 'Sefaria' : null
+        };
+        if (type) comment.type = type;
+        comments.push(comment);
+      }
     }
   });
 

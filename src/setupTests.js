@@ -45,12 +45,32 @@ jest.mock('./services/dictionaryLoader', () => {
     }
   };
 
+  // Klein lexicon data (etymological)
+  const kleinData = {
+    'מלך': { definition: 'king', etymology: 'Proto-Semitic *mlk' },
+    'ארץ': { definition: 'land', etymology: 'Common Semitic' },
+  };
+
+  // CAL Aramaic data
+  const calAramaicData = {
+    'מלכא': { definition: 'king', dialect: 'Jewish Palestinian Aramaic' },
+  };
+
+  // Jastrow Aramaic data
+  const jastrowAramaicData = {
+    'מלכא': { definition: 'king', source: 'Jastrow Aramaic' },
+  };
+
   return {
     __esModule: true,
     // Data getters (primary interface for combinedTranslationService)
     getBDBData: jest.fn(() => ({ byWord: bdbData, byStrongs: strongsData.byNumber })),
     getJastrowData: jest.fn(() => jastrowData),
     getStrongsData: jest.fn(() => strongsData),
+    // Additional data getters for unifiedLookupService
+    getKleinLexiconData: jest.fn(() => kleinData),
+    getCALAramaicData: jest.fn(() => calAramaicData),
+    getJastrowAramaicData: jest.fn(() => jastrowAramaicData),
     // Async loaders
     getBDB: jest.fn().mockResolvedValue({ byWord: bdbData }),
     getJastrow: jest.fn().mockResolvedValue(jastrowData),
@@ -67,5 +87,8 @@ jest.mock('./services/dictionaryLoader', () => {
     // Utility functions
     isDictionaryLoaded: jest.fn(() => true),
     preloadAllDictionaries: jest.fn().mockResolvedValue(undefined),
+    // Common words for preloading
+    COMMON_HEBREW_WORDS: ['מלך', 'ארץ', 'כל', 'בית'],
+    COMMON_ARAMAIC_WORDS: ['מלכא', 'ארעא'],
   };
 });

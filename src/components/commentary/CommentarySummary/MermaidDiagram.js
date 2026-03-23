@@ -1,33 +1,54 @@
 /**
  * MermaidDiagram Component
  * Renders Mermaid diagrams with error handling, timeout, and fallback display
+ *
+ * BUNDLE OPTIMIZATION: mermaid library (~500KB) is now lazy-loaded
+ * on first use instead of bundled with the main chunk.
  */
 
 import React, { useState, useEffect, useRef, useMemo, memo } from 'react';
-import mermaid from 'mermaid';
-
-// Initialize mermaid with better settings
-mermaid.initialize({
-  startOnLoad: false,
-  theme: 'base',
-  securityLevel: 'strict',
-  flowchart: {
-    useMaxWidth: true,
-    htmlLabels: true,
-    curve: 'basis',
-    padding: 20
-  },
-  themeVariables: {
-    primaryColor: '#667eea',
-    primaryTextColor: '#fff',
-    primaryBorderColor: '#5a67d8',
-    lineColor: '#718096',
-    secondaryColor: '#e0e7ff',
-    tertiaryColor: '#f7fafc'
-  }
-});
 
 const DIAGRAM_TIMEOUT = 5000; // 5 second timeout
+
+// Mermaid instance cache (lazy-loaded)
+let mermaidInstance = null;
+let mermaidLoadPromise = null;
+
+/**
+ * Lazy-load and initialize mermaid
+ * @returns {Promise<Object>} Mermaid instance
+ */
+async function getMermaid() {
+  if (mermaidInstance) return mermaidInstance;
+
+  if (!mermaidLoadPromise) {
+    mermaidLoadPromise = import('mermaid').then(({ default: mermaid }) => {
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'base',
+        securityLevel: 'strict',
+        flowchart: {
+          useMaxWidth: true,
+          htmlLabels: true,
+          curve: 'basis',
+          padding: 20
+        },
+        themeVariables: {
+          primaryColor: '#667eea',
+          primaryTextColor: '#fff',
+          primaryBorderColor: '#5a67d8',
+          lineColor: '#718096',
+          secondaryColor: '#e0e7ff',
+          tertiaryColor: '#f7fafc'
+        }
+      });
+      mermaidInstance = mermaid;
+      return mermaid;
+    });
+  }
+
+  return mermaidLoadPromise;
+}
 
 /**
  * Renders a Mermaid diagram with error handling and fallback
@@ -80,6 +101,11 @@ function MermaidDiagram({ chart, id, explanation }) {
       }, DIAGRAM_TIMEOUT);
 
       try {
+        // Lazy-load mermaid
+        const mermaid = await getMermaid();
+
+        if (isCancelled) return;
+
         // Clean the chart syntax
         let cleanChart = chart
           .replace(/\\n/g, '\n')

@@ -68,7 +68,6 @@
 // CORE API SERVICES
 // =============================================================================
 export { default as sefariaApi } from './sefariaApi';
-export { default as sefariaService } from './sefariaApi'; // Legacy alias
 export { default as hebcalService } from './hebcalService';
 
 // =============================================================================
@@ -81,7 +80,6 @@ export { default as targumService } from './targumService';
 // =============================================================================
 // DICTIONARY & TRANSLATION SERVICES
 // =============================================================================
-// PRO SCHOLAR V10.3: All word lookup now uses unifiedLookupService
 export { default as unifiedLookupService } from './unifiedLookupService';
 export {
   lookupWord as lookupWordAsync,
@@ -95,7 +93,7 @@ export {
 } from './unifiedLookupService';
 
 // =============================================================================
-// TRANSLATION SERVICE (PRO SCHOLAR V10.2)
+// TRANSLATION SERVICE
 // Pure text translation (Hebrew → English sentences/commentary)
 // =============================================================================
 export { default as translationService } from './translationService';
@@ -118,7 +116,7 @@ export { default as englishToFrenchService } from './englishToFrenchService';
 export { default as dictionaryLoader } from './dictionaryLoader';
 
 // =============================================================================
-// PRE-CLASSIFICATION SERVICE (PRO SCHOLAR V5)
+// PRE-CLASSIFICATION SERVICE
 // =============================================================================
 export { default as preClassificationService } from './preClassificationService';
 export {
@@ -291,13 +289,12 @@ export {
 // =============================================================================
 export {
   translateEnglishToFrench,
-  translateWithSource,
+  translateWithSource as translateWithSourceFr,
   quickTranslate
 } from './englishToFrenchService';
 
 // =============================================================================
 // NAMED EXPORTS - Dictionary Loader (BDB, Jastrow, Strong's)
-// PRO SCHOLAR V7: Single source of truth for all dictionary operations
 // =============================================================================
 export {
   // Async loaders
@@ -672,7 +669,7 @@ export {
 } from './sourceCredibilityService';
 
 // =============================================================================
-// NAMED EXPORTS - Word Relationship Service (PRO SCHOLAR v3)
+// NAMED EXPORTS - Word Relationship Service
 // =============================================================================
 export {
   WORD_RELATIONSHIP_TYPES,
@@ -699,7 +696,7 @@ export {
 } from './wordRelationshipService';
 
 // =============================================================================
-// NAMED EXPORTS - Learning Recommendation PRO (PRO SCHOLAR v3)
+// NAMED EXPORTS - Learning Recommendation PRO
 // =============================================================================
 export {
   calculatePriorityScore,
@@ -711,7 +708,7 @@ export {
 } from './learningRecommendationService';
 
 // =============================================================================
-// NAMED EXPORTS - Contextual Definition Service (PRO SCHOLAR v3)
+// NAMED EXPORTS - Contextual Definition Service
 // =============================================================================
 export {
   CONTEXT_TYPES,
@@ -747,7 +744,7 @@ export {
 } from './soncinoService';
 
 // =============================================================================
-// NAMED EXPORTS - Root Forms Service (PRO SCHOLAR v4)
+// NAMED EXPORTS - Root Forms Service
 // =============================================================================
 export {
   generateRootForms,
@@ -759,13 +756,8 @@ export {
 
 // =============================================================================
 // FEATURE FLAGS - Unified Feature Registry & Performance Layer
-// PRO SCHOLAR V8: Renamed from proScholarV4.js to featureFlags.js
-// NOTE: Root extraction moved to rootExtraction.js (V5)
-// Still valid for: FEATURES flags, telemetry, service management
 // =============================================================================
 export { default as featureFlags } from './featureFlags';
-// Legacy alias for backwards compatibility
-export { default as proScholarV4 } from './featureFlags';
 export {
   // Version & Feature Flags
   PRO_SCHOLAR_VERSION,
@@ -791,7 +783,6 @@ export {
 
 // =============================================================================
 // ★★★ UNIFIED LOOKUP SERVICE - PRIMARY WORD LOOKUP API ★★★
-// PRO SCHOLAR V10.1: Clean, fast, pipeline-based lookup
 // =============================================================================
 // USE THIS FOR NEW CODE! It's cleaner and more maintainable than combinedTranslationService.
 //
@@ -807,7 +798,7 @@ export {
 //   // Efficient batch
 //   const results = await batchLookup(['תורה', 'שבת', 'מלך']);
 //
-export { default as unifiedLookupService } from './unifiedLookupService';
+// NOTE: unifiedLookupService default export is at line ~85 (not duplicated here)
 export {
   // Core lookup functions
   lookupWord as lookupWordUnified,
@@ -815,10 +806,10 @@ export {
   batchLookup,
   lookupAllLocalDictionaries,
 
-  // PRO SCHOLAR V2: Enhanced lookup with all enrichments
+  // Enhanced lookup
   lookupWordEnriched,
 
-  // PRO SCHOLAR V2: Scholarly features
+  // Scholarly features
   generateCitation,
   generateAllCitations,
   calculateConfidence,
@@ -837,7 +828,7 @@ export {
   warmCache,
   isCached,
 
-  // Preloading (PRO SCHOLAR V10.3: Migrated from combinedTranslationService)
+  // Preloading
   preloadCommonWords as preloadCommonWordsUnified,
   isPreloadComplete as isPreloadCompleteUnified,
   getPreloadStatus as getPreloadStatusUnified,
@@ -845,64 +836,50 @@ export {
   // Translation
   getFrenchTranslation,
 
-  // PRO SCHOLAR V2: Progressive lookup (non-blocking UI pattern)
+  // Progressive lookup (non-blocking UI pattern)
   progressiveLookup,
   progressiveBatchLookup,
 
-  // PRO SCHOLAR V10.1: Semantic field enrichment
+  // Semantic field enrichment
   getSemanticField as getWordSemanticField,
   enrichWithSemantics,
   lookupWithSemantics,
 
-  // PRO SCHOLAR V10.2: Full enrichment (most comprehensive lookup)
+  // Full enrichment (most comprehensive lookup)
   lookupFullyEnriched,
 
-  // PRO SCHOLAR V10.2: Contextual definition ranking
+  // Contextual definition ranking
   rankDefinitionsByContext,
   lookupWithContextRanking,
 
-  // PRO SCHOLAR V10.2: Word relationships (aliased to avoid collision)
+  // Word relationships (aliased to avoid collision)
   getWordRelationships as getWordRelationshipsUnified,
   lookupWithRelationships,
 
-  // PRO SCHOLAR V10.2: Scholarly uncertainty markers
+  // Scholarly uncertainty markers
   generateScholarlyUncertainty,
   UNCERTAINTY_LEVELS,
 
-  // PRO SCHOLAR V10.2: Export capabilities
+  // Export capabilities
   exportToJsonLD,
   exportToMarkdown,
   exportToFlashcard,
 
-  // PRO SCHOLAR V10.2: Constants (aliased to avoid collision)
+  // Constants (aliased to avoid collision)
   CONTEXT_TYPES as UNIFIED_CONTEXT_TYPES,
   WORD_RELATIONSHIP_TYPES as UNIFIED_RELATIONSHIP_TYPES,
 
-  // PRO SCHOLAR V10.2: Advanced source management
+  // Advanced source management
   raceWithEarlyReturn,
   getResultQualityScore,
   rankSourcesByTier,
-  SCHOLARLY_TIERS,
-  SEMANTIC_DOMAINS,
+  SCHOLARLY_TIERS as UNIFIED_SCHOLARLY_TIERS,
+  SEMANTIC_DOMAINS as UNIFIED_SEMANTIC_DOMAINS,
   RELIABILITY_TIERS
 } from './unifiedLookupService';
 
 // =============================================================================
-// WORD LOOKUP - Legacy aliases (use unifiedLookupService exports above)
-// PRO SCHOLAR V10: wordLookupOrchestrator has been consolidated into unifiedLookupService
-// =============================================================================
-// Legacy alias - points to unifiedLookupService
-export { default as wordLookupOrchestrator } from './unifiedLookupService';
-export {
-  lookupWord,
-  quickLookup,
-  clearCache as clearLookupCache,
-  getCacheStats as getLookupCacheStats
-} from './unifiedLookupService';
-
-// =============================================================================
 // LOOKUP PIPELINE - Context management and stage execution
-// PRO SCHOLAR V10.3: Pipeline architecture for word lookup
 // =============================================================================
 export { default as lookupPipeline } from './lookupPipeline';
 export {
@@ -917,26 +894,22 @@ export {
 
 // =============================================================================
 // LOOKUP STAGES - Composable lookup stages
-// PRO SCHOLAR V10.3: Stage definitions for lookup pipeline
 // =============================================================================
 export { default as lookupStages, createStages, STAGE_ORDER } from './lookupStages';
 
 // =============================================================================
 // ROOT EXTRACTION - Unified Root Extraction Service
-// PRO SCHOLAR V8: Renamed from unifiedRootService.js to rootExtraction.js
 // =============================================================================
 export { default as rootExtraction } from './rootExtraction';
-// Legacy alias for backwards compatibility
-export { default as unifiedRootService } from './rootExtraction';
 export {
-  // ★★★ PRO SCHOLAR V6.1: Complete scholarly analysis (NEWEST!)
+  // Complete scholarly analysis
   analyzeWordComplete,
   getHistoricalLayer,
   getHistoricalEvolution,
   getGrammaticalAnomaly,
   getCognates as getRootCognates,
 
-  // ★★ PRO SCHOLAR V6: Enhanced analysis with binyan, dialect, semantic
+  // Enhanced analysis with binyan, dialect, semantic
   extractRootsEnhanced,
   analyzeBinyan,
   detectDialect,
@@ -958,7 +931,7 @@ export {
   extractRootsMultiHypothesis,
   extractAllPossibleRoots,
 
-  // PRO SCHOLAR V5.2: Comprehensive linguistic patterns
+  // Comprehensive linguistic patterns
   PREFIX_PATTERNS,
   SUFFIX_PATTERNS,
   NOUN_PATTERNS,
@@ -985,22 +958,19 @@ export { default as servicePreloader } from './servicePreloader';
 export {
   preloadServices as preloadAllServices,
   preloadCriticalServices,
-  getPreloadStatus,
+  getPreloadStatus as getServicePreloadStatus,
   isServiceLoaded
 } from './servicePreloader';
 
 // =============================================================================
-// PRO SCHOLAR V8 - Unified Cache System (consolidated in cacheOrchestrator)
+// UNIFIED CACHE SYSTEM
 // =============================================================================
 export { wordLookupCache, WordLookupCache } from './cacheOrchestrator';
 
 // =============================================================================
 // LINGUISTIC ANALYSIS - Advanced Linguistic Analysis + Historical & Cognate Data
-// PRO SCHOLAR V8: Renamed from proScholarV6.js to linguisticAnalysis.js
 // =============================================================================
 export { default as linguisticAnalysis } from './linguisticAnalysis';
-// Legacy alias for backwards compatibility
-export { default as proScholarV6 } from './linguisticAnalysis';
 export {
   PRO_SCHOLAR_V6_VERSION,
   // Binyan analysis
@@ -1022,29 +992,28 @@ export {
   // Cross-references
   BIBLICAL_BOOKS,
   detectCrossReferences,
-  // Unified V6 analysis
   analyzeWordV6,
 
-  // ★ PRO SCHOLAR V6.1: Historical Layers
+  // Historical Layers
   HISTORICAL_LAYERS,
   HISTORICAL_EVOLUTION,
   detectHistoricalLayer,
 
-  // ★ PRO SCHOLAR V6.1: Grammatical Anomalies
+  // Grammatical Anomalies
   GRAMMATICAL_ANOMALIES,
   checkGrammaticalAnomaly,
 
-  // ★ PRO SCHOLAR V6.1: Cognate Languages
+  // Cognate Languages
   COGNATE_LANGUAGES,
   ROOT_COGNATES,
   getCognates,
 
-  // ★ PRO SCHOLAR V6.1: Enhanced Analysis
+  // Enhanced Analysis
   analyzeWordV6Enhanced
 } from './linguisticAnalysis';
 
 // =============================================================================
-// PRO SCHOLAR ENGINE V7 - Unified Orchestrator
+// PRO SCHOLAR ENGINE - Unified Orchestrator
 // =============================================================================
 export { default as ProScholarEngine } from './ProScholarEngine';
 export {
@@ -1090,7 +1059,7 @@ export {
 } from './cacheOrchestrator';
 
 // =============================================================================
-// TELEMETRY SERVICE - PRO SCHOLAR V6 Unified Analytics
+// TELEMETRY SERVICE - Unified Analytics
 // =============================================================================
 export { default as TelemetryService } from './telemetryService';
 export {
@@ -1112,13 +1081,13 @@ export {
 } from './telemetryService';
 
 // =============================================================================
-// PRO SCHOLAR V10 - SCHOLARLY SOURCE AGGREGATOR
+// SCHOLARLY SOURCE AGGREGATOR
 // Parallel source fetching with expert consensus scoring
 // =============================================================================
 export { default as scholarSourceAggregator } from './scholarSourceAggregator';
 export {
-  // Source tiers & classification
-  SCHOLARLY_TIERS,
+  // Source tiers & classification (aliased to avoid collision with unifiedLookupService)
+  SCHOLARLY_TIERS as AGGREGATOR_SCHOLARLY_TIERS,
   CONSENSUS_LEVELS,
   getSourceTier,
 
@@ -1131,13 +1100,13 @@ export {
   aggregateLocalSources,
   createAggregatedResult,
 
-  // Enhanced parallel fetching (V11)
-  raceWithEarlyReturn,
+  // Enhanced parallel fetching (aliased - also exported from unifiedLookupService)
+  raceWithEarlyReturn as aggregatorRaceWithEarlyReturn,
 
-  // Pipeline integration helpers (V11)
+  // Pipeline integration helpers (aliased - also exported from unifiedLookupService)
   mergeSourcesIntoContext,
-  rankSourcesByTier,
-  getResultQualityScore,
+  rankSourcesByTier as aggregatorRankSourcesByTier,
+  getResultQualityScore as aggregatorGetResultQualityScore,
 
   // Scholarly comparison
   generateSourceComparison,
@@ -1145,7 +1114,7 @@ export {
 } from './scholarSourceAggregator';
 
 // =============================================================================
-// PRO SCHOLAR V10 - WORD PREFETCH SERVICE
+// WORD PREFETCH SERVICE
 // Intelligent prefetching for faster lookup experience
 // =============================================================================
 export { default as wordPrefetchService } from './wordPrefetchService';

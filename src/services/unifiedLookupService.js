@@ -28,12 +28,12 @@ import {
   getBDBData,
   getJastrowData,
   getStrongsData,
+  getKleinLexiconData,
+  getCALAramaicData,
+  getJastrowAramaicData,
   COMMON_HEBREW_WORDS,
   COMMON_ARAMAIC_WORDS
 } from './dictionaryLoader';
-import { KLEIN_LEXICON } from '../data/hebrewLexicons.js';
-import { CAL_ARAMAIC } from '../data/calAramaic';
-import { JASTROW_ARAMAIC } from '../data/jastrowAramaic';
 import { lookupAramaicWord as lookupCalAramaic } from './calDictionaryService';
 import { lookupWordSefaria } from './scholarlyLexiconService';
 import { normalizeFinals, stripAllDiacritics } from '../utils/hebrewUtils';
@@ -70,14 +70,14 @@ import {
   WORD_RELATIONSHIP_TYPES,
   WORD_RELATIONSHIPS_DB
 } from './wordRelationshipService';
-// PRO SCHOLAR V10.2: Critical word fallback for common words
+// Critical word fallback for common words
 import { lookupCriticalWord, isBiblicalName } from '../constants/criticalWords';
 
 const log = createLogger('UnifiedLookup');
 const DEBUG = process.env.NODE_ENV === 'development';
 
 // =============================================================================
-// CONFIDENCE SCORING CONSTANTS (PRO SCHOLAR V10.2)
+// CONFIDENCE SCORING CONSTANTS
 // =============================================================================
 
 const CONFIDENCE_SCORING = {
@@ -134,15 +134,16 @@ let preloadedCount = 0;
 
 /**
  * Get lazy-loaded dictionary data (includes Jastrow Aramaic for Talmudic lookup)
+ * All lexicons are now lazy-loaded from JSON files
  * @returns {Object} Dictionary data sources
  */
 const getDictionaries = () => ({
   bdb: getBDBData(),
   jastrow: getJastrowData(),
   strongs: getStrongsData(),
-  klein: KLEIN_LEXICON,
-  calAramaic: CAL_ARAMAIC,
-  jastrowAramaic: JASTROW_ARAMAIC
+  klein: getKleinLexiconData(),
+  calAramaic: getCALAramaicData(),
+  jastrowAramaic: getJastrowAramaicData()
 });
 
 // =============================================================================
@@ -832,7 +833,7 @@ const executeLookup = async (word, cleaned, contextMode, includeOnline) => {
 /**
  * Fetch from online sources (Sefaria API, CAL API)
  * Uses raceWithEarlyReturn for fast response when tier-1 source found
- * PRO SCHOLAR V10.2: Added error handling with graceful fallback
+ * Added error handling with graceful fallback
  */
 const fetchOnlineSources = async (word, contextMode) => {
   try {
@@ -921,7 +922,7 @@ export const quickLookup = (word, options = {}) => {
     return result;
   }
 
-  // PRO SCHOLAR V10.2: CRITICAL_WORDS fallback
+  // CRITICAL_WORDS fallback for common words
   // Final fallback for common words when all dictionary lookups fail
   const criticalTranslation = lookupCriticalWord(cleaned) || lookupCriticalWord(word);
   if (criticalTranslation) {
@@ -1226,7 +1227,7 @@ export const getCacheStats = () => lookupCache.getStats?.() || { size: 0 };
 export const clearCache = () => lookupCache.clear?.();
 
 /**
- * Clear cache entries for a specific word (PRO SCHOLAR V10.3)
+ * Clear cache entries for a specific word
  * Used by hooks to force refresh without clearing entire cache
  * @param {string} word - Word to clear from cache
  */
@@ -1422,10 +1423,8 @@ export const warmCache = async (text, options = {}) => {
 
 /**
  * Preload common Hebrew and Aramaic words into cache
- * PRO SCHOLAR V10.3: Migrated from combinedTranslationService
- *
- * @param {string[]} words - Optional custom word list (default: COMMON_HEBREW_WORDS + COMMON_ARAMAIC_WORDS)
- * @returns {Promise<number>} - Number of words successfully preloaded
+ * @param {string[]} words - Optional custom word list (default: common words)
+ * @returns {Promise<number>} Number of words successfully preloaded
  */
 export const preloadCommonWords = async (words = null) => {
   // Return existing promise if already preloading
@@ -1514,7 +1513,7 @@ export { cleanHebrewWord };
 export { SEMANTIC_DOMAINS };
 
 // =============================================================================
-// PRO SCHOLAR V10.3: DIALECTAL AND PERIOD ANALYSIS
+// DIALECTAL AND PERIOD ANALYSIS
 // =============================================================================
 
 /**
@@ -1651,7 +1650,7 @@ export const analyzeDialectalPeriod = (word, lookupResult = null) => {
 };
 
 // =============================================================================
-// PRO SCHOLAR V10.3: HAPAX LEGOMENA DATABASE
+// HAPAX LEGOMENA DATABASE
 // =============================================================================
 
 export const HAPAX_DATABASE = {
@@ -1677,7 +1676,7 @@ export const isLikelyHapax = (lookupResult) => {
 };
 
 // =============================================================================
-// PRO SCHOLAR V10.3: COMPARATIVE SEMITIC DATA
+// COMPARATIVE SEMITIC DATA
 // =============================================================================
 
 export const COMPARATIVE_SEMITIC_DB = {
@@ -1704,7 +1703,7 @@ export const getComparativeSemiticData = (word) => {
 };
 
 // =============================================================================
-// PRO SCHOLAR V10.3: HISTORICAL USAGE TIMELINE
+// HISTORICAL USAGE TIMELINE
 // =============================================================================
 
 export const HISTORICAL_PERIODS = [
@@ -1731,7 +1730,7 @@ export const getHistoricalUsageTimeline = (word) => {
 };
 
 // =============================================================================
-// PRO SCHOLAR V10.3: ENHANCED CITATIONS & CROSS-REFERENCES
+// ENHANCED CITATIONS & CROSS-REFERENCES
 // =============================================================================
 
 export const CITATION_FORMATS = { SBL: { name: 'Society of Biblical Literature' }, CHICAGO: { name: 'Chicago Manual of Style' } };
@@ -1763,7 +1762,7 @@ export const getCrossReferences = (word) => {
 };
 
 // =============================================================================
-// PRO SCHOLAR V10.3: ULTIMATE ENRICHED LOOKUP
+// ULTIMATE ENRICHED LOOKUP
 // =============================================================================
 
 export const lookupFullyEnrichedV3 = async (word, options = {}) => {
@@ -2575,8 +2574,6 @@ const unifiedLookupService = {
   // Enhanced lookup
   lookupWordEnriched,
   lookupFullyEnriched,
-
-  // PRO SCHOLAR V10.3: Ultimate enriched lookup
   lookupFullyEnrichedV3,
 
   // Scholarly features
@@ -2603,31 +2600,31 @@ const unifiedLookupService = {
   exportToMarkdown,
   exportToFlashcard,
 
-  // PRO SCHOLAR V10.3: Dialectal/Period Analysis
+  // Dialectal/Period Analysis
   analyzeDialectalPeriod,
   LINGUISTIC_PERIODS,
   ARAMAIC_DIALECTS,
 
-  // PRO SCHOLAR V10.3: Hapax Legomena
+  // Hapax Legomena
   getHapaxInfo,
   isLikelyHapax,
   HAPAX_DATABASE,
 
-  // PRO SCHOLAR V10.3: Comparative Semitic
+  // Comparative Semitic
   getComparativeSemiticData,
   COMPARATIVE_SEMITIC_DB,
 
-  // PRO SCHOLAR V10.3: Historical Timeline
+  // Historical Timeline
   getHistoricalUsageTimeline,
   HISTORICAL_PERIODS,
   SEMANTIC_EVOLUTION_DB,
 
-  // PRO SCHOLAR V10.3: Enhanced Citations
+  // Enhanced Citations
   generateSBLCitation,
   generateAcademicCitations,
   CITATION_FORMATS,
 
-  // PRO SCHOLAR V10.3: Cross-References
+  // Cross-References
   getCrossReferences,
   CROSS_REFERENCE_DB,
 
@@ -2643,7 +2640,7 @@ const unifiedLookupService = {
   warmCache,
   isCached,
 
-  // Preloading (PRO SCHOLAR V10.3: Migrated from combinedTranslationService)
+  // Preloading
   preloadCommonWords,
   isPreloadComplete,
   getPreloadStatus,

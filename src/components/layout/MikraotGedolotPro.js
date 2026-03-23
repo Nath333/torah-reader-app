@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import './MikraotGedolotPro.css';
-import { ClickableHebrewText } from '../core/ClickableText';
+import ClickableText from '../core/ClickableText';
 import {
   getRashiForVerse,
   getRambanForVerse,
@@ -205,7 +205,8 @@ const MikraotGedolotPro = ({
                 <span className="mgp-dibbur">{item.dibbur} — </span>
               )}
               {enableClickableText ? (
-                <ClickableHebrewText
+                <ClickableText
+                  language="hebrew"
                   text={removeHtmlTags(item.hebrew)}
                   className="mgp-text"
                   onSaveWord={onSaveWord}
@@ -307,7 +308,8 @@ const MikraotGedolotPro = ({
               <span key={v.num} className="mgp-pasuk">
                 <span className="mgp-pasuk-num">{v.num}</span>
                 {enableClickableText ? (
-                  <ClickableHebrewText
+                  <ClickableText
+                    language="hebrew"
                     text={v.hebrew}
                     className="mgp-pasuk-text"
                     onSaveWord={onSaveWord}

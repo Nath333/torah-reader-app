@@ -13,13 +13,19 @@ import {
 } from '../../services/sourceCredibilityService';
 // PRO SCHOLAR V8: Feature flags (renamed from proScholarV4)
 import {
-  getCached,
-  setCached,
   prefetchWords,
   PRO_SCHOLAR_FEATURES
 } from '../../services/featureFlags';
+// PRO SCHOLAR V8: Use createManagedCache instead of deprecated getCached/setCached
+import { createManagedCache } from '../../services/cacheOrchestrator';
 import { useProScholarV4, useKnowledgeGraph } from '../../hooks/useProScholarV4';
 import './CommentarySummary.css';
+
+// Create managed cache for commentary analysis at module level
+const commentaryAnalysisCache = createManagedCache('commentary', {
+  maxSize: 200,
+  ttl: 30 * 60 * 1000 // 30 minutes
+});
 
 // PRO SCHOLAR V5: Lazy Mermaid loader with initialization
 let mermaidInstance = null;
@@ -1204,7 +1210,7 @@ const CommentarySummary = ({
     const v4CacheKey = `${source}:${verse}:${selectedMode}`;
     if (!forceRefresh) {
       // Try v4 unified cache first
-      const v4Cached = getCached('commentaryAnalysis', v4CacheKey);
+      const v4Cached = commentaryAnalysisCache.get(v4CacheKey);
       if (v4Cached) {
         setData({ ...v4Cached, fromCache: true, cacheType: 'v4-unified' });
         setError(null);
@@ -1247,7 +1253,7 @@ const CommentarySummary = ({
       if (result.success) {
         // Cache successful results in both local and v4 unified cache
         modeResultsCache.current.set(selectedMode, result);
-        setCached('commentaryAnalysis', v4CacheKey, result);
+        commentaryAnalysisCache.set(v4CacheKey, result);
         setData(result);
 
         // PRO SCHOLAR v4: Prefetch keywords for word lookup

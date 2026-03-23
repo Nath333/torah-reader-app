@@ -15,7 +15,7 @@
  * - French translation on-demand (lazy)
  */
 
-import { useState, useCallback, useRef, useMemo } from 'react';
+import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 // PRO SCHOLAR V10: Use unifiedLookupService (consolidated from wordLookupOrchestrator)
 import {
   lookupWord,
@@ -197,11 +197,26 @@ const useWordLookup = ({ language = 'hebrew', reference = null } = {}) => {
   const [translationData, setTranslationData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [frenchTranslation, setFrenchTranslation] = useState(null);
-  const abortRef = useRef(null);
+
+  // Use proper AbortController for canceling requests
+  const abortControllerRef = useRef(null);
+  // Track mounted state to prevent state updates after unmount
+  const isMountedRef = useRef(true);
   const referenceRef = useRef(reference);
   referenceRef.current = reference;
 
   const isAramaic = language === 'aramaic';
+
+  // Cleanup on unmount - abort any pending requests
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   // Memoize lookup functions
   const { syncLookup, asyncLookup } = useMemo(() => ({
@@ -223,13 +238,14 @@ const useWordLookup = ({ language = 'hebrew', reference = null } = {}) => {
       return;
     }
 
-    // Cancel previous lookup
-    if (abortRef.current) {
-      abortRef.current.abort = true;
+    // Cancel previous lookup using AbortController
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
     }
 
-    const controller = { abort: false };
-    abortRef.current = controller;
+    // Create new AbortController for this lookup
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     setSelectedWord(word);
     setFrenchTranslation(null);
@@ -247,7 +263,8 @@ const useWordLookup = ({ language = 'hebrew', reference = null } = {}) => {
     try {
       const apiResult = await asyncLookup(word, lookupContext);
 
-      if (!controller.abort) {
+      // Check both abort signal and mounted state before updating
+      if (!controller.signal.aborted && isMountedRef.current) {
         const hasResult = isAramaic
           ? apiResult.translation || apiResult.english
           : apiResult.english;
@@ -257,10 +274,12 @@ const useWordLookup = ({ language = 'hebrew', reference = null } = {}) => {
         }
       }
     } catch (error) {
-      // Silent fail - already have sync result
-      console.warn('[useWordLookup] Async lookup failed:', error.message);
+      // Ignore abort errors, log others
+      if (error.name !== 'AbortError') {
+        console.warn('[useWordLookup] Async lookup failed:', error.message);
+      }
     } finally {
-      if (!controller.abort) {
+      if (!controller.signal.aborted && isMountedRef.current) {
         setIsLoading(false);
       }
     }
@@ -300,8 +319,8 @@ const useWordLookup = ({ language = 'hebrew', reference = null } = {}) => {
    * Clear selection
    */
   const clear = useCallback(() => {
-    if (abortRef.current) {
-      abortRef.current.abort = true;
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
     }
     setSelectedWord(null);
     setTranslationData(null);

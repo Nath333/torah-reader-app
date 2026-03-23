@@ -117,6 +117,9 @@ const useStudySession = () => {
 
   // End and save the session
   const endSession = useCallback(() => {
+    // Guard against double calls - if no timer and not active, nothing to do
+    if (!timerRef.current && !isActive) return;
+
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
@@ -150,7 +153,7 @@ const useStudySession = () => {
     setIsActive(false);
     setElapsedTime(0);
     setCurrentSession(DEFAULT_SESSION);
-  }, [currentSession, elapsedTime, setDailyStats, recordStudy, updateStudyTime]);
+  }, [currentSession, elapsedTime, setDailyStats, recordStudy, updateStudyTime, isActive]);
 
   // Get today's study progress
   const getTodayProgress = useCallback(() => {

@@ -15,10 +15,23 @@ const useSpeech = () => {
 
   const audioRef = useRef(null);
   const utteranceRef = useRef(null);
+  // Track pending timeouts for cleanup (fixes race condition)
+  const timeoutRef = useRef(null);
+  // Track stopped state to prevent playback after stop
+  const stoppedRef = useRef(false);
+  // Track mounted state
+  const isMountedRef = useRef(true);
 
   // Cleanup on unmount
   useEffect(() => {
+    isMountedRef.current = true;
     return () => {
+      isMountedRef.current = false;
+      stoppedRef.current = true;
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
@@ -74,12 +87,24 @@ const useSpeech = () => {
         return;
       }
 
+      // Reset stopped flag when starting new playback
+      stoppedRef.current = false;
+
       // Split into chunks if too long
       const chunks = splitTextIntoChunks(cleanText);
       let currentIndex = 0;
 
       const playNextChunk = () => {
+        // Check if stopped or unmounted before continuing
+        if (stoppedRef.current || !isMountedRef.current) {
+          resolve();
+          return;
+        }
+
         if (currentIndex >= chunks.length) {
+          if (isMountedRef.current) {
+            setSpeaking(false);
+          }
           resolve();
           return;
         }
@@ -97,37 +122,63 @@ const useSpeech = () => {
         audio.playbackRate = rate;
 
         audio.onplay = () => {
-          setSpeaking(true);
+          if (isMountedRef.current && !stoppedRef.current) {
+            setSpeaking(true);
+          }
         };
 
         audio.onended = () => {
+          // Check if stopped before scheduling next chunk
+          if (stoppedRef.current || !isMountedRef.current) {
+            resolve();
+            return;
+          }
+
           currentIndex++;
           if (currentIndex < chunks.length) {
-            // Small pause between chunks
-            setTimeout(playNextChunk, 200);
+            // Small pause between chunks - track timeout for cleanup
+            timeoutRef.current = setTimeout(playNextChunk, 200);
           } else {
-            setSpeaking(false);
+            if (isMountedRef.current) {
+              setSpeaking(false);
+            }
             resolve();
           }
         };
 
         audio.onerror = (e) => {
           console.error('Google TTS error:', e);
+          if (stoppedRef.current || !isMountedRef.current) {
+            resolve();
+            return;
+          }
+
           currentIndex++;
           // Try next chunk even if one fails
           if (currentIndex < chunks.length) {
             playNextChunk();
           } else {
-            setSpeaking(false);
+            if (isMountedRef.current) {
+              setSpeaking(false);
+            }
             reject(new Error('Audio playback failed'));
           }
         };
 
         audio.play().catch((err) => {
           console.error('Play failed:', err);
+          if (stoppedRef.current || !isMountedRef.current) {
+            resolve();
+            return;
+          }
+
           // Try Web Speech API as fallback
           playWithWebSpeech(chunk)
             .then(() => {
+              if (stoppedRef.current || !isMountedRef.current) {
+                resolve();
+                return;
+              }
               currentIndex++;
               if (currentIndex < chunks.length) {
                 playNextChunk();
@@ -222,6 +273,15 @@ const useSpeech = () => {
    * Stop speaking
    */
   const stop = useCallback(() => {
+    // Set stopped flag to prevent any pending callbacks from continuing
+    stoppedRef.current = true;
+
+    // Clear any pending timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;

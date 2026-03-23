@@ -113,10 +113,17 @@ const VerseRow = ({
   hasSoncinoAvailable
 }) => {
   const verseKey = `${selectedBook}:${selectedChapter}:${verse.verse}`;
+  const dafKey = `${selectedBook}:${selectedChapter}`;
 
   // Get commentary data for this verse
-  const rashiComments = commentaryData.rashiData?.[verseKey] || [];
-  const rashiLoading = commentaryData.rashiLoading?.[verseKey];
+  // PRO SCHOLAR: For Talmud, Rashi is stored at daf level (all comments for entire daf)
+  // For Torah, Rashi is stored at verse level
+  const rashiComments = isTalmud
+    ? (commentaryData.rashiData?.[dafKey] || commentaryData.rashiData?.[verseKey] || [])
+    : (commentaryData.rashiData?.[verseKey] || []);
+
+  // PRO SCHOLAR: Loading state is a boolean, not an object
+  const rashiLoading = commentaryData.rashiLoading;
   const tosafotComments = commentaryData.tosafotData?.[`${selectedBook}:${selectedChapter}`] || [];
   const tosafotLoading = commentaryData.tosafotLoading;
   const maharshaComments = commentaryData.maharshaData?.[`${selectedBook}:${selectedChapter}`];
@@ -125,11 +132,11 @@ const VerseRow = ({
   const soncinoLoading = commentaryData.soncinoLoading;
   const soncinoError = commentaryData.soncinoData?._error;
   const rambanComments = commentaryData.rambanData?.[verseKey]?.comments || [];
-  const rambanLoading = commentaryData.rambanLoading?.[verseKey];
+  const rambanLoading = commentaryData.rambanLoading; // Boolean, not per-verse
   const ibnEzraComments = commentaryData.ibnEzraData?.[verseKey]?.comments || [];
-  const ibnEzraLoading = commentaryData.ibnEzraLoading?.[verseKey];
+  const ibnEzraLoading = commentaryData.ibnEzraLoading; // Boolean, not per-verse
   const sfornoComments = commentaryData.sfornoData?.[verseKey]?.comments || [];
-  const sfornoLoading = commentaryData.sfornoLoading?.[verseKey];
+  const sfornoLoading = commentaryData.sfornoLoading; // Boolean, not per-verse
 
   // Get French translation for this verse
   const verseFrenchData = translationData.verseFrench?.[verseKey];

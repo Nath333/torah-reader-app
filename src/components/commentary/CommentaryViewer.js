@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import './CommentaryViewer.css';
 import { getCommentary } from '../../services/sefariaApi';
 import { removeHtmlTags } from '../../utils/sanitize';
-import { ClickableHebrewText } from '../core/ClickableText';
+import ClickableText from '../core/ClickableText';
 import CommentarySummary from './CommentarySummary';
 import { getStoredApiKey } from '../../services/groqService';
 import { EnhancedText } from '../../utils/textEnhancer';
@@ -405,7 +405,8 @@ const CommentaryDisplay = ({ source, commentaries, showTranslation, enableClicka
               {/* Main Rashi Commentary Text */}
               <div className={`rashi-main-text ${isRashi ? 'enhanced' : ''}`}>
                 {enableClickableText ? (
-                  <ClickableHebrewText
+                  <ClickableText
+                    language="hebrew"
                     text={isRashi ? mainText : removeHtmlTags(commentary.text, ['i', 'sup'])}
                     className={`commentary-text ${usesRashiScript ? 'rashi-script' : ''}`}
                     isRashiScript={usesRashiScript}

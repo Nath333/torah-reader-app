@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import './TzuratHaDaf.css';
 import '../../styles/OzVeHadar.css';
-import { ClickableHebrewText } from '../core/ClickableText';
+import ClickableText from '../core/ClickableText';
 import { getRashiOnTalmud, getTosafotForDaf, getMaharshaForDaf } from '../../services/sefariaApi';
 import { removeHtmlTags } from '../../utils/sanitize';
 import { detectStructuralMarkers, TALMUDIC_PATTERNS } from '../../services/discoursePatternService';
@@ -828,7 +828,8 @@ const TzuratHaDaf = ({
                       <span className="daf-dibbur"><strong>{t.dibbur}</strong> - </span>
                     )}
                     {enableClickableText ? (
-                      <ClickableHebrewText
+                      <ClickableText
+                        language="hebrew"
                         text={removeHtmlTags(t.hebrew)}
                         className="daf-tosafot-text"
                         onSaveWord={onSaveWord}
@@ -882,7 +883,8 @@ const TzuratHaDaf = ({
                 {abbreviatedGemara}
               </div>
             ) : enableClickableText ? (
-              <ClickableHebrewText
+              <ClickableText
+                language="hebrew"
                 text={gemaraText}
                 className="daf-gemara-text"
                 onSaveWord={onSaveWord}
@@ -913,7 +915,8 @@ const TzuratHaDaf = ({
                       <span className="daf-dibbur"><strong>{r.dibbur}</strong> - </span>
                     )}
                     {enableClickableText ? (
-                      <ClickableHebrewText
+                      <ClickableText
+                        language="hebrew"
                         text={removeHtmlTags(r.hebrew)}
                         className="daf-rashi-text rashi-script"
                         onSaveWord={onSaveWord}

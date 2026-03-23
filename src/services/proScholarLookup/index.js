@@ -66,6 +66,19 @@
 // =============================================================================
 
 // -----------------------------------------------------------------------------
+// IMPORTS (must be at top for ESLint import/first rule)
+// -----------------------------------------------------------------------------
+import unifiedLookupService from '../unifiedLookupService';
+import { LookupContext, createPipeline } from '../lookupPipeline';
+import { createStages, STAGE_ORDER } from '../lookupStages';
+import {
+  SCHOLARLY_TIERS,
+  CONSENSUS_LEVELS,
+  getSourceTier,
+  calculateConsensus
+} from '../scholarSourceAggregator';
+
+// -----------------------------------------------------------------------------
 // MAIN API: Unified Lookup Service (Recommended)
 // -----------------------------------------------------------------------------
 
@@ -157,16 +170,6 @@ export const VERSION = {
 // -----------------------------------------------------------------------------
 // DEFAULT EXPORT
 // -----------------------------------------------------------------------------
-
-import unifiedLookupService from '../unifiedLookupService';
-import { LookupContext, createPipeline } from '../lookupPipeline';
-import { createStages, STAGE_ORDER } from '../lookupStages';
-import {
-  SCHOLARLY_TIERS,
-  CONSENSUS_LEVELS,
-  getSourceTier,
-  calculateConsensus
-} from '../scholarSourceAggregator';
 
 const proScholarLookup = {
   // Main API

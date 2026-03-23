@@ -1,0 +1,1288 @@
+/* =============================================================================
+   Responsive Fixes - Dynamic UI Overlap Prevention v2.0
+   Comprehensive fixes for layout issues when console opens or screen shrinks
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   1. CRITICAL: FLEX/GRID OVERFLOW PREVENTION
+   The #1 cause of overlapping - elements not shrinking properly
+   ----------------------------------------------------------------------------- */
+
+/* Universal min-width fix for all flex/grid children */
+*,
+*::before,
+*::after {
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Explicit fixes for common containers */
+.app,
+.app-main,
+.main-content,
+.content-card,
+.card,
+.verse-card,
+.word-card,
+.commentary-card,
+.info-card,
+.stats-card,
+.list-card,
+.daf-column,
+.daf-col-content,
+.mgp-commentary-box,
+.mgp-box-content,
+.ml-commentary-box,
+.ml-box-content,
+.navigation,
+.book-selector,
+.chapter-selector,
+.header-brand,
+.header-toolbar,
+.toolbar-group,
+[class*="-content"],
+[class*="-body"],
+[class*="-container"] {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Prevent horizontal overflow globally */
+html {
+  overflow-x: hidden;
+}
+
+.app {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  position: relative;
+}
+
+.app-main {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+.main-content {
+  overflow-x: hidden;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* -----------------------------------------------------------------------------
+   2. TEXT OVERFLOW HANDLING
+   Prevent long text from breaking layouts
+   ----------------------------------------------------------------------------- */
+
+/* Ensure text wraps properly */
+.card__title,
+.word-card__word,
+.verse-card__text,
+.daf-masechet,
+.mgp-sefer,
+.ml-tractate,
+.mgp-box-title,
+.ml-box-title,
+h1, h2, h3, h4, h5, h6 {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+/* Prevent long words from overflowing */
+.card__body,
+.word-card__body,
+.word-card__source-text,
+.daf-col-content,
+.mgp-box-content,
+.ml-box-content,
+.mgp-entry,
+.ml-entry,
+p, li, td, th {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Truncate single-line text elegantly */
+.truncate-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* -----------------------------------------------------------------------------
+   3. WORD CARD RESPONSIVE FIXES
+   Make word lookup cards fully responsive
+   ----------------------------------------------------------------------------- */
+
+.word-card {
+  width: min(var(--word-card-width, 320px), calc(100vw - 2rem));
+  max-width: min(var(--word-card-max-width, 400px), calc(100vw - 1rem));
+  box-sizing: border-box;
+}
+
+/* Word card popup positioning - prevent edge overflow */
+.word-card[style*="position"],
+.word-card--popup {
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100vh - 8rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Ensure word card stays within viewport bounds */
+@media (max-width: 768px) {
+  .word-card {
+    position: fixed !important;
+    left: 1rem !important;
+    right: 1rem !important;
+    width: auto !important;
+    max-width: calc(100vw - 2rem);
+    bottom: auto;
+    top: 50% !important;
+    transform: translateY(-50%);
+    z-index: 1000;
+  }
+}
+
+@media (max-width: 480px) {
+  .word-card {
+    left: 0.5rem !important;
+    right: 0.5rem !important;
+    max-width: calc(100vw - 1rem);
+    max-height: 80vh;
+    top: 10vh !important;
+    transform: none;
+  }
+
+  .word-card__header {
+    padding: 10px 12px;
+  }
+
+  .word-card__body {
+    padding: 10px 12px;
+  }
+
+  .word-card__stats {
+    padding: 8px 12px;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .word-card__badge {
+    font-size: 0.6rem;
+    padding: 2px 5px;
+  }
+
+  .word-card__sources {
+    gap: 8px;
+  }
+
+  .word-card__source {
+    padding: 8px 10px;
+  }
+
+  .word-card__source-text {
+    font-size: 0.8rem;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   4. SETTINGS PANEL & POPOVER FIXES
+   Prevent panels from overlapping content
+   ----------------------------------------------------------------------------- */
+
+.daf-settings-panel {
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100vh - 8rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+/* Style dropdown menu fix */
+.daf-style-menu {
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100vh - 10rem);
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .daf-settings-panel {
+    position: fixed !important;
+    top: auto !important;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100% !important;
+    max-width: 100%;
+    border-radius: 20px 20px 0 0;
+    max-height: 80vh;
+    z-index: 1000;
+    animation: slideUpPanel 0.3s ease-out;
+  }
+
+  .daf-style-menu {
+    position: fixed !important;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto !important;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 20px 20px 0 0;
+    max-height: 60vh;
+  }
+}
+
+@keyframes slideUpPanel {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   5. THREE COLUMN LAYOUT FIXES (TzuratHaDaf)
+   Smooth responsive transitions with more breakpoints
+   ----------------------------------------------------------------------------- */
+
+/* Base - ensure proper sizing */
+.tzurat-hadaf {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.daf-three-columns {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* 1600px - Slight reduction */
+@media (max-width: 1600px) {
+  .tzurat-hadaf {
+    margin: 1rem;
+    max-width: calc(100vw - 2rem);
+  }
+}
+
+/* 1400px - Compress columns */
+@media (max-width: 1400px) {
+  .daf-three-columns {
+    grid-template-columns: 1fr 1.5fr 1fr;
+  }
+
+  .daf-column {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .daf-gemara-text {
+    font-size: 1.4rem;
+  }
+}
+
+/* 1200px - Further compression */
+@media (max-width: 1200px) {
+  .daf-three-columns {
+    grid-template-columns: 1fr 1.4fr 1fr;
+  }
+
+  .daf-gemara-text {
+    font-size: 1.3rem;
+  }
+
+  .daf-col-content {
+    font-size: 0.95rem;
+  }
+
+  .daf-col-title {
+    font-size: 1.3rem;
+  }
+}
+
+/* 1100px - Stack to single column */
+@media (max-width: 1100px) {
+  .daf-three-columns {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .daf-column {
+    max-height: none;
+    min-height: auto;
+    padding: 1.5rem;
+  }
+
+  .daf-column:not(:last-child) {
+    border-bottom: 2px solid var(--gold-light, #c4a77d);
+    padding-bottom: 1.5rem;
+  }
+
+  /* Column dividers - hide vertical, show horizontal */
+  .daf-tosafot-col::after,
+  .daf-rashi-col::before {
+    display: none;
+  }
+
+  .daf-gemara-text {
+    font-size: 1.35rem;
+  }
+}
+
+/* 900px - Tablet optimizations */
+@media (max-width: 900px) {
+  .tzurat-hadaf {
+    margin: 0.5rem;
+    max-width: calc(100vw - 1rem);
+  }
+
+  .daf-page-header {
+    padding: 1.25rem 1rem 1rem;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .daf-masechet {
+    font-size: 2.5rem;
+  }
+
+  .daf-value {
+    font-size: 2.2rem;
+  }
+
+  .daf-page-controls {
+    position: relative;
+    top: auto;
+    right: auto;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .daf-column {
+    padding: 1rem;
+  }
+
+  .daf-col-header {
+    padding: 0.75rem;
+  }
+}
+
+/* 600px - Mobile */
+@media (max-width: 600px) {
+  .tzurat-hadaf {
+    margin: 0.25rem;
+    border-radius: 0;
+  }
+
+  .daf-page-header {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+
+  .daf-masechet {
+    font-size: 2rem;
+  }
+
+  .daf-value {
+    font-size: 1.8rem;
+  }
+
+  .daf-gemara-text {
+    font-size: 1.15rem;
+    line-height: 2;
+  }
+
+  .daf-col-content {
+    font-size: 0.9rem;
+    line-height: 1.8;
+  }
+
+  .daf-col-title {
+    font-size: 1.1rem;
+  }
+
+  .daf-page-footer {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   6. MIKRAOT GEDOLOT LAYOUT FIXES
+   Comprehensive responsive grid handling
+   ----------------------------------------------------------------------------- */
+
+.mikraot-gedolot-pro {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.mgp-frame {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1600px) {
+  .mikraot-gedolot-pro {
+    padding: 1.5rem;
+  }
+
+  .mgp-frame {
+    margin: 0;
+  }
+}
+
+@media (max-width: 1500px) {
+  .mgp-upper-row {
+    grid-template-columns: 1fr 1.3fr;
+  }
+
+  .mgp-torah-content {
+    font-size: 1.6rem;
+    column-gap: 2rem;
+  }
+}
+
+@media (max-width: 1400px) {
+  .mgp-lower-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .mgp-lower-row .mgp-commentary-box:nth-child(3) {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 1200px) {
+  .mgp-upper-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .mgp-torah-content {
+    font-size: 1.5rem;
+    column-count: 1;
+  }
+
+  .mgp-torah-english {
+    column-count: 1;
+  }
+
+  .mgp-commentary-box {
+    max-height: 350px;
+  }
+}
+
+@media (max-width: 1000px) {
+  .mikraot-gedolot-pro {
+    padding: 1rem;
+  }
+
+  .mgp-upper-row,
+  .mgp-lower-row {
+    grid-template-columns: 1fr;
+  }
+
+  .mgp-lower-row .mgp-commentary-box:nth-child(3) {
+    grid-column: auto;
+  }
+
+  .mgp-commentary-box {
+    border-right: none;
+    border-bottom: 1px solid var(--mgp-border, #c4a87a);
+    max-height: 300px;
+  }
+
+  .mgp-commentary-box:last-child {
+    border-bottom: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .mikraot-gedolot-pro {
+    padding: 0.5rem;
+  }
+
+  .mgp-header {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .mgp-sefer {
+    font-size: 2.2rem;
+  }
+
+  .mgp-torah-content {
+    font-size: 1.3rem;
+    line-height: 2.2;
+  }
+
+  .mgp-box-title {
+    font-size: 1.2rem;
+  }
+
+  .mgp-box-content {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .mgp-sefer {
+    font-size: 1.8rem;
+  }
+
+  .mgp-perek-num {
+    font-size: 1.8rem;
+    width: 2.2rem;
+    height: 2.2rem;
+  }
+
+  .mgp-torah-content {
+    font-size: 1.15rem;
+  }
+
+  .mgp-commentary-box {
+    max-height: 280px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   7. MISHNAH LAYOUT FIXES
+   Better responsive behavior
+   ----------------------------------------------------------------------------- */
+
+.mishnah-layout {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.ml-frame {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+  .mishnah-layout {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 1200px) {
+  .ml-commentary-row {
+    grid-template-columns: 1fr;
+  }
+
+  .ml-commentary-box {
+    border-right: none;
+    border-bottom: 1px solid var(--ml-border, #c4b896);
+    max-height: 350px;
+  }
+
+  .ml-commentary-box:last-child {
+    border-bottom: none;
+  }
+}
+
+@media (max-width: 1000px) {
+  .ml-mishnah-content {
+    font-size: 1.35rem;
+  }
+
+  .ml-commentary-box {
+    max-height: 300px;
+  }
+}
+
+@media (max-width: 900px) {
+  .ml-header {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 0.75rem;
+  }
+
+  .ml-nav-btn {
+    margin: 0.5rem auto;
+  }
+
+  .ml-header-seder,
+  .ml-header-badge {
+    text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .mishnah-layout {
+    padding: 0.5rem;
+  }
+
+  .ml-tractate {
+    font-size: 2rem;
+  }
+
+  .ml-mishnah-content {
+    font-size: 1.2rem;
+  }
+
+  .ml-box-content {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .ml-tractate {
+    font-size: 1.7rem;
+  }
+
+  .ml-mishnah-content {
+    font-size: 1.1rem;
+  }
+
+  .ml-commentary-box {
+    max-height: 260px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   8. HEADER & TOOLBAR RESPONSIVE FIXES
+   Prevent header elements from overlapping
+   ----------------------------------------------------------------------------- */
+
+.app-header {
+  flex-wrap: wrap;
+  gap: var(--space-2, 8px);
+  min-height: var(--header-height, 64px);
+  height: auto;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.header-brand {
+  flex: 0 1 auto;
+  overflow: hidden;
+}
+
+.header-toolbar {
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-1, 4px);
+}
+
+.toolbar-group {
+  flex-wrap: wrap;
+}
+
+/* 1200px - Start compressing */
+@media (max-width: 1200px) {
+  .app-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .header-subtitle {
+    font-size: 0.95rem;
+    padding: var(--space-1, 4px) var(--space-2, 8px);
+  }
+}
+
+/* 1100px - Further compression */
+@media (max-width: 1100px) {
+  .header-brand {
+    flex: 0 0 auto;
+  }
+
+  .header-spacer {
+    flex: 1 1 0;
+    min-width: var(--space-1, 4px);
+  }
+
+  .header-toolbar {
+    flex: 0 0 auto;
+  }
+
+  .toolbar-btn .btn-label {
+    display: none;
+  }
+}
+
+/* 900px - Compact mode */
+@media (max-width: 900px) {
+  .app-header {
+    padding: 0 var(--space-3, 12px);
+  }
+
+  .toolbar-group {
+    gap: 2px;
+  }
+
+  .toolbar-btn.pronunciation {
+    display: none;
+  }
+
+  .smart-search-btn .search-label,
+  .smart-search-btn .search-kbd {
+    display: none;
+  }
+}
+
+/* 768px - Mobile header */
+@media (max-width: 768px) {
+  .app-header {
+    height: 56px;
+    min-height: 56px;
+    padding: 0 var(--space-3, 12px);
+  }
+
+  .app-header h1 {
+    font-size: 1.1rem;
+  }
+
+  .header-subtitle {
+    display: none;
+  }
+
+  .toolbar-divider {
+    display: none;
+  }
+
+  .toolbar-group.primary {
+    display: none;
+  }
+}
+
+/* 480px - Extra small */
+@media (max-width: 480px) {
+  .app-header {
+    padding: 0 var(--space-2, 8px);
+  }
+
+  .app-header h1 {
+    font-size: 1rem;
+  }
+
+  .header-brand {
+    gap: var(--space-2, 8px);
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   9. CARD LAYOUT FIXES
+   Ensure cards adapt to any container size
+   ----------------------------------------------------------------------------- */
+
+.card,
+.content-card,
+.verse-card,
+.word-card,
+.commentary-card,
+.info-card,
+.stats-card,
+.list-card {
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Card list - ensure proper flow */
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 12px);
+  width: 100%;
+}
+
+.card-list > * {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Grid card layouts - responsive grid */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+  gap: var(--space-4, 16px);
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Card content overflow handling */
+.card__body,
+.card__content,
+.verse-card__text,
+.commentary-card__body {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* -----------------------------------------------------------------------------
+   10. TOAST & MODAL RESPONSIVE FIXES
+   Ensure overlays don't cause overflow
+   ----------------------------------------------------------------------------- */
+
+.toast-container {
+  max-width: calc(100vw - 2rem);
+  right: var(--space-4, 16px);
+  left: auto;
+  width: auto;
+}
+
+.toast {
+  max-width: calc(100vw - 3rem);
+  width: auto;
+  min-width: min(300px, calc(100vw - 3rem));
+  box-sizing: border-box;
+}
+
+.smart-search-modal-overlay {
+  overflow-y: auto;
+  padding: 2rem 1rem;
+}
+
+.smart-search-modal {
+  max-width: min(640px, calc(100vw - 2rem));
+  max-height: calc(100vh - 4rem);
+  margin: 0 auto;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .toast-container {
+    left: var(--space-4, 16px);
+    right: var(--space-4, 16px);
+    width: auto;
+  }
+
+  .toast {
+    width: 100%;
+    min-width: auto;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .smart-search-modal-overlay {
+    padding: 1rem 0.5rem;
+    align-items: flex-start;
+  }
+
+  .smart-search-modal {
+    width: calc(100vw - 1rem);
+    max-width: none;
+    border-radius: 12px;
+    max-height: calc(100vh - 2rem);
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   11. NAVIGATION & SIDEBAR RESPONSIVE FIXES
+   Smooth transitions when sidebar/container resizes
+   ----------------------------------------------------------------------------- */
+
+.app-main {
+  transition: margin-left 0.25s ease, width 0.25s ease;
+  width: calc(100% - var(--sidebar-width, 280px));
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.app.sidebar-collapsed .app-main {
+  width: calc(100% - 60px);
+}
+
+@media (max-width: 1024px) {
+  .app-main {
+    margin-left: 60px;
+    width: calc(100% - 60px);
+  }
+}
+
+@media (max-width: 768px) {
+  .app-main {
+    margin-left: 0;
+    width: 100%;
+    margin-bottom: 60px;
+  }
+
+  .app.sidebar-collapsed .app-main {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   12. SCROLL-TO-TOP & FIXED ELEMENTS
+   Prevent overlap and ensure proper positioning
+   ----------------------------------------------------------------------------- */
+
+.scroll-to-top {
+  bottom: max(var(--space-6, 24px), env(safe-area-inset-bottom, 24px));
+  right: max(var(--space-6, 24px), env(safe-area-inset-right, 24px));
+  z-index: var(--z-sticky, 200);
+}
+
+@media (max-width: 768px) {
+  .scroll-to-top {
+    bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+    right: var(--space-4, 16px);
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* Reading progress bar */
+.reading-progress-container {
+  width: auto;
+  left: 0;
+  right: 0;
+  max-width: 100%;
+}
+
+@media (min-width: 769px) {
+  .reading-progress-container {
+    left: var(--sidebar-width, 280px);
+  }
+
+  .app.sidebar-collapsed .reading-progress-container {
+    left: 60px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   13. NAVIGATION BUTTONS WITHIN LAYOUTS
+   Fix page navigation button positioning
+   ----------------------------------------------------------------------------- */
+
+.daf-nav-btn,
+.mgp-nav-btn,
+.ml-nav-btn {
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+@media (max-width: 900px) {
+  .daf-nav-prev,
+  .daf-nav-next {
+    position: relative;
+    left: auto;
+    right: auto;
+    transform: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .daf-nav-btn,
+  .mgp-nav-btn,
+  .ml-nav-btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  .daf-nav-btn svg,
+  .mgp-nav-btn svg,
+  .ml-nav-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   14. CONTAINER QUERIES (Modern browsers)
+   Components respond to their container, not viewport
+   ----------------------------------------------------------------------------- */
+
+@supports (container-type: inline-size) {
+  .main-content {
+    container-type: inline-size;
+    container-name: main-content;
+  }
+
+  .tzurat-hadaf {
+    container-type: inline-size;
+    container-name: daf-container;
+  }
+
+  .mikraot-gedolot-pro {
+    container-type: inline-size;
+    container-name: mgp-container;
+  }
+
+  .mishnah-layout {
+    container-type: inline-size;
+    container-name: mishnah-container;
+  }
+
+  /* Main content container queries */
+  @container main-content (max-width: 900px) {
+    .content-header {
+      flex-direction: column;
+      gap: var(--space-3, 12px);
+    }
+
+    .navigation {
+      flex-direction: column;
+      gap: var(--space-3, 12px);
+    }
+
+    .book-selector,
+    .chapter-selector {
+      width: 100%;
+      min-width: 100%;
+    }
+  }
+
+  @container main-content (max-width: 600px) {
+    .card-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Daf container queries */
+  @container daf-container (max-width: 1100px) {
+    .daf-three-columns {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* MGP container queries */
+  @container mgp-container (max-width: 1000px) {
+    .mgp-upper-row,
+    .mgp-lower-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Mishnah container queries */
+  @container mishnah-container (max-width: 1000px) {
+    .ml-commentary-row {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   15. SMOOTH RESIZE TRANSITIONS
+   Prevent jarring layout shifts when container resizes
+   ----------------------------------------------------------------------------- */
+
+.daf-three-columns,
+.mgp-upper-row,
+.mgp-lower-row,
+.ml-commentary-row,
+.content-header,
+.navigation {
+  transition:
+    grid-template-columns 0.25s ease,
+    gap 0.2s ease;
+}
+
+.main-content {
+  transition: padding 0.2s ease;
+}
+
+.daf-column,
+.mgp-commentary-box,
+.ml-commentary-box {
+  transition:
+    max-height 0.25s ease,
+    padding 0.2s ease,
+    border 0.2s ease;
+}
+
+.app-main {
+  transition:
+    margin-left 0.25s ease,
+    width 0.25s ease;
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   16. SCROLL CONTAINER FIXES
+   Ensure scrollable areas work correctly
+   ----------------------------------------------------------------------------- */
+
+.daf-col-content,
+.mgp-box-content,
+.ml-box-content {
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Prevent scroll chaining */
+.word-card,
+.daf-settings-panel,
+.smart-search-modal {
+  overscroll-behavior: contain;
+}
+
+/* -----------------------------------------------------------------------------
+   17. Z-INDEX MANAGEMENT
+   Ensure proper stacking order
+   ----------------------------------------------------------------------------- */
+
+/* Base layer */
+.app-main {
+  z-index: 1;
+}
+
+/* Header layer */
+.app-header {
+  z-index: 100;
+}
+
+/* Sticky elements */
+.scroll-to-top {
+  z-index: 200;
+}
+
+/* Dropdowns and menus */
+.daf-style-menu,
+.daf-page-controls {
+  z-index: 300;
+}
+
+/* Panels and settings */
+.daf-settings-panel {
+  z-index: 400;
+}
+
+/* Modals */
+.smart-search-modal-overlay {
+  z-index: 500;
+}
+
+/* Popups (word cards) */
+.word-card[style*="position"] {
+  z-index: 600;
+}
+
+/* Toast notifications */
+.toast-container {
+  z-index: 900;
+}
+
+/* -----------------------------------------------------------------------------
+   18. SAFE AREA INSETS (Notched devices)
+   Support for iPhone notch, etc.
+   ----------------------------------------------------------------------------- */
+
+@supports (padding: env(safe-area-inset-top)) {
+  .app-header {
+    padding-top: env(safe-area-inset-top);
+    padding-left: max(var(--space-6, 24px), env(safe-area-inset-left));
+    padding-right: max(var(--space-6, 24px), env(safe-area-inset-right));
+  }
+
+  .main-content {
+    padding-left: max(var(--space-6, 24px), env(safe-area-inset-left));
+    padding-right: max(var(--space-6, 24px), env(safe-area-inset-right));
+  }
+
+  @media (max-width: 768px) {
+    .app-main {
+      padding-bottom: calc(60px + env(safe-area-inset-bottom));
+    }
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   19. PRINT STYLES
+   Ensure content prints correctly
+   ----------------------------------------------------------------------------- */
+
+@media print {
+  html,
+  body,
+  .app,
+  .app-main,
+  .main-content {
+    overflow: visible !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .app-header,
+  .sidebar,
+  .scroll-to-top,
+  .toast-container,
+  .daf-page-controls,
+  .daf-settings-panel,
+  .word-card {
+    display: none !important;
+  }
+
+  .daf-three-columns,
+  .mgp-upper-row,
+  .mgp-lower-row,
+  .ml-commentary-row {
+    display: block !important;
+  }
+
+  .daf-column,
+  .mgp-commentary-box,
+  .ml-commentary-box {
+    max-height: none !important;
+    overflow: visible !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   20. DARK MODE SPECIFIC FIXES
+   Ensure responsive fixes work in dark mode
+   ----------------------------------------------------------------------------- */
+
+.app.dark-mode .daf-settings-panel {
+  border-color: var(--border, #334155);
+}
+
+.app.dark-mode .word-card {
+  border-color: var(--border, #334155);
+}
+
+@media (max-width: 768px) {
+  .app.dark-mode .daf-settings-panel {
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+  }
+
+  .app.dark-mode .word-card {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  }
+}

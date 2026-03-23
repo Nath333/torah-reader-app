@@ -1,16 +1,24 @@
 /**
  * useCommentaryLoader - Custom hook for loading commentary data
  *
- * Extracts all commentary loading logic from TorahReader to reduce complexity.
- * Manages Rashi, Tosafot, Maharsha, Ramban, Ibn Ezra, Sforno, and Soncino loading.
+ * PRO SCHOLAR V10.1: Performance optimizations
+ *
+ * Fixes:
+ * - Stabilized effect dependencies to prevent multiple re-runs
+ * - Batched reducer actions to reduce renders
+ * - Effect-level deduplication with stable key generation
  *
  * Features:
- * - Batch loading for chapters (single API call instead of per-verse)
- * - Deduplication via refs to prevent infinite loops
- * - Supports both Torah and Talmud content types
+ * - Consolidated state management with useReducer
+ * - Generic loader factory (eliminates repetitive code)
+ * - Parallel loading when multiple commentaries are enabled
+ * - Retry mechanism for failed requests
+ * - Request deduplication across all commentary types
+ *
+ * Supports: Rashi, Tosafot, Maharsha, Ramban, Ibn Ezra, Sforno, Soncino
  */
 
-import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { useCallback, useEffect, useRef, useMemo, useReducer } from 'react';
 import {
   isTalmudBook,
   getRashiForChapter,
@@ -25,107 +33,236 @@ import { createLogger } from '../utils/debug';
 
 const log = createLogger('useCommentaryLoader');
 
-/**
- * Configuration for each commentary type
- */
+// =============================================================================
+// CONFIGURATION
+// =============================================================================
+
 const COMMENTARY_CONFIG = {
   rashi: {
     name: 'Rashi',
+    key: 'rashi',
     supportsTorah: true,
     supportsTalmud: true,
-    batchLoad: true
+    showFlag: 'showRashi',
+    fetcher: getRashiForChapter,
+    usesVerseMap: true,
+    talmudDafLevel: true
   },
   tosafot: {
     name: 'Tosafot',
+    key: 'tosafot',
     supportsTorah: false,
     supportsTalmud: true,
-    batchLoad: true
+    showFlag: 'showTosafot',
+    fetcher: getTosafotForDaf,
+    usesVerseMap: false,
+    talmudDafLevel: true
   },
   maharsha: {
     name: 'Maharsha',
+    key: 'maharsha',
     supportsTorah: false,
     supportsTalmud: true,
-    batchLoad: true
+    showFlag: 'showMaharsha',
+    fetcher: getMaharshaForDaf,
+    usesVerseMap: false,
+    talmudDafLevel: true,
+    wrapInComments: true
   },
   ramban: {
     name: 'Ramban',
+    key: 'ramban',
     supportsTorah: true,
     supportsTalmud: false,
-    batchLoad: true
+    showFlag: 'showRamban',
+    fetcher: getRambanForChapter,
+    usesVerseMap: true,
+    wrapInComments: true
   },
   ibnEzra: {
     name: 'Ibn Ezra',
+    key: 'ibnEzra',
     supportsTorah: true,
     supportsTalmud: false,
-    batchLoad: false
+    showFlag: 'showIbnEzra',
+    fetcher: getIbnEzraForChapter,
+    usesVerseMap: true,
+    wrapInComments: true
   },
   sforno: {
     name: 'Sforno',
+    key: 'sforno',
     supportsTorah: true,
     supportsTalmud: false,
-    batchLoad: false
+    showFlag: 'showSforno',
+    fetcher: getSfornoForChapter,
+    usesVerseMap: true,
+    wrapInComments: true
   },
   soncino: {
     name: 'Soncino',
+    key: 'soncino',
     supportsTorah: false,
     supportsTalmud: true,
-    batchLoad: true
+    showFlag: 'showSoncino',
+    fetcher: getSoncinoFootnotesForTractate,
+    usesVerseMap: false,
+    talmudDafLevel: true,
+    requiresAvailabilityCheck: true
   }
 };
 
-/**
- * useCommentaryLoader - Hook for loading and managing commentary data
- *
- * @param {Object} options
- * @param {string} options.selectedBook - Currently selected book
- * @param {string|number} options.selectedChapter - Currently selected chapter
- * @param {Array} options.verses - Array of verse objects
- * @param {boolean} options.isTorahBook - Whether the current book is Torah
- * @param {Object} options.showFlags - Object with show flags for each commentary
- * @returns {Object} Commentary data and loading states
- */
+const COMMENTARY_KEYS = Object.keys(COMMENTARY_CONFIG);
+
+// =============================================================================
+// REDUCER (with batched actions)
+// =============================================================================
+
+const initialState = {
+  data: {
+    rashi: {},
+    tosafot: {},
+    maharsha: {},
+    ramban: {},
+    ibnEzra: {},
+    sforno: {},
+    soncino: {}
+  },
+  loading: {
+    rashi: false,
+    tosafot: false,
+    maharsha: false,
+    ramban: false,
+    ibnEzra: false,
+    sforno: false,
+    soncino: false
+  },
+  errors: {},
+  retryCounts: {}
+};
+
+function commentaryReducer(state, action) {
+  switch (action.type) {
+    case 'SET_LOADING':
+      return {
+        ...state,
+        loading: { ...state.loading, [action.commentary]: action.value }
+      };
+
+    case 'SET_DATA':
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          [action.commentary]: { ...state.data[action.commentary], ...action.data }
+        }
+      };
+
+    // BATCHED: Set data + clear error + set loading=false in one dispatch
+    case 'LOAD_SUCCESS': {
+      const newErrors = { ...state.errors };
+      delete newErrors[action.commentary];
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          [action.commentary]: { ...state.data[action.commentary], ...action.data }
+        },
+        loading: { ...state.loading, [action.commentary]: false },
+        errors: newErrors
+      };
+    }
+
+    // BATCHED: Set error + set empty data + set loading=false in one dispatch
+    case 'LOAD_ERROR':
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          [action.commentary]: { ...state.data[action.commentary], ...action.emptyData }
+        },
+        loading: { ...state.loading, [action.commentary]: false },
+        errors: { ...state.errors, [action.commentary]: action.error }
+      };
+
+    case 'SET_ERROR':
+      return {
+        ...state,
+        errors: { ...state.errors, [action.commentary]: action.error }
+      };
+
+    case 'CLEAR_ERROR': {
+      const newErrors = { ...state.errors };
+      delete newErrors[action.commentary];
+      return { ...state, errors: newErrors };
+    }
+
+    case 'INCREMENT_RETRY':
+      return {
+        ...state,
+        retryCounts: {
+          ...state.retryCounts,
+          [action.key]: (state.retryCounts[action.key] || 0) + 1
+        }
+      };
+
+    case 'RESET_ALL':
+      return initialState;
+
+    case 'RESET_DATA':
+      return {
+        ...state,
+        data: initialState.data,
+        errors: {},
+        retryCounts: {}
+      };
+
+    default:
+      return state;
+  }
+}
+
+// =============================================================================
+// HOOK
+// =============================================================================
+
 export function useCommentaryLoader({
   selectedBook,
   selectedChapter,
   verses = [],
   isTorahBook = false,
-  showFlags = {}
+  showFlags = {},
+  enablePrefetch = false
 }) {
-  // Data states
-  const [rashiData, setRashiData] = useState({});
-  const [tosafotData, setTosafotData] = useState({});
-  const [maharshaData, setMaharshaData] = useState({});
-  const [rambanData, setRambanData] = useState({});
-  const [ibnEzraData, setIbnEzraData] = useState({});
-  const [sfornoData, setSfornoData] = useState({});
-  const [soncinoData, setSoncinoData] = useState({});
+  const [state, dispatch] = useReducer(commentaryReducer, initialState);
 
-  // Loading states
-  const [rashiLoading, setRashiLoading] = useState({});
-  const [tosafotLoading, setTosafotLoading] = useState(false);
-  const [maharshaLoading, setMaharshaLoading] = useState(false);
-  const [rambanLoading, setRambanLoading] = useState({});
-  const [ibnEzraLoading, setIbnEzraLoading] = useState({});
-  const [sfornoLoading, setSfornoLoading] = useState({});
-  const [soncinoLoading, setSoncinoLoading] = useState(false);
-
-  // Error states for UI feedback
-  const [errors, setErrors] = useState({});
-
-  // Refs to track loaded items and prevent duplicate requests
-  const rashiLoadedRef = useRef(new Set());
-  const rambanLoadedRef = useRef(new Set());
-  const ibnEzraLoadedRef = useRef(new Set());
-  const sfornoLoadedRef = useRef(new Set());
-  const tosafotLoadedRef = useRef(new Set());
-  const maharshaLoadedRef = useRef(new Set());
-  const soncinoLoadedRef = useRef(new Set());
-
-  // AbortController ref for canceling in-flight requests
-  const abortControllerRef = useRef(null);
+  // Refs for deduplication and lifecycle
+  const loadedKeysRef = useRef(new Set());
+  const pendingRequestsRef = useRef(new Map());
   const mountedRef = useRef(true);
+  const abortControllerRef = useRef(null);
+  const lastLoadConfigRef = useRef('');
 
-  // Cleanup on unmount
+  // Derived values
+  const isTalmud = useMemo(() => isTalmudBook(selectedBook), [selectedBook]);
+  const hasVerses = verses.length > 0;
+  const hasSoncinoAvailable = useMemo(() => {
+    return isTalmud && isTractateAvailable(selectedBook);
+  }, [isTalmud, selectedBook]);
+
+  // STABILIZE showFlags - extract primitive values to prevent effect re-runs
+  const showRashi = showFlags.showRashi || false;
+  const showTosafot = showFlags.showTosafot || false;
+  const showMaharsha = showFlags.showMaharsha || false;
+  const showRamban = showFlags.showRamban || false;
+  const showIbnEzra = showFlags.showIbnEzra || false;
+  const showSforno = showFlags.showSforno || false;
+  const showSoncino = showFlags.showSoncino || false;
+
+  // ==========================================================================
+  // LIFECYCLE
+  // ==========================================================================
+
   useEffect(() => {
     mountedRef.current = true;
     return () => {
@@ -136,32 +273,202 @@ export function useCommentaryLoader({
     };
   }, []);
 
-  // Reset when book/chapter changes
   useEffect(() => {
-    // Cancel any in-flight requests when navigation changes
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
     abortControllerRef.current = new AbortController();
   }, [selectedBook, selectedChapter]);
 
-  // Derived values
-  const isTalmud = useMemo(() => isTalmudBook(selectedBook), [selectedBook]);
-  const hasVerses = verses.length > 0;
-  const hasSoncinoAvailable = useMemo(() => {
-    return isTalmud && isTractateAvailable(selectedBook);
-  }, [isTalmud, selectedBook]);
+  // ==========================================================================
+  // GENERIC LOADER (stable - no changing dependencies in closure)
+  // ==========================================================================
 
-  // Normalized Rashi data: provides verse-level keys for both Torah and Talmud
-  // For Talmud, expands daf-level data to all verse keys for backwards compatibility
+  const loadCommentary = useCallback(async (config, book, chapter, talmud) => {
+    const { key, name, fetcher, usesVerseMap, talmudDafLevel, wrapInComments } = config;
+    const chapterKey = `${key}:${book}:${chapter}`;
+
+    // Deduplication check
+    if (loadedKeysRef.current.has(chapterKey)) {
+      return;
+    }
+
+    // Check for pending request
+    if (pendingRequestsRef.current.has(chapterKey)) {
+      return pendingRequestsRef.current.get(chapterKey);
+    }
+
+    loadedKeysRef.current.add(chapterKey);
+    dispatch({ type: 'SET_LOADING', commentary: key, value: true });
+
+    const loadPromise = (async () => {
+      try {
+        log.debug(`${name}: Loading ${book} ${chapter}`);
+
+        const result = await fetcher(book, chapter);
+
+        if (!mountedRef.current) return;
+
+        let newData = {};
+        const dafKey = `${book}:${chapter}`;
+
+        if (usesVerseMap && result instanceof Map) {
+          if (talmud && talmudDafLevel) {
+            const allComments = result.get('all') || [];
+            newData[dafKey] = allComments;
+            log.debug(`${name}: Loaded ${allComments.length} Talmud comments`);
+          } else {
+            result.forEach((comments, verseNum) => {
+              const cacheKey = `${book}:${chapter}:${verseNum}`;
+              newData[cacheKey] = wrapInComments ? { comments } : comments;
+            });
+            log.debug(`${name}: Loaded ${result.size} verses`);
+          }
+        } else {
+          newData[dafKey] = wrapInComments ? { comments: result } : result;
+          log.debug(`${name}: Loaded ${Array.isArray(result) ? result.length : 0} comments`);
+        }
+
+        // BATCHED dispatch - single state update (3 actions → 1)
+        dispatch({ type: 'LOAD_SUCCESS', commentary: key, data: newData });
+
+      } catch (error) {
+        if (!mountedRef.current) return;
+        log.error(`${name}: Failed to load:`, error);
+
+        const dafKey = `${book}:${chapter}`;
+        const emptyData = { [dafKey]: wrapInComments ? { comments: [] } : [] };
+
+        // BATCHED dispatch - single state update
+        dispatch({
+          type: 'LOAD_ERROR',
+          commentary: key,
+          error: error.message || `Failed to load ${name}`,
+          emptyData
+        });
+      } finally {
+        pendingRequestsRef.current.delete(chapterKey);
+      }
+    })();
+
+    pendingRequestsRef.current.set(chapterKey, loadPromise);
+    return loadPromise;
+  }, []); // Empty deps - uses passed arguments instead of closure
+
+  // ==========================================================================
+  // PARALLEL LOADING EFFECT (optimized with config key deduplication)
+  // ==========================================================================
+
+  useEffect(() => {
+    if (!selectedBook || !selectedChapter) return;
+
+    // Generate stable config key to detect actual changes
+    const configKey = [
+      selectedBook,
+      selectedChapter,
+      isTalmud,
+      isTorahBook,
+      hasVerses,
+      hasSoncinoAvailable,
+      showRashi,
+      showTosafot,
+      showMaharsha,
+      showRamban,
+      showIbnEzra,
+      showSforno,
+      showSoncino
+    ].join('|');
+
+    // Skip if config hasn't actually changed
+    if (lastLoadConfigRef.current === configKey) {
+      return;
+    }
+    lastLoadConfigRef.current = configKey;
+
+    const flagMap = {
+      showRashi,
+      showTosafot,
+      showMaharsha,
+      showRamban,
+      showIbnEzra,
+      showSforno,
+      showSoncino
+    };
+
+    const toLoad = [];
+
+    COMMENTARY_KEYS.forEach(key => {
+      const config = COMMENTARY_CONFIG[key];
+      const shouldShow = flagMap[config.showFlag];
+
+      const isApplicable = isTalmud
+        ? config.supportsTalmud
+        : (config.supportsTorah && isTorahBook);
+
+      const isAvailable = key === 'soncino' ? hasSoncinoAvailable : true;
+      const needsVerses = config.supportsTorah && !isTalmud;
+      const hasRequiredVerses = !needsVerses || hasVerses;
+
+      if (shouldShow && isApplicable && isAvailable && hasRequiredVerses) {
+        toLoad.push({ config, key });
+      }
+    });
+
+    if (toLoad.length > 0) {
+      log.debug(`Loading ${toLoad.length} commentaries in parallel`);
+      Promise.all(
+        toLoad.map(({ config }) =>
+          loadCommentary(config, selectedBook, selectedChapter, isTalmud)
+        )
+      );
+    }
+  }, [
+    selectedBook,
+    selectedChapter,
+    isTalmud,
+    isTorahBook,
+    hasVerses,
+    hasSoncinoAvailable,
+    showRashi,
+    showTosafot,
+    showMaharsha,
+    showRamban,
+    showIbnEzra,
+    showSforno,
+    showSoncino,
+    loadCommentary
+  ]);
+
+  // ==========================================================================
+  // PREFETCHING (optional)
+  // ==========================================================================
+
+  useEffect(() => {
+    if (!enablePrefetch || !selectedBook || !selectedChapter) return;
+
+    const prefetchTimeout = setTimeout(() => {
+      log.debug('Prefetch: Ready for adjacent chapters');
+    }, 2000);
+
+    return () => clearTimeout(prefetchTimeout);
+  }, [enablePrefetch, selectedBook, selectedChapter]);
+
+  // ==========================================================================
+  // NORMALIZED DATA (Rashi verse-level keys for Talmud)
+  // ==========================================================================
+
   const rashiDataByVerse = useMemo(() => {
-    if (isTalmud) {
-      // For Talmud, daf-level data needs to be mapped to verse-level keys
+    const rashiData = state.data.rashi;
+
+    if (isTalmud && verses.length > 0) {
       const dafKey = `${selectedBook}:${selectedChapter}`;
       const dafData = rashiData[dafKey];
-      if (!dafData || !verses.length) return rashiData;
 
-      // Create object with verse-level keys pointing to same daf data
+      if (!dafData) {
+        return rashiData;
+      }
+
+      // Create verse-level keys pointing to daf data
       const normalized = { ...rashiData };
       verses.forEach(verse => {
         const verseKey = `${selectedBook}:${selectedChapter}:${verse.verse}`;
@@ -170,390 +477,105 @@ export function useCommentaryLoader({
       return normalized;
     }
     return rashiData;
-  }, [isTalmud, selectedBook, selectedChapter, rashiData, verses]);
+  }, [isTalmud, selectedBook, selectedChapter, state.data.rashi, verses]);
 
-  // ============================================================================
-  // Rashi Loading
-  // ============================================================================
-  const loadRashiForChapter = useCallback(async () => {
-    const chapterKey = `${selectedBook}:${selectedChapter}`;
-    if (rashiLoadedRef.current.has(chapterKey)) return;
-    rashiLoadedRef.current.add(chapterKey);
+  // ==========================================================================
+  // HELPER FUNCTIONS
+  // ==========================================================================
 
-    setRashiLoading(prev => ({ ...prev, [chapterKey]: true }));
-    try {
-      log.debug(`Rashi: Batch loading chapter ${chapterKey}`);
-
-      // Use batch API for all cases (Torah, Tanach, AND Talmud)
-      // This fixes N+1 problem: was making 30+ calls per daf, now makes 1
-      const verseMap = await getRashiForChapter(selectedBook, selectedChapter);
-
-      // Check if still mounted and not aborted before updating state
-      if (!mountedRef.current) return;
-
-      const newRashiData = {};
-
-      if (isTalmud) {
-        // Talmud: all comments come under 'all' key (daf-level, not verse-level)
-        const allComments = verseMap.get('all') || [];
-        // Store under daf key (same pattern as Tosafot/Maharsha)
-        newRashiData[chapterKey] = allComments;
-        rashiLoadedRef.current.add(chapterKey);
-        log.debug(`Rashi: Loaded ${allComments.length} Talmud comments with single API call`);
-      } else {
-        // Torah/Tanach: verse-level comments
-        verseMap.forEach((comments, verseNum) => {
-          const cacheKey = `${selectedBook}:${selectedChapter}:${verseNum}`;
-          newRashiData[cacheKey] = comments;
-          rashiLoadedRef.current.add(cacheKey);
-        });
-        log.debug(`Rashi: Loaded ${verseMap.size} verses with batch API call`);
-      }
-      setRashiData(prev => ({ ...prev, ...newRashiData }));
-    } catch (error) {
-      if (!mountedRef.current) return;
-      log.error('Failed to batch fetch Rashi:', error);
-      setErrors(prev => ({ ...prev, rashi: error.message || 'Failed to load Rashi commentary' }));
-    }
-    if (mountedRef.current) {
-      setRashiLoading(prev => ({ ...prev, [chapterKey]: false }));
-    }
-  }, [selectedBook, selectedChapter, isTalmud]);
-
-  // ============================================================================
-  // Tosafot Loading (Talmud only)
-  // ============================================================================
-  const loadTosafot = useCallback(async () => {
-    const cacheKey = `${selectedBook}:${selectedChapter}`;
-    if (!isTalmud || tosafotLoadedRef.current.has(cacheKey)) return;
-    tosafotLoadedRef.current.add(cacheKey);
-
-    setTosafotLoading(true);
-    try {
-      const comments = await getTosafotForDaf(selectedBook, selectedChapter);
-      if (!mountedRef.current) return;
-      setTosafotData(prev => ({ ...prev, [cacheKey]: comments }));
-    } catch (error) {
-      if (!mountedRef.current) return;
-      log.error('Failed to fetch Tosafot:', error);
-      setTosafotData(prev => ({ ...prev, [cacheKey]: [] }));
-      setErrors(prev => ({ ...prev, tosafot: error.message || 'Failed to load Tosafot commentary' }));
-    }
-    if (mountedRef.current) setTosafotLoading(false);
-  }, [selectedBook, selectedChapter, isTalmud]);
-
-  // ============================================================================
-  // Maharsha Loading (Talmud only)
-  // ============================================================================
-  const loadMaharsha = useCallback(async () => {
-    const cacheKey = `${selectedBook}:${selectedChapter}`;
-    if (!isTalmud || maharshaLoadedRef.current.has(cacheKey)) return;
-    maharshaLoadedRef.current.add(cacheKey);
-
-    setMaharshaLoading(true);
-    try {
-      const data = await getMaharshaForDaf(selectedBook, selectedChapter);
-      if (!mountedRef.current) return;
-      setMaharshaData(prev => ({ ...prev, [cacheKey]: data }));
-    } catch (error) {
-      if (!mountedRef.current) return;
-      log.error('Failed to fetch Maharsha:', error);
-      setMaharshaData(prev => ({ ...prev, [cacheKey]: { comments: [] } }));
-      setErrors(prev => ({ ...prev, maharsha: error.message || 'Failed to load Maharsha commentary' }));
-    }
-    if (mountedRef.current) setMaharshaLoading(false);
-  }, [selectedBook, selectedChapter, isTalmud]);
-
-  // ============================================================================
-  // Soncino Loading (Talmud only)
-  // ============================================================================
-  const loadSoncino = useCallback(async () => {
-    if (!selectedChapter) {
-      log.verbose('Soncino: No daf selected, skipping');
-      return;
-    }
-
-    const cacheKey = `${selectedBook}:${selectedChapter}`;
-    if (!isTalmud || !hasSoncinoAvailable || soncinoLoadedRef.current.has(cacheKey)) {
-      return;
-    }
-    soncinoLoadedRef.current.add(cacheKey);
-
-    setSoncinoLoading(true);
-    try {
-      log.verbose(`Soncino: Fetching footnotes for ${selectedBook} ${selectedChapter}`);
-      const footnotes = await getSoncinoFootnotesForTractate(selectedBook, selectedChapter);
-      if (!mountedRef.current) return;
-      log.verbose(`Soncino: Got ${footnotes?.length || 0} footnotes`);
-      setSoncinoData(prev => ({ ...prev, [cacheKey]: footnotes }));
-    } catch (error) {
-      if (!mountedRef.current) return;
-      log.error('Soncino: Failed to fetch:', error);
-      setSoncinoData(prev => ({ ...prev, [cacheKey]: [], _error: error.message }));
-      setErrors(prev => ({ ...prev, soncino: error.message || 'Failed to load Soncino commentary' }));
-    }
-    if (mountedRef.current) setSoncinoLoading(false);
-  }, [selectedBook, selectedChapter, isTalmud, hasSoncinoAvailable]);
-
-  // ============================================================================
-  // Ramban Loading (Torah only)
-  // ============================================================================
-  const loadRambanForChapter = useCallback(async () => {
-    const chapterKey = `ramban:${selectedBook}:${selectedChapter}`;
-    if (rambanLoadedRef.current.has(chapterKey)) return;
-    rambanLoadedRef.current.add(chapterKey);
-
-    setRambanLoading(prev => ({ ...prev, [chapterKey]: true }));
-    try {
-      log.debug(`Ramban: Batch loading chapter ${selectedBook} ${selectedChapter}`);
-      const verseMap = await getRambanForChapter(selectedBook, selectedChapter);
-
-      if (!mountedRef.current) return;
-
-      const newRambanData = {};
-      verseMap.forEach((comments, verseNum) => {
-        const cacheKey = `${selectedBook}:${selectedChapter}:${verseNum}`;
-        newRambanData[cacheKey] = { comments };
-        rambanLoadedRef.current.add(cacheKey);
-      });
-
-      setRambanData(prev => ({ ...prev, ...newRambanData }));
-      log.debug(`Ramban: Loaded ${verseMap.size} verses with batch API call`);
-    } catch (error) {
-      if (!mountedRef.current) return;
-      log.error('Failed to batch fetch Ramban:', error);
-      setErrors(prev => ({ ...prev, ramban: error.message || 'Failed to load Ramban commentary' }));
-    }
-    if (mountedRef.current) setRambanLoading(prev => ({ ...prev, [chapterKey]: false }));
-  }, [selectedBook, selectedChapter]);
-
-  // ============================================================================
-  // Ibn Ezra Loading (Torah only, batch per chapter)
-  // ============================================================================
-  const loadIbnEzraForChapter = useCallback(async () => {
-    const chapterKey = `ibnezra:${selectedBook}:${selectedChapter}`;
-    if (ibnEzraLoadedRef.current.has(chapterKey)) return;
-    ibnEzraLoadedRef.current.add(chapterKey);
-
-    setIbnEzraLoading(prev => ({ ...prev, [chapterKey]: true }));
-    try {
-      log.debug(`Ibn Ezra: Batch loading chapter ${selectedBook}:${selectedChapter}`);
-      const verseMap = await getIbnEzraForChapter(selectedBook, selectedChapter);
-
-      if (!mountedRef.current) return;
-
-      // Convert Map to object with verse-level keys
-      const newIbnEzraData = {};
-      verseMap.forEach((comments, verseNum) => {
-        const cacheKey = `${selectedBook}:${selectedChapter}:${verseNum}`;
-        newIbnEzraData[cacheKey] = { comments };
-        ibnEzraLoadedRef.current.add(cacheKey);
-      });
-
-      setIbnEzraData(prev => ({ ...prev, ...newIbnEzraData }));
-      log.debug(`Ibn Ezra: Loaded ${verseMap.size} verses with single API call`);
-    } catch (error) {
-      if (!mountedRef.current) return;
-      log.error('Failed to batch fetch Ibn Ezra:', error);
-      setErrors(prev => ({ ...prev, ibnEzra: error.message || 'Failed to load Ibn Ezra commentary' }));
-    }
-    if (mountedRef.current) setIbnEzraLoading(prev => ({ ...prev, [chapterKey]: false }));
-  }, [selectedBook, selectedChapter]);
-
-  // ============================================================================
-  // Sforno Loading (Torah only, batch per chapter)
-  // ============================================================================
-  const loadSfornoForChapter = useCallback(async () => {
-    const chapterKey = `sforno:${selectedBook}:${selectedChapter}`;
-    if (sfornoLoadedRef.current.has(chapterKey)) return;
-    sfornoLoadedRef.current.add(chapterKey);
-
-    setSfornoLoading(prev => ({ ...prev, [chapterKey]: true }));
-    try {
-      log.debug(`Sforno: Batch loading chapter ${selectedBook}:${selectedChapter}`);
-      const verseMap = await getSfornoForChapter(selectedBook, selectedChapter);
-
-      if (!mountedRef.current) return;
-
-      // Convert Map to object with verse-level keys
-      const newSfornoData = {};
-      verseMap.forEach((comments, verseNum) => {
-        const cacheKey = `${selectedBook}:${selectedChapter}:${verseNum}`;
-        newSfornoData[cacheKey] = { comments };
-        sfornoLoadedRef.current.add(cacheKey);
-      });
-
-      setSfornoData(prev => ({ ...prev, ...newSfornoData }));
-      log.debug(`Sforno: Loaded ${verseMap.size} verses with single API call`);
-    } catch (error) {
-      if (!mountedRef.current) return;
-      log.error('Failed to batch fetch Sforno:', error);
-      setErrors(prev => ({ ...prev, sforno: error.message || 'Failed to load Sforno commentary' }));
-    }
-    if (mountedRef.current) setSfornoLoading(prev => ({ ...prev, [chapterKey]: false }));
-  }, [selectedBook, selectedChapter]);
-
-  // ============================================================================
-  // Effects to trigger loading based on show flags
-  // ============================================================================
-
-  // Load Rashi
-  useEffect(() => {
-    if (showFlags.showRashi && hasVerses) {
-      loadRashiForChapter();
-    }
-  }, [showFlags.showRashi, hasVerses, selectedBook, selectedChapter, loadRashiForChapter]);
-
-  // Load Tosafot (Talmud only)
-  useEffect(() => {
-    if (showFlags.showTosafot && isTalmud) {
-      loadTosafot();
-    }
-  }, [showFlags.showTosafot, isTalmud, loadTosafot]);
-
-  // Load Maharsha (Talmud only)
-  useEffect(() => {
-    if (showFlags.showMaharsha && isTalmud) {
-      loadMaharsha();
-    }
-  }, [showFlags.showMaharsha, isTalmud, loadMaharsha]);
-
-  // Load Soncino (Talmud only)
-  useEffect(() => {
-    if (showFlags.showSoncino && hasSoncinoAvailable) {
-      loadSoncino();
-    }
-  }, [showFlags.showSoncino, hasSoncinoAvailable, loadSoncino]);
-
-  // Load Ramban (Torah only)
-  useEffect(() => {
-    if (showFlags.showRamban && isTorahBook && hasVerses) {
-      loadRambanForChapter();
-    }
-  }, [showFlags.showRamban, isTorahBook, hasVerses, selectedBook, selectedChapter, loadRambanForChapter]);
-
-  // Load Ibn Ezra (Torah only, batch per chapter)
-  useEffect(() => {
-    if (showFlags.showIbnEzra && isTorahBook && hasVerses) {
-      loadIbnEzraForChapter();
-    }
-  }, [showFlags.showIbnEzra, isTorahBook, hasVerses, selectedBook, selectedChapter, loadIbnEzraForChapter]);
-
-  // Load Sforno (Torah only, batch per chapter)
-  useEffect(() => {
-    if (showFlags.showSforno && isTorahBook && hasVerses) {
-      loadSfornoForChapter();
-    }
-  }, [showFlags.showSforno, isTorahBook, hasVerses, selectedBook, selectedChapter, loadSfornoForChapter]);
-
-  // ============================================================================
-  // Helper functions for consumers
-  // ============================================================================
-
-  /**
-   * Get Rashi for a specific verse (uses normalized data with verse-level keys)
-   */
   const getRashiForVerse = useCallback((verseNumber) => {
     const cacheKey = `${selectedBook}:${selectedChapter}:${verseNumber}`;
     return rashiDataByVerse[cacheKey] || [];
   }, [selectedBook, selectedChapter, rashiDataByVerse]);
 
-  /**
-   * Get commentary data for a specific verse
-   */
   const getCommentaryForVerse = useCallback((verseNumber) => {
     const cacheKey = `${selectedBook}:${selectedChapter}:${verseNumber}`;
     const dafKey = `${selectedBook}:${selectedChapter}`;
 
     return {
-      // Use helper that handles Talmud daf-level vs Torah verse-level
       rashi: getRashiForVerse(verseNumber),
-      tosafot: tosafotData[dafKey] || [],
-      maharsha: maharshaData[dafKey]?.comments || [],
-      ramban: rambanData[cacheKey]?.comments || [],
-      ibnEzra: ibnEzraData[cacheKey]?.comments || [],
-      sforno: sfornoData[cacheKey]?.comments || [],
-      soncino: soncinoData[dafKey] || []
+      tosafot: state.data.tosafot[dafKey] || [],
+      maharsha: state.data.maharsha[dafKey]?.comments || [],
+      ramban: state.data.ramban[cacheKey]?.comments || [],
+      ibnEzra: state.data.ibnEzra[cacheKey]?.comments || [],
+      sforno: state.data.sforno[cacheKey]?.comments || [],
+      soncino: state.data.soncino[dafKey] || []
     };
-  }, [selectedBook, selectedChapter, getRashiForVerse, tosafotData, maharshaData, rambanData, ibnEzraData, sfornoData, soncinoData]);
+  }, [selectedBook, selectedChapter, getRashiForVerse, state.data]);
 
-  /**
-   * Check if any commentary is loading for a verse
-   */
-  const isCommentaryLoading = useCallback((verseNumber) => {
-    const cacheKey = `${selectedBook}:${selectedChapter}:${verseNumber}`;
-    const chapterKey = `${selectedBook}:${selectedChapter}`;
+  const isCommentaryLoading = useCallback(() => {
+    return Object.values(state.loading).some(Boolean);
+  }, [state.loading]);
 
-    return (
-      rashiLoading[chapterKey] ||
-      tosafotLoading ||
-      maharshaLoading ||
-      rambanLoading[`ramban:${chapterKey}`] ||
-      ibnEzraLoading[cacheKey] ||
-      sfornoLoading[cacheKey] ||
-      soncinoLoading
-    );
-  }, [selectedBook, selectedChapter, rashiLoading, tosafotLoading, maharshaLoading, rambanLoading, ibnEzraLoading, sfornoLoading, soncinoLoading]);
+  const isAnyLoading = useMemo(() => {
+    return Object.values(state.loading).some(Boolean);
+  }, [state.loading]);
 
-  /**
-   * Clear all cached data (useful when switching books/chapters)
-   */
   const clearCache = useCallback(() => {
-    setRashiData({});
-    setTosafotData({});
-    setMaharshaData({});
-    setRambanData({});
-    setIbnEzraData({});
-    setSfornoData({});
-    setSoncinoData({});
-    setErrors({});
-
-    rashiLoadedRef.current.clear();
-    rambanLoadedRef.current.clear();
-    ibnEzraLoadedRef.current.clear();
-    sfornoLoadedRef.current.clear();
-    tosafotLoadedRef.current.clear();
-    maharshaLoadedRef.current.clear();
-    soncinoLoadedRef.current.clear();
+    dispatch({ type: 'RESET_DATA' });
+    loadedKeysRef.current.clear();
+    pendingRequestsRef.current.clear();
+    lastLoadConfigRef.current = '';
   }, []);
 
-  /**
-   * Clear a specific error
-   */
   const clearError = useCallback((commentaryType) => {
-    setErrors(prev => {
-      const next = { ...prev };
-      delete next[commentaryType];
-      return next;
-    });
+    dispatch({ type: 'CLEAR_ERROR', commentary: commentaryType });
   }, []);
+
+  const retry = useCallback(async (commentaryType) => {
+    const config = COMMENTARY_CONFIG[commentaryType];
+    if (!config) return;
+
+    const chapterKey = `${commentaryType}:${selectedBook}:${selectedChapter}`;
+    loadedKeysRef.current.delete(chapterKey);
+    dispatch({ type: 'INCREMENT_RETRY', key: chapterKey });
+
+    await loadCommentary(config, selectedBook, selectedChapter, isTalmud);
+  }, [selectedBook, selectedChapter, isTalmud, loadCommentary]);
+
+  // Stable loader references for external use
+  const loaders = useMemo(() => ({
+    rashi: () => loadCommentary(COMMENTARY_CONFIG.rashi, selectedBook, selectedChapter, isTalmud),
+    tosafot: () => loadCommentary(COMMENTARY_CONFIG.tosafot, selectedBook, selectedChapter, isTalmud),
+    maharsha: () => loadCommentary(COMMENTARY_CONFIG.maharsha, selectedBook, selectedChapter, isTalmud),
+    ramban: () => loadCommentary(COMMENTARY_CONFIG.ramban, selectedBook, selectedChapter, isTalmud),
+    ibnEzra: () => loadCommentary(COMMENTARY_CONFIG.ibnEzra, selectedBook, selectedChapter, isTalmud),
+    sforno: () => loadCommentary(COMMENTARY_CONFIG.sforno, selectedBook, selectedChapter, isTalmud),
+    soncino: () => loadCommentary(COMMENTARY_CONFIG.soncino, selectedBook, selectedChapter, isTalmud)
+  }), [selectedBook, selectedChapter, isTalmud, loadCommentary]);
+
+  // ==========================================================================
+  // RETURN VALUE
+  // ==========================================================================
 
   return {
-    // Data (rashiData is normalized: verse-level keys for both Torah and Talmud)
+    // Data
     rashiData: rashiDataByVerse,
-    tosafotData,
-    maharshaData,
-    rambanData,
-    ibnEzraData,
-    sfornoData,
-    soncinoData,
+    tosafotData: state.data.tosafot,
+    maharshaData: state.data.maharsha,
+    rambanData: state.data.ramban,
+    ibnEzraData: state.data.ibnEzra,
+    sfornoData: state.data.sforno,
+    soncinoData: state.data.soncino,
 
     // Loading states
-    rashiLoading,
-    tosafotLoading,
-    maharshaLoading,
-    rambanLoading,
-    ibnEzraLoading,
-    sfornoLoading,
-    soncinoLoading,
+    rashiLoading: state.loading.rashi,
+    tosafotLoading: state.loading.tosafot,
+    maharshaLoading: state.loading.maharsha,
+    rambanLoading: state.loading.ramban,
+    ibnEzraLoading: state.loading.ibnEzra,
+    sfornoLoading: state.loading.sforno,
+    soncinoLoading: state.loading.soncino,
+    isAnyLoading,
 
     // Derived values
     isTalmud,
     hasSoncinoAvailable,
 
     // Error states
-    errors,
+    errors: state.errors,
     clearError,
+    retry,
 
     // Helper functions
     getRashiForVerse,
@@ -561,16 +583,16 @@ export function useCommentaryLoader({
     isCommentaryLoading,
     clearCache,
 
-    // Manual loaders (for advanced use)
-    loadRashiForChapter,
-    loadTosafot,
-    loadMaharsha,
-    loadSoncino,
-    loadRambanForChapter,
-    loadIbnEzraForChapter,
-    loadSfornoForChapter,
+    // Manual loaders
+    loadRashiForChapter: loaders.rashi,
+    loadTosafot: loaders.tosafot,
+    loadMaharsha: loaders.maharsha,
+    loadSoncino: loaders.soncino,
+    loadRambanForChapter: loaders.ramban,
+    loadIbnEzraForChapter: loaders.ibnEzra,
+    loadSfornoForChapter: loaders.sforno,
 
-    // Configuration (for UI)
+    // Configuration
     COMMENTARY_CONFIG
   };
 }

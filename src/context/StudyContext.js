@@ -38,7 +38,15 @@ export function StudyProvider({ children, book, chapter }) {
     recordStudyRef.current = studyStreak.recordStudy;
   }, [studyStreak.recordStudy]);
 
+  // Ref to hold latest streak value (avoids stale closure in setTimeout)
+  const currentStreakRef = useRef(studyStreak.currentStreak);
   useEffect(() => {
+    currentStreakRef.current = studyStreak.currentStreak;
+  }, [studyStreak.currentStreak]);
+
+  useEffect(() => {
+    let timeoutId = null;
+
     if (book && chapter) {
       addToHistory(book, chapter);
 
@@ -48,14 +56,15 @@ export function StudyProvider({ children, book, chapter }) {
         lastRecordedRef.current = key;
 
         // Store previous streak before recording
-        const prevStreak = studyStreak.currentStreak;
+        const prevStreak = currentStreakRef.current;
 
         // Record study activity for streak tracking
         recordStudyRef.current();
 
         // Check for streak milestones after recording (use setTimeout to get updated value)
-        setTimeout(() => {
-          const newStreak = studyStreak.currentStreak;
+        // Using ref to get fresh value and cleanup to prevent memory leak
+        timeoutId = setTimeout(() => {
+          const newStreak = currentStreakRef.current;
 
           // Only show milestone notification once per milestone
           if (previousStreakRef.current !== newStreak) {
@@ -81,7 +90,14 @@ export function StudyProvider({ children, book, chapter }) {
         }, 100);
       }
     }
-  }, [book, chapter, addToHistory, studyStreak.currentStreak, toast]);
+
+    // Cleanup timeout on unmount or when dependencies change
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [book, chapter, addToHistory, toast]);
 
   // Bookmark functions
   const addBookmark = useCallback((verse, currentBook, currentChapter) => {
