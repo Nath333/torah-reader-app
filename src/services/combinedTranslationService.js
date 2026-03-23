@@ -1935,27 +1935,20 @@ export const lookupWordSync = (word, options = {}) => {
   }
   // Otherwise, re-fetch to get all sources
 
-  // === PRO SCHOLAR: Check FUNCTION_WORDS first for common terms ===
-  // This catches: העומדים, נפקא, להביא, התראתו, לקמן, etc.
-  // These are curated translations that should take priority
+  // === PRO SCHOLAR V8: FUNCTION_WORDS + DICTIONARY COMBINATION ===
+  // For common terms, get BOTH curated translation AND academic dictionaries
+  // This allows DictionaryTranslation.js to show Jastrow/BDB as primary when available
   const functionWordTranslation = lookupFunctionWord(cleaned);
+  let functionWordSource = null;
   if (functionWordTranslation) {
-    return {
-      word: word,
-      cleanedWord: cleaned,
-      english: functionWordTranslation,
-      source: 'Talmudic',
-      sources: [{
-        name: 'Talmudic',
-        fullName: 'Talmudic Vocabulary',
-        definition: functionWordTranslation,
-        recommended: true
-      }],
-      isAramaic: isLikelyAramaic(cleaned),
-      language: isLikelyAramaic(cleaned) ? 'Aramaic' : 'Hebrew',
-      offline: true,
-      _functionWord: true
+    functionWordSource = {
+      name: 'Rabbinic',
+      fullName: 'Curated Rabbinic Vocabulary',
+      definition: functionWordTranslation,
+      recommended: true,
+      isLocal: true
     };
+    // DON'T return early - continue to also check dictionaries
   }
 
   // === PRO SCHOLAR V3: HEBREW BINYAN DETECTION ===
@@ -2074,6 +2067,17 @@ export const lookupWordSync = (word, options = {}) => {
     }
   }
 
+  // === PRO SCHOLAR V8: Add function word source if available ===
+  // This ensures curated translations are included alongside dictionary results
+  if (functionWordSource && !allSources.some(s => s.name === 'Rabbinic')) {
+    allSources.push(functionWordSource);
+    // Set primary if no other result
+    if (!primaryEnglish) {
+      primaryEnglish = functionWordTranslation;
+      primarySource = 'Rabbinic';
+    }
+  }
+
   // Return combined result with ALL sources
   if (allSources.length > 0 || primaryEnglish) {
     return {
@@ -2091,6 +2095,7 @@ export const lookupWordSync = (word, options = {}) => {
       sefariaData: null,
       offline: true,
       _halachicOverride: !!halachicResult,
+      _functionWord: !!functionWordSource,
       root: halachicResult?.root,
       prefix: halachicResult?.prefix,
       isLoading: true // Still trigger API for potentially better results

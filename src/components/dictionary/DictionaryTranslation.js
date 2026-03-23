@@ -176,22 +176,40 @@ const checkRashiWithPrefixes = (word) => {
 // High-priority words that MUST have correct translations
 // Used as fallback when other lookups fail (e.g., due to Unicode issues)
 const CRITICAL_WORDS = {
+  // Biblical names
   'משה': 'Moses',
-  'ויעבירו': 'and they proclaimed',
-  'וגו': 'etc.',
-  "וגו'": 'etc.',
-  'וגו׳': 'etc.',
-  'להו': 'to them',
-  'ברישיה': 'at its beginning',
-  'לר"ה': 'to public domain',
-  'לרה"י': 'to private domain',
-  'מדבריהם': 'from their words',
   'אהרן': 'Aaron',
   'אברהם': 'Abraham',
   'יצחק': 'Isaac',
   'יעקב': 'Jacob',
   'דוד': 'David',
   'שלמה': 'Solomon',
+  // Shabbat variations (NOT page references - gematria 702 is out of range)
+  'שבת': 'Shabbat',
+  'שבת:': 'Shabbat',  // With trailing colon (punctuation)
+  'השבת': 'the Shabbat',
+  // Verb forms
+  'ויעבירו': 'and they proclaimed',
+  // Abbreviations
+  'וגו': 'etc.',
+  "וגו'": 'etc.',
+  'וגו׳': 'etc.',
+  // Aramaic pronouns
+  'להו': 'to them',
+  // Aramaic/Talmudic terms
+  'ברישיה': 'at its beginning',
+  'מדבריהם': 'from their words',
+  // Domain abbreviations
+  'לר"ה': 'to public domain',
+  'לרה"י': 'to private domain',
+  'מרה"י': 'from private domain',
+  'לרה"ר': 'to public domain',
+  // Common prefixed words with clean translations
+  'בכל': 'in all',
+  'לכל': 'to all',
+  'מכל': 'from all',
+  'וכל': 'and all',
+  'ככל': 'like all',
 };
 
 /**
