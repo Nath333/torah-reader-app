@@ -21,9 +21,22 @@ import {
 // DEPRECATED: Direct data access
 // =============================================================================
 
+// Properties checked by React Fast Refresh - don't warn for these
+const REACT_INTERNAL_PROPS = new Set([
+  '$$typeof', 'prototype', 'render', 'displayName', 'name', 'length',
+  'propTypes', 'defaultProps', 'contextTypes', 'childContextTypes',
+  'getDerivedStateFromProps', 'getDerivedStateFromError', 'type',
+  Symbol.toStringTag, Symbol.iterator, 'then', 'constructor'
+]);
+
 /** @deprecated Use lookupStrongsByWord() instead */
 export const STRONGS_BY_WORD = new Proxy({}, {
   get(target, prop) {
+    // Ignore React Fast Refresh internal property checks
+    if (REACT_INTERNAL_PROPS.has(prop) || typeof prop === 'symbol') {
+      return undefined;
+    }
+
     const cached = lookupStrongsSync(prop);
     if (cached) return cached;
 
@@ -45,6 +58,10 @@ export const STRONGS_BY_WORD = new Proxy({}, {
 /** @deprecated Use lookupStrongsByNumber() instead */
 export const STRONGS_BY_NUMBER = new Proxy({}, {
   get(target, prop) {
+    // Ignore React Fast Refresh internal property checks
+    if (REACT_INTERNAL_PROPS.has(prop) || typeof prop === 'symbol') {
+      return undefined;
+    }
     console.warn("[Strong's] Direct access to STRONGS_BY_NUMBER is deprecated. Use lookupStrongsByNumber() instead.");
     return undefined;
   }
