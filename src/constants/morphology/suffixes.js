@@ -1,6 +1,6 @@
 // =============================================================================
 // Hebrew/Aramaic Suffix Constants - SINGLE SOURCE OF TRUTH
-// Used by: morphologyAnalyzer, combinedTranslationService
+// Used by: morphologyAnalyzer, unifiedLookupService
 // =============================================================================
 
 /**

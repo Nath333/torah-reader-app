@@ -63,7 +63,7 @@ jest.mock('./services/dictionaryLoader', () => {
 
   return {
     __esModule: true,
-    // Data getters (primary interface for combinedTranslationService)
+    // Data getters (primary interface for unifiedLookupService)
     getBDBData: jest.fn(() => ({ byWord: bdbData, byStrongs: strongsData.byNumber })),
     getJastrowData: jest.fn(() => jastrowData),
     getStrongsData: jest.fn(() => strongsData),

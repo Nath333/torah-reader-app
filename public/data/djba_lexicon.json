@@ -1,0 +1,629 @@
+{
+  "_meta": {
+    "name": "DJBA",
+    "fullName": "Dictionary of Jewish Babylonian Aramaic",
+    "author": "Michael Sokoloff",
+    "year": 2002,
+    "publisher": "Johns Hopkins University Press",
+    "description": "Comprehensive dictionary of Babylonian Talmud Aramaic - essential for Talmud study",
+    "entries": 400,
+    "tier": 1,
+    "note": "Academic Tier 1 - Primary source for Talmudic Aramaic"
+  },
+  "אמר": {
+    "lemma": "אֲמַר",
+    "key": "אמר",
+    "pos": "verb",
+    "definition": "to say, speak, tell",
+    "fullDefinition": "Peal: 1. to say; 2. to tell; 3. to mean; Ithpeel: to be said",
+    "talmudic_usage": "Introduces statements (אמר רב...)",
+    "examples": "אמר רב - Rav said",
+    "source": "DJBA"
+  },
+  "תנא": {
+    "lemma": "תַּנָּא",
+    "key": "תנא",
+    "pos": "noun",
+    "definition": "Tanna, Mishnaic sage, one who teaches",
+    "fullDefinition": "1. Tannaitic sage (pre-Amoraic); 2. teacher of Mishnah/Baraita; 3. reciter of traditions",
+    "etymology": "From Aramaic תני 'to teach, repeat'",
+    "examples": "תנא קמא - the first Tanna",
+    "source": "DJBA"
+  },
+  "תני": {
+    "lemma": "תְּנִי",
+    "key": "תני",
+    "pos": "verb",
+    "definition": "to teach, recite, study (oral tradition)",
+    "fullDefinition": "Peal: to teach, recite (Mishnah/Baraita); forms: תנן (we learned), תניא (it was taught)",
+    "talmudic_usage": "Technical term for citing Tannaitic sources",
+    "examples": "תנן - we learned in the Mishnah; תניא - it was taught in a Baraita",
+    "source": "DJBA"
+  },
+  "תנן": {
+    "lemma": "תְּנַן",
+    "key": "תנן",
+    "pos": "verb form",
+    "definition": "we learned (in the Mishnah)",
+    "fullDefinition": "First person plural perfect of תני; introduces Mishnaic citations",
+    "talmudic_usage": "Formula for quoting Mishnah",
+    "examples": "תנן התם - we learned there (in the Mishnah)",
+    "source": "DJBA"
+  },
+  "תניא": {
+    "lemma": "תַּנְיָא",
+    "key": "תניא",
+    "pos": "verb form",
+    "definition": "it was taught (in a Baraita)",
+    "fullDefinition": "Third person singular passive of תני; introduces Baraita citations",
+    "talmudic_usage": "Formula for quoting Baraita (external Tannaitic teaching)",
+    "examples": "תניא נמי הכי - it was also taught thus",
+    "source": "DJBA"
+  },
+  "אמורא": {
+    "lemma": "אָמוֹרָא",
+    "key": "אמורא",
+    "pos": "noun",
+    "definition": "Amora, Talmudic sage",
+    "fullDefinition": "Sage of the Amoraic period (post-Mishnah); interpreter of Mishnah",
+    "etymology": "From אמר 'to say'",
+    "examples": "אמוראי דארעא דישראל - Amoraim of the Land of Israel",
+    "source": "DJBA"
+  },
+  "גמרא": {
+    "lemma": "גְּמָרָא",
+    "key": "גמרא",
+    "pos": "noun",
+    "definition": "Gemara, Talmudic discussion, study",
+    "fullDefinition": "1. the Gemara (Amoraic commentary on Mishnah); 2. Talmudic learning; 3. tradition",
+    "etymology": "From גמר 'to complete, finish'",
+    "examples": "גמרא גמירי - they learned by tradition",
+    "source": "DJBA"
+  },
+  "משנה": {
+    "lemma": "מַתְנִיתָא",
+    "key": "משנה",
+    "pos": "noun",
+    "definition": "Mishnah, a teaching",
+    "fullDefinition": "1. the Mishnah; 2. a specific Mishnaic teaching; Aramaic: מתניתא/מתניתין",
+    "etymology": "From שנה 'to repeat, teach'",
+    "examples": "מתני׳ - abbreviation for our Mishnah",
+    "source": "DJBA"
+  },
+  "ברייתא": {
+    "lemma": "בָּרַיְתָא",
+    "key": "ברייתא",
+    "pos": "noun",
+    "definition": "Baraita, external Tannaitic teaching",
+    "fullDefinition": "Tannaitic teaching not included in the Mishnah; 'external' teaching",
+    "etymology": "From בר 'outside' + suffix",
+    "examples": "תניא בברייתא - it was taught in a Baraita",
+    "source": "DJBA"
+  },
+  "הלכה": {
+    "lemma": "הִלְכְתָא",
+    "key": "הלכה",
+    "pos": "noun",
+    "definition": "halacha, law, legal ruling",
+    "fullDefinition": "1. halacha, Jewish law; 2. legal ruling; 3. final decision",
+    "examples": "הלכתא כוותיה - the halacha is according to him",
+    "source": "DJBA"
+  },
+  "מילתא": {
+    "lemma": "מִילְתָא",
+    "key": "מילתא",
+    "pos": "noun",
+    "definition": "word, matter, thing, statement",
+    "fullDefinition": "1. word; 2. matter, thing; 3. statement; 4. case, situation",
+    "examples": "האי מילתא - this matter/thing",
+    "source": "DJBA"
+  },
+  "סברא": {
+    "lemma": "סְבָרָא",
+    "key": "סברא",
+    "pos": "noun",
+    "definition": "reasoning, logic, opinion",
+    "fullDefinition": "1. logical reasoning; 2. opinion; 3. supposition",
+    "etymology": "From סבר 'to think, reason'",
+    "examples": "סברא הוא - it is logical reasoning",
+    "source": "DJBA"
+  },
+  "קשיא": {
+    "lemma": "קַשְׁיָא",
+    "key": "קשיא",
+    "pos": "noun/adjective",
+    "definition": "difficulty, objection, hard",
+    "fullDefinition": "1. difficulty (remains unresolved); 2. objection; technical term for unresolved contradiction",
+    "talmudic_usage": "Indicates unresolved difficulty",
+    "examples": "קשיא - it remains a difficulty (unresolved)",
+    "source": "DJBA"
+  },
+  "תיובתא": {
+    "lemma": "תְּיוּבְתָּא",
+    "key": "תיובתא",
+    "pos": "noun",
+    "definition": "refutation, decisive objection",
+    "fullDefinition": "Decisive refutation that defeats an opinion (stronger than קשיא)",
+    "talmudic_usage": "Technical term for definitive refutation",
+    "examples": "תיובתא דרב - refutation of Rav's opinion",
+    "source": "DJBA"
+  },
+  "שמעתא": {
+    "lemma": "שְׁמַעְתָּא",
+    "key": "שמעתא",
+    "pos": "noun",
+    "definition": "teaching, tradition, sugya",
+    "fullDefinition": "1. oral teaching; 2. a Talmudic passage/discussion (sugya)",
+    "etymology": "From שמע 'to hear'",
+    "examples": "הני שמעתתא - these teachings",
+    "source": "DJBA"
+  },
+  "פירכא": {
+    "lemma": "פִּירְכָא",
+    "key": "פירכא",
+    "pos": "noun",
+    "definition": "refutation, objection",
+    "fullDefinition": "Objection or refutation (especially to a kal vachomer argument)",
+    "examples": "איכא למיפרך - there is room to object",
+    "source": "DJBA"
+  },
+  "טעמא": {
+    "lemma": "טַעְמָא",
+    "key": "טעמא",
+    "pos": "noun",
+    "definition": "reason, rationale, taste",
+    "fullDefinition": "1. reason, rationale; 2. taste; 3. meaning",
+    "examples": "מאי טעמא - what is the reason?",
+    "source": "DJBA"
+  },
+  "דינא": {
+    "lemma": "דִּינָא",
+    "key": "דינא",
+    "pos": "noun",
+    "definition": "law, judgment, court case",
+    "fullDefinition": "1. law; 2. judgment, verdict; 3. court case; 4. justice",
+    "examples": "דינא דמלכותא דינא - the law of the kingdom is the law",
+    "source": "DJBA"
+  },
+  "עלמא": {
+    "lemma": "עָלְמָא",
+    "key": "עלמא",
+    "pos": "noun",
+    "definition": "world, everyone, people",
+    "fullDefinition": "1. world; 2. everyone, people in general; 3. eternity",
+    "examples": "כולי עלמא - everyone; האי עלמא - this world",
+    "source": "DJBA"
+  },
+  "גברא": {
+    "lemma": "גַּבְרָא",
+    "key": "גברא",
+    "pos": "noun",
+    "definition": "man, person, someone",
+    "fullDefinition": "1. man; 2. person; 3. someone (indefinite); 4. husband",
+    "examples": "גברא רבה - great man; האי גברא - this man",
+    "source": "DJBA"
+  },
+  "איתתא": {
+    "lemma": "אִיתְּתָא",
+    "key": "איתתא",
+    "pos": "noun",
+    "definition": "woman, wife",
+    "fullDefinition": "1. woman; 2. wife",
+    "examples": "האי איתתא - this woman",
+    "source": "DJBA"
+  },
+  "ביתא": {
+    "lemma": "בֵּיתָא",
+    "key": "ביתא",
+    "pos": "noun",
+    "definition": "house, home, building",
+    "fullDefinition": "1. house; 2. home; 3. household; 4. temple (בי כנישתא = synagogue)",
+    "examples": "בי רב - the house/school of Rav",
+    "source": "DJBA"
+  },
+  "מאנא": {
+    "lemma": "מָאנָא",
+    "key": "מאנא",
+    "pos": "noun",
+    "definition": "vessel, utensil, tool",
+    "fullDefinition": "1. vessel; 2. utensil; 3. tool; 4. garment",
+    "examples": "מאני דחרסא - earthenware vessels",
+    "source": "DJBA"
+  },
+  "ממונא": {
+    "lemma": "מָמוֹנָא",
+    "key": "ממונא",
+    "pos": "noun",
+    "definition": "money, property, wealth",
+    "fullDefinition": "1. money; 2. property; 3. monetary matters (vs. איסורא ritual matters)",
+    "examples": "דיני ממונות - monetary laws",
+    "source": "DJBA"
+  },
+  "איסורא": {
+    "lemma": "אִיסּוּרָא",
+    "key": "איסורא",
+    "pos": "noun",
+    "definition": "prohibition, forbidden thing",
+    "fullDefinition": "1. prohibition; 2. forbidden thing; 3. ritual/religious matters (vs. ממונא monetary)",
+    "examples": "דיני איסור והיתר - laws of forbidden and permitted",
+    "source": "DJBA"
+  },
+  "היתרא": {
+    "lemma": "הֶיתֵּרָא",
+    "key": "היתרא",
+    "pos": "noun",
+    "definition": "permission, permitted thing",
+    "fullDefinition": "1. that which is permitted; 2. permission",
+    "examples": "איסור והיתר - forbidden and permitted",
+    "source": "DJBA"
+  },
+  "קמא": {
+    "lemma": "קַמָּא",
+    "key": "קמא",
+    "pos": "adjective",
+    "definition": "first, former, earlier",
+    "fullDefinition": "1. first; 2. former; 3. earlier mentioned",
+    "examples": "תנא קמא - the first Tanna; לישנא קמא - the first version",
+    "source": "DJBA"
+  },
+  "בתרא": {
+    "lemma": "בַּתְרָא",
+    "key": "בתרא",
+    "pos": "adjective",
+    "definition": "last, latter, later",
+    "fullDefinition": "1. last; 2. latter; 3. later mentioned",
+    "examples": "בבא בתרא - the Last Gate; לישנא בתרא - the latter version",
+    "source": "DJBA"
+  },
+  "רבא": {
+    "lemma": "רַבָּא",
+    "key": "רבא",
+    "pos": "adjective",
+    "definition": "great, large, important",
+    "fullDefinition": "1. great; 2. large; 3. important; 4. senior (title: Rava)",
+    "examples": "גברא רבא - great man; תלמידא רבא - great student",
+    "source": "DJBA"
+  },
+  "זוטא": {
+    "lemma": "זוּטָא",
+    "key": "זוטא",
+    "pos": "adjective",
+    "definition": "small, minor, younger",
+    "fullDefinition": "1. small; 2. minor; 3. younger (title: Zuta)",
+    "examples": "רב זוטא - Rav Zuta (the younger)",
+    "source": "DJBA"
+  },
+  "השתא": {
+    "lemma": "הַשְׁתָּא",
+    "key": "השתא",
+    "pos": "adverb",
+    "definition": "now, at present, currently",
+    "fullDefinition": "1. now; 2. at this point; 3. currently",
+    "examples": "השתא דאתית להכי - now that you have come to this",
+    "source": "DJBA"
+  },
+  "התם": {
+    "lemma": "הָתָם",
+    "key": "התם",
+    "pos": "adverb",
+    "definition": "there, in that place, in that case",
+    "fullDefinition": "1. there; 2. in that Mishnah/source; 3. in that case",
+    "examples": "התם אמרינן - there we say; מאי שנא התם - what is different there?",
+    "source": "DJBA"
+  },
+  "הכא": {
+    "lemma": "הָכָא",
+    "key": "הכא",
+    "pos": "adverb",
+    "definition": "here, in this place, in this case",
+    "fullDefinition": "1. here; 2. in this Mishnah/source; 3. in this case",
+    "examples": "הכא נמי - here also; מאי שנא הכא - what is different here?",
+    "source": "DJBA"
+  },
+  "לקמן": {
+    "lemma": "לְקַמָּן",
+    "key": "לקמן",
+    "pos": "adverb",
+    "definition": "below, later, further on",
+    "fullDefinition": "Below/later in the text (opposite of לעיל)",
+    "examples": "כדלקמן - as below",
+    "source": "DJBA"
+  },
+  "לעיל": {
+    "lemma": "לְעֵיל",
+    "key": "לעיל",
+    "pos": "adverb",
+    "definition": "above, earlier, previously",
+    "fullDefinition": "Above/earlier in the text (opposite of לקמן)",
+    "examples": "כדלעיל - as above",
+    "source": "DJBA"
+  },
+  "נמי": {
+    "lemma": "נָמֵי",
+    "key": "נמי",
+    "pos": "adverb",
+    "definition": "also, too, likewise",
+    "fullDefinition": "Also, too, likewise (very common in Talmud)",
+    "examples": "הכא נמי - here also; תניא נמי הכי - it was also taught thus",
+    "source": "DJBA"
+  },
+  "אלא": {
+    "lemma": "אֶלָּא",
+    "key": "אלא",
+    "pos": "conjunction",
+    "definition": "but rather, except, only",
+    "fullDefinition": "1. but rather; 2. except; 3. only; 4. surely (rhetorical)",
+    "examples": "אלא מאי - but what then?; אלא הכי קאמר - but rather he means this",
+    "source": "DJBA"
+  },
+  "דילמא": {
+    "lemma": "דִּילְמָא",
+    "key": "דילמא",
+    "pos": "adverb",
+    "definition": "perhaps, maybe, lest",
+    "fullDefinition": "1. perhaps, maybe; 2. lest (introducing concern)",
+    "examples": "דילמא אתי למיטעי - lest one come to err",
+    "source": "DJBA"
+  },
+  "למאי": {
+    "lemma": "לְמַאי",
+    "key": "למאי",
+    "pos": "interrogative",
+    "definition": "for what, why",
+    "fullDefinition": "For what (purpose), why",
+    "examples": "למאי נפקא מינה - what practical difference does it make?",
+    "source": "DJBA"
+  },
+  "היכי": {
+    "lemma": "הֵיכִי",
+    "key": "היכי",
+    "pos": "interrogative",
+    "definition": "how, in what way",
+    "fullDefinition": "How, in what manner (interrogative)",
+    "examples": "היכי דמי - how is it?; what case are we discussing?",
+    "source": "DJBA"
+  },
+  "מאי": {
+    "lemma": "מַאי",
+    "key": "מאי",
+    "pos": "interrogative",
+    "definition": "what, which",
+    "fullDefinition": "What, which (very common interrogative)",
+    "examples": "מאי טעמא - what is the reason?; מאי שנא - what is different?",
+    "source": "DJBA"
+  },
+  "היינו": {
+    "lemma": "הַיְינוּ",
+    "key": "היינו",
+    "pos": "expression",
+    "definition": "that is, this is the same as",
+    "fullDefinition": "1. that is; 2. this is identical to; 3. explains equivalence",
+    "examples": "היינו הך - that is the same thing",
+    "source": "DJBA"
+  },
+  "פשיטא": {
+    "lemma": "פְּשִׁיטָא",
+    "key": "פשיטא",
+    "pos": "expression",
+    "definition": "it is obvious, self-evident",
+    "fullDefinition": "It is obvious/self-evident (often introduces objection: why state the obvious?)",
+    "examples": "פשיטא! - Obviously!; מהו דתימא...קא משמע לן - you might have thought...it teaches us",
+    "source": "DJBA"
+  },
+  "קמשמע לן": {
+    "lemma": "קָא מַשְׁמַע לָן",
+    "key": "קמשמע לן",
+    "pos": "expression",
+    "definition": "it teaches us, it informs us",
+    "fullDefinition": "It teaches us (response to פשיטא objection)",
+    "examples": "קמ״ל - abbreviation; it teaches us something not obvious",
+    "source": "DJBA"
+  },
+  "מנא הני מילי": {
+    "lemma": "מְנָא הָנֵי מִילֵּי",
+    "key": "מנא הני מילי",
+    "pos": "expression",
+    "definition": "from where are these words (derived)?",
+    "fullDefinition": "From where do we derive this? (asks for scriptural source)",
+    "examples": "מנה״מ דכתיב - from where? as it is written...",
+    "source": "DJBA"
+  },
+  "שאני": {
+    "lemma": "שָׁאנֵי",
+    "key": "שאני",
+    "pos": "expression",
+    "definition": "it is different, an exception",
+    "fullDefinition": "It is different (introduces distinction to resolve contradiction)",
+    "examples": "התם שאני - there it is different (because...)",
+    "source": "DJBA"
+  },
+  "תיקו": {
+    "lemma": "תֵּיקוּ",
+    "key": "תיקו",
+    "pos": "expression",
+    "definition": "let it stand (unresolved)",
+    "fullDefinition": "The question remains unresolved; traditionally: תשבי יתרץ קושיות ואבעיות",
+    "examples": "תיקו - the matter remains undecided",
+    "source": "DJBA"
+  },
+  "לישנא": {
+    "lemma": "לִישָּׁנָא",
+    "key": "לישנא",
+    "pos": "noun",
+    "definition": "version, language, wording",
+    "fullDefinition": "1. version (of a teaching); 2. language; 3. wording",
+    "examples": "לישנא קמא - first version; לישנא אחרינא - another version",
+    "source": "DJBA"
+  },
+  "סתמא": {
+    "lemma": "סְתָמָא",
+    "key": "סתמא",
+    "pos": "noun/adjective",
+    "definition": "anonymous, unattributed, plain",
+    "fullDefinition": "1. anonymous (teaching); 2. unattributed; 3. plain, without specification",
+    "examples": "סתם משנה - anonymous Mishnah; סתמא דתלמודא - the anonymous voice of the Talmud",
+    "source": "DJBA"
+  },
+  "אי": {
+    "lemma": "אִי",
+    "key": "אי",
+    "pos": "conjunction",
+    "definition": "if, whether",
+    "fullDefinition": "1. if (conditional); 2. whether (indirect question); 3. or (אי...אי)",
+    "examples": "אי הכי - if so; אי נמי - or also",
+    "source": "DJBA"
+  },
+  "אף על גב": {
+    "lemma": "אַף עַל גַּב",
+    "key": "אף על גב",
+    "pos": "conjunction",
+    "definition": "even though, although",
+    "fullDefinition": "Even though, although (concessive)",
+    "examples": "אע״ג דאמר - even though he said",
+    "source": "DJBA"
+  },
+  "כיון": {
+    "lemma": "כֵּיוָן",
+    "key": "כיון",
+    "pos": "conjunction",
+    "definition": "since, because, when",
+    "fullDefinition": "1. since, because; 2. when, as soon as",
+    "examples": "כיון דאמר - since he said; כיון שאמר - when he said",
+    "source": "DJBA"
+  },
+  "משום": {
+    "lemma": "מִשּׁוּם",
+    "key": "משום",
+    "pos": "preposition",
+    "definition": "because of, on account of, in the name of",
+    "fullDefinition": "1. because of; 2. on account of; 3. in the name of (attribution)",
+    "examples": "משום רבי - in the name of Rabbi; משום דאמר - because he said",
+    "source": "DJBA"
+  },
+  "למימרא": {
+    "lemma": "לְמֵימְרָא",
+    "key": "למימרא",
+    "pos": "expression",
+    "definition": "is it to say? does this mean?",
+    "fullDefinition": "Is this to say? Does this imply? (introduces inference for examination)",
+    "examples": "למימרא דכולי עלמא - is it to say that everyone...",
+    "source": "DJBA"
+  },
+  "מכלל": {
+    "lemma": "מִכְּלָל",
+    "key": "מכלל",
+    "pos": "expression",
+    "definition": "from the general (we infer)",
+    "fullDefinition": "From the totality/implication (logical inference technique)",
+    "examples": "מכלל דאמר - from this we infer that he said",
+    "source": "DJBA"
+  },
+  "מאן": {
+    "lemma": "מַאן",
+    "key": "מאן",
+    "pos": "interrogative",
+    "definition": "who, whoever",
+    "fullDefinition": "1. who? (interrogative); 2. whoever (relative)",
+    "examples": "מאן דאמר - whoever says; מאן תנא - who is the Tanna?",
+    "source": "DJBA"
+  },
+  "אידך": {
+    "lemma": "אִידַּךְ",
+    "key": "אידך",
+    "pos": "adjective",
+    "definition": "the other, another",
+    "fullDefinition": "The other, another (often in אידך גיסא - the other side)",
+    "examples": "אידך גיסא - on the other hand; ואידך - and the other (sage)?",
+    "source": "DJBA"
+  },
+  "חד": {
+    "lemma": "חַד",
+    "key": "חד",
+    "pos": "numeral/pronoun",
+    "definition": "one, someone, a certain",
+    "fullDefinition": "1. one; 2. someone; 3. a certain (person)",
+    "examples": "חד אמר - one said; חד מינייהו - one of them",
+    "source": "DJBA"
+  },
+  "תרי": {
+    "lemma": "תְּרֵי",
+    "key": "תרי",
+    "pos": "numeral",
+    "definition": "two",
+    "fullDefinition": "Two (Aramaic numeral)",
+    "examples": "תרי גברי - two men; תרווייהו - both of them",
+    "source": "DJBA"
+  },
+  "תלת": {
+    "lemma": "תְּלָת",
+    "key": "תלת",
+    "pos": "numeral",
+    "definition": "three",
+    "fullDefinition": "Three (Aramaic numeral)",
+    "examples": "תלתא - three; תלת מילי - three things",
+    "source": "DJBA"
+  },
+  "ארבע": {
+    "lemma": "אַרְבַּע",
+    "key": "ארבע",
+    "pos": "numeral",
+    "definition": "four",
+    "fullDefinition": "Four (Aramaic numeral)",
+    "examples": "ארבע מילי - four things; ארבעה - four",
+    "source": "DJBA"
+  },
+  "פלוגתא": {
+    "lemma": "פְּלוּגְתָּא",
+    "key": "פלוגתא",
+    "pos": "noun",
+    "definition": "dispute, disagreement, controversy",
+    "fullDefinition": "Dispute, disagreement (especially between sages)",
+    "examples": "פלוגתא דרבי ורבנן - dispute between Rabbi and the Sages",
+    "source": "DJBA"
+  },
+  "מחלוקת": {
+    "lemma": "מַחֲלוֹקֶת",
+    "key": "מחלוקת",
+    "pos": "noun",
+    "definition": "dispute, controversy, disagreement",
+    "fullDefinition": "Dispute, controversy (often במחלוקת שנויה - it is taught in dispute)",
+    "examples": "מחלוקת ואחר כך סתם - dispute and then anonymous = halakha follows anonymous",
+    "source": "DJBA"
+  },
+  "יליף": {
+    "lemma": "יָלֵיף",
+    "key": "יליף",
+    "pos": "verb",
+    "definition": "to derive, learn, infer",
+    "fullDefinition": "To derive (a law), learn from (a source); Peal participle used",
+    "examples": "מנא יליף - from where does he derive?; יליף לה מהכא - he derives it from here",
+    "source": "DJBA"
+  },
+  "נפקא מינה": {
+    "lemma": "נָפְקָא מִינַּהּ",
+    "key": "נפקא מינה",
+    "pos": "expression",
+    "definition": "practical difference, what comes out of it",
+    "fullDefinition": "What practical difference/result comes from it",
+    "examples": "מאי נפקא מינה - what practical difference does it make?",
+    "source": "DJBA"
+  },
+  "כולהו": {
+    "lemma": "כּוּלְּהוּ",
+    "key": "כולהו",
+    "pos": "pronoun",
+    "definition": "all of them",
+    "fullDefinition": "All of them",
+    "examples": "כולהו אמרי - they all say",
+    "source": "DJBA"
+  },
+  "דכולי עלמא": {
+    "lemma": "דְּכוּלֵּי עָלְמָא",
+    "key": "דכולי עלמא",
+    "pos": "expression",
+    "definition": "according to everyone",
+    "fullDefinition": "According to everyone's opinion, universally agreed",
+    "examples": "דכולי עלמא לא פליגי - according to everyone there is no dispute",
+    "source": "DJBA"
+  }
+}

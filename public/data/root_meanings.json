@@ -1,0 +1,3022 @@
+{
+  "נפק": {
+    "base": "go out",
+    "causative": "bring out",
+    "etymology": "Proto-Semitic *npq",
+    "cognates": {
+      "arabic": "nafaqa (spend)",
+      "akkadian": "napāqu"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 2847
+    },
+    "semanticField": "movement",
+    "notes": "Primary Aramaic verb for exit; Hebrew equivalent is יצא"
+  },
+  "יצא": {
+    "base": "go out",
+    "causative": "bring out",
+    "etymology": "Proto-Semitic *yṣʾ",
+    "cognates": {
+      "arabic": "kharaja",
+      "akkadian": "waṣû"
+    },
+    "frequency": {
+      "tanakh": 1069,
+      "talmud": 1523
+    },
+    "semanticField": "movement",
+    "notes": "Primary Hebrew verb for exit"
+  },
+  "עלל": {
+    "base": "enter",
+    "causative": "bring in",
+    "etymology": "Proto-Semitic *ʿll",
+    "cognates": {
+      "arabic": "ʿalla",
+      "syriac": "ʿal"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 1876
+    },
+    "semanticField": "movement",
+    "notes": "Aramaic; Hebrew equivalent is בוא"
+  },
+  "עיל": {
+    "base": "enter",
+    "causative": "bring in",
+    "etymology": "Variant of עלל",
+    "cognates": {
+      "syriac": "ʿal"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 543
+    },
+    "semanticField": "movement",
+    "notes": "Alternate Aramaic form"
+  },
+  "בוא": {
+    "base": "come/enter",
+    "causative": "bring",
+    "etymology": "Proto-Semitic *bwʾ",
+    "cognates": {
+      "arabic": "bāʾa",
+      "akkadian": "bâʾu"
+    },
+    "frequency": {
+      "tanakh": 2570,
+      "talmud": 892
+    },
+    "semanticField": "movement",
+    "notes": "Most common Hebrew entry verb"
+  },
+  "סלק": {
+    "base": "go up",
+    "causative": "raise/remove",
+    "etymology": "Proto-Semitic *slq",
+    "cognates": {
+      "arabic": "salaqa (climb)",
+      "syriac": "sleq"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 1234
+    },
+    "semanticField": "movement",
+    "notes": "Aramaic; Hebrew equivalent is עלה"
+  },
+  "עלה": {
+    "base": "go up",
+    "causative": "bring up",
+    "etymology": "Proto-Semitic *ʿly",
+    "cognates": {
+      "arabic": "ʿalā",
+      "akkadian": "elû"
+    },
+    "frequency": {
+      "tanakh": 894,
+      "talmud": 567
+    },
+    "semanticField": "movement",
+    "notes": "Hebrew ascent verb"
+  },
+  "נחת": {
+    "base": "descend",
+    "causative": "bring down",
+    "etymology": "Proto-Semitic *nḥt",
+    "cognates": {
+      "arabic": "naḥata (carve)",
+      "akkadian": "naḫātu"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 456
+    },
+    "semanticField": "movement",
+    "notes": "Aramaic descent"
+  },
+  "ירד": {
+    "base": "go down",
+    "causative": "bring down",
+    "etymology": "Proto-Semitic *yrd",
+    "cognates": {
+      "arabic": "warada",
+      "akkadian": "warādu"
+    },
+    "frequency": {
+      "tanakh": 382,
+      "talmud": 234
+    },
+    "semanticField": "movement",
+    "notes": "Hebrew descent verb"
+  },
+  "אתי": {
+    "base": "come",
+    "causative": "bring",
+    "etymology": "Proto-Semitic *ʾty",
+    "cognates": {
+      "arabic": "ʾatā",
+      "akkadian": "atû"
+    },
+    "frequency": {
+      "tanakh": 21,
+      "talmud": 1567
+    },
+    "semanticField": "movement",
+    "notes": "Common in both Hebrew and Aramaic"
+  },
+  "אזל": {
+    "base": "go",
+    "causative": "send",
+    "etymology": "Proto-Semitic *ʾzl",
+    "cognates": {
+      "arabic": "ʾazala",
+      "syriac": "ʾezal"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 2134
+    },
+    "semanticField": "movement",
+    "notes": "Primary Aramaic walking verb"
+  },
+  "הלך": {
+    "base": "walk/go",
+    "causative": "lead",
+    "etymology": "Proto-Semitic *hlk",
+    "cognates": {
+      "arabic": "halaka (perish)",
+      "akkadian": "alāku"
+    },
+    "frequency": {
+      "tanakh": 1554,
+      "talmud": 678
+    },
+    "semanticField": "movement",
+    "notes": "Hebrew walking verb; semantic shift in Arabic"
+  },
+  "רוץ": {
+    "base": "run",
+    "causative": "make run",
+    "etymology": "Proto-Semitic *rwṣ",
+    "cognates": {
+      "arabic": "rakaḍa",
+      "akkadian": "râṣu"
+    },
+    "frequency": {
+      "tanakh": 104,
+      "talmud": 89
+    },
+    "semanticField": "movement"
+  },
+  "שוב": {
+    "base": "return",
+    "causative": "bring back",
+    "etymology": "Proto-Semitic *θwb",
+    "cognates": {
+      "arabic": "thāba",
+      "akkadian": "târu"
+    },
+    "frequency": {
+      "tanakh": 1066,
+      "talmud": 543
+    },
+    "semanticField": "movement",
+    "notes": "Also means \"repent\" (תשובה)"
+  },
+  "נסע": {
+    "base": "travel/journey",
+    "causative": "move/transport",
+    "etymology": "Proto-Semitic *nsʿ",
+    "cognates": {
+      "arabic": "nasaʿa"
+    },
+    "frequency": {
+      "tanakh": 146,
+      "talmud": 78
+    },
+    "semanticField": "movement"
+  },
+  "עבר": {
+    "base": "pass/cross",
+    "causative": "transfer",
+    "etymology": "Proto-Semitic *ʿbr",
+    "cognates": {
+      "arabic": "ʿabara",
+      "akkadian": "ebēru"
+    },
+    "frequency": {
+      "tanakh": 559,
+      "talmud": 445
+    },
+    "semanticField": "movement",
+    "notes": "Root of \"Hebrew\" (עברי)"
+  },
+  "אמר": {
+    "base": "say",
+    "causative": "tell",
+    "etymology": "Proto-Semitic *ʾmr",
+    "cognates": {
+      "arabic": "ʾamara (command)",
+      "akkadian": "amāru (see)"
+    },
+    "frequency": {
+      "tanakh": 5316,
+      "talmud": 8934
+    },
+    "semanticField": "speech",
+    "notes": "Most common speech verb; semantic divergence in cognates"
+  },
+  "דבר": {
+    "base": "speak",
+    "causative": "speak",
+    "etymology": "Proto-Semitic *dbr",
+    "cognates": {
+      "arabic": "dabbara (manage)",
+      "akkadian": "dabābu"
+    },
+    "frequency": {
+      "tanakh": 1145,
+      "talmud": 567
+    },
+    "semanticField": "speech",
+    "notes": "More formal than אמר"
+  },
+  "קרא": {
+    "base": "call/read",
+    "causative": "proclaim",
+    "etymology": "Proto-Semitic *qrʾ",
+    "cognates": {
+      "arabic": "qaraʾa (read)",
+      "akkadian": "qarû"
+    },
+    "frequency": {
+      "tanakh": 739,
+      "talmud": 1234
+    },
+    "semanticField": "speech",
+    "notes": "Also means \"read\" - root of Quran"
+  },
+  "שמע": {
+    "base": "hear",
+    "causative": "announce/cause to hear",
+    "etymology": "Proto-Semitic *šmʿ",
+    "cognates": {
+      "arabic": "samiʿa",
+      "akkadian": "šemû"
+    },
+    "frequency": {
+      "tanakh": 1159,
+      "talmud": 2345
+    },
+    "semanticField": "speech",
+    "notes": "Shema prayer derives from this"
+  },
+  "ענה": {
+    "base": "answer",
+    "causative": "answer",
+    "etymology": "Proto-Semitic *ʿny",
+    "cognates": {
+      "arabic": "ʿanā",
+      "akkadian": "enû"
+    },
+    "frequency": {
+      "tanakh": 329,
+      "talmud": 456
+    },
+    "semanticField": "speech"
+  },
+  "שאל": {
+    "base": "ask",
+    "causative": "ask",
+    "etymology": "Proto-Semitic *šʾl",
+    "cognates": {
+      "arabic": "saʾala",
+      "akkadian": "šāʾilu"
+    },
+    "frequency": {
+      "tanakh": 176,
+      "talmud": 567
+    },
+    "semanticField": "speech",
+    "notes": "Also \"borrow\" - שאילה"
+  },
+  "צעק": {
+    "base": "cry out",
+    "causative": "cry out",
+    "etymology": "Proto-Semitic *ṣʿq",
+    "cognates": {
+      "arabic": "ṣaʿaqa"
+    },
+    "frequency": {
+      "tanakh": 73,
+      "talmud": 45
+    },
+    "semanticField": "speech"
+  },
+  "תני": {
+    "base": "teach/recite",
+    "causative": "teach",
+    "etymology": "From שנה (repeat)",
+    "cognates": {
+      "syriac": "tenā"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 4567
+    },
+    "semanticField": "speech",
+    "notes": "Tanna (תנא) derives from this root"
+  },
+  "מלל": {
+    "base": "speak",
+    "causative": "speak",
+    "etymology": "Proto-Semitic *mll",
+    "cognates": {
+      "akkadian": "malālu"
+    },
+    "frequency": {
+      "tanakh": 5,
+      "talmud": 234
+    },
+    "semanticField": "speech",
+    "notes": "Poetic/archaic; related to מלה (word)"
+  },
+  "ידע": {
+    "base": "know",
+    "causative": "inform/make known",
+    "etymology": "Proto-Semitic *ydʿ",
+    "cognates": {
+      "arabic": "wadaʿa",
+      "akkadian": "idû"
+    },
+    "frequency": {
+      "tanakh": 947,
+      "talmud": 1234
+    },
+    "semanticField": "cognition",
+    "notes": "Biblical דעת (knowledge)"
+  },
+  "חכם": {
+    "base": "be wise",
+    "causative": "make wise",
+    "etymology": "Proto-Semitic *ḥkm",
+    "cognates": {
+      "arabic": "ḥakama (judge)",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 137,
+      "talmud": 567
+    },
+    "semanticField": "cognition",
+    "notes": "חכם (sage), חכמה (wisdom)"
+  },
+  "סבר": {
+    "base": "think/suppose",
+    "causative": "explain",
+    "etymology": "Proto-Semitic *sbr",
+    "cognates": {
+      "arabic": "ṣabara (be patient)",
+      "syriac": "sbar"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 2345
+    },
+    "semanticField": "cognition",
+    "notes": "Talmudic \"סברא\" (reasoning)"
+  },
+  "חשב": {
+    "base": "think/reckon",
+    "causative": "regard as",
+    "etymology": "Proto-Semitic *ḥšb",
+    "cognates": {
+      "arabic": "ḥasaba",
+      "akkadian": "ḫasābu"
+    },
+    "frequency": {
+      "tanakh": 124,
+      "talmud": 234
+    },
+    "semanticField": "cognition",
+    "notes": "Also \"compute\" - modern חשבון"
+  },
+  "זכר": {
+    "base": "remember",
+    "causative": "remind",
+    "etymology": "Proto-Semitic *ḏkr",
+    "cognates": {
+      "arabic": "dhakara",
+      "akkadian": "zakāru"
+    },
+    "frequency": {
+      "tanakh": 233,
+      "talmud": 456
+    },
+    "semanticField": "cognition",
+    "notes": "זכרון (memory), יזכור (memorial)"
+  },
+  "שכח": {
+    "base": "forget",
+    "causative": "cause to forget",
+    "etymology": "Proto-Semitic *škḥ",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "mašû"
+    },
+    "frequency": {
+      "tanakh": 102,
+      "talmud": 234
+    },
+    "semanticField": "cognition"
+  },
+  "חזי": {
+    "base": "see",
+    "causative": "show",
+    "etymology": "Proto-Semitic *ḥzy",
+    "cognates": {
+      "arabic": "ḥazā",
+      "syriac": "ḥzā"
+    },
+    "frequency": {
+      "tanakh": 55,
+      "talmud": 1876
+    },
+    "semanticField": "cognition",
+    "notes": "Aramaic; Hebrew equivalent is ראה"
+  },
+  "למד": {
+    "base": "learn",
+    "causative": "teach",
+    "etymology": "Proto-Semitic *lmd",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "lamādu"
+    },
+    "frequency": {
+      "tanakh": 87,
+      "talmud": 2345
+    },
+    "semanticField": "learning",
+    "notes": "תלמוד derives from this root"
+  },
+  "גמר": {
+    "base": "complete/study",
+    "causative": "complete",
+    "etymology": "Proto-Semitic *gmr",
+    "cognates": {
+      "arabic": "jamara",
+      "akkadian": "gamāru"
+    },
+    "frequency": {
+      "tanakh": 5,
+      "talmud": 3456
+    },
+    "semanticField": "learning",
+    "notes": "גמרא (Gemara) derives from this"
+  },
+  "דרש": {
+    "base": "seek/expound",
+    "causative": "expound",
+    "etymology": "Proto-Semitic *drš",
+    "cognates": {
+      "arabic": "darasa (study)",
+      "akkadian": "darāšu"
+    },
+    "frequency": {
+      "tanakh": 165,
+      "talmud": 1234
+    },
+    "semanticField": "learning",
+    "notes": "מדרש (Midrash) derives from this"
+  },
+  "יליף": {
+    "base": "learn/derive",
+    "causative": "derive",
+    "etymology": "From אלף (teach)",
+    "cognates": {
+      "syriac": "yālep"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 1234
+    },
+    "semanticField": "learning",
+    "notes": "Talmudic derivation term"
+  },
+  "עבד": {
+    "base": "work/serve",
+    "causative": "cause to work",
+    "etymology": "Proto-Semitic *ʿbd",
+    "cognates": {
+      "arabic": "ʿabada (worship)",
+      "akkadian": "abādu"
+    },
+    "frequency": {
+      "tanakh": 799,
+      "talmud": 2345
+    },
+    "semanticField": "action",
+    "notes": "עבודה (work/worship), עבד (servant)"
+  },
+  "פעל": {
+    "base": "do/act",
+    "causative": "accomplish",
+    "etymology": "Proto-Semitic *pʿl",
+    "cognates": {
+      "arabic": "faʿala",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 57,
+      "talmud": 234
+    },
+    "semanticField": "action",
+    "notes": "פועל (verb/worker)"
+  },
+  "כתב": {
+    "base": "write",
+    "causative": "inscribe",
+    "etymology": "Proto-Semitic *ktb",
+    "cognates": {
+      "arabic": "kataba",
+      "akkadian": "katābu"
+    },
+    "frequency": {
+      "tanakh": 223,
+      "talmud": 567
+    },
+    "semanticField": "action",
+    "notes": "כתב (scripture), מכתב (letter)"
+  },
+  "שבר": {
+    "base": "break",
+    "causative": "shatter",
+    "etymology": "Proto-Semitic *θbr",
+    "cognates": {
+      "arabic": "thabara",
+      "akkadian": "šebēru"
+    },
+    "frequency": {
+      "tanakh": 148,
+      "talmud": 234
+    },
+    "semanticField": "action"
+  },
+  "פתח": {
+    "base": "open",
+    "causative": "open",
+    "etymology": "Proto-Semitic *ptḥ",
+    "cognates": {
+      "arabic": "fataḥa",
+      "akkadian": "petû"
+    },
+    "frequency": {
+      "tanakh": 165,
+      "talmud": 345
+    },
+    "semanticField": "action",
+    "notes": "פתח (opening), מפתח (key)"
+  },
+  "סגר": {
+    "base": "close",
+    "causative": "close",
+    "etymology": "Proto-Semitic *sgr",
+    "cognates": {
+      "arabic": "sajara",
+      "akkadian": "sekēru"
+    },
+    "frequency": {
+      "tanakh": 91,
+      "talmud": 234
+    },
+    "semanticField": "action"
+  },
+  "נתן": {
+    "base": "give",
+    "causative": "give",
+    "etymology": "Proto-Semitic *ntn",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "nadānu"
+    },
+    "frequency": {
+      "tanakh": 2014,
+      "talmud": 1234
+    },
+    "semanticField": "transfer",
+    "notes": "Pe-Nun verb; נ assimilates"
+  },
+  "יהב": {
+    "base": "give",
+    "causative": "give",
+    "etymology": "Proto-Semitic *yhb",
+    "cognates": {
+      "arabic": "wahaba",
+      "syriac": "yahb"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 1567
+    },
+    "semanticField": "transfer",
+    "notes": "Aramaic equivalent of נתן"
+  },
+  "לקח": {
+    "base": "take",
+    "causative": "take",
+    "etymology": "Proto-Semitic *lqḥ",
+    "cognates": {
+      "arabic": "laqiḥa (be fertilized)",
+      "akkadian": "leqû"
+    },
+    "frequency": {
+      "tanakh": 967,
+      "talmud": 567
+    },
+    "semanticField": "transfer"
+  },
+  "שקל": {
+    "base": "weigh/take",
+    "causative": "weigh",
+    "etymology": "Proto-Semitic *θql",
+    "cognates": {
+      "arabic": "thaqula (be heavy)",
+      "akkadian": "šaqālu"
+    },
+    "frequency": {
+      "tanakh": 22,
+      "talmud": 1234
+    },
+    "semanticField": "transfer",
+    "notes": "שקל (shekel currency)"
+  },
+  "נטל": {
+    "base": "take/lift",
+    "causative": "remove",
+    "etymology": "Proto-Semitic *nṭl",
+    "cognates": {
+      "syriac": "neṭal"
+    },
+    "frequency": {
+      "tanakh": 3,
+      "talmud": 567
+    },
+    "semanticField": "transfer"
+  },
+  "קבל": {
+    "base": "receive",
+    "causative": "accept",
+    "etymology": "Proto-Semitic *qbl",
+    "cognates": {
+      "arabic": "qabila",
+      "akkadian": "qabālu"
+    },
+    "frequency": {
+      "tanakh": 13,
+      "talmud": 2345
+    },
+    "semanticField": "transfer",
+    "notes": "קבלה (reception/Kabbalah)"
+  },
+  "היה": {
+    "base": "be/become",
+    "causative": "cause to be",
+    "etymology": "Proto-Semitic *hwy",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 3576,
+      "talmud": 1234
+    },
+    "semanticField": "existence",
+    "notes": "יהוה may derive from this root"
+  },
+  "הוה": {
+    "base": "be",
+    "causative": "cause to be",
+    "etymology": "Variant of היה",
+    "cognates": {
+      "syriac": "hwā"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 2345
+    },
+    "semanticField": "existence",
+    "notes": "Aramaic being verb"
+  },
+  "קום": {
+    "base": "stand/rise",
+    "causative": "establish",
+    "etymology": "Proto-Semitic *qwm",
+    "cognates": {
+      "arabic": "qāma",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 627,
+      "talmud": 1234
+    },
+    "semanticField": "existence",
+    "notes": "תקומה (resurrection), מקום (place)"
+  },
+  "יתב": {
+    "base": "sit/dwell",
+    "causative": "seat",
+    "etymology": "From ישב",
+    "cognates": {
+      "syriac": "yeteb"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 1567
+    },
+    "semanticField": "existence",
+    "notes": "Aramaic; Hebrew is ישב"
+  },
+  "ישב": {
+    "base": "sit/dwell",
+    "causative": "seat/settle",
+    "etymology": "Proto-Semitic *wθb",
+    "cognates": {
+      "arabic": "wathaba (jump)",
+      "akkadian": "wašābu"
+    },
+    "frequency": {
+      "tanakh": 1088,
+      "talmud": 567
+    },
+    "semanticField": "existence",
+    "notes": "ישיבה (yeshiva - sitting/academy)"
+  },
+  "חיה": {
+    "base": "live",
+    "causative": "revive",
+    "etymology": "Proto-Semitic *ḥyy",
+    "cognates": {
+      "arabic": "ḥayya",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 283,
+      "talmud": 456
+    },
+    "semanticField": "existence",
+    "notes": "חיים (life), לחיים (to life)"
+  },
+  "מות": {
+    "base": "die",
+    "causative": "kill",
+    "etymology": "Proto-Semitic *mwt",
+    "cognates": {
+      "arabic": "māta",
+      "akkadian": "mâtu"
+    },
+    "frequency": {
+      "tanakh": 845,
+      "talmud": 567
+    },
+    "semanticField": "existence",
+    "notes": "מות (death), מת (dead)"
+  },
+  "פטר": {
+    "base": "exempt/release",
+    "causative": "exempt",
+    "etymology": "Proto-Semitic *pṭr",
+    "cognates": {
+      "arabic": "faṭara (break fast)",
+      "akkadian": "paṭāru"
+    },
+    "frequency": {
+      "tanakh": 4,
+      "talmud": 2345
+    },
+    "semanticField": "legal",
+    "notes": "פטור (exempt) vs חייב (obligated)"
+  },
+  "חיב": {
+    "base": "be obligated/guilty",
+    "causative": "obligate",
+    "etymology": "Proto-Semitic *ḥwb",
+    "cognates": {
+      "arabic": "unknown",
+      "syriac": "ḥayab"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 3456
+    },
+    "semanticField": "legal",
+    "notes": "חיוב (obligation), חובה (duty)"
+  },
+  "שרי": {
+    "base": "permit/loosen",
+    "causative": "permit",
+    "etymology": "Proto-Semitic *śry",
+    "cognates": {
+      "syriac": "šrā"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 1567
+    },
+    "semanticField": "legal",
+    "notes": "Aramaic; Hebrew is התיר"
+  },
+  "גזר": {
+    "base": "cut/decree",
+    "causative": "decree",
+    "etymology": "Proto-Semitic *gzr",
+    "cognates": {
+      "arabic": "jazara",
+      "akkadian": "gazāru"
+    },
+    "frequency": {
+      "tanakh": 12,
+      "talmud": 567
+    },
+    "semanticField": "legal",
+    "notes": "גזירה (decree), גזירה שוה (hermeneutic rule)"
+  },
+  "דון": {
+    "base": "judge",
+    "causative": "judge",
+    "etymology": "Proto-Semitic *dyn",
+    "cognates": {
+      "arabic": "dāna",
+      "akkadian": "dânu"
+    },
+    "frequency": {
+      "tanakh": 187,
+      "talmud": 1234
+    },
+    "semanticField": "legal",
+    "notes": "דין (law), דיין (judge), בית דין (court)"
+  },
+  "פסק": {
+    "base": "decide/rule",
+    "causative": "decide",
+    "etymology": "Proto-Semitic *psq",
+    "cognates": {
+      "arabic": "fasaqa",
+      "syriac": "psaq"
+    },
+    "frequency": {
+      "tanakh": 4,
+      "talmud": 1234
+    },
+    "semanticField": "legal",
+    "notes": "פסק הלכה (halachic ruling)"
+  },
+  "תקן": {
+    "base": "fix/establish",
+    "causative": "repair",
+    "etymology": "Proto-Semitic *tqn",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "takānu"
+    },
+    "frequency": {
+      "tanakh": 3,
+      "talmud": 567
+    },
+    "semanticField": "legal",
+    "notes": "תקנה (enactment), תיקון (repair)"
+  },
+  "אהב": {
+    "base": "love",
+    "causative": "make beloved",
+    "etymology": "Proto-Semitic *ʾhb",
+    "cognates": {
+      "arabic": "ḥabba",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 251,
+      "talmud": 234
+    },
+    "semanticField": "emotion",
+    "notes": "אהבה (love)"
+  },
+  "שנא": {
+    "base": "hate",
+    "causative": "cause hatred",
+    "etymology": "Proto-Semitic *śnʾ",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 148,
+      "talmud": 123
+    },
+    "semanticField": "emotion",
+    "notes": "שנאה (hatred)"
+  },
+  "רצה": {
+    "base": "desire/accept",
+    "causative": "please",
+    "etymology": "Proto-Semitic *rṣy",
+    "cognates": {
+      "arabic": "raḍiya",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 56,
+      "talmud": 234
+    },
+    "semanticField": "emotion",
+    "notes": "רצון (will/desire)"
+  },
+  "ירא": {
+    "base": "fear",
+    "causative": "frighten",
+    "etymology": "Proto-Semitic *yrʾ",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 435,
+      "talmud": 345
+    },
+    "semanticField": "emotion",
+    "notes": "יראה (fear/awe), יראת שמים"
+  },
+  "שמח": {
+    "base": "rejoice",
+    "causative": "make happy",
+    "etymology": "Proto-Semitic *śmḥ",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 156,
+      "talmud": 234
+    },
+    "semanticField": "emotion",
+    "notes": "שמחה (joy), simcha"
+  },
+  "בכה": {
+    "base": "weep",
+    "causative": "cause to weep",
+    "etymology": "Proto-Semitic *bky",
+    "cognates": {
+      "arabic": "bakā",
+      "akkadian": "bakû"
+    },
+    "frequency": {
+      "tanakh": 114,
+      "talmud": 123
+    },
+    "semanticField": "emotion"
+  },
+  "כעס": {
+    "base": "be angry",
+    "causative": "anger",
+    "etymology": "Proto-Semitic *kʿś",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 55,
+      "talmud": 89
+    },
+    "semanticField": "emotion",
+    "notes": "כעס (anger)"
+  },
+  "אכל": {
+    "base": "eat",
+    "causative": "feed",
+    "etymology": "Proto-Semitic *ʾkl",
+    "cognates": {
+      "arabic": "ʾakala",
+      "akkadian": "akālu"
+    },
+    "frequency": {
+      "tanakh": 820,
+      "talmud": 1234
+    },
+    "semanticField": "physical",
+    "notes": "אוכל (food), מאכל (food item)"
+  },
+  "שתה": {
+    "base": "drink",
+    "causative": "give to drink",
+    "etymology": "Proto-Semitic *šty",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "šatû"
+    },
+    "frequency": {
+      "tanakh": 217,
+      "talmud": 456
+    },
+    "semanticField": "physical",
+    "notes": "משתה (feast/drinking party)"
+  },
+  "שכב": {
+    "base": "lie down",
+    "causative": "lay down",
+    "etymology": "Proto-Semitic *škb",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "šakābu"
+    },
+    "frequency": {
+      "tanakh": 213,
+      "talmud": 345
+    },
+    "semanticField": "physical",
+    "notes": "Also euphemism for intimacy"
+  },
+  "ישן": {
+    "base": "sleep / be old",
+    "causative": "put to sleep / age",
+    "etymology": "Proto-Semitic *yšn",
+    "cognates": {
+      "arabic": "wasina",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 27,
+      "talmud": 357
+    },
+    "semanticField": "physical",
+    "notes": "HOMOGRAPH: 1) ישן sleep (שינה), 2) ישן be old (yashan). Connection: old things \"sleep\""
+  },
+  "לבש": {
+    "base": "wear/dress",
+    "causative": "clothe",
+    "etymology": "Proto-Semitic *lbš",
+    "cognates": {
+      "arabic": "labisa",
+      "akkadian": "labāšu"
+    },
+    "frequency": {
+      "tanakh": 112,
+      "talmud": 234
+    },
+    "semanticField": "physical",
+    "notes": "מלבוש (garment)"
+  },
+  "רחץ": {
+    "base": "wash",
+    "causative": "wash",
+    "etymology": "Proto-Semitic *rḥṣ",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "raḫāṣu"
+    },
+    "frequency": {
+      "tanakh": 72,
+      "talmud": 345
+    },
+    "semanticField": "physical"
+  },
+  "ברך": {
+    "base": "kneel/bless",
+    "causative": "bless",
+    "etymology": "Proto-Semitic *brk",
+    "cognates": {
+      "arabic": "bāraka",
+      "akkadian": "karābu"
+    },
+    "frequency": {
+      "tanakh": 398,
+      "talmud": 1567
+    },
+    "semanticField": "religious",
+    "notes": "ברכה (blessing), ברוך (blessed)"
+  },
+  "פלל": {
+    "base": "pray",
+    "causative": "intercede",
+    "etymology": "Proto-Semitic *pll",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 84,
+      "talmud": 567
+    },
+    "semanticField": "religious",
+    "notes": "תפילה (prayer)"
+  },
+  "שבח": {
+    "base": "praise",
+    "causative": "praise",
+    "etymology": "Proto-Semitic *šbḥ",
+    "cognates": {
+      "arabic": "sabbaḥa (glorify)",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 8,
+      "talmud": 234
+    },
+    "semanticField": "religious",
+    "notes": "שבח (praise)"
+  },
+  "חטא": {
+    "base": "sin/miss",
+    "causative": "cause to sin",
+    "etymology": "Proto-Semitic *ḥṭʾ",
+    "cognates": {
+      "arabic": "khaṭiʾa",
+      "akkadian": "ḫaṭû"
+    },
+    "frequency": {
+      "tanakh": 238,
+      "talmud": 345
+    },
+    "semanticField": "religious",
+    "notes": "חטא (sin), חטאת (sin offering)"
+  },
+  "סלח": {
+    "base": "forgive",
+    "causative": "forgive",
+    "etymology": "Proto-Semitic *slḥ",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 46,
+      "talmud": 123
+    },
+    "semanticField": "religious",
+    "notes": "סליחה (forgiveness), סליחות (penitential prayers)"
+  },
+  "כפר": {
+    "base": "atone/cover",
+    "causative": "atone",
+    "etymology": "Proto-Semitic *kpr",
+    "cognates": {
+      "arabic": "kafara (cover/deny)",
+      "akkadian": "kapāru"
+    },
+    "frequency": {
+      "tanakh": 102,
+      "talmud": 234
+    },
+    "semanticField": "religious",
+    "notes": "כיפור (atonement), Yom Kippur"
+  },
+  "טהר": {
+    "base": "be pure",
+    "causative": "purify",
+    "etymology": "Proto-Semitic *ṭhr",
+    "cognates": {
+      "arabic": "ṭahura",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 94,
+      "talmud": 1234
+    },
+    "semanticField": "religious",
+    "notes": "טהרה (purity), מקוה"
+  },
+  "טמא": {
+    "base": "be impure",
+    "causative": "defile",
+    "etymology": "Proto-Semitic *ṭmʾ",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 162,
+      "talmud": 1567
+    },
+    "semanticField": "religious",
+    "notes": "טומאה (impurity)"
+  },
+  "נגע": {
+    "base": "touch",
+    "causative": "touch",
+    "etymology": "Proto-Semitic *ngʿ",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 150,
+      "talmud": 234
+    },
+    "semanticField": "physical",
+    "weakType": "pe-nun",
+    "notes": "נגע (plague/affliction)"
+  },
+  "נגש": {
+    "base": "approach",
+    "causative": "bring near",
+    "etymology": "Proto-Semitic *ngš",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 125,
+      "talmud": 234
+    },
+    "semanticField": "movement",
+    "weakType": "pe-nun"
+  },
+  "נכה": {
+    "base": "strike",
+    "causative": "strike",
+    "etymology": "Proto-Semitic *nky",
+    "cognates": {
+      "arabic": "nakā",
+      "akkadian": "nakû"
+    },
+    "frequency": {
+      "tanakh": 501,
+      "talmud": 234
+    },
+    "semanticField": "action",
+    "weakType": "pe-nun"
+  },
+  "נפל": {
+    "base": "fall",
+    "causative": "drop/make fall",
+    "etymology": "Proto-Semitic *npl",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "napālu"
+    },
+    "frequency": {
+      "tanakh": 435,
+      "talmud": 345
+    },
+    "semanticField": "movement",
+    "weakType": "pe-nun"
+  },
+  "נצל": {
+    "base": "be saved",
+    "causative": "rescue",
+    "etymology": "Proto-Semitic *nṣl",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "naṣālu"
+    },
+    "frequency": {
+      "tanakh": 213,
+      "talmud": 345
+    },
+    "semanticField": "action",
+    "weakType": "pe-nun"
+  },
+  "נצר": {
+    "base": "watch/guard",
+    "causative": "protect",
+    "etymology": "Proto-Semitic *nṣr",
+    "cognates": {
+      "arabic": "naṣara (help)",
+      "akkadian": "naṣāru"
+    },
+    "frequency": {
+      "tanakh": 63,
+      "talmud": 123
+    },
+    "semanticField": "action",
+    "weakType": "pe-nun",
+    "notes": "נוצרי (Nazarene/Christian)"
+  },
+  "נשך": {
+    "base": "bite",
+    "causative": "bite",
+    "etymology": "Proto-Semitic *nšk",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "našāku"
+    },
+    "frequency": {
+      "tanakh": 14,
+      "talmud": 56
+    },
+    "semanticField": "physical",
+    "weakType": "pe-nun",
+    "notes": "Also \"interest\" (usury)"
+  },
+  "נטש": {
+    "base": "abandon",
+    "causative": "forsake",
+    "etymology": "Proto-Semitic *nṭš",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 40,
+      "talmud": 45
+    },
+    "semanticField": "action",
+    "weakType": "pe-nun"
+  },
+  "שים": {
+    "base": "put/place",
+    "causative": "set",
+    "etymology": "Proto-Semitic *śym",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "šâmu"
+    },
+    "frequency": {
+      "tanakh": 585,
+      "talmud": 456
+    },
+    "semanticField": "action",
+    "weakType": "hollow"
+  },
+  "בין": {
+    "base": "between",
+    "causative": "distinguish",
+    "etymology": "Proto-Semitic *byn",
+    "cognates": {
+      "arabic": "bayna",
+      "akkadian": "bânu"
+    },
+    "frequency": {
+      "tanakh": 409,
+      "talmud": 678
+    },
+    "semanticField": "cognition",
+    "weakType": "hollow",
+    "notes": "Both verb \"understand\" and preposition \"between\""
+  },
+  "דין": {
+    "base": "judge",
+    "causative": "judge",
+    "etymology": "Proto-Semitic *dyn",
+    "cognates": {
+      "arabic": "dāna (condemn)",
+      "akkadian": "dânu"
+    },
+    "frequency": {
+      "tanakh": 24,
+      "talmud": 2345
+    },
+    "semanticField": "legal",
+    "weakType": "hollow",
+    "notes": "Core legal root; דין (law)"
+  },
+  "רום": {
+    "base": "be high",
+    "causative": "raise/lift",
+    "etymology": "Proto-Semitic *rwm",
+    "cognates": {
+      "arabic": "rāma",
+      "akkadian": "râmu"
+    },
+    "frequency": {
+      "tanakh": 197,
+      "talmud": 234
+    },
+    "semanticField": "movement",
+    "weakType": "hollow"
+  },
+  "שוט": {
+    "base": "go about",
+    "causative": "roam",
+    "etymology": "Proto-Semitic *šwṭ",
+    "cognates": {
+      "arabic": "sāṭa",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 13,
+      "talmud": 78
+    },
+    "semanticField": "movement",
+    "weakType": "hollow"
+  },
+  "גור": {
+    "base": "sojourn/dwell",
+    "causative": "dwell",
+    "etymology": "Proto-Semitic *gwr",
+    "cognates": {
+      "arabic": "jāra (neighbor)",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 164,
+      "talmud": 234
+    },
+    "semanticField": "existence",
+    "weakType": "hollow",
+    "notes": "גר (stranger/convert)"
+  },
+  "נוח": {
+    "base": "rest",
+    "causative": "give rest",
+    "etymology": "Proto-Semitic *nwḥ",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "nâḫu"
+    },
+    "frequency": {
+      "tanakh": 144,
+      "talmud": 234
+    },
+    "semanticField": "existence",
+    "weakType": "hollow",
+    "notes": "נח (Noah), מנוחה (rest)"
+  },
+  "כון": {
+    "base": "be firm",
+    "causative": "establish",
+    "etymology": "Proto-Semitic *kwn",
+    "cognates": {
+      "arabic": "kāna (be)",
+      "akkadian": "kânu"
+    },
+    "frequency": {
+      "tanakh": 219,
+      "talmud": 234
+    },
+    "semanticField": "existence",
+    "weakType": "hollow",
+    "notes": "הכנה (preparation), כונה (intention)"
+  },
+  "טוב": {
+    "base": "be good",
+    "causative": "make good",
+    "etymology": "Proto-Semitic *ṭwb",
+    "cognates": {
+      "arabic": "ṭāba",
+      "akkadian": "ṭâbu"
+    },
+    "frequency": {
+      "tanakh": 559,
+      "talmud": 456
+    },
+    "semanticField": "emotion",
+    "weakType": "hollow"
+  },
+  "סבב": {
+    "base": "turn/surround",
+    "causative": "surround",
+    "etymology": "Proto-Semitic *sbb",
+    "cognates": {
+      "arabic": "sabba",
+      "akkadian": "sabābu"
+    },
+    "frequency": {
+      "tanakh": 163,
+      "talmud": 234
+    },
+    "semanticField": "movement",
+    "weakType": "geminate"
+  },
+  "חלל": {
+    "base": "profane/begin",
+    "causative": "profane",
+    "etymology": "Proto-Semitic *ḥll",
+    "cognates": {
+      "arabic": "ḥalla",
+      "akkadian": "ḫalālu"
+    },
+    "frequency": {
+      "tanakh": 141,
+      "talmud": 567
+    },
+    "semanticField": "religious",
+    "weakType": "geminate",
+    "notes": "Both \"profane\" and \"begin\" (התחיל)"
+  },
+  "קלל": {
+    "base": "be light/curse",
+    "causative": "curse",
+    "etymology": "Proto-Semitic *qll",
+    "cognates": {
+      "arabic": "qalla (be few)",
+      "akkadian": "qalālu"
+    },
+    "frequency": {
+      "tanakh": 82,
+      "talmud": 123
+    },
+    "semanticField": "speech",
+    "weakType": "geminate",
+    "notes": "קללה (curse), קל (light/easy)"
+  },
+  "גלל": {
+    "base": "roll",
+    "causative": "roll",
+    "etymology": "Proto-Semitic *gll",
+    "cognates": {
+      "arabic": "jalla",
+      "akkadian": "galālu"
+    },
+    "frequency": {
+      "tanakh": 18,
+      "talmud": 89
+    },
+    "semanticField": "movement",
+    "weakType": "geminate",
+    "notes": "גלגול (reincarnation), מגילה (scroll)"
+  },
+  "חקק": {
+    "base": "engrave/decree",
+    "causative": "engrave",
+    "etymology": "Proto-Semitic *ḥqq",
+    "cognates": {
+      "arabic": "ḥaqqa",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 19,
+      "talmud": 345
+    },
+    "semanticField": "legal",
+    "weakType": "geminate",
+    "notes": "חק (statute), חוקה (law)"
+  },
+  "שרר": {
+    "base": "rule",
+    "causative": "rule",
+    "etymology": "Proto-Semitic *śrr",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 6,
+      "talmud": 234
+    },
+    "semanticField": "legal",
+    "weakType": "geminate",
+    "notes": "שר (minister), שררה (authority)"
+  },
+  "רנן": {
+    "base": "sing/shout",
+    "causative": "sing",
+    "etymology": "Proto-Semitic *rnn",
+    "cognates": {
+      "arabic": "ranna",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 53,
+      "talmud": 89
+    },
+    "semanticField": "speech",
+    "weakType": "geminate",
+    "notes": "רנה (joyful song)"
+  },
+  "עשה": {
+    "base": "do/make",
+    "causative": "cause to do",
+    "etymology": "Proto-Semitic *ʿśy",
+    "cognates": {
+      "akkadian": "epēšu"
+    },
+    "frequency": {
+      "tanakh": 2632,
+      "talmud": 1234
+    },
+    "semanticField": "action",
+    "weakType": "lamed-he"
+  },
+  "ראה": {
+    "base": "see",
+    "causative": "show",
+    "etymology": "Proto-Semitic *rʾy",
+    "cognates": {
+      "arabic": "raʾā",
+      "akkadian": "amāru"
+    },
+    "frequency": {
+      "tanakh": 1311,
+      "talmud": 567
+    },
+    "semanticField": "cognition",
+    "weakType": "lamed-he"
+  },
+  "בנה": {
+    "base": "build",
+    "causative": "build",
+    "etymology": "Proto-Semitic *bny",
+    "cognates": {
+      "arabic": "banā",
+      "akkadian": "banû"
+    },
+    "frequency": {
+      "tanakh": 376,
+      "talmud": 345
+    },
+    "semanticField": "action",
+    "weakType": "lamed-he"
+  },
+  "קנה": {
+    "base": "acquire/buy",
+    "causative": "acquire",
+    "etymology": "Proto-Semitic *qny",
+    "cognates": {
+      "arabic": "qanā",
+      "akkadian": "qanû"
+    },
+    "frequency": {
+      "tanakh": 84,
+      "talmud": 789
+    },
+    "semanticField": "transfer",
+    "weakType": "lamed-he",
+    "notes": "קנין (acquisition/property)"
+  },
+  "פנה": {
+    "base": "turn",
+    "causative": "clear",
+    "etymology": "Proto-Semitic *pny",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "panû"
+    },
+    "frequency": {
+      "tanakh": 135,
+      "talmud": 234
+    },
+    "semanticField": "movement",
+    "weakType": "lamed-he",
+    "notes": "פנים (face), לפני (before)"
+  },
+  "כלה": {
+    "base": "finish/complete",
+    "causative": "complete",
+    "etymology": "Proto-Semitic *kly",
+    "cognates": {
+      "arabic": "kallā",
+      "akkadian": "kalû"
+    },
+    "frequency": {
+      "tanakh": 206,
+      "talmud": 345
+    },
+    "semanticField": "action",
+    "weakType": "lamed-he",
+    "notes": "Also \"destroy\""
+  },
+  "גלה": {
+    "base": "uncover/exile",
+    "causative": "reveal",
+    "etymology": "Proto-Semitic *gly",
+    "cognates": {
+      "arabic": "jalā",
+      "akkadian": "galû"
+    },
+    "frequency": {
+      "tanakh": 188,
+      "talmud": 567
+    },
+    "semanticField": "action",
+    "weakType": "lamed-he",
+    "notes": "גלות (exile), גילוי (revelation)"
+  },
+  "צפה": {
+    "base": "look/watch",
+    "causative": "foresee",
+    "etymology": "Proto-Semitic *ṣpy",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "ṣapû"
+    },
+    "frequency": {
+      "tanakh": 37,
+      "talmud": 234
+    },
+    "semanticField": "cognition",
+    "weakType": "lamed-he"
+  },
+  "כסה": {
+    "base": "cover",
+    "causative": "cover",
+    "etymology": "Proto-Semitic *ksy",
+    "cognates": {
+      "arabic": "kasā",
+      "akkadian": "kasû"
+    },
+    "frequency": {
+      "tanakh": 153,
+      "talmud": 234
+    },
+    "semanticField": "action",
+    "weakType": "lamed-he"
+  },
+  "שנה": {
+    "base": "repeat/change",
+    "causative": "change",
+    "etymology": "Proto-Semitic *θny",
+    "cognates": {
+      "arabic": "thanā (fold)",
+      "akkadian": "šanû"
+    },
+    "frequency": {
+      "tanakh": 23,
+      "talmud": 2345
+    },
+    "semanticField": "learning",
+    "weakType": "lamed-he",
+    "notes": "משנה (Mishnah), שנוי (change)"
+  },
+  "בעי": {
+    "base": "ask/want",
+    "causative": "require",
+    "etymology": "From Hebrew בקש",
+    "cognates": {
+      "syriac": "beʿā"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 3456
+    },
+    "semanticField": "speech",
+    "notes": "בעיא (question) - very common in Talmud"
+  },
+  "צבי": {
+    "base": "want/wish",
+    "causative": "want",
+    "etymology": "From Hebrew חפץ",
+    "cognates": {
+      "syriac": "ṣbā"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 1234
+    },
+    "semanticField": "emotion",
+    "notes": "Aramaic desire verb"
+  },
+  "מטי": {
+    "base": "reach/arrive",
+    "causative": "bring",
+    "etymology": "From Hebrew נגע",
+    "cognates": {
+      "syriac": "meṭā"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 567
+    },
+    "semanticField": "movement",
+    "notes": "מטי (reaches)"
+  },
+  "קאי": {
+    "base": "stand",
+    "causative": "establish",
+    "etymology": "From קום",
+    "cognates": {
+      "syriac": "qām"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 1567
+    },
+    "semanticField": "existence",
+    "notes": "קאי אמר (refers to what was said)"
+  },
+  "אית": {
+    "base": "there is",
+    "causative": "",
+    "etymology": "Aramaic existential",
+    "cognates": {
+      "syriac": "ʾīt"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 2345
+    },
+    "semanticField": "existence",
+    "notes": "Aramaic equivalent of יש"
+  },
+  "לית": {
+    "base": "there is not",
+    "causative": "",
+    "etymology": "Aramaic negative existential",
+    "cognates": {
+      "syriac": "layt"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 1234
+    },
+    "semanticField": "existence",
+    "notes": "Aramaic equivalent of אין"
+  },
+  "מנא": {
+    "base": "from where",
+    "causative": "",
+    "etymology": "From מן + הא",
+    "cognates": {
+      "syriac": "mennā"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 567
+    },
+    "semanticField": "speech",
+    "notes": "מנא לן (from where do we know)"
+  },
+  "היך": {
+    "base": "how",
+    "causative": "",
+    "etymology": "Aramaic interrogative",
+    "cognates": {
+      "syriac": "haykā"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 345
+    },
+    "semanticField": "speech",
+    "notes": "היכי (how/in what manner)"
+  },
+  "פשט": {
+    "base": "spread/explain",
+    "causative": "explain",
+    "etymology": "Proto-Semitic *pšṭ",
+    "cognates": {
+      "arabic": "basaṭa",
+      "akkadian": "pašāṭu"
+    },
+    "frequency": {
+      "tanakh": 43,
+      "talmud": 1234
+    },
+    "semanticField": "learning",
+    "notes": "פשיטא (obvious), פשט (plain meaning)"
+  },
+  "רמי": {
+    "base": "throw/pose",
+    "causative": "cast",
+    "etymology": "Proto-Semitic *rmy",
+    "cognates": {
+      "arabic": "ramā",
+      "syriac": "rmā"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 567
+    },
+    "semanticField": "action",
+    "notes": "רמי (poses contradiction)"
+  },
+  "תרץ": {
+    "base": "resolve/answer",
+    "causative": "resolve",
+    "etymology": "From תירוץ",
+    "cognates": {
+      "syriac": "trēṣ"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 1234
+    },
+    "semanticField": "learning",
+    "notes": "תירוץ (resolution/answer)"
+  },
+  "קשי": {
+    "base": "be difficult",
+    "causative": "make difficult",
+    "etymology": "Proto-Semitic *qšy",
+    "cognates": {
+      "arabic": "qasiya",
+      "syriac": "qshā"
+    },
+    "frequency": {
+      "tanakh": 0,
+      "talmud": 1567
+    },
+    "semanticField": "learning",
+    "notes": "קושיא (difficulty/objection)"
+  },
+  "שמש": {
+    "base": "serve/use",
+    "causative": "use",
+    "etymology": "Proto-Semitic *šmš",
+    "cognates": {
+      "arabic": "šamasa (be sunny)",
+      "akkadian": "šamšu (sun)"
+    },
+    "frequency": {
+      "tanakh": 30,
+      "talmud": 567
+    },
+    "semanticField": "action",
+    "notes": "שמש (servant), תשמיש (use)"
+  },
+  "ברא": {
+    "base": "create",
+    "causative": "create",
+    "etymology": "Proto-Semitic *brʾ",
+    "cognates": {
+      "arabic": "baraʾa",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 54,
+      "talmud": 234
+    },
+    "semanticField": "religious",
+    "notes": "בראשית (Genesis), בריאה (creation)"
+  },
+  "יצר": {
+    "base": "form/fashion",
+    "causative": "form",
+    "etymology": "Proto-Semitic *yṣr",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "eṣēru"
+    },
+    "frequency": {
+      "tanakh": 64,
+      "talmud": 345
+    },
+    "semanticField": "action",
+    "notes": "יצר (inclination), יוצר (creator/potter)"
+  },
+  "ינק": {
+    "base": "suckle",
+    "causative": "nurse",
+    "etymology": "Proto-Semitic *ynq",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "enēqu"
+    },
+    "frequency": {
+      "tanakh": 32,
+      "talmud": 89
+    },
+    "semanticField": "physical"
+  },
+  "זרע": {
+    "base": "sow/seed",
+    "causative": "sow",
+    "etymology": "Proto-Semitic *ḏrʿ",
+    "cognates": {
+      "arabic": "dharaʿa",
+      "akkadian": "zarû"
+    },
+    "frequency": {
+      "tanakh": 56,
+      "talmud": 345
+    },
+    "semanticField": "action",
+    "notes": "זרע (seed/offspring)"
+  },
+  "קצר": {
+    "base": "harvest/reap",
+    "causative": "reap",
+    "etymology": "Proto-Semitic *qṣr",
+    "cognates": {
+      "arabic": "qaṣara",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 49,
+      "talmud": 234
+    },
+    "semanticField": "action",
+    "notes": "קציר (harvest)"
+  },
+  "שמר": {
+    "base": "guard/keep",
+    "causative": "guard",
+    "etymology": "Proto-Semitic *šmr",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "naṣāru"
+    },
+    "frequency": {
+      "tanakh": 469,
+      "talmud": 678
+    },
+    "semanticField": "action",
+    "notes": "שומר (guard), שמירה (watching)"
+  },
+  "ילד": {
+    "base": "give birth",
+    "causative": "beget",
+    "etymology": "Proto-Semitic *wld",
+    "cognates": {
+      "arabic": "walada",
+      "akkadian": "alādu"
+    },
+    "frequency": {
+      "tanakh": 498,
+      "talmud": 456
+    },
+    "semanticField": "physical",
+    "notes": "ילד (child), תולדות (generations)"
+  },
+  "נשא": {
+    "base": "marry/carry",
+    "causative": "marry",
+    "etymology": "Proto-Semitic *nśʾ",
+    "cognates": {
+      "arabic": "nasaʾa",
+      "akkadian": "našû"
+    },
+    "frequency": {
+      "tanakh": 654,
+      "talmud": 567
+    },
+    "semanticField": "transfer",
+    "weakType": "pe-nun",
+    "notes": "Also \"carry\" - נושא (subject)"
+  },
+  "גרש": {
+    "base": "drive out/divorce",
+    "causative": "divorce",
+    "etymology": "Proto-Semitic *grš",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 47,
+      "talmud": 567
+    },
+    "semanticField": "legal",
+    "notes": "גט (divorce document), גרושין (divorce)"
+  },
+  "ארש": {
+    "base": "betroth",
+    "causative": "betroth",
+    "etymology": "Proto-Semitic *ʾrś",
+    "cognates": {
+      "akkadian": "erēšu"
+    },
+    "frequency": {
+      "tanakh": 11,
+      "talmud": 345
+    },
+    "semanticField": "legal",
+    "notes": "ארוסין (betrothal)"
+  },
+  "קדש": {
+    "base": "betroth/sanctify",
+    "causative": "sanctify",
+    "etymology": "Proto-Semitic *qdš",
+    "cognates": {
+      "arabic": "qaddasa",
+      "akkadian": "qadāšu"
+    },
+    "frequency": {
+      "tanakh": 172,
+      "talmud": 2345
+    },
+    "semanticField": "religious",
+    "notes": "קידושין (marriage), קדוש (holy)"
+  },
+  "מכר": {
+    "base": "sell",
+    "causative": "sell",
+    "etymology": "Proto-Semitic *mkr",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "makāru"
+    },
+    "frequency": {
+      "tanakh": 80,
+      "talmud": 789
+    },
+    "semanticField": "transfer",
+    "notes": "מכירה (sale)"
+  },
+  "גנב": {
+    "base": "steal",
+    "causative": "steal",
+    "etymology": "Proto-Semitic *gnb",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 39,
+      "talmud": 567
+    },
+    "semanticField": "transfer",
+    "notes": "גנב (thief), גנבה (theft)"
+  },
+  "גזל": {
+    "base": "rob",
+    "causative": "rob",
+    "etymology": "Proto-Semitic *gzl",
+    "cognates": {
+      "arabic": "jazala",
+      "akkadian": "gazālu"
+    },
+    "frequency": {
+      "tanakh": 30,
+      "talmud": 456
+    },
+    "semanticField": "transfer",
+    "notes": "גזל (robbery) - open vs גנבה (stealth)"
+  },
+  "שכר": {
+    "base": "hire/rent",
+    "causative": "hire",
+    "etymology": "Proto-Semitic *śkr",
+    "cognates": {
+      "arabic": "shakara",
+      "akkadian": "agāru"
+    },
+    "frequency": {
+      "tanakh": 18,
+      "talmud": 567
+    },
+    "semanticField": "transfer",
+    "notes": "שכירות (rental), שכר (wages)"
+  },
+  "השל": {
+    "base": "borrow/lend",
+    "causative": "lend",
+    "etymology": "Proto-Semitic *šʾl",
+    "cognates": {
+      "arabic": "saʾala",
+      "akkadian": "šāʾilu"
+    },
+    "frequency": {
+      "tanakh": 176,
+      "talmud": 567
+    },
+    "semanticField": "transfer",
+    "notes": "הלואה (loan)"
+  },
+  "חסר": {
+    "base": "lack",
+    "causative": "cause to lack",
+    "etymology": "Proto-Semitic *ḥsr",
+    "cognates": {
+      "arabic": "ḥasira",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 23,
+      "talmud": 234
+    },
+    "semanticField": "existence",
+    "notes": "חסרון (lack/deficiency)"
+  },
+  "לחם": {
+    "base": "fight/bread",
+    "causative": "wage war",
+    "etymology": "Proto-Semitic *lḥm",
+    "cognates": {
+      "arabic": "laḥm (meat)",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 171,
+      "talmud": 234
+    },
+    "semanticField": "action",
+    "notes": "מלחמה (war), לחם (bread) - same root!"
+  },
+  "הרג": {
+    "base": "kill",
+    "causative": "kill",
+    "etymology": "Proto-Semitic *hrg",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 167,
+      "talmud": 345
+    },
+    "semanticField": "action",
+    "notes": "הרג vs רצח (murder)"
+  },
+  "רצח": {
+    "base": "murder",
+    "causative": "murder",
+    "etymology": "Proto-Semitic *rṣḥ",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 47,
+      "talmud": 234
+    },
+    "semanticField": "action",
+    "notes": "לא תרצח (do not murder)"
+  },
+  "כבש": {
+    "base": "conquer/subdue",
+    "causative": "conquer",
+    "etymology": "Proto-Semitic *kbš",
+    "cognates": {
+      "arabic": "kabasa",
+      "akkadian": "kabāsu"
+    },
+    "frequency": {
+      "tanakh": 15,
+      "talmud": 123
+    },
+    "semanticField": "action",
+    "notes": "כבוש (conquest)"
+  },
+  "נצח": {
+    "base": "be victorious",
+    "causative": "oversee",
+    "etymology": "Proto-Semitic *nṣḥ",
+    "cognates": {
+      "arabic": "naṣaḥa",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 65,
+      "talmud": 234
+    },
+    "semanticField": "action",
+    "notes": "נצחון (victory), מנצח (conductor)"
+  },
+  "חלה": {
+    "base": "be sick",
+    "causative": "make sick",
+    "etymology": "Proto-Semitic *ḥly",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 75,
+      "talmud": 345
+    },
+    "semanticField": "physical",
+    "weakType": "lamed-he",
+    "notes": "חולה (sick), חלה (challah bread)"
+  },
+  "רפא": {
+    "base": "heal",
+    "causative": "heal",
+    "etymology": "Proto-Semitic *rpʾ",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 69,
+      "talmud": 234
+    },
+    "semanticField": "physical",
+    "notes": "רפואה (medicine), רופא (doctor)"
+  },
+  "חזק": {
+    "base": "be strong",
+    "causative": "strengthen",
+    "etymology": "Proto-Semitic *ḥzq",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 290,
+      "talmud": 567
+    },
+    "semanticField": "physical",
+    "notes": "חזק (strong), חזקה (possession/presumption)"
+  },
+  "חלש": {
+    "base": "be weak",
+    "causative": "weaken",
+    "etymology": "Proto-Semitic *ḥlš",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 3,
+      "talmud": 123
+    },
+    "semanticField": "physical"
+  },
+  "שבע": {
+    "base": "be satisfied / swear",
+    "causative": "satisfy / adjure",
+    "etymology": "Proto-Semitic *śbʿ",
+    "cognates": {
+      "arabic": "shabiʿa (satisfy) / sabʿa (seven)",
+      "akkadian": "šebû"
+    },
+    "frequency": {
+      "tanakh": 283,
+      "talmud": 690
+    },
+    "semanticField": "physical",
+    "notes": "HOMOGRAPH: 1) שבע be satisfied, 2) שבע swear (שבועה oath). Seven (שבע) related to oath-taking"
+  },
+  "רעב": {
+    "base": "be hungry",
+    "causative": "starve",
+    "etymology": "Proto-Semitic *rʿb",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 17,
+      "talmud": 89
+    },
+    "semanticField": "physical",
+    "notes": "רעב (famine/hunger)"
+  },
+  "אהל": {
+    "base": "pitch tent",
+    "causative": "dwell in tent",
+    "etymology": "Proto-Semitic *ʾhl",
+    "cognates": {
+      "arabic": "ahl (family)",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 3,
+      "talmud": 45
+    },
+    "semanticField": "existence",
+    "weakType": "pe-aleph",
+    "notes": "אוהל (tent), אהל מועד"
+  },
+  "אסף": {
+    "base": "gather",
+    "causative": "gather in",
+    "etymology": "Proto-Semitic *ʾsp",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "esēpu"
+    },
+    "frequency": {
+      "tanakh": 200,
+      "talmud": 345
+    },
+    "semanticField": "action",
+    "weakType": "pe-aleph",
+    "notes": "אסיפה (gathering), בית האסיפות"
+  },
+  "אפה": {
+    "base": "bake",
+    "causative": "bake",
+    "etymology": "Proto-Semitic *ʾpy",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "epû"
+    },
+    "frequency": {
+      "tanakh": 25,
+      "talmud": 234
+    },
+    "semanticField": "action",
+    "weakType": "pe-aleph",
+    "notes": "מאפה (bakery), פת (bread)"
+  },
+  "אבד": {
+    "base": "be lost",
+    "causative": "destroy",
+    "etymology": "Proto-Semitic *ʾbd",
+    "cognates": {
+      "arabic": "abada (worship)",
+      "akkadian": "abātu"
+    },
+    "frequency": {
+      "tanakh": 185,
+      "talmud": 345
+    },
+    "semanticField": "existence",
+    "weakType": "pe-aleph",
+    "notes": "אבדה (lost object), אבדון (destruction)"
+  },
+  "אחז": {
+    "base": "grasp/hold",
+    "causative": "seize",
+    "etymology": "Proto-Semitic *ʾḥz",
+    "cognates": {
+      "arabic": "akhadha",
+      "akkadian": "aḫāzu"
+    },
+    "frequency": {
+      "tanakh": 68,
+      "talmud": 234
+    },
+    "semanticField": "action",
+    "weakType": "pe-aleph",
+    "notes": "אחיזה (holding), אחוזה (estate)"
+  },
+  "אסר": {
+    "base": "bind/imprison/forbid",
+    "causative": "bind/forbid",
+    "etymology": "Proto-Semitic *ʾsr",
+    "cognates": {
+      "arabic": "asara (capture)",
+      "akkadian": "esēru"
+    },
+    "frequency": {
+      "tanakh": 73,
+      "talmud": 1579
+    },
+    "semanticField": "legal",
+    "weakType": "pe-aleph",
+    "notes": "DUAL: 1) bind/imprison (אסיר prisoner), 2) forbid (איסור prohibition). Opposite of התיר/שרי"
+  },
+  "ריח": {
+    "base": "smell",
+    "causative": "smell",
+    "etymology": "Proto-Semitic *ryḥ",
+    "cognates": {
+      "arabic": "rīḥ (wind)",
+      "akkadian": "riāḫu"
+    },
+    "frequency": {
+      "tanakh": 11,
+      "talmud": 234
+    },
+    "semanticField": "cognition",
+    "notes": "ריח (smell), ריח ניחוח (pleasing aroma)"
+  },
+  "טעם": {
+    "base": "taste",
+    "causative": "taste",
+    "etymology": "Proto-Semitic *ṭʿm",
+    "cognates": {
+      "arabic": "ṭaʿima",
+      "akkadian": "ṭēmu"
+    },
+    "frequency": {
+      "tanakh": 11,
+      "talmud": 456
+    },
+    "semanticField": "cognition",
+    "notes": "טעם (taste/reason), טעמי המקרא"
+  },
+  "מוש": {
+    "base": "feel/touch",
+    "causative": "feel",
+    "etymology": "Proto-Semitic *mšš",
+    "cognates": {
+      "arabic": "massa",
+      "akkadian": "mašāšu"
+    },
+    "frequency": {
+      "tanakh": 5,
+      "talmud": 78
+    },
+    "semanticField": "cognition",
+    "notes": "Related to משש (grope)"
+  },
+  "צמח": {
+    "base": "sprout/grow",
+    "causative": "cause to grow",
+    "etymology": "Proto-Semitic *ṣmḥ",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "ṣamāḫu"
+    },
+    "frequency": {
+      "tanakh": 33,
+      "talmud": 123
+    },
+    "semanticField": "physical",
+    "notes": "צמח (plant), צמיחה (growth)"
+  },
+  "פרח": {
+    "base": "blossom/fly",
+    "causative": "flower",
+    "etymology": "Proto-Semitic *prḥ",
+    "cognates": {
+      "arabic": "faraḥa (rejoice)",
+      "akkadian": "parāḫu"
+    },
+    "frequency": {
+      "tanakh": 36,
+      "talmud": 89
+    },
+    "semanticField": "physical",
+    "notes": "פרח (flower), לפרוח (to bloom/fly)"
+  },
+  "נבט": {
+    "base": "look/sprout",
+    "causative": "gaze",
+    "etymology": "Proto-Semitic *nbṭ",
+    "cognates": {
+      "arabic": "nabata",
+      "akkadian": "nabaṭu"
+    },
+    "frequency": {
+      "tanakh": 69,
+      "talmud": 89
+    },
+    "semanticField": "cognition",
+    "weakType": "pe-nun",
+    "notes": "נבט/הביט (look), נביטה (sprouting)"
+  },
+  "עוף": {
+    "base": "fly",
+    "causative": "make fly",
+    "etymology": "Proto-Semitic *ʿwp",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 28,
+      "talmud": 123
+    },
+    "semanticField": "movement",
+    "weakType": "hollow",
+    "notes": "עוף (bird/fowl)"
+  },
+  "רבץ": {
+    "base": "lie down (animal)",
+    "causative": "make lie down",
+    "etymology": "Proto-Semitic *rbṣ",
+    "cognates": {
+      "arabic": "rabaḍa",
+      "akkadian": "rabāṣu"
+    },
+    "frequency": {
+      "tanakh": 30,
+      "talmud": 89
+    },
+    "semanticField": "physical",
+    "notes": "רביצה (lying)"
+  },
+  "רעה": {
+    "base": "shepherd/graze",
+    "causative": "tend",
+    "etymology": "Proto-Semitic *rʿy",
+    "cognates": {
+      "arabic": "raʿā",
+      "akkadian": "rēʾû"
+    },
+    "frequency": {
+      "tanakh": 173,
+      "talmud": 234
+    },
+    "semanticField": "action",
+    "weakType": "lamed-he",
+    "notes": "רועה (shepherd), מרעה (pasture)"
+  },
+  "טבח": {
+    "base": "slaughter",
+    "causative": "slaughter",
+    "etymology": "Proto-Semitic *ṭbḥ",
+    "cognates": {
+      "arabic": "dhabaḥa",
+      "akkadian": "ṭabāḫu"
+    },
+    "frequency": {
+      "tanakh": 11,
+      "talmud": 567
+    },
+    "semanticField": "action",
+    "notes": "טבח (butcher), שחיטה related"
+  },
+  "שחט": {
+    "base": "slaughter (ritual)",
+    "causative": "slaughter",
+    "etymology": "Proto-Semitic *šḥṭ",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 81,
+      "talmud": 1567
+    },
+    "semanticField": "religious",
+    "notes": "שחיטה (kosher slaughter), שוחט (slaughterer)"
+  },
+  "חבר": {
+    "base": "join/associate",
+    "causative": "unite",
+    "etymology": "Proto-Semitic *ḥbr",
+    "cognates": {
+      "arabic": "ḥabara",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 29,
+      "talmud": 567
+    },
+    "semanticField": "action",
+    "notes": "חבר (friend/scholar), חברותא (study partner)"
+  },
+  "פרד": {
+    "base": "separate",
+    "causative": "divide",
+    "etymology": "Proto-Semitic *prd",
+    "cognates": {
+      "arabic": "farada",
+      "akkadian": "parādu"
+    },
+    "frequency": {
+      "tanakh": 26,
+      "talmud": 234
+    },
+    "semanticField": "action",
+    "notes": "פרידה (separation), הפרדה (division)"
+  },
+  "התיר": {
+    "base": "permit/release",
+    "causative": "untie",
+    "etymology": "Proto-Semitic *ntr",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "naṭāru"
+    },
+    "frequency": {
+      "tanakh": 8,
+      "talmud": 1567
+    },
+    "semanticField": "legal",
+    "notes": "היתר (permission), מותר (permitted)"
+  },
+  "כנס": {
+    "base": "gather/assemble",
+    "causative": "gather",
+    "etymology": "Proto-Semitic *kns",
+    "cognates": {
+      "arabic": "kanasa",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 11,
+      "talmud": 345
+    },
+    "semanticField": "action",
+    "notes": "כנסת (assembly), כנסיה (church)"
+  },
+  "קהל": {
+    "base": "assemble",
+    "causative": "gather",
+    "etymology": "Proto-Semitic *qhl",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 39,
+      "talmud": 234
+    },
+    "semanticField": "action",
+    "notes": "קהל (congregation), קהילה (community)"
+  },
+  "נהג": {
+    "base": "lead/practice",
+    "causative": "conduct",
+    "etymology": "Proto-Semitic *nhg",
+    "cognates": {
+      "arabic": "nahaja",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 31,
+      "talmud": 567
+    },
+    "semanticField": "action",
+    "weakType": "pe-nun",
+    "notes": "מנהג (custom), נוהג (practice)"
+  },
+  "סמך": {
+    "base": "support/lean",
+    "causative": "ordain",
+    "etymology": "Proto-Semitic *smk",
+    "cognates": {
+      "arabic": "samaka",
+      "akkadian": "samāku"
+    },
+    "frequency": {
+      "tanakh": 48,
+      "talmud": 567
+    },
+    "semanticField": "action",
+    "notes": "סמיכה (ordination), סמיכות (proximity)"
+  },
+  "מנה": {
+    "base": "count/appoint",
+    "causative": "count",
+    "etymology": "Proto-Semitic *mny",
+    "cognates": {
+      "arabic": "mannā",
+      "akkadian": "manû"
+    },
+    "frequency": {
+      "tanakh": 28,
+      "talmud": 789
+    },
+    "semanticField": "action",
+    "weakType": "lamed-he",
+    "notes": "מנין (quorum), מינוי (appointment)"
+  },
+  "בדק": {
+    "base": "examine/check",
+    "causative": "inspect",
+    "etymology": "Proto-Semitic *bdq",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 7,
+      "talmud": 567
+    },
+    "semanticField": "cognition",
+    "notes": "בדיקה (inspection), בודק (inspector)"
+  },
+  "הפך": {
+    "base": "turn/overturn",
+    "causative": "reverse",
+    "etymology": "Proto-Semitic *hpk",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "epēqu"
+    },
+    "frequency": {
+      "tanakh": 94,
+      "talmud": 456
+    },
+    "semanticField": "action",
+    "notes": "הפיכה (reversal), היפך (opposite)"
+  },
+  "מזג": {
+    "base": "mix/pour",
+    "causative": "blend",
+    "etymology": "Proto-Semitic *mzg",
+    "cognates": {
+      "arabic": "mazaja",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 2,
+      "talmud": 345
+    },
+    "semanticField": "action",
+    "notes": "מזג (temperament/pour), מזיגה (mixing wine)"
+  },
+  "קטר": {
+    "base": "burn incense",
+    "causative": "offer incense",
+    "etymology": "Proto-Semitic *qṭr",
+    "cognates": {
+      "arabic": "qaṭara",
+      "akkadian": "qatāru"
+    },
+    "frequency": {
+      "tanakh": 117,
+      "talmud": 234
+    },
+    "semanticField": "religious",
+    "notes": "קטורת (incense), מקטיר (one who offers)"
+  },
+  "נדר": {
+    "base": "vow",
+    "causative": "vow",
+    "etymology": "Proto-Semitic *ndr",
+    "cognates": {
+      "arabic": "nadhara",
+      "akkadian": "nadāru"
+    },
+    "frequency": {
+      "tanakh": 31,
+      "talmud": 567
+    },
+    "semanticField": "religious",
+    "weakType": "pe-nun",
+    "notes": "נדר (vow), נדרים (tractate)"
+  },
+  "טוה": {
+    "base": "spin (thread)",
+    "causative": "spin",
+    "etymology": "Proto-Semitic *ṭwy",
+    "cognates": {
+      "arabic": "ṭawā",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 2,
+      "talmud": 123
+    },
+    "semanticField": "action",
+    "weakType": "lamed-he",
+    "notes": "טויה (spinning)"
+  },
+  "ארג": {
+    "base": "weave",
+    "causative": "weave",
+    "etymology": "Proto-Semitic *ʾrg",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "erēgu"
+    },
+    "frequency": {
+      "tanakh": 13,
+      "talmud": 234
+    },
+    "semanticField": "action",
+    "notes": "אריגה (weaving), אורג (weaver)"
+  },
+  "תפר": {
+    "base": "sew",
+    "causative": "stitch",
+    "etymology": "Proto-Semitic *tpr",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 4,
+      "talmud": 123
+    },
+    "semanticField": "action",
+    "notes": "תפירה (sewing), תופר (tailor)"
+  },
+  "צבע": {
+    "base": "dye",
+    "causative": "color",
+    "etymology": "Proto-Semitic *ṣbʿ",
+    "cognates": {
+      "arabic": "ṣabaʿa",
+      "akkadian": "ṣabû"
+    },
+    "frequency": {
+      "tanakh": 2,
+      "talmud": 234
+    },
+    "semanticField": "action",
+    "notes": "צבע (color/dye), צביעה (dyeing)"
+  },
+  "קדם": {
+    "base": "precede",
+    "causative": "anticipate",
+    "etymology": "Proto-Semitic *qdm",
+    "cognates": {
+      "arabic": "qadama",
+      "akkadian": "qadāmu"
+    },
+    "frequency": {
+      "tanakh": 26,
+      "talmud": 456
+    },
+    "semanticField": "movement",
+    "notes": "קדם (east/ancient), קודם (before)"
+  },
+  "אחר": {
+    "base": "be late",
+    "causative": "delay",
+    "etymology": "Proto-Semitic *ʾḥr",
+    "cognates": {
+      "arabic": "akhkhara",
+      "akkadian": "aḫāru"
+    },
+    "frequency": {
+      "tanakh": 17,
+      "talmud": 345
+    },
+    "semanticField": "movement",
+    "notes": "אחר (after/other), אחרון (last)"
+  },
+  "מהר": {
+    "base": "hurry",
+    "causative": "hasten",
+    "etymology": "Proto-Semitic *mhr",
+    "cognates": {
+      "arabic": "mahara",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 65,
+      "talmud": 234
+    },
+    "semanticField": "movement",
+    "notes": "מהיר (fast), מהירות (speed)"
+  },
+  "חדש": {
+    "base": "be new",
+    "causative": "renew",
+    "etymology": "Proto-Semitic *ḥdš",
+    "cognates": {
+      "arabic": "ḥadatha",
+      "akkadian": "ḫadāšu"
+    },
+    "frequency": {
+      "tanakh": 10,
+      "talmud": 567
+    },
+    "semanticField": "existence",
+    "notes": "חדש (month/new), חידוש (innovation)"
+  },
+  "בוש": {
+    "base": "be ashamed",
+    "causative": "shame",
+    "etymology": "Proto-Semitic *bwš",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "bâšu"
+    },
+    "frequency": {
+      "tanakh": 125,
+      "talmud": 234
+    },
+    "semanticField": "emotion",
+    "weakType": "hollow",
+    "notes": "בושה (shame), ביישן (shy)"
+  },
+  "גיל": {
+    "base": "rejoice",
+    "causative": "cause joy",
+    "etymology": "Proto-Semitic *gyl",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 45,
+      "talmud": 89
+    },
+    "semanticField": "emotion",
+    "weakType": "hollow",
+    "notes": "גילה (joy), גיל (age)"
+  },
+  "ריב": {
+    "base": "quarrel",
+    "causative": "dispute",
+    "etymology": "Proto-Semitic *ryb",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 67,
+      "talmud": 345
+    },
+    "semanticField": "speech",
+    "weakType": "hollow",
+    "notes": "ריב (quarrel), מריבה (dispute)"
+  },
+  "שיר": {
+    "base": "sing",
+    "causative": "sing",
+    "etymology": "Proto-Semitic *šyr",
+    "cognates": {
+      "arabic": "unknown",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 87,
+      "talmud": 234
+    },
+    "semanticField": "speech",
+    "weakType": "hollow",
+    "notes": "שיר (song), שירה (poetry)"
+  },
+  "צום": {
+    "base": "fast",
+    "causative": "fast",
+    "etymology": "Proto-Semitic *ṣwm",
+    "cognates": {
+      "arabic": "ṣāma",
+      "akkadian": "unknown"
+    },
+    "frequency": {
+      "tanakh": 21,
+      "talmud": 345
+    },
+    "semanticField": "religious",
+    "weakType": "hollow",
+    "notes": "צום (fast), תענית (fast day)"
+  }
+}

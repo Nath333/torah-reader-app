@@ -111,6 +111,13 @@ export const CACHE_CONFIGS = {
     maxSize: 5000,
     ttl: 7 * 24 * 60 * 60 * 1000, // 7 days
     priority: 'medium'
+  },
+  scholarly: {
+    name: 'Scholarly Lookup',
+    category: 'dictionary',
+    maxSize: 1000,
+    ttl: 48 * 60 * 60 * 1000, // 48 hours
+    priority: 'high'
   }
 };
 

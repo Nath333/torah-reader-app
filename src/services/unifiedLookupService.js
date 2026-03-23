@@ -72,6 +72,8 @@ import {
 } from './wordRelationshipService';
 // Critical word fallback for common words
 import { lookupCriticalWord, isBiblicalName } from '../constants/criticalWords';
+// Telemetry integration for tracking lookup performance
+import { recordLookup, recordDictionaryLookup } from './telemetryService';
 
 const log = createLogger('UnifiedLookup');
 const DEBUG = process.env.NODE_ENV === 'development';
@@ -616,6 +618,16 @@ export const lookupAllLocalDictionaries = (word, contextMode = null) => {
 
   const confidence = calculateConfidence(aggregated);
 
+  // Record dictionary lookups for telemetry
+  const sources = aggregated.allSources || [];
+  for (const src of sources) {
+    const sourceName = (src.name || '').toLowerCase();
+    if (sourceName.includes('bdb')) recordDictionaryLookup('bdb', true);
+    else if (sourceName.includes('jastrow')) recordDictionaryLookup('jastrow', true);
+    else if (sourceName.includes('strong')) recordDictionaryLookup('strongs', true);
+    else if (sourceName.includes('cal')) recordDictionaryLookup('cal', true);
+  }
+
   return {
     ...aggregated,
     isAramaic,
@@ -665,6 +677,7 @@ const getPipeline = () => {
  * @returns {Object} Complete lookup result with sources and consensus
  */
 export const lookupWord = async (word, options = {}) => {
+  const startTime = performance.now();
   const {
     reference = null,
     contextMode = null,
@@ -688,6 +701,15 @@ export const lookupWord = async (word, options = {}) => {
   if (!skipCache) {
     const cached = lookupCache.get(cacheKey);
     if (cached) {
+      // Record cache hit telemetry
+      const durationMs = performance.now() - startTime;
+      recordLookup({
+        word: cleaned,
+        success: true,
+        fromCache: true,
+        durationMs,
+        source: cached.source || 'cache'
+      });
       return { ...cached, fromCache: true };
     }
   }
@@ -708,6 +730,16 @@ export const lookupWord = async (word, options = {}) => {
     if (result.english || result.sources.length > 0) {
       lookupCache.set(cacheKey, result);
     }
+
+    // Record cache miss telemetry
+    const durationMs = performance.now() - startTime;
+    recordLookup({
+      word: cleaned,
+      success: !!(result.english || result.sources?.length > 0),
+      fromCache: false,
+      durationMs,
+      source: result.source || result.sources?.[0]?.name?.toLowerCase() || 'unified'
+    });
 
     return result;
   } finally {

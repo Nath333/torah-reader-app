@@ -33,7 +33,7 @@ export {
 
 /**
  * Hebrew prefixes with their meanings and grammatical information
- * Used by: grammarAnalysisService, combinedTranslationService, commentaryUtils, etc.
+ * Used by: grammarAnalysisService, unifiedLookupService, commentaryUtils, etc.
  */
 export const HEBREW_PREFIX_MEANINGS = {
   'ו': { short: 'and', full: 'and/but (conjunction)', type: 'conjunction' },

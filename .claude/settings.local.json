@@ -166,7 +166,12 @@
       "Bash(npx babel-node:*)",
       "Bash(ls -la \"c:\\\\Users\\\\natha\\\\Desktop\\\\App_N\\\\torah-reader-app\\\\src\\\\components\\\\dictionary\"\" | grep -i \"glossary|definition|pro \")",
       "Bash(npx jest:*)",
-      "Bash(git commit -m \"$\\(cat <<''EOF''\nExtract lexicons to JSON for lazy-loading and clean up service exports\n\nMove hardcoded lexicon data \\(BDB, Klein, Jastrow, Strong''s, CAL Aramaic\\) from\nhebrewLexicons.js to separate JSON files for on-demand loading. Extends\ndictionaryLoader with new async loaders and sync getters. Removes legacy\naliases and version comments from services/index.js. Adds unit tests for\nCommentaryViewer, TzuratHaDaf, useDarkMode, useDebounce, and sanitize utils.\nIncludes responsive CSS fixes for dynamic UI adjustments.\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nExtract lexicons to JSON for lazy-loading and clean up service exports\n\nMove hardcoded lexicon data \\(BDB, Klein, Jastrow, Strong''s, CAL Aramaic\\) from\nhebrewLexicons.js to separate JSON files for on-demand loading. Extends\ndictionaryLoader with new async loaders and sync getters. Removes legacy\naliases and version comments from services/index.js. Adds unit tests for\nCommentaryViewer, TzuratHaDaf, useDarkMode, useDebounce, and sanitize utils.\nIncludes responsive CSS fixes for dynamic UI adjustments.\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(for file in src/hooks/*.js)",
+      "Bash(do [ ! -f \"$file%.js.test.js\" ])",
+      "Bash(basename:*)",
+      "Bash(for f in public/data/root_meanings.json public/data/semantic_fields.json public/data/rabbi_biographies.json public/data/realia.json)",
+      "Bash(for:*)"
     ]
   }
 }

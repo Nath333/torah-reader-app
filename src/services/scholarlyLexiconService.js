@@ -20,6 +20,8 @@ import {
 } from '../constants/morphology';
 // PRO SCHOLAR V7: Unified dictionary loader (single source of truth for dictionary data)
 import * as dictionaryLoader from './dictionaryLoader';
+// PRO SCHOLAR V7: Telemetry integration for tracking lookup performance
+import { recordLookup, recordDictionaryLookup } from './telemetryService';
 
 const log = createLogger('ScholarlyLexicon');
 
@@ -915,7 +917,7 @@ const isGarbageText = (text) => {
 
 // Cache for scholarly lookups (longer TTL for academic data)
 // PRO SCHOLAR V6.2: Use CacheOrchestrator for unified telemetry
-const scholarlyCache = createManagedCache('semanticField', { ttl: 48 * 60 * 60 * 1000, maxSize: 1000 }); // 48 hours
+const scholarlyCache = createManagedCache('scholarly', { ttl: 48 * 60 * 60 * 1000, maxSize: 1000 }); // 48 hours
 
 // =============================================================================
 // CACHE VERSIONING - Automatically invalidates old cached results
@@ -2481,12 +2483,24 @@ const generateWordForms = (word) => {
  * @returns {Promise<object>} Full scholarly analysis
  */
 export const scholarlyLookup = async (word) => {
+  const startTime = performance.now();
   const cleaned = cleanWord(word);
   if (!cleaned || cleaned.length < 2) return null;
 
   const cacheKey = `scholarly:${CACHE_VERSION}:${cleaned}`;
   const cached = scholarlyCache.get(cacheKey);
-  if (cached) return cached;
+  if (cached) {
+    // Record cache hit telemetry
+    const durationMs = performance.now() - startTime;
+    recordLookup({
+      word: cleaned,
+      success: true,
+      fromCache: true,
+      durationMs,
+      source: cached.primarySource || 'cache'
+    });
+    return cached;
+  }
 
   // ==========================================================================
   // HALACHIC OVERRIDE: Check context-specific translations FIRST
@@ -3106,6 +3120,38 @@ export const scholarlyLookup = async (word) => {
     // Flag if halachic override was applied
     _halachicOverride: !!halachicOverride
   };
+
+  // Record telemetry for this lookup
+  const durationMs = performance.now() - startTime;
+  const primarySource = result.primarySource ||
+    (result.sources?.bdb ? 'bdb' :
+     result.sources?.jastrow ? 'jastrow' :
+     result.sources?.strong ? 'strongs' : 'sefaria');
+
+  recordLookup({
+    word: cleaned,
+    success: !!result.primaryDefinition,
+    fromCache: false,
+    durationMs,
+    source: primarySource
+  });
+
+  // Record individual dictionary lookups for detailed tracking
+  if (bySource.bdb.length > 0 || allLocalResults?.bdb) {
+    recordDictionaryLookup('bdb', true);
+  }
+  if (bySource.jastrow.length > 0 || allLocalResults?.jastrow) {
+    recordDictionaryLookup('jastrow', true);
+  }
+  if (bySource.strong.length > 0 || allLocalResults?.strongs) {
+    recordDictionaryLookup('strongs', true);
+  }
+  if (calResult) {
+    recordDictionaryLookup('cal', true);
+  }
+  if (sefariaData && sefariaData.length > 0) {
+    recordDictionaryLookup('sefaria', true);
+  }
 
   scholarlyCache.set(cacheKey, result);
   return result;

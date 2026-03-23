@@ -515,8 +515,7 @@ export const analyzeTextLanguage = (text) => {
 // EXPORTS
 // NOTE: For actual Aramaic word lookups, use:
 // - scholarlyLookup() from scholarlyLexiconService (Jastrow via API)
-// - lookupLocalJastrow() from combinedTranslationService (offline)
-// - lookupLocalCAL() from combinedTranslationService (offline)
+// - lookupWord() from unifiedLookupService (unified lookup)
 // This module provides LANGUAGE DETECTION only (isLikelyAramaic, analyzeWord)
 // =============================================================================
 

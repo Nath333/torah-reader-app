@@ -553,7 +553,7 @@ const TierLegend = ({ compact = true }) => {
 /**
  * PRO SCHOLAR V7: Enhanced source badge with match type and confidence
  * Shows: Source name, reliability tier, match type (exact/morphological/fuzzy), local indicator
- * Now accepts enriched metadata directly from combinedTranslationService
+ * Now accepts enriched metadata directly from unifiedLookupService
  */
 const SourceBadge = ({
   source,

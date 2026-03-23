@@ -31,7 +31,12 @@ const cache = {
   jastrowLexicon: null,
   strongLexicon: null,
   calAramaic: null,
-  jastrowAramaic: null
+  jastrowAramaic: null,
+  // Scholarly data (lazy-loaded from JSON)
+  rootMeanings: null,
+  semanticFields: null,
+  rabbiBiographies: null,
+  realia: null
 };
 
 /** Loading promises to prevent duplicate fetches */
@@ -45,7 +50,11 @@ const loadingPromises = {
   jastrowLexicon: null,
   strongLexicon: null,
   calAramaic: null,
-  jastrowAramaic: null
+  jastrowAramaic: null,
+  rootMeanings: null,
+  semanticFields: null,
+  rabbiBiographies: null,
+  realia: null
 };
 
 /** Loading state for UI feedback */
@@ -59,7 +68,11 @@ const loadingState = {
   jastrowLexicon: false,
   strongLexicon: false,
   calAramaic: false,
-  jastrowAramaic: false
+  jastrowAramaic: false,
+  rootMeanings: false,
+  semanticFields: false,
+  rabbiBiographies: false,
+  realia: false
 };
 
 // =============================================================================
@@ -97,7 +110,12 @@ async function loadDictionary(name) {
     jastrowLexicon: 'jastrow_lexicon.json',
     strongLexicon: 'strong_lexicon.json',
     calAramaic: 'cal_aramaic.json',
-    jastrowAramaic: 'jastrow_aramaic.json'
+    jastrowAramaic: 'jastrow_aramaic.json',
+    // Scholarly data extracted from data/*.js
+    rootMeanings: 'root_meanings.json',
+    semanticFields: 'semantic_fields.json',
+    rabbiBiographies: 'rabbi_biographies.json',
+    realia: 'realia.json'
   }[name];
 
   loadingPromises[name] = fetch(`${process.env.PUBLIC_URL}/data/${fileName}`)
@@ -332,6 +350,50 @@ export function getCALAramaicData() { return cache.calAramaic; }
 export function getJastrowAramaicData() { return cache.jastrowAramaic; }
 
 // =============================================================================
+// SCHOLARLY DATA (lazy-loaded from extracted JSON)
+// =============================================================================
+
+/**
+ * Get root meanings data (from rootDatabase.js)
+ * @returns {Promise<Object>} Root meanings dictionary
+ */
+export async function getRootMeanings() {
+  return loadDictionary('rootMeanings');
+}
+
+/**
+ * Get semantic fields data (from rootDatabase.js)
+ * @returns {Promise<Object>} Semantic fields dictionary
+ */
+export async function getSemanticFields() {
+  return loadDictionary('semanticFields');
+}
+
+/**
+ * Get rabbi biographies data
+ * @returns {Promise<Object>} Rabbi biographies dictionary
+ */
+export async function getRabbiBiographies() {
+  return loadDictionary('rabbiBiographies');
+}
+
+/**
+ * Get realia/measures data
+ * @returns {Promise<Object>} Realia dictionary
+ */
+export async function getRealia() {
+  return loadDictionary('realia');
+}
+
+/**
+ * Synchronous access to cached scholarly data (returns null if not loaded)
+ */
+export function getRootMeaningsData() { return cache.rootMeanings; }
+export function getSemanticFieldsData() { return cache.semanticFields; }
+export function getRabbiBiographiesData() { return cache.rabbiBiographies; }
+export function getRealiaData() { return cache.realia; }
+
+// =============================================================================
 // PRELOADING & UTILITIES
 // =============================================================================
 
@@ -404,8 +466,27 @@ export function getCacheStatus() {
     calAramaic: cache.calAramaic !== null,
     jastrowAramaic: cache.jastrowAramaic !== null,
     bdbLexicon: cache.bdbLexicon !== null,
-    bdbAramaic: cache.bdbAramaic !== null
+    bdbAramaic: cache.bdbAramaic !== null,
+    rootMeanings: cache.rootMeanings !== null,
+    semanticFields: cache.semanticFields !== null,
+    rabbiBiographies: cache.rabbiBiographies !== null,
+    realia: cache.realia !== null
   };
+}
+
+/**
+ * Preload scholarly data (call for scholar mode features)
+ * @returns {Promise<void>}
+ */
+export async function preloadScholarlyData() {
+  log.debug('Preloading scholarly data...');
+  await Promise.all([
+    loadDictionary('rootMeanings').catch(() => null),
+    loadDictionary('semanticFields').catch(() => null),
+    loadDictionary('rabbiBiographies').catch(() => null),
+    loadDictionary('realia').catch(() => null)
+  ]);
+  log.debug('Scholarly data preloaded');
 }
 
 /**
@@ -553,13 +634,20 @@ export function shouldPreload() {
  * @returns {Promise<void>}
  */
 export async function initializePreload() {
-  // PRIORITY 1: Load ALL local dictionaries
+  // PRIORITY 1: Load core dictionaries (BDB, Jastrow, Strong's)
   await preloadDictionaries();
   const status = getCacheStatus();
-  log.debug(`[Preload] Dictionaries loaded: BDB=${status.bdb}, Jastrow=${status.jastrow}, Strongs=${status.strongs}`);
+  log.debug(`[Preload] Core dictionaries loaded: BDB=${status.bdb}, Jastrow=${status.jastrow}, Strongs=${status.strongs}`);
 
-  // PRIORITY 2: Preload common words into translation cache (if cache is cold)
-  // PRO SCHOLAR V10.3: Use unifiedLookupService instead of combinedTranslationService
+  // PRIORITY 2: Preload additional lexicons (lazy-loaded from JSON)
+  // These are smaller and needed for scholar mode lookups
+  preloadLexicons().then(() => {
+    log.debug('[Preload] Additional lexicons loaded');
+  }).catch(() => {
+    log.debug('[Preload] Additional lexicons preload skipped');
+  });
+
+  // PRIORITY 3: Preload common words into translation cache (if cache is cold)
   if (shouldPreload()) {
     try {
       const { preloadCommonWords } = await import('./unifiedLookupService');
@@ -608,6 +696,17 @@ const dictionaryLoader = {
   getCALAramaicData,
   getJastrowAramaicData,
   preloadLexicons,
+
+  // Scholarly Data (lazy-loaded)
+  getRootMeanings,
+  getSemanticFields,
+  getRabbiBiographies,
+  getRealia,
+  getRootMeaningsData,
+  getSemanticFieldsData,
+  getRabbiBiographiesData,
+  getRealiaData,
+  preloadScholarlyData,
 
   // Utilities
   preloadDictionaries,

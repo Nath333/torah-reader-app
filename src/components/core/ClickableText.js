@@ -2,7 +2,7 @@
  * ClickableText V3.0 - Unified Interactive Hebrew/Aramaic Text Component
  *
  * A professional component for displaying Hebrew and Aramaic text
- * with word-by-word translation support via the unified wordLookupOrchestrator.
+ * with word-by-word translation support via the unifiedLookupService.
  *
  * Features:
  * - Multi-source scholarly lookups (Jastrow, BDB, Strong's, Sefaria)

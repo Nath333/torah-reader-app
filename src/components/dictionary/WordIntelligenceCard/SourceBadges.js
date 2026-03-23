@@ -93,4 +93,5 @@ export const DictionaryTierBadge = memo(function DictionaryTierBadge({ source })
   );
 });
 
-export default { LookupPathDisplay, SourceBadge, DictionaryTierBadge };
+const SourceBadges = { LookupPathDisplay, SourceBadge, DictionaryTierBadge };
+export default SourceBadges;

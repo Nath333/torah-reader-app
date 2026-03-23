@@ -182,7 +182,7 @@ export const lookupHalachicWithPrefix = (word, options = {}) => {
   // 2. RASHI_VOCABULARY (Talmudic vocabulary and compound phrases)
   //
   // NOTE: Common words (יד, של, בעל, etc.) are now handled by the
-  // systematic scoring system in combinedTranslationService.js
+  // systematic scoring system in unifiedLookupService.js
   const checkDictionaries = (w) => {
     // FIRST: Check halachic overrides (proper nouns, titles)
     if (HALACHIC_OVERRIDE[w]) {
