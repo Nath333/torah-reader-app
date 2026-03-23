@@ -23,6 +23,8 @@ import {
   isLocalSource,
   getSourceInfo
 } from '../../constants/dictionarySources';
+// PRO SCHOLAR V7: Morphological hints for missing words
+import { getMorphologicalHint } from '../../services/unifiedLookupService';
 import './WordGlossary.css';
 
 /**
@@ -154,10 +156,22 @@ const WordGlossary = React.memo(({ text, onClose }) => {
           if (!isMounted) break;
 
           const word = words[i];
+          const cleaned = cleanHebrewWord(word);
           const result = await lookupWord(word);
 
           if (result) {
             results.push(result);
+          } else if (cleaned && cleaned.length >= 2) {
+            // Word not found - add with morphological hint
+            const hint = getMorphologicalHint(cleaned);
+            results.push({
+              word: cleaned,
+              definition: null,
+              notFound: true,
+              hint: hint?.breakdown || null,
+              possibleRoot: hint?.possibleRoot || null,
+              source: 'not-found'
+            });
           }
 
           // Small delay between lookups
@@ -220,6 +234,31 @@ const WordGlossary = React.memo(({ text, onClose }) => {
         {!loading && definitions.length > 0 && (
           <ul className="glossary-list" aria-label="Word definitions">
             {definitions.map((def, idx) => {
+              // Handle not-found words with morphological hints
+              if (def.notFound) {
+                return (
+                  <li
+                    key={`${def.word}-${idx}`}
+                    className="glossary-item not-found"
+                  >
+                    <span className="glossary-word not-found-word" dir="rtl" lang="he">{def.word}</span>
+                    <span className="glossary-arrow" aria-hidden="true">→</span>
+                    <span className="glossary-hint-text">
+                      {def.hint ? (
+                        <>
+                          <span className="hint-label">Possible:</span> {def.hint}
+                        </>
+                      ) : (
+                        <span className="hint-unknown">not in dictionary</span>
+                      )}
+                    </span>
+                    <span className="glossary-source not-found-badge" title="Word not found in dictionaries">
+                      ❓
+                    </span>
+                  </li>
+                );
+              }
+
               // PRO SCHOLAR V7: Get scholarly source info
               const sourceInfo = getSourceInfo(def.source);
               const sourceIcon = def.isLexicon ? '📚' : def.isLocal ? '📝' : '📖';

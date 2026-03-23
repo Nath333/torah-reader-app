@@ -504,3 +504,55 @@
     transition: opacity 0.15s ease !important;
   }
 }
+
+/* =============================================================================
+   Not Found Words - Morphological Hints
+   ============================================================================= */
+
+.glossary-item.not-found {
+  opacity: 0.75;
+  background: var(--bg-warning-subtle, #fefce8);
+  border-left: 3px solid var(--color-warning, #eab308);
+}
+
+.glossary-word.not-found-word {
+  font-style: italic;
+  color: var(--text-muted, #64748b);
+}
+
+.glossary-hint-text {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #475569);
+}
+
+.glossary-hint-text .hint-label {
+  font-weight: 500;
+  color: var(--text-muted, #64748b);
+  margin-right: 0.25rem;
+}
+
+.glossary-hint-text .hint-unknown {
+  font-style: italic;
+  color: var(--text-muted, #94a3b8);
+}
+
+.glossary-source.not-found-badge {
+  background: var(--bg-warning, #fef3c7);
+  color: var(--color-warning-dark, #92400e);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+/* Dark mode support for not-found words */
+@media (prefers-color-scheme: dark) {
+  .glossary-item.not-found {
+    background: var(--bg-warning-subtle-dark, #422006);
+    border-left-color: var(--color-warning-dark, #ca8a04);
+  }
+
+  .glossary-source.not-found-badge {
+    background: var(--bg-warning-dark, #713f12);
+    color: var(--color-warning-light, #fde68a);
+  }
+}

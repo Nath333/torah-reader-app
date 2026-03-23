@@ -1249,6 +1249,102 @@ const createEmptyResult = (word, cleanedWord = null) => ({
 });
 
 /**
+ * Get morphological hint for words not found in dictionary
+ * Provides helpful breakdown of prefixes, root, and suffixes
+ *
+ * @param {string} word - The word to analyze
+ * @returns {Object|null} Morphological hint object
+ */
+export const getMorphologicalHint = (word) => {
+  const cleaned = cleanHebrewWord(word);
+  if (!cleaned || cleaned.length < 2) return null;
+
+  const hint = {
+    word: cleaned,
+    prefixes: [],
+    possibleRoot: null,
+    suffixes: [],
+    breakdown: null
+  };
+
+  // Common Hebrew prefixes
+  const prefixMap = {
+    'ו': 'and',
+    'ה': 'the',
+    'ב': 'in',
+    'ל': 'to/for',
+    'מ': 'from',
+    'כ': 'like/as',
+    'ש': 'that/which',
+    'וה': 'and the',
+    'וב': 'and in',
+    'ול': 'and to',
+    'מה': 'from the',
+    'לה': 'to the',
+    'בה': 'in the',
+    'כש': 'when'
+  };
+
+  // Common Hebrew suffixes
+  const suffixMap = {
+    'ים': 'masc. pl.',
+    'ות': 'fem. pl.',
+    'ין': 'Aram. pl.',
+    'י': 'my/of',
+    'ך': 'your (m)',
+    'ה': 'her/to',
+    'ו': 'his/him',
+    'נו': 'our/us',
+    'כם': 'your (m.pl)',
+    'הם': 'their (m)',
+    'הן': 'their (f)'
+  };
+
+  let remaining = cleaned;
+
+  // Try to detect prefixes (max 2 chars)
+  for (const [prefix, meaning] of Object.entries(prefixMap).sort((a, b) => b[0].length - a[0].length)) {
+    if (remaining.startsWith(prefix) && remaining.length > prefix.length + 2) {
+      hint.prefixes.push({ chars: prefix, meaning });
+      remaining = remaining.slice(prefix.length);
+      break;
+    }
+  }
+
+  // Try to detect suffixes
+  for (const [suffix, meaning] of Object.entries(suffixMap).sort((a, b) => b[0].length - a[0].length)) {
+    if (remaining.endsWith(suffix) && remaining.length > suffix.length + 2) {
+      hint.suffixes.push({ chars: suffix, meaning });
+      remaining = remaining.slice(0, -suffix.length);
+      break;
+    }
+  }
+
+  // The remaining part might be the root
+  if (remaining.length >= 2 && remaining.length <= 4) {
+    hint.possibleRoot = remaining;
+  }
+
+  // Build human-readable breakdown
+  const parts = [];
+  if (hint.prefixes.length > 0) {
+    parts.push(hint.prefixes.map(p => `${p.chars}(${p.meaning})`).join('+'));
+  }
+  if (hint.possibleRoot) {
+    parts.push(`√${hint.possibleRoot}`);
+  } else {
+    parts.push(remaining);
+  }
+  if (hint.suffixes.length > 0) {
+    parts.push(hint.suffixes.map(s => `${s.chars}(${s.meaning})`).join('+'));
+  }
+
+  hint.breakdown = parts.join(' + ');
+
+  return hint;
+};
+
+/**
  * Get cache statistics
  */
 export const getCacheStats = () => lookupCache.getStats?.() || { size: 0 };

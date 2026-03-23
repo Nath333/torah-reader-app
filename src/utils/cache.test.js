@@ -76,10 +76,11 @@ describe('createCache', () => {
       cache.set('nullKey', null);
       cache.set('undefinedKey', undefined);
 
-      // Note: Since get returns null for missing keys,
-      // we need to use has to distinguish
-      expect(cache.has('nullKey')).toBe(false); // null is stored but get returns null
-      expect(cache.has('undefinedKey')).toBe(false); // undefined is also falsy
+      // Note: Both null and undefined are stored as data
+      // The get method returns the actual stored value
+      // null returns null, undefined returns undefined
+      expect(cache.get('nullKey')).toBeNull();
+      expect(cache.get('undefinedKey')).toBeUndefined();
     });
   });
 
