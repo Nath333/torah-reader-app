@@ -18,14 +18,15 @@ import './MorphologyBreakdown.css';
 // =============================================================================
 // PRO SCHOLAR V6: Unified Root Service Integration
 // =============================================================================
+// PRO SCHOLAR V8: Renamed from unifiedRootService to rootExtraction
 // eslint-disable-next-line no-unused-vars
 let extractRootsEnhanced, analyzeBinyan, detectDialect, getSemanticField;
 try {
-  const unifiedRoot = require('../../services/unifiedRootService');
-  extractRootsEnhanced = unifiedRoot.extractRootsEnhanced;
-  analyzeBinyan = unifiedRoot.analyzeBinyan;
-  detectDialect = unifiedRoot.detectDialect;
-  getSemanticField = unifiedRoot.getSemanticField;
+  const rootExtraction = require('../../services/rootExtraction');
+  extractRootsEnhanced = rootExtraction.extractRootsEnhanced;
+  analyzeBinyan = rootExtraction.analyzeBinyan;
+  detectDialect = rootExtraction.detectDialect;
+  getSemanticField = rootExtraction.getSemanticField;
 } catch (e) {
   extractRootsEnhanced = () => null;
   // eslint-disable-next-line no-unused-vars

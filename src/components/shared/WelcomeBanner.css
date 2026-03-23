@@ -121,6 +121,7 @@
   background: rgba(255, 255, 255, 0.15);
   border-radius: var(--radius-lg);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   width: fit-content;
 }
 

@@ -15,6 +15,7 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import useLocalStorage from './useLocalStorage';
+import { safeGet, safeSet } from '../utils/safeLocalStorage';
 
 /**
  * Hook for managing boolean settings with toggle functionality
@@ -106,15 +107,10 @@ export function useToggleGroup(defaults) {
 
   // Single state object for all toggles (avoids dynamic hook calls)
   const [values, setValues] = useState(() => {
-    // Initialize from localStorage or defaults
+    // Initialize from localStorage or defaults using safeGet
     const initial = {};
     for (const [key, defaultValue] of Object.entries(defaults)) {
-      try {
-        const stored = localStorage.getItem(key);
-        initial[key] = stored !== null ? JSON.parse(stored) : defaultValue;
-      } catch {
-        initial[key] = defaultValue;
-      }
+      initial[key] = safeGet(key, defaultValue);
     }
     return initial;
   });
@@ -126,9 +122,7 @@ export function useToggleGroup(defaults) {
       result[key] = () => {
         setValues(prev => {
           const newValue = !prev[key];
-          try {
-            localStorage.setItem(key, JSON.stringify(newValue));
-          } catch { /* localStorage full or disabled */ }
+          safeSet(key, newValue);
           return { ...prev, [key]: newValue };
         });
       };
@@ -142,9 +136,7 @@ export function useToggleGroup(defaults) {
       result[key] = (newValue) => {
         setValues(prev => {
           const resolved = typeof newValue === 'function' ? newValue(prev[key]) : newValue;
-          try {
-            localStorage.setItem(key, JSON.stringify(resolved));
-          } catch { /* localStorage full or disabled */ }
+          safeSet(key, resolved);
           return { ...prev, [key]: resolved };
         });
       };
@@ -157,9 +149,7 @@ export function useToggleGroup(defaults) {
       const newValues = {};
       for (const key of Object.keys(prev)) {
         newValues[key] = !prev[key];
-        try {
-          localStorage.setItem(key, JSON.stringify(newValues[key]));
-        } catch { /* ignore */ }
+        safeSet(key, newValues[key]);
       }
       return newValues;
     });
@@ -170,9 +160,7 @@ export function useToggleGroup(defaults) {
       const newValues = {};
       for (const key of Object.keys(prev)) {
         newValues[key] = value;
-        try {
-          localStorage.setItem(key, JSON.stringify(value));
-        } catch { /* ignore */ }
+        safeSet(key, value);
       }
       return newValues;
     });

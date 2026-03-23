@@ -562,6 +562,41 @@ export const toSefariaUrl = (ref) => {
 export { checkGroqConnection };
 
 // =============================================================================
+// French Translation
+// =============================================================================
+/**
+ * Translate English text to French using Groq API
+ * @param {string} englishText - English text to translate
+ * @returns {Promise<string|null>} French translation or null
+ */
+export const translateToFrench = async (englishText) => {
+  if (!englishText || !hasApiKey()) return null;
+
+  try {
+    const { queryGroq } = await import('./groqApi');
+    const response = await queryGroq({
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a translator. Translate the following English text to French. Return ONLY the French translation, nothing else.'
+        },
+        {
+          role: 'user',
+          content: englishText
+        }
+      ],
+      temperature: 0.3,
+      maxTokens: 200
+    });
+
+    return response?.trim() || null;
+  } catch (err) {
+    console.warn('[groqService] French translation failed:', err.message);
+    return null;
+  }
+};
+
+// =============================================================================
 // Cache Utilities
 // =============================================================================
 export const clearAnalysisCache = () => analysisCache.clear();
@@ -581,6 +616,7 @@ const groqService = {
   hasApiKey,
   clearAnalysisCache,
   sanitizeMermaidDiagram,
+  translateToFrench,
   ANALYSIS_MODES
 };
 

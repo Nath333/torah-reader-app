@@ -49,7 +49,7 @@ const ACCURACY_STYLES = {
 /**
  * Minimal inline source indicator
  */
-const SourceBadge = ({ source, method, accuracy, compact = false }) => {
+const SourceBadge = React.memo(({ source, method, accuracy, compact = false }) => {
   const meta = SOURCE_META[source] || { icon: '📄', color: '#6b7280' };
   const acc = accuracy ? ACCURACY_STYLES[accuracy] : null;
 
@@ -77,12 +77,13 @@ const SourceBadge = ({ source, method, accuracy, compact = false }) => {
       )}
     </span>
   );
-};
+});
+SourceBadge.displayName = 'SourceBadge';
 
 /**
  * Translation header with language + source
  */
-const TranslationSourceHeader = ({ language, source, method, accuracy, isLoading }) => {
+const TranslationSourceHeader = React.memo(({ language, source, method, accuracy, isLoading }) => {
   const langs = {
     en: { code: 'EN', name: 'English', color: '#059669' },
     fr: { code: 'FR', name: 'French', color: '#2563eb' },
@@ -109,23 +110,25 @@ const TranslationSourceHeader = ({ language, source, method, accuracy, isLoading
       )}
     </div>
   );
-};
+});
+TranslationSourceHeader.displayName = 'TranslationSourceHeader';
 
 /**
  * Multiple sources inline
  */
-const SourceBadgeGroup = ({ sources }) => (
+const SourceBadgeGroup = React.memo(({ sources }) => (
   <span className="src-group">
     {sources.map((s, i) => (
       <SourceBadge key={i} source={s.source} method={s.method} accuracy={s.accuracy} compact />
     ))}
   </span>
-);
+));
+SourceBadgeGroup.displayName = 'SourceBadgeGroup';
 
 /**
  * Era badge pill
  */
-const EraBadge = ({ era, compact = false }) => {
+const EraBadge = React.memo(({ era, compact = false }) => {
   const config = ERA_CONFIG[era] || { color: '#6b7280', label: era, shortLabel: era?.[0] };
 
   return (
@@ -137,12 +140,13 @@ const EraBadge = ({ era, compact = false }) => {
       {compact ? config.shortLabel : config.label}
     </span>
   );
-};
+});
+EraBadge.displayName = 'EraBadge';
 
 /**
  * Credibility badge - shows academic trust indicator
  */
-const CredibilityBadge = ({ sourceName, compact = false, showScore = false }) => {
+const CredibilityBadge = React.memo(({ sourceName, compact = false, showScore = false }) => {
   const credibility = getSourceCredibility(sourceName);
   const badge = getCredibilityBadge(credibility.overallScore);
   const categoryInfo = credibility.categoryInfo || SOURCE_CATEGORIES[credibility.category];
@@ -162,12 +166,13 @@ const CredibilityBadge = ({ sourceName, compact = false, showScore = false }) =>
       )}
     </span>
   );
-};
+});
+CredibilityBadge.displayName = 'CredibilityBadge';
 
 /**
  * Hover card for commentary details - enhanced with credibility info
  */
-const CommentaryHoverCard = ({ meta, isVisible, sourceName }) => {
+const CommentaryHoverCard = React.memo(({ meta, isVisible, sourceName }) => {
   if (!isVisible || !meta) return null;
 
   // Get credibility info from service
@@ -242,12 +247,13 @@ const CommentaryHoverCard = ({ meta, isVisible, sourceName }) => {
       </div>
     </div>
   );
-};
+});
+CommentaryHoverCard.displayName = 'CommentaryHoverCard';
 
 /**
  * Enhanced Commentary source badge with hover card and credibility indicators
  */
-const CommentarySourceBadge = ({
+const CommentarySourceBadge = React.memo(({
   source,
   accuracy = 'high',
   showLink = true,
@@ -386,19 +392,21 @@ const CommentarySourceBadge = ({
       <CommentaryHoverCard meta={meta} isVisible={showHoverCard} sourceName={source} />
     </span>
   );
-};
+});
+CommentarySourceBadge.displayName = 'CommentarySourceBadge';
 
 /**
  * Inline verified badge
  */
-const VerifiedBadge = ({ label = 'Verified' }) => (
+const VerifiedBadge = React.memo(({ label = 'Verified' }) => (
   <span className="verified-badge" title={label}>
     <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
       <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
     </svg>
     <span>{label}</span>
   </span>
-);
+));
+VerifiedBadge.displayName = 'VerifiedBadge';
 
 // PropTypes definitions
 SourceBadge.propTypes = {

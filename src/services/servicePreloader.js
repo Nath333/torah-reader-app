@@ -43,9 +43,10 @@ const SERVICES = {
   },
 
   // Priority 4: AI/Translation services (can load later)
+  // PRO SCHOLAR V10: Use unifiedLookupService (consolidated from combinedTranslationService)
   translation: {
     priority: 4,
-    loader: () => import('./combinedTranslationService').then(m => m.warmCache?.() || Promise.resolve()),
+    loader: () => import('./unifiedLookupService').then(m => m.warmCache?.() || Promise.resolve()),
     critical: false
   }
 };

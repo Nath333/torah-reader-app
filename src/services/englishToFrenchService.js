@@ -1,9 +1,12 @@
 /**
  * English → French Translation Service
  * Sequential queue, rate limiting, caching, validation
+ *
+ * PRO SCHOLAR V8: Registered with CacheOrchestrator for unified telemetry
  */
 
 import { createCache } from '../utils/cache';
+import { registerCache, CACHE_CONFIGS } from './cacheOrchestrator';
 import { createLogger } from '../utils/debug';
 
 const log = createLogger('FrenchTranslation');
@@ -29,6 +32,10 @@ const LINGVA_MIRRORS = [
 
 // State
 const cache = createCache({ ttl: CONFIG.CACHE_TTL, maxSize: CONFIG.CACHE_SIZE });
+
+// PRO SCHOLAR V8: Register with orchestrator for unified telemetry
+registerCache('frenchTranslation', cache, CACHE_CONFIGS.frenchTranslation);
+
 const apiState = { last: 0, blocked: 0, fails: 0, currentMirror: 0 };
 const stats = { hits: 0, calls: 0, ok: 0, fail: 0 };
 const pending = new Map();
@@ -54,7 +61,9 @@ const save = () => {
     if (Object.keys(d).length) {
       localStorage.setItem(CONFIG.PERSIST_KEY, JSON.stringify(d));
     }
-  } catch {}
+  } catch (e) {
+    log.warn('Cache save failed:', e.message);
+  }
 };
 
 if (typeof window !== 'undefined') {
@@ -274,7 +283,11 @@ export const translateWithBoldPreservation = async (html) => {
 
 export const clearCache = () => {
   cache.clear();
-  try { localStorage.removeItem(CONFIG.PERSIST_KEY); } catch {}
+  try {
+    localStorage.removeItem(CONFIG.PERSIST_KEY);
+  } catch (e) {
+    log.warn('Cache clear failed:', e.message);
+  }
 };
 
 export const getStats = () => ({ ...stats });

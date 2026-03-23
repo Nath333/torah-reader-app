@@ -11,6 +11,7 @@
  * - Source citations and cross-references
  */
 import { useState, useCallback, useEffect, useMemo, lazy, Suspense } from 'react';
+import { safeGet, safeSet } from '../../utils/safeLocalStorage';
 import RabbinicReferences from '../analysis/RabbinicReferences';
 import { fetchWithFallback } from '../../utils/http';
 import { createLogger } from '../../utils/debug';
@@ -377,43 +378,35 @@ function categorizeLinks(links) {
 }
 
 // =============================================================================
-// LOCAL STORAGE HELPERS
+// LOCAL STORAGE HELPERS - Using safeLocalStorage for error handling
 // =============================================================================
 
 function getLearnedCommentaries() {
-  try {
-    return JSON.parse(localStorage.getItem(LEARNED_KEY) || '{}');
-  } catch { return {}; }
+  return safeGet(LEARNED_KEY, {});
 }
 
 function setLearnedCommentary(ref, learned) {
-  try {
-    const data = getLearnedCommentaries();
-    if (learned) {
-      data[ref] = Date.now();
-    } else {
-      delete data[ref];
-    }
-    localStorage.setItem(LEARNED_KEY, JSON.stringify(data));
-  } catch { /* ignore */ }
+  const data = getLearnedCommentaries();
+  if (learned) {
+    data[ref] = Date.now();
+  } else {
+    delete data[ref];
+  }
+  safeSet(LEARNED_KEY, data);
 }
 
 function getStudyNotes() {
-  try {
-    return JSON.parse(localStorage.getItem(NOTES_KEY) || '{}');
-  } catch { return {}; }
+  return safeGet(NOTES_KEY, {});
 }
 
 function saveStudyNote(ref, note) {
-  try {
-    const data = getStudyNotes();
-    if (note.trim()) {
-      data[ref] = { text: note, updated: Date.now() };
-    } else {
-      delete data[ref];
-    }
-    localStorage.setItem(NOTES_KEY, JSON.stringify(data));
-  } catch { /* ignore */ }
+  const data = getStudyNotes();
+  if (note.trim()) {
+    data[ref] = { text: note, updated: Date.now() };
+  } else {
+    delete data[ref];
+  }
+  safeSet(NOTES_KEY, data);
 }
 
 // =============================================================================

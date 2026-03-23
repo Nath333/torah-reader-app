@@ -1,14 +1,14 @@
 /**
  * useWordLookup - Custom hook for Hebrew/Aramaic word translations
  *
- * V3.0 REFACTORED: Now uses unified wordLookupOrchestrator
+ * V4.0 CONSOLIDATED: Now uses unifiedLookupService (replaces wordLookupOrchestrator)
  *
  * This hook provides a clean API for looking up words, delegating all lookup
- * logic to the centralized orchestrator. No duplicate code.
+ * logic to the centralized unified service. No duplicate code.
  *
  * Features:
  * - Instant sync lookup with async enhancement
- * - Automatic caching (handled by orchestrator)
+ * - Automatic caching (handled by unified service)
  * - Abort controller for canceling in-flight requests
  * - Toggle behavior (clicking same word clears selection)
  * - Context-aware lookup with reference support
@@ -16,6 +16,7 @@
  */
 
 import { useState, useCallback, useRef, useMemo } from 'react';
+// PRO SCHOLAR V10: Use unifiedLookupService (consolidated from wordLookupOrchestrator)
 import {
   lookupWord,
   quickLookup,
@@ -24,7 +25,7 @@ import {
   batchLookup,
   warmCache,
   isCached
-} from '../services/wordLookupOrchestrator';
+} from '../services/unifiedLookupService';
 
 // =============================================================================
 // CONFIDENCE THRESHOLDS (re-exported for components that need them)

@@ -1,20 +1,21 @@
 /**
- * Pro Scholar v4 - Unified Feature Registry & Performance Layer
+ * Feature Flags - Unified Feature Registry & Performance Layer
+ * (Renamed from proScholarV4.js in PRO SCHOLAR V8 cleanup)
  *
- * ⚠️ DEPRECATED for root extraction - Use unifiedRootService.js instead!
- * The extractAllPossibleRoots function is now available in unifiedRootService.js
+ * ⚠️ DEPRECATED for root extraction - Use rootExtraction.js instead!
+ * The extractAllPossibleRoots function is now in rootExtraction.js
  * with better caching and direct dictionary validation.
  *
  * Migration guide:
- *   OLD: import { extractAllPossibleRoots } from './proScholarV4';
- *   NEW: import { extractRootsWithDirectValidation } from './unifiedRootService';
+ *   OLD: import { extractAllPossibleRoots } from './featureFlags';
+ *   NEW: import { extractRootsWithDirectValidation } from './rootExtraction';
  *
  * This module is STILL VALID for:
  * - Feature flags (FEATURES)
  * - Telemetry
  * - Service cache management
  *
- * @module proScholarV4
+ * @module featureFlags
  * @version 4.0.0
  */
 
@@ -110,7 +111,8 @@ export const getService = (serviceName) => {
         _serviceCache.srs = require('./srsService');
         break;
       case 'wordLookup':
-        _serviceCache.wordLookup = require('./wordLookupOrchestrator');
+        // PRO SCHOLAR V10: Use unifiedLookupService (consolidated from wordLookupOrchestrator)
+        _serviceCache.wordLookup = require('./unifiedLookupService');
         break;
       case 'grammarAnalysis':
         _serviceCache.grammarAnalysis = require('./grammarAnalysisService');
@@ -138,6 +140,18 @@ export const getService = (serviceName) => {
 
 // =============================================================================
 // UNIFIED CACHE SYSTEM
+// ⚠️ DEPRECATED - PRO SCHOLAR V8
+//
+// These cache functions (getCached, setCached, clearCache) are deprecated.
+// Use cacheOrchestrator.js instead for unified cache management with telemetry.
+//
+// Migration:
+//   OLD: import { getCached, setCached } from './proScholarV4';
+//   NEW: import { createManagedCache } from './cacheOrchestrator';
+//        const cache = createManagedCache('myNamespace', { ttl: 300000, maxSize: 500 });
+//        cache.get(key); cache.set(key, value);
+//
+// The getCached/setCached functions below are kept for backwards compatibility.
 // =============================================================================
 
 const _globalCache = new Map();

@@ -6,7 +6,7 @@
 import React, { useState, useMemo, useCallback, lazy, Suspense } from 'react';
 import PropTypes from 'prop-types';
 import './ProScholarPanel.css';
-// PRO SCHOLAR V6.2: Import advanced analysis functions
+// PRO SCHOLAR V8: Import advanced analysis functions (renamed from unifiedRootService)
 import {
   analyzeBinyan,
   detectDialect,
@@ -18,7 +18,7 @@ import {
   getGrammaticalAnomaly,
   getCognates
   // V6.2: getLoanwordInfo available for future loanword display
-} from '../../services/unifiedRootService';
+} from '../../services/rootExtraction';
 
 // PRO SCHOLAR V6: Full telemetry dashboard (lazy loaded for development use)
 const V6TelemetryDashboard = lazy(() => import('./V6TelemetryDashboard'));

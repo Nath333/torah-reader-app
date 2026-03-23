@@ -7,9 +7,8 @@ import { createLogger } from './debug';
 import { pickBestDefinition } from './definitionCleaner';
 // Centralized Hebrew utilities
 import { normalizeFinals } from './hebrewUtils';
-// LOCAL dictionaries - much better than API calls!
-import { JASTROW_COMPLETE } from '../data/jastrowComplete';
-import { BDB_BY_WORD } from '../data/bdbComplete';
+// LOCAL dictionaries - use sync lookup functions (no deprecation warnings)
+import { lookupJastrowSync, lookupBDBSync } from '../services/dictionaryLoader';
 // Centralized morphology constants
 import { getPrefixMeaning, SINGLE_PREFIXES } from '../constants/morphology';
 
@@ -191,7 +190,7 @@ export const lookupHalachicWithPrefix = (word, options = {}) => {
     }
     // SECOND: Check Rashi vocabulary (compound phrases, Aramaic particles)
     if (includeRashi && typeof RASHI_VOCABULARY !== 'undefined' && RASHI_VOCABULARY[w]) {
-      return { def: RASHI_VOCABULARY[w], source: 'Talmudic' };
+      return { def: RASHI_VOCABULARY[w], source: 'Rabbinic' };
     }
     return null;
   };
@@ -533,33 +532,41 @@ const RASHI_VOCABULARY = {
  * Look up a word in a local dictionary with morphological variations
  * Tries: exact match → normalized → prefix stripped → suffix stripped
  * @param {string} word - Hebrew/Aramaic word
- * @param {Object} dictionary - Local dictionary object (JASTROW_COMPLETE or BDB_BY_WORD)
+ * @param {Function} lookupFn - Sync lookup function (lookupJastrowSync or lookupBDBSync)
  * @returns {Object|null} Dictionary entry or null
  */
-const lookupLocalWithMorphology = (word, dictionary) => {
-  if (!word || !dictionary) return null;
+const lookupLocalWithMorphology = (word, lookupFn) => {
+  if (!word || !lookupFn) return null;
 
   // Direct match
-  if (dictionary[word]) {
-    return dictionary[word];
+  const direct = lookupFn(word);
+  if (direct) {
+    return direct;
   }
 
   // Normalized match (final letters → regular)
   const normalized = normalizeFinals(word);
-  if (normalized !== word && dictionary[normalized]) {
-    return dictionary[normalized];
+  if (normalized !== word) {
+    const normalizedMatch = lookupFn(normalized);
+    if (normalizedMatch) {
+      return normalizedMatch;
+    }
   }
 
   // Try stripping prefixes (using centralized SINGLE_PREFIXES)
   for (const prefix of SINGLE_PREFIXES) {
     if (word.startsWith(prefix) && word.length > prefix.length + 1) {
       const stem = word.slice(prefix.length);
-      if (dictionary[stem]) {
-        return dictionary[stem];
+      const stemMatch = lookupFn(stem);
+      if (stemMatch) {
+        return stemMatch;
       }
       const normalizedStem = normalizeFinals(stem);
-      if (normalizedStem !== stem && dictionary[normalizedStem]) {
-        return dictionary[normalizedStem];
+      if (normalizedStem !== stem) {
+        const normalizedStemMatch = lookupFn(normalizedStem);
+        if (normalizedStemMatch) {
+          return normalizedStemMatch;
+        }
       }
     }
   }
@@ -569,12 +576,16 @@ const lookupLocalWithMorphology = (word, dictionary) => {
   for (const suffix of COMMON_SUFFIXES) {
     if (word.endsWith(suffix) && word.length > suffix.length + 2) {
       const stem = word.slice(0, -suffix.length);
-      if (dictionary[stem]) {
-        return dictionary[stem];
+      const stemMatch = lookupFn(stem);
+      if (stemMatch) {
+        return stemMatch;
       }
       // For ות plural, try adding ה for feminine singular
-      if (suffix === 'ות' && dictionary[stem + 'ה']) {
-        return dictionary[stem + 'ה'];
+      if (suffix === 'ות') {
+        const femSingular = lookupFn(stem + 'ה');
+        if (femSingular) {
+          return femSingular;
+        }
       }
     }
   }
@@ -665,7 +676,7 @@ const buildDynamicGlossary = async (words) => {
     let definition = null;
 
     // Try Jastrow LOCAL first (best for Talmud/Rashi - 25K entries)
-    const jastrowEntry = lookupLocalWithMorphology(word, JASTROW_COMPLETE);
+    const jastrowEntry = lookupLocalWithMorphology(word, lookupJastrowSync);
     if (jastrowEntry?.definition) {
       // Use pickBestDefinition to clean scholarly notation
       definition = pickBestDefinition(jastrowEntry.definition);
@@ -674,7 +685,7 @@ const buildDynamicGlossary = async (words) => {
 
     // Fallback to BDB LOCAL (Biblical Hebrew)
     if (!definition) {
-      const bdbEntry = lookupLocalWithMorphology(word, BDB_BY_WORD);
+      const bdbEntry = lookupLocalWithMorphology(word, lookupBDBSync);
       if (bdbEntry?.definition || bdbEntry?.fullDef) {
         definition = pickBestDefinition(bdbEntry.definition || bdbEntry.fullDef);
         bdbCount++;

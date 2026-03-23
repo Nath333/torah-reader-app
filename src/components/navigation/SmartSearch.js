@@ -10,10 +10,13 @@
  */
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { safeGet, safeSet } from '../../utils/safeLocalStorage';
 import {
   semanticSearch,
   hybridSearch
 } from '../../services/semanticSearchService';
+
+const SEARCH_HISTORY_KEY = 'smart-search-history';
 
 // CSS styles
 const styles = {
@@ -209,30 +212,20 @@ const SmartSearch = ({
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const inputRef = useRef(null);
 
-  // Load search history
+  // Load search history using safeLocalStorage
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem('smart-search-history');
-      if (stored) {
-        setHistory(JSON.parse(stored).slice(0, 10));
-      }
-    } catch (e) {
-      console.warn('Failed to load search history');
-    }
+    const stored = safeGet(SEARCH_HISTORY_KEY, []);
+    setHistory(stored.slice(0, 10));
   }, []);
 
-  // Save search to history
+  // Save search to history using safeLocalStorage
   const saveToHistory = useCallback((searchQuery) => {
     const updated = [
       searchQuery,
       ...history.filter(h => h !== searchQuery)
     ].slice(0, 10);
     setHistory(updated);
-    try {
-      localStorage.setItem('smart-search-history', JSON.stringify(updated));
-    } catch (e) {
-      console.warn('Failed to save search history');
-    }
+    safeSet(SEARCH_HISTORY_KEY, updated);
   }, [history]);
 
   // Perform search

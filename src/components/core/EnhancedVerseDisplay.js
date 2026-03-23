@@ -8,11 +8,13 @@
  * - Beautiful typography
  */
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { QuickMasterySelector } from '../study/MasteryTracker';
 import useMastery, { MASTERY_LEVELS } from '../../hooks/useMastery';
 import ClickableText from './ClickableText';
+import { prefetchVerse } from '../../services/wordPrefetchService';
+import { lookupParallel } from '../../services/unifiedLookupService';
 import './EnhancedVerseDisplay.css';
 
 // =============================================================================
@@ -185,6 +187,7 @@ const EnhancedVerseDisplay = ({
   showCommentary = true,
   showMastery = true,
   enlargeFirstLetter = true,
+  prefetchEnabled = true, // PRO SCHOLAR V10: Enable prefetching
   // Vocabulary
   onSaveWord,
   hasWord,
@@ -195,6 +198,32 @@ const EnhancedVerseDisplay = ({
   onCommentaryExpand
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const verseRef = useRef(null);
+  const prefetchedRef = useRef(false);
+
+  // PRO SCHOLAR V10: Prefetch verse words when it enters viewport
+  useEffect(() => {
+    if (!prefetchEnabled || !hebrewText || prefetchedRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !prefetchedRef.current) {
+            prefetchedRef.current = true;
+            // Prefetch with low priority (background)
+            prefetchVerse(hebrewText, lookupParallel, 'low');
+          }
+        });
+      },
+      { rootMargin: '200px', threshold: 0.1 }
+    );
+
+    if (verseRef.current) {
+      observer.observe(verseRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [prefetchEnabled, hebrewText]);
 
   // Get mastery level for this verse
   const { getVerseMastery } = useMastery();
@@ -241,6 +270,7 @@ const EnhancedVerseDisplay = ({
 
   return (
     <div
+      ref={verseRef}
       className={containerClass}
       onClick={handleSelect}
       onMouseEnter={() => setIsHovered(true)}
@@ -317,6 +347,7 @@ EnhancedVerseDisplay.propTypes = {
   showCommentary: PropTypes.bool,
   showMastery: PropTypes.bool,
   enlargeFirstLetter: PropTypes.bool,
+  prefetchEnabled: PropTypes.bool, // PRO SCHOLAR V10
   onSaveWord: PropTypes.func,
   hasWord: PropTypes.func,
   onSelect: PropTypes.func,

@@ -20,11 +20,12 @@ import './V6AnalysisBadge.css';
 // SAFE IMPORTS
 // =============================================================================
 
+// PRO SCHOLAR V8: Renamed from unifiedRootService to rootExtraction
 let extractRootsEnhanced, analyzeBinyan;
 try {
-  const unifiedRoot = require('../../services/unifiedRootService');
-  extractRootsEnhanced = unifiedRoot.extractRootsEnhanced;
-  analyzeBinyan = unifiedRoot.analyzeBinyan;
+  const rootExtraction = require('../../services/rootExtraction');
+  extractRootsEnhanced = rootExtraction.extractRootsEnhanced;
+  analyzeBinyan = rootExtraction.analyzeBinyan;
 } catch (e) {
   extractRootsEnhanced = () => null;
   analyzeBinyan = () => null;

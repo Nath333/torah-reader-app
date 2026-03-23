@@ -137,7 +137,22 @@
       "Bash(npm run lint)",
       "Bash(for dir in src/components/*/)",
       "Bash(do [ ! -f \"$dir/index.js\" ])",
-      "Bash(npm run lint:*)"
+      "Bash(npm run lint:*)",
+      "Bash(git stash:*)",
+      "Bash(tree:*)",
+      "Bash(CI=true npm test -- --testPathPattern=\"combinedTranslationService\" --testNamePattern=\"LookupContext\")",
+      "Bash(CI=true npm test -- --testPathPattern=\"combinedTranslationService\" --testNamePattern=\"Pipeline\")",
+      "Bash(git mv:*)",
+      "Bash(git rm:*)",
+      "Bash(CI=true npm test -- --testPathPattern=\"combinedTranslationService\")",
+      "Bash(node --check:*)",
+      "Bash(node -c:*)",
+      "Bash(CI=true npm test:*)",
+      "Bash(timeout 30 npm test -- --testPathPattern=\"unifiedLookupService\" --no-coverage --watchAll=false)",
+      "Bash(timeout 60 npm test -- --testPathPattern=\"unifiedLookupService\" --no-coverage --watchAll=false)",
+      "Bash(timeout 90 npm test:*)",
+      "Bash(timeout 120 npm test -- --testPathPattern=\"unifiedLookupService\" --no-coverage --watchAll=false)",
+      "Bash(git show:*)"
     ]
   }
 }

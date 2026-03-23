@@ -121,6 +121,30 @@ export function useCommentaryLoader({
   const maharshaLoadedRef = useRef(new Set());
   const soncinoLoadedRef = useRef(new Set());
 
+  // AbortController ref for canceling in-flight requests
+  const abortControllerRef = useRef(null);
+  const mountedRef = useRef(true);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
+  // Reset when book/chapter changes
+  useEffect(() => {
+    // Cancel any in-flight requests when navigation changes
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
+  }, [selectedBook, selectedChapter]);
+
   // Derived values
   const isTalmud = useMemo(() => isTalmudBook(selectedBook), [selectedBook]);
   const hasVerses = verses.length > 0;
@@ -163,6 +187,10 @@ export function useCommentaryLoader({
       // Use batch API for all cases (Torah, Tanach, AND Talmud)
       // This fixes N+1 problem: was making 30+ calls per daf, now makes 1
       const verseMap = await getRashiForChapter(selectedBook, selectedChapter);
+
+      // Check if still mounted and not aborted before updating state
+      if (!mountedRef.current) return;
+
       const newRashiData = {};
 
       if (isTalmud) {
@@ -183,10 +211,13 @@ export function useCommentaryLoader({
       }
       setRashiData(prev => ({ ...prev, ...newRashiData }));
     } catch (error) {
+      if (!mountedRef.current) return;
       log.error('Failed to batch fetch Rashi:', error);
       setErrors(prev => ({ ...prev, rashi: error.message || 'Failed to load Rashi commentary' }));
     }
-    setRashiLoading(prev => ({ ...prev, [chapterKey]: false }));
+    if (mountedRef.current) {
+      setRashiLoading(prev => ({ ...prev, [chapterKey]: false }));
+    }
   }, [selectedBook, selectedChapter, isTalmud]);
 
   // ============================================================================
@@ -200,13 +231,15 @@ export function useCommentaryLoader({
     setTosafotLoading(true);
     try {
       const comments = await getTosafotForDaf(selectedBook, selectedChapter);
+      if (!mountedRef.current) return;
       setTosafotData(prev => ({ ...prev, [cacheKey]: comments }));
     } catch (error) {
+      if (!mountedRef.current) return;
       log.error('Failed to fetch Tosafot:', error);
       setTosafotData(prev => ({ ...prev, [cacheKey]: [] }));
       setErrors(prev => ({ ...prev, tosafot: error.message || 'Failed to load Tosafot commentary' }));
     }
-    setTosafotLoading(false);
+    if (mountedRef.current) setTosafotLoading(false);
   }, [selectedBook, selectedChapter, isTalmud]);
 
   // ============================================================================
@@ -220,13 +253,15 @@ export function useCommentaryLoader({
     setMaharshaLoading(true);
     try {
       const data = await getMaharshaForDaf(selectedBook, selectedChapter);
+      if (!mountedRef.current) return;
       setMaharshaData(prev => ({ ...prev, [cacheKey]: data }));
     } catch (error) {
+      if (!mountedRef.current) return;
       log.error('Failed to fetch Maharsha:', error);
       setMaharshaData(prev => ({ ...prev, [cacheKey]: { comments: [] } }));
       setErrors(prev => ({ ...prev, maharsha: error.message || 'Failed to load Maharsha commentary' }));
     }
-    setMaharshaLoading(false);
+    if (mountedRef.current) setMaharshaLoading(false);
   }, [selectedBook, selectedChapter, isTalmud]);
 
   // ============================================================================
@@ -248,14 +283,16 @@ export function useCommentaryLoader({
     try {
       log.verbose(`Soncino: Fetching footnotes for ${selectedBook} ${selectedChapter}`);
       const footnotes = await getSoncinoFootnotesForTractate(selectedBook, selectedChapter);
+      if (!mountedRef.current) return;
       log.verbose(`Soncino: Got ${footnotes?.length || 0} footnotes`);
       setSoncinoData(prev => ({ ...prev, [cacheKey]: footnotes }));
     } catch (error) {
+      if (!mountedRef.current) return;
       log.error('Soncino: Failed to fetch:', error);
       setSoncinoData(prev => ({ ...prev, [cacheKey]: [], _error: error.message }));
       setErrors(prev => ({ ...prev, soncino: error.message || 'Failed to load Soncino commentary' }));
     }
-    setSoncinoLoading(false);
+    if (mountedRef.current) setSoncinoLoading(false);
   }, [selectedBook, selectedChapter, isTalmud, hasSoncinoAvailable]);
 
   // ============================================================================
@@ -271,6 +308,8 @@ export function useCommentaryLoader({
       log.debug(`Ramban: Batch loading chapter ${selectedBook} ${selectedChapter}`);
       const verseMap = await getRambanForChapter(selectedBook, selectedChapter);
 
+      if (!mountedRef.current) return;
+
       const newRambanData = {};
       verseMap.forEach((comments, verseNum) => {
         const cacheKey = `${selectedBook}:${selectedChapter}:${verseNum}`;
@@ -281,10 +320,11 @@ export function useCommentaryLoader({
       setRambanData(prev => ({ ...prev, ...newRambanData }));
       log.debug(`Ramban: Loaded ${verseMap.size} verses with batch API call`);
     } catch (error) {
+      if (!mountedRef.current) return;
       log.error('Failed to batch fetch Ramban:', error);
       setErrors(prev => ({ ...prev, ramban: error.message || 'Failed to load Ramban commentary' }));
     }
-    setRambanLoading(prev => ({ ...prev, [chapterKey]: false }));
+    if (mountedRef.current) setRambanLoading(prev => ({ ...prev, [chapterKey]: false }));
   }, [selectedBook, selectedChapter]);
 
   // ============================================================================
@@ -300,6 +340,8 @@ export function useCommentaryLoader({
       log.debug(`Ibn Ezra: Batch loading chapter ${selectedBook}:${selectedChapter}`);
       const verseMap = await getIbnEzraForChapter(selectedBook, selectedChapter);
 
+      if (!mountedRef.current) return;
+
       // Convert Map to object with verse-level keys
       const newIbnEzraData = {};
       verseMap.forEach((comments, verseNum) => {
@@ -311,10 +353,11 @@ export function useCommentaryLoader({
       setIbnEzraData(prev => ({ ...prev, ...newIbnEzraData }));
       log.debug(`Ibn Ezra: Loaded ${verseMap.size} verses with single API call`);
     } catch (error) {
+      if (!mountedRef.current) return;
       log.error('Failed to batch fetch Ibn Ezra:', error);
       setErrors(prev => ({ ...prev, ibnEzra: error.message || 'Failed to load Ibn Ezra commentary' }));
     }
-    setIbnEzraLoading(prev => ({ ...prev, [chapterKey]: false }));
+    if (mountedRef.current) setIbnEzraLoading(prev => ({ ...prev, [chapterKey]: false }));
   }, [selectedBook, selectedChapter]);
 
   // ============================================================================
@@ -330,6 +373,8 @@ export function useCommentaryLoader({
       log.debug(`Sforno: Batch loading chapter ${selectedBook}:${selectedChapter}`);
       const verseMap = await getSfornoForChapter(selectedBook, selectedChapter);
 
+      if (!mountedRef.current) return;
+
       // Convert Map to object with verse-level keys
       const newSfornoData = {};
       verseMap.forEach((comments, verseNum) => {
@@ -341,10 +386,11 @@ export function useCommentaryLoader({
       setSfornoData(prev => ({ ...prev, ...newSfornoData }));
       log.debug(`Sforno: Loaded ${verseMap.size} verses with single API call`);
     } catch (error) {
+      if (!mountedRef.current) return;
       log.error('Failed to batch fetch Sforno:', error);
       setErrors(prev => ({ ...prev, sforno: error.message || 'Failed to load Sforno commentary' }));
     }
-    setSfornoLoading(prev => ({ ...prev, [chapterKey]: false }));
+    if (mountedRef.current) setSfornoLoading(prev => ({ ...prev, [chapterKey]: false }));
   }, [selectedBook, selectedChapter]);
 
   // ============================================================================

@@ -8,8 +8,8 @@
 import { useCallback, useMemo, useEffect, lazy, Suspense, memo } from 'react';
 import './App.css';
 
-// Services
-import { initializePreload } from './services/dictionaryPreloader';
+// Services - PRO SCHOLAR V8: Use dictionaryLoader (consolidated from dictionaryPreloader)
+import { initializePreload } from './services/dictionaryLoader';
 
 // Context
 import { useTorah } from './context/TorahContext';

@@ -7,8 +7,9 @@
  *
  * Features: search history, keyboard shortcuts, copy/share, SRS flashcards
  */
-import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useRef, useMemo, memo } from 'react';
 import PropTypes from 'prop-types';
+import { safeGet, safeSet } from '../../utils/safeLocalStorage';
 import { scholarlyLookup, getEtymology, SCHOLARLY_SOURCES } from '../../services/scholarlyLexiconService';
 import { getWordFrequency, getRootOccurrences, getDerivedWords } from '../../services/wordFrequencyService';
 import { getWordSemantics, SEMANTIC_DOMAINS } from '../../services/semanticFieldService';
@@ -37,25 +38,12 @@ import './ScholarModeEnhancements.css';
 const HISTORY_KEY = 'lexicon-search-history';
 const MAX_HISTORY = 10;
 
-// Load/save history helpers
-const loadHistory = () => {
-  try {
-    return JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
-  } catch {
-    return [];
-  }
-};
-
-const saveHistory = (history) => {
-  try {
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
-  } catch (e) {
-    console.warn('Failed to save history:', e);
-  }
-};
+// Load/save history helpers - using safeLocalStorage
+const loadHistory = () => safeGet(HISTORY_KEY, []);
+const saveHistory = (history) => safeSet(HISTORY_KEY, history);
 
 // Skeleton Loading Component
-const LexiconSkeleton = () => (
+const LexiconSkeleton = memo(() => (
   <div className="lexicon-skeleton">
     <div className="skeleton-header">
       <div className="skeleton-bar skeleton-word"></div>
@@ -72,10 +60,11 @@ const LexiconSkeleton = () => (
       <div className="skeleton-bar skeleton-def"></div>
     </div>
   </div>
-);
+));
+LexiconSkeleton.displayName = 'LexiconSkeleton';
 
 // Frequency badge component
-const FrequencyBadge = ({ frequency }) => {
+const FrequencyBadge = memo(({ frequency }) => {
   if (!frequency) return null;
   const band = frequency.band;
   return (
@@ -85,10 +74,11 @@ const FrequencyBadge = ({ frequency }) => {
       <span className="freq-percentile">(top {frequency.percentile}%)</span>
     </div>
   );
-};
+});
+FrequencyBadge.displayName = 'FrequencyBadge';
 
 // Semantic field display component
-const SemanticFieldDisplay = ({ semantics }) => {
+const SemanticFieldDisplay = memo(({ semantics }) => {
   if (!semantics) return null;
   return (
     <div className="semantic-field-section">
@@ -125,10 +115,11 @@ const SemanticFieldDisplay = ({ semantics }) => {
       )}
     </div>
   );
-};
+});
+SemanticFieldDisplay.displayName = 'SemanticFieldDisplay';
 
 // Construct chain display component
-const ConstructChainDisplay = ({ constructs }) => {
+const ConstructChainDisplay = memo(({ constructs }) => {
   if (!constructs || constructs.length === 0) return null;
   return (
     <div className="construct-chain-section">
@@ -147,13 +138,14 @@ const ConstructChainDisplay = ({ constructs }) => {
       </div>
     </div>
   );
-};
+});
+ConstructChainDisplay.displayName = 'ConstructChainDisplay';
 
 // =============================================================================
 // My Words Section (Vocabulary)
 // =============================================================================
 
-const MyWordsSection = React.memo(function MyWordsSection({ showFrench }) {
+const MyWordsSection = memo(function MyWordsSection({ showFrench }) {
   const { vocabulary, markReviewed, getStats, removeWord } = useVocabulary();
   const [isReviewing, setIsReviewing] = useState(false);
   const [showAll, setShowAll] = useState(false);

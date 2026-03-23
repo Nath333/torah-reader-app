@@ -49,7 +49,7 @@ export {
   getSourceReliability,
   getSourceBadgeData,
   sortSourcesByReliability,
-  getSourcesByTier,
+  getSourcesByType,
   isAcademicSource
 } from './dictionarySources';
 
@@ -129,3 +129,33 @@ export {
   getBinyanInfo,
   detectBinyan
 } from './morphologyPatterns';
+
+// =============================================================================
+// Critical Words & Fallback Translations
+// =============================================================================
+export {
+  CRITICAL_WORDS,
+  BIBLICAL_NAMES,
+  SHABBAT_WORDS,
+  COMMON_ABBREVIATIONS,
+  DOMAIN_ABBREVIATIONS,
+  ARAMAIC_TERMS,
+  VERB_FORMS,
+  PREFIXED_WORDS,
+  lookupCriticalWord,
+  isBiblicalName
+} from './criticalWords';
+
+// =============================================================================
+// Application Configuration
+// =============================================================================
+export {
+  TALMUD_DAF_RANGE,
+  HEBREW_GEMATRIA,
+  WORD_ANALYSIS,
+  UI_THRESHOLDS,
+  DICTIONARY_CONFIG,
+  PERFORMANCE,
+  FEATURE_FLAGS,
+  getFeatureFlag
+} from './appConfig';

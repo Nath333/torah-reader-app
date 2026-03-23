@@ -100,6 +100,7 @@
   color: var(--sefer-gold-accent);
   vertical-align: super;
   margin-inline-start: 0.3em;
+  -webkit-user-select: none;
   user-select: none;
 }
 

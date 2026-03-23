@@ -2,9 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import VerseJump from '../navigation/VerseJump';
 import CommentaryToggleDropdown from '../commentary/CommentaryToggleDropdown';
+import { useSettings } from '../../context';
 
 /**
  * ReaderControls - Toolbar for the Torah/Talmud reader
+ *
+ * PRO SCHOLAR V8: Refactored to use useSettings() directly
+ * This eliminates 15+ props that were being drilled through TorahReader.
  *
  * Provides controls for:
  * - Translation toggles (English, French)
@@ -16,47 +20,18 @@ import CommentaryToggleDropdown from '../commentary/CommentaryToggleDropdown';
  * - Verse jump navigation
  */
 const ReaderControls = ({
-  // Translation toggles
+  // Local UI state (not in settings context)
   showTranslation,
   setShowTranslation,
-  showFrench,
-  onToggleFrench,
-
-  // Hebrew options
-  showVowels,
-  toggleVowels,
-  showCantillation,
-  toggleCantillation,
-
-  // Word lookup
   enableClickableText,
   setEnableClickableText,
 
-  // Commentary toggles
-  showOnkelos,
-  onToggleOnkelos,
-  showRashi,
-  onToggleRashi,
-  showRamban,
-  onToggleRamban,
-  showIbnEzra,
-  onToggleIbnEzra,
-  showSforno,
-  onToggleSforno,
-  showTosafot,
-  onToggleTosafot,
-  showMaharsha,
-  onToggleMaharsha,
-  showSoncino,
-  onToggleSoncino,
-  hasSoncinoAvailable,
-
-  // Study mode
+  // Study mode state
   studyPanelIsOpen,
   onToggleStudyMode,
   selectedVersesCount,
 
-  // Font controls
+  // Font controls (localStorage)
   fontSize,
   setFontSize,
 
@@ -68,8 +43,18 @@ const ReaderControls = ({
 
   // Book type flags
   isTorahBook,
-  isTalmud
+  isTalmud,
+  hasSoncinoAvailable
 }) => {
+  // PRO SCHOLAR V8: Get settings from context (commentary toggles handled by CommentaryToggleDropdown)
+  const {
+    showFrench,
+    toggleFrench: onToggleFrench,
+    showVowels,
+    toggleVowels,
+    showCantillation,
+    toggleCantillation
+  } = useSettings();
   return (
     <div className="reader-controls" role="toolbar" aria-label="Reading controls">
       <div className="control-group">
@@ -134,24 +119,8 @@ const ReaderControls = ({
           Lookup
         </button>
 
-        {/* Commentaries dropdown */}
+        {/* Commentaries dropdown - PRO SCHOLAR V8: Uses useSettings() directly */}
         <CommentaryToggleDropdown
-          showOnkelos={showOnkelos}
-          onToggleOnkelos={onToggleOnkelos}
-          showRashi={showRashi}
-          onToggleRashi={onToggleRashi}
-          showRamban={showRamban}
-          onToggleRamban={onToggleRamban}
-          showIbnEzra={showIbnEzra}
-          onToggleIbnEzra={onToggleIbnEzra}
-          showSforno={showSforno}
-          onToggleSforno={onToggleSforno}
-          showTosafot={showTosafot}
-          onToggleTosafot={onToggleTosafot}
-          showMaharsha={showMaharsha}
-          onToggleMaharsha={onToggleMaharsha}
-          showSoncino={showSoncino}
-          onToggleSoncino={onToggleSoncino}
           hasSoncinoAvailable={hasSoncinoAvailable}
           isTorahBook={isTorahBook}
           isTalmud={isTalmud}
@@ -209,47 +178,18 @@ const ReaderControls = ({
 };
 
 ReaderControls.propTypes = {
-  // Translation toggles
+  // Local UI state (not in settings context)
   showTranslation: PropTypes.bool.isRequired,
   setShowTranslation: PropTypes.func.isRequired,
-  showFrench: PropTypes.bool,
-  onToggleFrench: PropTypes.func,
-
-  // Hebrew options
-  showVowels: PropTypes.bool,
-  toggleVowels: PropTypes.func,
-  showCantillation: PropTypes.bool,
-  toggleCantillation: PropTypes.func,
-
-  // Word lookup
   enableClickableText: PropTypes.bool,
   setEnableClickableText: PropTypes.func,
 
-  // Commentary toggles
-  showOnkelos: PropTypes.bool,
-  onToggleOnkelos: PropTypes.func,
-  showRashi: PropTypes.bool,
-  onToggleRashi: PropTypes.func,
-  showRamban: PropTypes.bool,
-  onToggleRamban: PropTypes.func,
-  showIbnEzra: PropTypes.bool,
-  onToggleIbnEzra: PropTypes.func,
-  showSforno: PropTypes.bool,
-  onToggleSforno: PropTypes.func,
-  showTosafot: PropTypes.bool,
-  onToggleTosafot: PropTypes.func,
-  showMaharsha: PropTypes.bool,
-  onToggleMaharsha: PropTypes.func,
-  showSoncino: PropTypes.bool,
-  onToggleSoncino: PropTypes.func,
-  hasSoncinoAvailable: PropTypes.bool,
-
-  // Study mode
+  // Study mode state
   studyPanelIsOpen: PropTypes.bool,
   onToggleStudyMode: PropTypes.func,
   selectedVersesCount: PropTypes.number,
 
-  // Font controls
+  // Font controls (localStorage)
   fontSize: PropTypes.number,
   setFontSize: PropTypes.func,
 
@@ -261,29 +201,19 @@ ReaderControls.propTypes = {
 
   // Book type flags
   isTorahBook: PropTypes.bool,
-  isTalmud: PropTypes.bool
+  isTalmud: PropTypes.bool,
+  hasSoncinoAvailable: PropTypes.bool
 };
 
 ReaderControls.defaultProps = {
-  showFrench: false,
-  showVowels: true,
-  showCantillation: true,
   enableClickableText: true,
-  showOnkelos: false,
-  showRashi: false,
-  showRamban: false,
-  showIbnEzra: false,
-  showSforno: false,
-  showTosafot: false,
-  showMaharsha: false,
-  showSoncino: false,
-  hasSoncinoAvailable: false,
   studyPanelIsOpen: false,
   selectedVersesCount: 0,
   fontSize: 18,
   verses: [],
   isTorahBook: false,
-  isTalmud: false
+  isTalmud: false,
+  hasSoncinoAvailable: false
 };
 
 export default React.memo(ReaderControls);

@@ -67,19 +67,9 @@ const TorahReader = ({
     showRamban,
     showIbnEzra,
     showSforno,
-    toggleFrench: onToggleFrench,
-    toggleOnkelos: onToggleOnkelos,
-    toggleRashi: onToggleRashi,
-    toggleTosafot: onToggleTosafot,
-    toggleMaharsha: onToggleMaharsha,
     toggleSoncino: onToggleSoncino,
-    toggleRamban: onToggleRamban,
-    toggleIbnEzra: onToggleIbnEzra,
-    toggleSforno: onToggleSforno,
     showVowels,
-    showCantillation,
-    toggleVowels,
-    toggleCantillation
+    showCantillation
   } = settings;
 
   // Local UI state
@@ -135,21 +125,25 @@ const TorahReader = ({
     return map;
   }, [selection.selectedVerses]);
 
+  // PRO SCHOLAR V8: Memoize showFlags to prevent unnecessary useCommentaryLoader re-runs
+  // Without this, a new object reference is created every render, triggering effect re-runs
+  const showFlags = useMemo(() => ({
+    showRashi,
+    showTosafot,
+    showMaharsha,
+    showSoncino,
+    showRamban,
+    showIbnEzra,
+    showSforno
+  }), [showRashi, showTosafot, showMaharsha, showSoncino, showRamban, showIbnEzra, showSforno]);
+
   // Commentary loading hook
   const commentaryData = useCommentaryLoader({
     selectedBook,
     selectedChapter,
     verses,
     isTorahBook,
-    showFlags: {
-      showRashi,
-      showTosafot,
-      showMaharsha,
-      showSoncino,
-      showRamban,
-      showIbnEzra,
-      showSforno
-    }
+    showFlags
   });
 
   // Translation loading hook
@@ -353,35 +347,12 @@ const TorahReader = ({
           </div>
         )}
 
-        {/* Reader Controls */}
+        {/* Reader Controls - PRO SCHOLAR V8: Uses useSettings() directly */}
         <ReaderControls
           showTranslation={showTranslation}
           setShowTranslation={setShowTranslation}
-          showFrench={showFrench}
-          onToggleFrench={onToggleFrench}
-          showVowels={showVowels}
-          toggleVowels={toggleVowels}
-          showCantillation={showCantillation}
-          toggleCantillation={toggleCantillation}
           enableClickableText={enableClickableText}
           setEnableClickableText={setEnableClickableText}
-          showOnkelos={showOnkelos}
-          onToggleOnkelos={onToggleOnkelos}
-          showRashi={showRashi}
-          onToggleRashi={onToggleRashi}
-          showRamban={showRamban}
-          onToggleRamban={onToggleRamban}
-          showIbnEzra={showIbnEzra}
-          onToggleIbnEzra={onToggleIbnEzra}
-          showSforno={showSforno}
-          onToggleSforno={onToggleSforno}
-          showTosafot={showTosafot}
-          onToggleTosafot={onToggleTosafot}
-          showMaharsha={showMaharsha}
-          onToggleMaharsha={onToggleMaharsha}
-          showSoncino={showSoncino}
-          onToggleSoncino={onToggleSoncino}
-          hasSoncinoAvailable={hasSoncinoAvailable}
           studyPanelIsOpen={studyPanelState.isOpen}
           onToggleStudyMode={toggleStudyMode}
           selectedVersesCount={selection.selectedVerses.length}
@@ -393,6 +364,7 @@ const TorahReader = ({
           selectedChapter={selectedChapter}
           isTorahBook={isTorahBook}
           isTalmud={isTalmud}
+          hasSoncinoAvailable={hasSoncinoAvailable}
         />
 
         {/* Verses Container */}

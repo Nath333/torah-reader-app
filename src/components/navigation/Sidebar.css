@@ -106,7 +106,7 @@
   border-right: 1px solid var(--card-border, var(--border, #e5e7eb));
   display: flex;
   flex-direction: column;
-  z-index: 100;
+  z-index: var(--z-sidebar, 90);
   transition: var(--card-transition, all 0.3s ease);
   box-shadow: var(--card-shadow);
 }

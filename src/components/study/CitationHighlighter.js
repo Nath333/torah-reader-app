@@ -7,8 +7,8 @@ import React, { useMemo, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import './CitationHighlighter.css';
 
-// PRO SCHOLAR V6: Citation pattern detection
-import { detectCitations } from '../../services/unifiedRootService';
+// PRO SCHOLAR V8: Citation pattern detection (renamed from unifiedRootService)
+import { detectCitations } from '../../services/rootExtraction';
 
 // =============================================================================
 // CITATION TYPE CONFIGURATIONS

@@ -1,0 +1,10 @@
+/* =============================================================================
+   Effects Index - Import all effect modules
+   Replaces the monolithic enhancements.css with modular imports
+   ============================================================================= */
+
+@import './button-effects.css';
+@import './loading-effects.css';
+@import './card-effects.css';
+@import './modal-effects.css';
+@import './accessibility-effects.css';

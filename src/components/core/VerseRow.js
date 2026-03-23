@@ -975,4 +975,51 @@ VerseRow.defaultProps = {
   hasSoncinoAvailable: false
 };
 
-export default React.memo(VerseRow);
+/**
+ * PRO SCHOLAR V8: Custom comparator for VerseRow memoization
+ *
+ * Reduces re-renders by doing smart comparison:
+ * - Primitive props: strict equality
+ * - Object props: shallow comparison of keys
+ * - Function props: always equal (assumed stable via useCallback)
+ *
+ * This prevents re-renders when parent re-renders with same values.
+ */
+const arePropsEqual = (prevProps, nextProps) => {
+  // Quick bail: different verse numbers always need re-render
+  if (prevProps.verse?.verse !== nextProps.verse?.verse) return false;
+
+  // Key props that should trigger re-render
+  const keyProps = [
+    'isSelected', 'selectionOrder', 'isHighlighted', 'inDragRange', 'hasRipple',
+    'showTranslation', 'showFrench', 'showVowels', 'showCantillation',
+    'showOnkelos', 'showRashi', 'showTosafot', 'showMaharsha',
+    'showSoncino', 'showRamban', 'showIbnEzra', 'showSforno',
+    'copiedVerse', 'speakingVerse', 'editingNote', 'mastery'
+  ];
+
+  for (const prop of keyProps) {
+    if (prevProps[prop] !== nextProps[prop]) return false;
+  }
+
+  // Check verse text changes (rare but important)
+  if (prevProps.verse?.hebrewText !== nextProps.verse?.hebrewText) return false;
+  if (prevProps.verse?.englishText !== nextProps.verse?.englishText) return false;
+
+  // Check onkelos item (object comparison)
+  const prevOnkelos = prevProps.onkelosItem;
+  const nextOnkelos = nextProps.onkelosItem;
+  if ((prevOnkelos == null) !== (nextOnkelos == null)) return false;
+  if (prevOnkelos && nextOnkelos && prevOnkelos.text !== nextOnkelos.text) return false;
+
+  // Translation data comparison (check key content)
+  const prevTrans = prevProps.translationData || {};
+  const nextTrans = nextProps.translationData || {};
+  const verseKey = `${nextProps.selectedBook}:${nextProps.selectedChapter}:${nextProps.verse?.verse}`;
+  if (prevTrans.frenchTranslations?.[verseKey] !== nextTrans.frenchTranslations?.[verseKey]) return false;
+
+  // All checks passed - props are equal
+  return true;
+};
+
+export default React.memo(VerseRow, arePropsEqual);

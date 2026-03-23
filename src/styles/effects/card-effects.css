@@ -1,0 +1,262 @@
+/* =============================================================================
+   Card Effects - Hover effects, lift animations, and glass morphism
+   Split from enhancements.css for better organization
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   Enhancement Variables
+   ----------------------------------------------------------------------------- */
+
+:root {
+  /* Hover shadows (specific to enhancement effects) */
+  --shadow-hover-light: 0 8px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.04);
+  --shadow-hover-dark: 0 8px 25px rgba(0, 0, 0, 0.3), 0 4px 10px rgba(0, 0, 0, 0.2);
+  --shadow-lift: 0 12px 32px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
+
+  /* Lift transform presets */
+  --lift-small: translateY(-2px);
+  --lift-medium: translateY(-4px);
+  --lift-large: translateY(-6px);
+}
+
+/* -----------------------------------------------------------------------------
+   Glass Cards & Containers
+   ----------------------------------------------------------------------------- */
+
+.content-card,
+.navigation,
+.loading-indicator {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Subtle gradient mesh background for main content */
+.main-content::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--gradient-mesh,
+    radial-gradient(at 40% 20%, rgba(91, 76, 219, 0.08) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(124, 58, 237, 0.06) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, rgba(13, 148, 136, 0.06) 0px, transparent 50%)
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Dark mode gradient mesh */
+.app.dark-mode .main-content::before {
+  background: var(--gradient-mesh,
+    radial-gradient(at 40% 20%, rgba(129, 140, 248, 0.1) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(167, 139, 250, 0.08) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, rgba(20, 184, 166, 0.06) 0px, transparent 50%)
+  );
+}
+
+/* -----------------------------------------------------------------------------
+   Enhanced Hover Effects for Cards
+   ----------------------------------------------------------------------------- */
+
+/* Lift effect on hover */
+.verse-item,
+.bookmark-item,
+.history-item,
+.vocabulary-item {
+  transition:
+    transform var(--duration-normal, 250ms) var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1)),
+    box-shadow var(--duration-normal, 250ms) ease !important;
+}
+
+.verse-item:hover,
+.bookmark-item:hover,
+.history-item:hover,
+.vocabulary-item:hover {
+  transform: var(--lift-small) !important;
+  box-shadow: var(--shadow-hover-light) !important;
+}
+
+/* Border glow on focus */
+.verse-item:focus-within,
+.search-box:focus-within {
+  box-shadow:
+    0 0 0 2px var(--bg, #f8fafc),
+    0 0 0 4px var(--primary, #5b4cdb),
+    0 4px 14px var(--primary-glow, rgba(91, 76, 219, 0.15)) !important;
+}
+
+/* Dark mode hover shadows */
+.app.dark-mode .verse-item:hover,
+.app.dark-mode .bookmark-item:hover,
+.app.dark-mode .history-item:hover {
+  box-shadow: var(--shadow-hover-dark) !important;
+}
+
+/* -----------------------------------------------------------------------------
+   Premium Card Effects
+   ----------------------------------------------------------------------------- */
+
+/* Premium card hover with depth */
+.premium-card {
+  position: relative;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  transition: all 0.4s var(--ease-out-expo);
+}
+
+.premium-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.02) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.premium-card::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    var(--primary-light) 50%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: -1;
+}
+
+.premium-card:hover::after {
+  opacity: 1;
+}
+
+.premium-card:hover {
+  transform: var(--lift-large);
+  box-shadow:
+    0 20px 40px rgba(91, 76, 219, 0.1),
+    0 8px 16px rgba(0, 0, 0, 0.05);
+  border-color: transparent;
+}
+
+/* -----------------------------------------------------------------------------
+   Card Lift & Glow Effects
+   ----------------------------------------------------------------------------- */
+
+/* Subtle lift with shadow */
+.card-lift {
+  transition: transform 0.3s var(--ease-smooth),
+              box-shadow 0.3s ease;
+}
+
+.card-lift:hover {
+  transform: var(--lift-medium);
+  box-shadow: var(--shadow-lift);
+}
+
+/* Border highlight on hover */
+.card-border-glow {
+  position: relative;
+  transition: border-color 0.3s ease;
+}
+
+.card-border-glow::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, var(--primary), var(--accent-purple));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.card-border-glow:hover::before {
+  opacity: 1;
+}
+
+.card-border-glow:hover {
+  border-color: transparent;
+}
+
+/* -----------------------------------------------------------------------------
+   Interactive Glow Effects
+   ----------------------------------------------------------------------------- */
+
+/* Subtle glow on hover */
+.glow-on-hover {
+  position: relative;
+}
+
+.glow-on-hover::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(
+    var(--glow-angle, 135deg),
+    var(--primary) 0%,
+    var(--accent-purple) 50%,
+    var(--accent-teal) 100%
+  );
+  border-radius: inherit;
+  opacity: 0;
+  filter: blur(8px);
+  transition: opacity 0.4s ease;
+  z-index: -1;
+}
+
+.glow-on-hover:hover::before {
+  opacity: 0.4;
+}
+
+/* Animated border gradient */
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.animated-border {
+  position: relative;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-lg);
+}
+
+.animated-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--border-angle),
+    var(--primary),
+    var(--accent-purple),
+    var(--accent-teal),
+    var(--primary)
+  );
+  z-index: -1;
+  animation: rotateBorder 4s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.animated-border:hover::before {
+  opacity: 1;
+}
+
+@keyframes rotateBorder {
+  to {
+    --border-angle: 360deg;
+  }
+}

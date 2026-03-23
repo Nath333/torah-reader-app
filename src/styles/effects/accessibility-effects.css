@@ -1,0 +1,130 @@
+/* =============================================================================
+   Accessibility Effects - Focus rings, reduced motion, scroll behavior
+   Split from enhancements.css for better organization
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   Focus Ring Enhancements
+   ----------------------------------------------------------------------------- */
+
+/* Beautiful animated focus ring */
+@keyframes focusRing {
+  0% {
+    box-shadow: 0 0 0 0 var(--primary-glow, rgba(91, 76, 219, 0.5));
+  }
+  50% {
+    box-shadow: 0 0 0 4px var(--primary-glow, rgba(91, 76, 219, 0.3));
+  }
+  100% {
+    box-shadow: 0 0 0 2px var(--primary-glow, rgba(91, 76, 219, 0.4));
+  }
+}
+
+button:focus-visible,
+.toolbar-btn:focus-visible,
+a:focus-visible {
+  animation: focusRing 0.3s ease forwards;
+}
+
+/* -----------------------------------------------------------------------------
+   Scroll Behavior Enhancements
+   ----------------------------------------------------------------------------- */
+
+/* Smooth momentum scrolling */
+.main-content,
+.sidebar-content,
+.verse-container {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Scroll snap for better reading experience */
+@media (min-width: 768px) {
+  .verse-container {
+    scroll-snap-type: y proximity;
+  }
+
+  .verse-item {
+    scroll-snap-align: start;
+    scroll-margin-top: 80px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Text Selection Styling
+   ----------------------------------------------------------------------------- */
+
+::selection {
+  background: var(--primary-light, #f0eeff);
+  color: var(--primary, #5b4cdb);
+}
+
+.app.dark-mode ::selection {
+  background: var(--primary, #818cf8);
+  color: white;
+}
+
+/* Hebrew text selection */
+[dir="rtl"]::selection,
+[lang="he"]::selection {
+  background: rgba(91, 76, 219, 0.3);
+}
+
+/* -----------------------------------------------------------------------------
+   Reduced Motion Support
+   ----------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .toolbar-btn::after {
+    display: none;
+  }
+
+  .glow-on-hover::before,
+  .animated-border::before,
+  .premium-card::after {
+    display: none;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Error State Shake Animation
+   ----------------------------------------------------------------------------- */
+
+.shake-error {
+  animation: shakeError 0.4s ease-in-out;
+}
+
+@keyframes shakeError {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+/* -----------------------------------------------------------------------------
+   Success State Glow
+   ----------------------------------------------------------------------------- */
+
+.state-success {
+  position: relative;
+}
+
+.state-success::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  background: var(--success);
+  filter: blur(12px);
+  opacity: 0.2;
+  z-index: -1;
+  animation: pulseGlow 2s ease-in-out infinite;
+}

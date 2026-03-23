@@ -21,8 +21,9 @@
  * - Summary builder for each sugya
  * - Track mastery progress
  */
-import React, { useState, useMemo, useCallback, useRef, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useMemo, useCallback, useRef, useEffect, lazy, Suspense, memo } from 'react';
 import PropTypes from 'prop-types';
+import { safeGet, safeSet } from '../../utils/safeLocalStorage';
 import { findAbbreviations, expandAllAbbreviations } from '../../services/talmudicAbbreviationsService';
 import { detectStructuralMarkers, TALMUDIC_PATTERNS } from '../../services/discoursePatternService';
 
@@ -197,19 +198,15 @@ function useCopyToClipboard() {
 }
 
 // Hook for managing study notes in localStorage with size limits
+// PRO SCHOLAR: Uses safeLocalStorage for error handling
 const MAX_NOTES_ENTRIES = 100;
 const MAX_NOTE_TEXT_LENGTH = 5000;
 const MAX_INSIGHTS_PER_SUGYA = 20;
 
 function useStudyNotes(sugyaKey) {
   const [notes, setNotes] = useState(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEYS.notes);
-      const all = stored ? JSON.parse(stored) : {};
-      return all[sugyaKey] || { text: '', insights: [], questions: [] };
-    } catch {
-      return { text: '', insights: [], questions: [] };
-    }
+    const all = safeGet(STORAGE_KEYS.notes, {});
+    return all[sugyaKey] || { text: '', insights: [], questions: [] };
   });
 
   const saveNotes = useCallback((newNotes) => {
@@ -219,45 +216,32 @@ function useStudyNotes(sugyaKey) {
       questions: newNotes.questions || []
     };
     setNotes(sanitized);
-    try {
-      const stored = localStorage.getItem(STORAGE_KEYS.notes);
-      const all = stored ? JSON.parse(stored) : {};
-      all[sugyaKey] = sanitized;
-      const keys = Object.keys(all);
-      if (keys.length > MAX_NOTES_ENTRIES) {
-        keys.slice(0, keys.length - MAX_NOTES_ENTRIES).forEach(k => delete all[k]);
-      }
-      localStorage.setItem(STORAGE_KEYS.notes, JSON.stringify(all));
-    } catch (e) {
-      console.warn('Failed to save notes:', e);
+    const all = safeGet(STORAGE_KEYS.notes, {});
+    all[sugyaKey] = sanitized;
+    // Limit total entries
+    const keys = Object.keys(all);
+    if (keys.length > MAX_NOTES_ENTRIES) {
+      keys.slice(0, keys.length - MAX_NOTES_ENTRIES).forEach(k => delete all[k]);
     }
+    safeSet(STORAGE_KEYS.notes, all);
   }, [sugyaKey]);
 
   return [notes, saveNotes];
 }
 
 // Hook for tracking mastery level
+// PRO SCHOLAR: Uses safeLocalStorage for error handling
 function useMasteryLevel(sugyaKey) {
   const [level, setLevel] = useState(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEYS.mastery);
-      const all = stored ? JSON.parse(stored) : {};
-      return all[sugyaKey] || 0;
-    } catch {
-      return 0;
-    }
+    const all = safeGet(STORAGE_KEYS.mastery, {});
+    return all[sugyaKey] || 0;
   });
 
   const updateLevel = useCallback((newLevel) => {
     setLevel(newLevel);
-    try {
-      const stored = localStorage.getItem(STORAGE_KEYS.mastery);
-      const all = stored ? JSON.parse(stored) : {};
-      all[sugyaKey] = newLevel;
-      localStorage.setItem(STORAGE_KEYS.mastery, JSON.stringify(all));
-    } catch (e) {
-      console.warn('Failed to save mastery:', e);
-    }
+    const all = safeGet(STORAGE_KEYS.mastery, {});
+    all[sugyaKey] = newLevel;
+    safeSet(STORAGE_KEYS.mastery, all);
   }, [sugyaKey]);
 
   return [level, updateLevel];
@@ -1487,36 +1471,26 @@ const StudyModeSelector = React.memo(function StudyModeSelector({ currentMode, o
 
 const CHAZARA_STORAGE_KEY = 'talmud_chazara_assessment';
 
-const ChazaraQuestions = React.memo(function ChazaraQuestions({ patterns, text, sugyaKey }) {
+const ChazaraQuestions = memo(function ChazaraQuestions({ patterns, text, sugyaKey }) {
   const [showAnswers, setShowAnswers] = useState({});
 
-  // Persist self-assessment to localStorage
+  // Persist self-assessment using safeLocalStorage
   const [selfAssessment, setSelfAssessment] = useState(() => {
-    try {
-      const stored = localStorage.getItem(CHAZARA_STORAGE_KEY);
-      const all = stored ? JSON.parse(stored) : {};
-      return all[sugyaKey] || {};
-    } catch {
-      return {};
-    }
+    const all = safeGet(CHAZARA_STORAGE_KEY, {});
+    return all[sugyaKey] || {};
   });
 
   // Save assessment when it changes
   useEffect(() => {
     if (!sugyaKey || Object.keys(selfAssessment).length === 0) return;
-    try {
-      const stored = localStorage.getItem(CHAZARA_STORAGE_KEY);
-      const all = stored ? JSON.parse(stored) : {};
-      all[sugyaKey] = selfAssessment;
-      // Limit storage to last 50 sugyot
-      const keys = Object.keys(all);
-      if (keys.length > 50) {
-        keys.slice(0, keys.length - 50).forEach(k => delete all[k]);
-      }
-      localStorage.setItem(CHAZARA_STORAGE_KEY, JSON.stringify(all));
-    } catch (e) {
-      console.warn('Failed to save chazara assessment:', e);
+    const all = safeGet(CHAZARA_STORAGE_KEY, {});
+    all[sugyaKey] = selfAssessment;
+    // Limit storage to last 50 sugyot
+    const keys = Object.keys(all);
+    if (keys.length > 50) {
+      keys.slice(0, keys.length - 50).forEach(k => delete all[k]);
     }
+    safeSet(CHAZARA_STORAGE_KEY, all);
   }, [selfAssessment, sugyaKey]);
 
   // Generate review questions based on sugya structure
@@ -1808,34 +1782,24 @@ const StudyNotesPanel = React.memo(function StudyNotesPanel({ sugyaKey, text }) 
 
 const BEKIUS_STORAGE_KEY = 'talmud_bekius_checklist';
 
-const BekiusSummary = React.memo(function BekiusSummary({ patterns, text, sugyaKey }) {
-  // Persist checklist state
+const BekiusSummary = memo(function BekiusSummary({ patterns, text, sugyaKey }) {
+  // Persist checklist state using safeLocalStorage
   const [checklist, setChecklist] = useState(() => {
-    try {
-      const stored = localStorage.getItem(BEKIUS_STORAGE_KEY);
-      const all = stored ? JSON.parse(stored) : {};
-      return all[sugyaKey] || {};
-    } catch {
-      return {};
-    }
+    const all = safeGet(BEKIUS_STORAGE_KEY, {});
+    return all[sugyaKey] || {};
   });
 
   // Save checklist when it changes
   useEffect(() => {
     if (!sugyaKey || Object.keys(checklist).length === 0) return;
-    try {
-      const stored = localStorage.getItem(BEKIUS_STORAGE_KEY);
-      const all = stored ? JSON.parse(stored) : {};
-      all[sugyaKey] = checklist;
-      // Limit to 50 entries
-      const keys = Object.keys(all);
-      if (keys.length > 50) {
-        keys.slice(0, keys.length - 50).forEach(k => delete all[k]);
-      }
-      localStorage.setItem(BEKIUS_STORAGE_KEY, JSON.stringify(all));
-    } catch (e) {
-      console.warn('Failed to save bekius checklist:', e);
+    const all = safeGet(BEKIUS_STORAGE_KEY, {});
+    all[sugyaKey] = checklist;
+    // Limit to 50 entries
+    const keys = Object.keys(all);
+    if (keys.length > 50) {
+      keys.slice(0, keys.length - 50).forEach(k => delete all[k]);
     }
+    safeSet(BEKIUS_STORAGE_KEY, all);
   }, [checklist, sugyaKey]);
 
   const toggleCheck = useCallback((id) => {

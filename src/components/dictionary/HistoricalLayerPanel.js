@@ -17,14 +17,15 @@ import './HistoricalLayerPanel.css';
 // SAFE IMPORTS
 // =============================================================================
 
+// PRO SCHOLAR V8: Renamed from proScholarV6 to linguisticAnalysis
 let HISTORICAL_LAYERS, HISTORICAL_EVOLUTION, detectHistoricalLayer;
 try {
-  const proScholarV6 = require('../../services/proScholarV6');
-  HISTORICAL_LAYERS = proScholarV6.HISTORICAL_LAYERS;
-  HISTORICAL_EVOLUTION = proScholarV6.HISTORICAL_EVOLUTION;
-  detectHistoricalLayer = proScholarV6.detectHistoricalLayer;
+  const linguisticAnalysis = require('../../services/linguisticAnalysis');
+  HISTORICAL_LAYERS = linguisticAnalysis.HISTORICAL_LAYERS;
+  HISTORICAL_EVOLUTION = linguisticAnalysis.HISTORICAL_EVOLUTION;
+  detectHistoricalLayer = linguisticAnalysis.detectHistoricalLayer;
 } catch (e) {
-  console.debug('[HistoricalLayerPanel] V6 service not available:', e.message);
+  console.debug('[HistoricalLayerPanel] linguisticAnalysis not available:', e.message);
   HISTORICAL_LAYERS = {};
   HISTORICAL_EVOLUTION = {};
   detectHistoricalLayer = () => null;

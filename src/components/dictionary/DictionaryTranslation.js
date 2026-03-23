@@ -12,8 +12,9 @@
 
 import React, { useMemo, useState } from 'react';
 import { splitIntoWords, cleanHebrewWord } from '../../services/hebrewDictionary';
-import { lookupWordSync } from '../../services/combinedTranslationService';
+import { lookupWordSync } from '../../services/unifiedLookupService';
 import { getSourceInfo, RELIABILITY_TIERS, isAcademicSource } from '../../constants/dictionarySources';
+import { CRITICAL_WORDS, TALMUD_DAF_RANGE, HEBREW_GEMATRIA } from '../../constants';
 import { cleanDefinition } from '../../utils/definitionCleaner';
 import { lookupHalachicWithPrefix, RASHI_VOCABULARY } from '../../utils/commentaryUtils';
 import { STOP_WORDS, lookupFunctionWord, FUNCTION_WORDS } from '../../constants/morphology';
@@ -172,45 +173,7 @@ const checkRashiWithPrefixes = (word) => {
   return null;
 };
 
-// === CRITICAL WORD FALLBACK ===
-// High-priority words that MUST have correct translations
-// Used as fallback when other lookups fail (e.g., due to Unicode issues)
-const CRITICAL_WORDS = {
-  // Biblical names
-  'משה': 'Moses',
-  'אהרן': 'Aaron',
-  'אברהם': 'Abraham',
-  'יצחק': 'Isaac',
-  'יעקב': 'Jacob',
-  'דוד': 'David',
-  'שלמה': 'Solomon',
-  // Shabbat variations (NOT page references - gematria 702 is out of range)
-  'שבת': 'Shabbat',
-  'שבת:': 'Shabbat',  // With trailing colon (punctuation)
-  'השבת': 'the Shabbat',
-  // Verb forms
-  'ויעבירו': 'and they proclaimed',
-  // Abbreviations
-  'וגו': 'etc.',
-  "וגו'": 'etc.',
-  'וגו׳': 'etc.',
-  // Aramaic pronouns
-  'להו': 'to them',
-  // Aramaic/Talmudic terms
-  'ברישיה': 'at its beginning',
-  'מדבריהם': 'from their words',
-  // Domain abbreviations
-  'לר"ה': 'to public domain',
-  'לרה"י': 'to private domain',
-  'מרה"י': 'from private domain',
-  'לרה"ר': 'to public domain',
-  // Common prefixed words with clean translations
-  'בכל': 'in all',
-  'לכל': 'to all',
-  'מכל': 'from all',
-  'וכל': 'and all',
-  'ככל': 'like all',
-};
+// CRITICAL_WORDS imported from '../../constants' - see constants/criticalWords.js
 
 /**
  * Get ALL dictionary translations for a word - PRO SCHOLAR MODE
@@ -239,17 +202,13 @@ const getAllDictionaryResults = (word) => {
   };
 
   if (isTalmudicPageRef(word)) {
-    // Convert Hebrew letters to number for display
-    const hebrewToNum = { 'א': 1, 'ב': 2, 'ג': 3, 'ד': 4, 'ה': 5, 'ו': 6, 'ז': 7, 'ח': 8, 'ט': 9,
-      'י': 10, 'כ': 20, 'ך': 20, 'ל': 30, 'מ': 40, 'ם': 40, 'נ': 50, 'ן': 50, 'ס': 60, 'ע': 70,
-      'פ': 80, 'ף': 80, 'צ': 90, 'ץ': 90, 'ק': 100, 'ר': 200, 'ש': 300, 'ת': 400 };
+    // Convert Hebrew letters to number using centralized gematria table
     const letters = cleaned.replace(/[^א-ת]/g, '');
-    const pageNum = letters.split('').reduce((sum, c) => sum + (hebrewToNum[c] || 0), 0);
+    const pageNum = letters.split('').reduce((sum, c) => sum + (HEBREW_GEMATRIA[c] || 0), 0);
 
-    // PRO SCHOLAR V9: Valid daf range check
-    // Most tractates have 2-200 pages. Bava Batra (largest) has 176 pages.
-    // Numbers above 200 are almost certainly real words (שבת=702), not page refs.
-    if (pageNum >= 2 && pageNum <= 200) {
+    // PRO SCHOLAR V9: Valid daf range check using centralized config
+    // See constants/appConfig.js for TALMUD_DAF_RANGE documentation
+    if (pageNum >= TALMUD_DAF_RANGE.MIN && pageNum <= TALMUD_DAF_RANGE.MAX) {
       // Amud notation: : = amud bet (side b), . = amud alef (side a)
       const amud = word.includes(':') ? 'b' : 'a';
       return {
@@ -294,24 +253,23 @@ const getAllDictionaryResults = (word) => {
     results.push(result);
   };
 
-  // === PRO SCHOLAR V6: FUNCTION WORDS FIRST ===
+  // === PRO SCHOLAR V8: FUNCTION WORDS + DICTIONARY COMBINATION ===
   // Check for complete verb forms and common words that shouldn't be broken down
   // e.g., ויעבירו → "and they passed/proclaimed" (not "and they ed")
+  // V8 FIX: Don't return early - continue to also check academic dictionaries
+  // This allows showing both curated Rabbinic translation AND Jastrow/BDB sources
   const functionWordTranslation = lookupFunctionWord(cleaned);
+  let functionWordSource = null;
   if (functionWordTranslation) {
-    addResult({
-      source: 'Talmudic',
+    functionWordSource = {
+      source: 'Rabbinic',
       definition: functionWordTranslation,
-      isAcademic: true,
-      priority: -1, // Highest priority - before pre-classification
-    });
-    // For function words, return immediately with this result
-    // Don't query other sources that might return wrong verb analysis
-    return {
-      results,
-      isAbbrev,
-      structure,
+      isAcademic: false,
+      isLocal: true,
+      reliabilityTier: 3,
+      priority: 5, // Lower than academic sources - supplementary
     };
+    // DON'T return early - continue to dictionary lookup below
   }
 
   // === PRO SCHOLAR V5: PRE-CLASSIFICATION SECOND ===
@@ -513,6 +471,13 @@ const getAllDictionaryResults = (word) => {
         priority: 7,
       });
     }
+  }
+
+  // === PRO SCHOLAR V8: Add function word source if available ===
+  // This ensures curated translations are included alongside dictionary results
+  // Added AFTER academic sources so it appears as supplementary, not primary
+  if (functionWordSource) {
+    addResult(functionWordSource);
   }
 
   // Sort by priority (lower = better) then academic status

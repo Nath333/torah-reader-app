@@ -43,12 +43,12 @@ import FamilyTree from './FamilyTree';
 // SAFE IMPORTS - All services are optional
 // =============================================================================
 
-// Word lookup services
+// Word lookup services - PRO SCHOLAR V10: Use unifiedLookupService
 let lookupWord, quickLookup;
 try {
-  const orchestrator = require('../../services/wordLookupOrchestrator');
-  lookupWord = orchestrator.lookupWord;
-  quickLookup = orchestrator.quickLookup;
+  const unifiedService = require('../../services/unifiedLookupService');
+  lookupWord = unifiedService.lookupWord;
+  quickLookup = unifiedService.quickLookup;
 } catch (e) {
   lookupWord = async () => null;
   quickLookup = () => null;
@@ -158,16 +158,16 @@ try {
 }
 
 // =============================================================================
-// PRO SCHOLAR V6: Unified Root Service Integration
+// PRO SCHOLAR V8: Root Extraction Service (renamed from unifiedRootService)
 // =============================================================================
 let extractRootsEnhanced, analyzeBinyan, detectDialect, getSemanticField, DICTIONARY_TIERS;
 try {
-  const unifiedRoot = require('../../services/unifiedRootService');
-  extractRootsEnhanced = unifiedRoot.extractRootsEnhanced;
-  analyzeBinyan = unifiedRoot.analyzeBinyan;
-  detectDialect = unifiedRoot.detectDialect;
-  getSemanticField = unifiedRoot.getSemanticField;
-  DICTIONARY_TIERS = unifiedRoot.DICTIONARY_TIERS || {};
+  const rootExtraction = require('../../services/rootExtraction');
+  extractRootsEnhanced = rootExtraction.extractRootsEnhanced;
+  analyzeBinyan = rootExtraction.analyzeBinyan;
+  detectDialect = rootExtraction.detectDialect;
+  getSemanticField = rootExtraction.getSemanticField;
+  DICTIONARY_TIERS = rootExtraction.DICTIONARY_TIERS || {};
 } catch (e) {
   // eslint-disable-next-line no-unused-vars
   extractRootsEnhanced = () => null;

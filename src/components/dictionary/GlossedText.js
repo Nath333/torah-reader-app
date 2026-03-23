@@ -14,7 +14,7 @@
 
 import React, { useMemo, useCallback, useRef, useState } from 'react';
 import { splitIntoWords } from '../../services/hebrewDictionary';
-import { lookupWordSync, clearCaches as clearServiceCaches } from '../../services/combinedTranslationService';
+import { lookupWordSync, clearCaches as clearServiceCaches } from '../../services/unifiedLookupService';
 import { useSettings } from '../../context/SettingsContext';
 import {
   getSourceReliability,
@@ -124,27 +124,29 @@ const getWordGloss = (word, showFrench = false, contextMode = null, reference = 
     return glossCache.get(cacheKey);
   }
 
+  // PRO SCHOLAR V8: Declare outside try block so catch can access it
+  let functionWordSource = null;
+
   try {
-    // === PRIORITY 1: Check function words FIRST ===
-    // These are common particles/pronouns that often get wrong dictionary matches
+    // === PRO SCHOLAR V8: Check function words + continue to dictionary ===
+    // Save function word result but DON'T return early
+    // This allows combining curated vocab with academic dictionary sources
     const functionGloss = lookupFunctionWord(word);
     if (functionGloss) {
-      const glossData = {
+      functionWordSource = {
         gloss: functionGloss,
-        source: 'Talmudic',
-        sources: [{ name: 'Function Words', fullName: 'Common Talmudic Terms', definition: functionGloss }],
+        source: 'Rabbinic',
+        sources: [{ name: 'Rabbinic', fullName: 'Curated Rabbinic Vocabulary', definition: functionGloss }],
         sourceCount: 1,
-        tier: 'gold',  // Mark as gold since these are manually curated and correct
-        reliability: { level: 1, name: 'Function Words' },
+        tier: 'bronze', // V8: Downgraded - academic sources get priority
+        reliability: { level: 3, name: 'Rabbinic' },
         root: null,
         headword: word,
         isAramaic: false,
-        // PRO SCHOLAR v3: Grammar and confidence
-        grammar: null, // Function words don't have verb grammar
-        confidence: { score: 100, level: 'high', emoji: '✓', factors: ['Curated function word'] }
+        grammar: null,
+        confidence: { score: 90, level: 'high', emoji: '✓', factors: ['Curated function word'] }
       };
-      glossCache.set(cacheKey, glossData);
-      return glossData;
+      // DON'T return - continue to dictionary lookup
     }
 
     // === PRIORITY 1.5: Pre-classification for proper nouns, abbreviations, daf references ===
@@ -226,12 +228,30 @@ const getWordGloss = (word, showFrench = false, contextMode = null, reference = 
         matchType
       };
 
+      // === PRO SCHOLAR V8: Merge function word source if available ===
+      // Add curated source alongside academic sources (don't override)
+      if (functionWordSource && !glossData.sources?.some(s => s.name === 'Rabbinic')) {
+        glossData.sources = [...(glossData.sources || []), ...functionWordSource.sources];
+        glossData.sourceCount = glossData.sources.length;
+      }
+
       // Cache the result
       glossCache.set(cacheKey, glossData);
       return glossData;
     }
+
+    // === PRO SCHOLAR V8: Use function word source as fallback ===
+    // If dictionary lookup found nothing, use our curated translation
+    if (functionWordSource) {
+      glossCache.set(cacheKey, functionWordSource);
+      return functionWordSource;
+    }
   } catch (e) {
-    // Ignore lookup errors
+    // Ignore lookup errors - but still return function word if available
+    if (functionWordSource) {
+      glossCache.set(cacheKey, functionWordSource);
+      return functionWordSource;
+    }
   }
 
   const emptyResult = {

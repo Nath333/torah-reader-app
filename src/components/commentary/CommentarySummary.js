@@ -11,13 +11,13 @@ import {
   getSourceCredibility,
   getCredibilityBadge
 } from '../../services/sourceCredibilityService';
-// Pro Scholar v4 - Unified Feature Registry
+// PRO SCHOLAR V8: Feature flags (renamed from proScholarV4)
 import {
   getCached,
   setCached,
   prefetchWords,
   PRO_SCHOLAR_FEATURES
-} from '../../services/proScholarV4';
+} from '../../services/featureFlags';
 import { useProScholarV4, useKnowledgeGraph } from '../../hooks/useProScholarV4';
 import './CommentarySummary.css';
 

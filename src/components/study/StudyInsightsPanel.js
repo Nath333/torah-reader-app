@@ -7,8 +7,8 @@ import React, { useState, useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './StudyInsightsPanel.css';
 
-// PRO SCHOLAR V6: Telemetry and semantic field detection
-import { getTelemetry, getSemanticField } from '../../services/unifiedRootService';
+// PRO SCHOLAR V8: Telemetry and semantic field detection (renamed from unifiedRootService)
+import { getTelemetry, getSemanticField } from '../../services/rootExtraction';
 
 // =============================================================================
 // SEMANTIC FIELD DEFINITIONS (from proScholarV6)

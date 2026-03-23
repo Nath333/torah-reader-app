@@ -5,27 +5,17 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
+import { safeGet, safeSet } from '../utils/safeLocalStorage';
 
 const STORAGE_KEY = 'torah-reader-analysis-history';
 const MAX_HISTORY_SIZE = 50;
 
 function useAnalysisHistory() {
-  const [history, setHistory] = useState(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [history, setHistory] = useState(() => safeGet(STORAGE_KEY, []));
 
-  // Persist to localStorage
+  // Persist using safeLocalStorage
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-    } catch (e) {
-      console.warn('Failed to save analysis history:', e);
-    }
+    safeSet(STORAGE_KEY, history);
   }, [history]);
 
   // Add a new analysis to history

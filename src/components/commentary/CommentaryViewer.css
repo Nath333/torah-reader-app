@@ -24,8 +24,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10001;
+  z-index: var(--z-modal, 500);
   backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   animation: fadeIn 0.15s ease-out;
 }
 
@@ -54,7 +55,7 @@
 }
 
 .dark-mode .commentary-viewer {
-  background: #1e293b;
+  background: var(--bg-elevated, #1e293b);
 }
 
 /* Header - Compact */

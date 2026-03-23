@@ -16,10 +16,18 @@
  * shared-ui.css       - Shared component styles
  * Toast.css           - Toast notifications
  *
+ * EFFECTS (Modular):
+ * effects/            - Split from enhancements.css for better organization
+ *   button-effects.css      - Button transitions, FAB, button groups
+ *   loading-effects.css     - Spinners, skeletons, progress bars
+ *   card-effects.css        - Card hover, premium cards, glass morphism
+ *   modal-effects.css       - Modal/overlay animations
+ *   accessibility-effects.css - Focus rings, reduced motion, scroll behavior
+ *
  * SPECIALIZED:
  * textLayers.css      - Text overlay layers (commentary, translation)
  * scrollbars.css      - Custom scrollbar styling
- * enhancements.css    - Text enhancements and highlights
+ * enhancements.css    - Text enhancements, typography, translation cards
  * OzVeHadar.css       - Traditional page layout styles
  */
 
@@ -35,6 +43,9 @@
 @import './modal.css';
 @import './shared-ui.css';
 @import './Toast.css';
+
+/* === Effects (Modular) === */
+@import './effects/index.css';
 
 /* === Specialized === */
 @import './textLayers.css';

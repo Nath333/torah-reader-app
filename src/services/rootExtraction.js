@@ -1052,17 +1052,18 @@ export function getTopRoots(word, n = 3, lookupFn) {
 // =============================================================================
 
 // Lazy-load V6 to avoid circular dependencies
-let _v6Module = null;
+// PRO SCHOLAR V8: Renamed from proScholarV6 to linguisticAnalysis
+let _linguisticModule = null;
 const getV6 = () => {
-  if (!_v6Module) {
+  if (!_linguisticModule) {
     try {
-      _v6Module = require('./proScholarV6');
+      _linguisticModule = require('./linguisticAnalysis');
     } catch (e) {
-      if (DEBUG) log.debug('[V6] Module not available:', e.message);
-      _v6Module = null;
+      if (DEBUG) log.debug('[V6] linguisticAnalysis not available:', e.message);
+      _linguisticModule = null;
     }
   }
-  return _v6Module;
+  return _linguisticModule;
 };
 
 /**

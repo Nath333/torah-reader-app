@@ -89,6 +89,28 @@ export const CACHE_CONFIGS = {
     maxSize: 300,
     ttl: 60 * 60 * 1000, // 1 hour
     priority: 'low'
+  },
+  // PRO SCHOLAR V8: New cache configs for unified caching
+  hebcal: {
+    name: 'Jewish Calendar',
+    category: 'api',
+    maxSize: 100,
+    ttl: 30 * 60 * 1000, // 30 minutes
+    priority: 'low'
+  },
+  rootOccurrences: {
+    name: 'Root Occurrences',
+    category: 'linguistic',
+    maxSize: 200,
+    ttl: 60 * 60 * 1000, // 1 hour
+    priority: 'low'
+  },
+  frenchTranslation: {
+    name: 'French Translation',
+    category: 'dictionary',
+    maxSize: 5000,
+    ttl: 7 * 24 * 60 * 60 * 1000, // 7 days
+    priority: 'medium'
   }
 };
 

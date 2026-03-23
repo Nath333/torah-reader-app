@@ -1,12 +1,15 @@
 // Hebcal API Service for accurate Jewish calendar and parsha information
 // Uses the free Hebcal API for Jewish calendar calculations
+//
+// PRO SCHOLAR V8: Migrated to use CacheOrchestrator for unified caching & telemetry
+
+import { createManagedCache } from './cacheOrchestrator';
 
 const HEBCAL_BASE_URL = 'https://www.hebcal.com/hebcal';
 const SHABBAT_API_URL = 'https://www.hebcal.com/shabbat';
 
-// Cache for API responses
-const cache = new Map();
-const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
+// PRO SCHOLAR V8: Use managed cache with orchestrator telemetry
+const cache = createManagedCache('hebcal');
 
 // Fallback parsha data for offline mode - calculated based on approximate yearly cycle
 const FALLBACK_PARSHIOT = [
@@ -135,18 +138,7 @@ const getApproximateDafYomi = () => {
   };
 };
 
-const getCachedData = (key) => {
-  const cached = cache.get(key);
-  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-    return cached.data;
-  }
-  cache.delete(key);
-  return null;
-};
-
-const setCachedData = (key, data) => {
-  cache.set(key, { data, timestamp: Date.now() });
-};
+// PRO SCHOLAR V8: Cache helpers simplified - TTL is managed by createManagedCache
 
 /**
  * Get today's Jewish date and calendar information
@@ -154,7 +146,7 @@ const setCachedData = (key, data) => {
  */
 export const getJewishDate = async () => {
   const cacheKey = `jewishDate:${new Date().toDateString()}`;
-  const cached = getCachedData(cacheKey);
+  const cached = cache.get(cacheKey);
   if (cached) return cached;
 
   try {
@@ -183,7 +175,7 @@ export const getJewishDate = async () => {
     if (!response.ok) throw new Error('Hebcal API error');
 
     const data = await response.json();
-    setCachedData(cacheKey, data);
+    cache.set(cacheKey, data);
     return data;
   } catch (error) {
     console.error('Error fetching Jewish date:', error);
@@ -199,7 +191,7 @@ export const getJewishDate = async () => {
  */
 export const getWeeklyParsha = async (geonameid = '281184') => {
   const cacheKey = `parsha:${new Date().toDateString()}`;
-  const cached = getCachedData(cacheKey);
+  const cached = cache.get(cacheKey);
   if (cached) return cached;
 
   try {
@@ -229,7 +221,7 @@ export const getWeeklyParsha = async (geonameid = '281184') => {
       location: data.location || null
     };
 
-    setCachedData(cacheKey, result);
+    cache.set(cacheKey, result);
     return result;
   } catch (error) {
     console.error('Error fetching weekly parsha:', error);
@@ -254,7 +246,7 @@ export const getWeeklyParsha = async (geonameid = '281184') => {
  */
 export const getUpcomingHolidays = async (days = 30) => {
   const cacheKey = `holidays:${days}:${new Date().toDateString()}`;
-  const cached = getCachedData(cacheKey);
+  const cached = cache.get(cacheKey);
   if (cached) return cached;
 
   try {
@@ -286,7 +278,7 @@ export const getUpcomingHolidays = async (days = 30) => {
       return eventDate >= today && eventDate <= endDate;
     }).sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    setCachedData(cacheKey, events);
+    cache.set(cacheKey, events);
     return events;
   } catch (error) {
     console.error('Error fetching holidays:', error);
@@ -300,7 +292,7 @@ export const getUpcomingHolidays = async (days = 30) => {
  */
 export const getDafYomi = async () => {
   const cacheKey = `dafyomi:${new Date().toDateString()}`;
-  const cached = getCachedData(cacheKey);
+  const cached = cache.get(cacheKey);
   if (cached) return cached;
 
   try {
@@ -333,7 +325,7 @@ export const getDafYomi = async () => {
       daf: dafYomi.title?.split(' ').pop()
     } : null;
 
-    setCachedData(cacheKey, result);
+    cache.set(cacheKey, result);
     return result;
   } catch (error) {
     console.error('Error fetching Daf Yomi:', error);

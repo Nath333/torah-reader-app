@@ -16,6 +16,7 @@
 
 import React, { useCallback } from 'react';
 import { useModals, useModal } from '../../context/ModalContext';
+import ErrorBoundary from '../shared/ErrorBoundary';
 import WordIntelligenceCard from './WordIntelligenceCard';
 import './WordIntelligenceModal.css';
 
@@ -52,15 +53,17 @@ const WordIntelligenceModal = () => {
         className="word-intelligence-modal-container"
         onClick={(e) => e.stopPropagation()}
       >
-        <WordIntelligenceCard
-          word={word}
-          onClose={handlers.wordDetail.close}
-          onWordClick={handleWordClick}
-          showSRS={options.showSRS !== false}
-          showEtymology={options.showEtymology !== false}
-          showRelated={options.showRelated !== false}
-          compact={options.compact || false}
-        />
+        <ErrorBoundary name="WordIntelligenceCard" compact>
+          <WordIntelligenceCard
+            word={word}
+            onClose={handlers.wordDetail.close}
+            onWordClick={handleWordClick}
+            showSRS={options.showSRS !== false}
+            showEtymology={options.showEtymology !== false}
+            showRelated={options.showRelated !== false}
+            compact={options.compact || false}
+          />
+        </ErrorBoundary>
       </div>
     </div>
   );

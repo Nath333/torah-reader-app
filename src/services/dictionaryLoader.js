@@ -424,6 +424,31 @@ export function shouldPreload() {
   return hoursSincePreload > 24;
 }
 
+/**
+ * PRO SCHOLAR V8: Full initialization with common word preloading
+ * Replaces dictionaryPreloader.initializePreload()
+ *
+ * @returns {Promise<void>}
+ */
+export async function initializePreload() {
+  // PRIORITY 1: Load ALL local dictionaries
+  await preloadDictionaries();
+  const status = getCacheStatus();
+  log.debug(`[Preload] Dictionaries loaded: BDB=${status.bdb}, Jastrow=${status.jastrow}, Strongs=${status.strongs}`);
+
+  // PRIORITY 2: Preload common words into translation cache (if cache is cold)
+  // PRO SCHOLAR V10.3: Use unifiedLookupService instead of combinedTranslationService
+  if (shouldPreload()) {
+    try {
+      const { preloadCommonWords } = await import('./unifiedLookupService');
+      await preloadCommonWords();
+      localStorage.setItem('dictionary_preload_time', Date.now().toString());
+    } catch (e) {
+      log.debug('[Preload] Common words preload skipped:', e.message);
+    }
+  }
+}
+
 const dictionaryLoader = {
   // BDB
   getBDB,
@@ -457,6 +482,7 @@ const dictionaryLoader = {
 
   // PRO SCHOLAR V8: Unified initialization
   initializeDictionaries,
+  initializePreload,
   shouldPreload,
   COMMON_HEBREW_WORDS,
   COMMON_ARAMAIC_WORDS

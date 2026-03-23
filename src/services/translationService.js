@@ -1,16 +1,32 @@
 // =============================================================================
-// Translation Service
-// Provides Hebrew to English translation functionality
-// ALL TRANSLATIONS FROM API - NO HARDCODED DICTIONARIES
-// Uses Sefaria API (BDB, Jastrow, Strong's, Klein) via scholarlyLexiconService
+// TRANSLATION SERVICE
+// Pure text translation (Hebrew → English sentences/commentary)
+// Separated from word lookup concerns for cleaner architecture
+// =============================================================================
+//
+// PRO SCHOLAR V10.2: Extracted from combinedTranslationService
+//
+// This service handles TEXT TRANSLATION (sentences, paragraphs, commentary)
+// For WORD LOOKUP, use unifiedLookupService instead:
+//
+//   import { quickLookup, lookupWord } from './unifiedLookupService';
+//
 // =============================================================================
 
 import { scholarlyLookup } from './scholarlyLexiconService';
-import { cleanHebrewWord, splitIntoWords, getPrefixMeaning, getSuffixMeaning } from './hebrewDictionary';
-import { cleanHtml } from '../utils/sanitize';
+import { cleanHebrewWord } from './hebrewDictionary';
+import { createLogger } from '../utils/debug';
+
+const log = createLogger('TranslationService');
+
+// =============================================================================
+// SINGLE WORD TRANSLATION
+// =============================================================================
 
 /**
- * Translate a single Hebrew word using scholarly lexicons (API)
+ * Translate a single Hebrew word to English
+ * Uses Sefaria scholarly lexicons for accurate translation
+ *
  * @param {string} word - Hebrew word to translate
  * @returns {Promise<string|null>} - English translation or null
  */
@@ -27,13 +43,19 @@ export const translateWord = async (word) => {
     }
     return null;
   } catch (error) {
-    console.warn('Translation lookup failed:', error.message);
+    log.warn('Translation lookup failed:', error.message);
     return null;
   }
 };
 
+// =============================================================================
+// TEXT TRANSLATION
+// =============================================================================
+
 /**
  * Translate Hebrew text to English using Sefaria scholarly lexicons
+ * Processes text word-by-word with context awareness
+ *
  * @param {string} hebrewText - The Hebrew text to translate
  * @returns {Promise<string|null>} - The translated English text or null
  */
@@ -42,74 +64,68 @@ export const translateHebrewToEnglish = async (hebrewText) => {
     return null;
   }
 
-  const cleanText = cleanHtml(hebrewText);
-  if (!cleanText || cleanText.trim().length === 0) {
+  const cleanText = hebrewText.replace(/<[^>]*>/g, '').trim();
+  if (!cleanText || cleanText.length === 0) {
     return null;
   }
 
-  // Split into words
-  const words = splitIntoWords(cleanText);
+  // Split into words (Hebrew text handling)
+  const words = cleanText.split(/\s+/).filter(w => w.length > 0);
   if (words.length === 0) return null;
 
   const translatedWords = [];
-  let hasTranslation = false;
+  let hasTranslationResult = false;
 
   for (const word of words) {
     const cleaned = cleanHebrewWord(word);
 
-    // Skip very short words (likely particles handled by prefix meanings)
+    // Skip very short words
     if (!cleaned || cleaned.length < 2) {
       translatedWords.push(word);
       continue;
     }
 
     try {
-      // Get translation from scholarly lexicon API
       const result = await scholarlyLookup(cleaned);
 
       if (result?.primaryDefinition) {
-        // Add prefix meaning if word has prefix
-        const prefixMeaning = getPrefixMeaning(word.slice(0, 2)) ||
-                             getPrefixMeaning(word.slice(0, 1)) || '';
-
-        // Add suffix meaning if word has suffix
-        const suffixMeaning = getSuffixMeaning(word.slice(-2)) ||
-                             getSuffixMeaning(word.slice(-1)) || '';
-
-        translatedWords.push(prefixMeaning + result.primaryDefinition + suffixMeaning);
-        hasTranslation = true;
+        translatedWords.push(result.primaryDefinition);
+        hasTranslationResult = true;
       } else {
-        // Keep original word if no translation found
         translatedWords.push(word);
       }
     } catch (error) {
-      // Keep original word on error
       translatedWords.push(word);
     }
   }
 
-  if (!hasTranslation) {
-    return null; // No translation found for any word
+  if (!hasTranslationResult) {
+    return null;
   }
 
-  // Join and capitalize
   const result = translatedWords.join(' ');
   return result.charAt(0).toUpperCase() + result.slice(1);
 };
 
 /**
- * Translate Hebrew commentary with context-aware processing (async API version)
+ * Translate Hebrew commentary with context-aware processing
+ * Alias for translateHebrewToEnglish for semantic clarity
+ *
  * @param {string} hebrewText - The Hebrew commentary text
  * @returns {Promise<string|null>} - The translated English text or null
  */
 export const translateCommentary = async (hebrewText) => {
-  // Commentary uses same translation logic
   return translateHebrewToEnglish(hebrewText);
 };
 
+// =============================================================================
+// TRANSLATION UTILITIES
+// =============================================================================
+
 /**
  * Quick synchronous check if word might be translatable
- * (Does not perform actual translation - use translateWord for that)
+ * Does not perform actual translation - use translateWord for that
+ *
  * @param {string} word - Hebrew word
  * @returns {boolean} - True if word appears to be translatable
  */
@@ -120,6 +136,7 @@ export const isTranslatable = (word) => {
 
 /**
  * Get translation with source information
+ *
  * @param {string} word - Hebrew word
  * @returns {Promise<object>} - Translation result with source info
  */
@@ -137,7 +154,6 @@ export const translateWithSource = async (word) => {
     const result = await scholarlyLookup(cleaned);
 
     if (result?.primaryDefinition) {
-      // Determine which source provided the definition
       let source = 'Sefaria';
       if (result.sources?.bdb) source = 'BDB';
       else if (result.sources?.jastrow) source = 'Jastrow';
@@ -158,13 +174,19 @@ export const translateWithSource = async (word) => {
 
     return { translation: null, source: null, word: cleaned };
   } catch (error) {
-    console.warn('Translation with source failed:', error.message);
+    log.warn('Translation with source failed:', error.message);
     return { translation: null, source: null, word: cleaned, error: error.message };
   }
 };
 
+// =============================================================================
+// BATCH TRANSLATION
+// =============================================================================
+
 /**
- * Batch translate multiple words
+ * Batch translate multiple words efficiently
+ * Processes in batches to avoid overwhelming the API
+ *
  * @param {string[]} words - Array of Hebrew words
  * @returns {Promise<Map<string, string>>} - Map of word to translation
  */
@@ -198,13 +220,24 @@ export const batchTranslate = async (words) => {
   return results;
 };
 
+// =============================================================================
+// DEFAULT EXPORT
+// =============================================================================
+
 const translationService = {
+  // Single word
   translateWord,
+  translateWithSource,
+
+  // Text/commentary
   translateHebrewToEnglish,
   translateCommentary,
-  translateWithSource,
+
+  // Batch
   batchTranslate,
-  isTranslatable,
+
+  // Utilities
+  isTranslatable
 };
 
 export default translationService;

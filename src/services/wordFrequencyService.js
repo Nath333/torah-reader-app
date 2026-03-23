@@ -3,7 +3,11 @@
  *
  * Provides frequency data for Hebrew vocabulary in the Hebrew Bible,
  * enabling scholars to understand how common words are and where they appear.
+ *
+ * PRO SCHOLAR V8: Migrated to use CacheOrchestrator for root occurrences caching
  */
+
+import { createManagedCache } from './cacheOrchestrator';
 
 // Frequency bands for pedagogical purposes
 export const FREQUENCY_BANDS = {
@@ -426,8 +430,8 @@ export const BAND_KEYS = Object.keys(FREQUENCY_BANDS);
 // Sefaria API Integration for Root Occurrences
 // =============================================================================
 
-// Cache for root occurrences
-const rootOccurrencesCache = new Map();
+// PRO SCHOLAR V8: Use managed cache for root occurrences with orchestrator telemetry
+const rootOccurrencesCache = createManagedCache('rootOccurrences');
 
 /**
  * Fetch all occurrences of a root across Tanakh from Sefaria
@@ -437,10 +441,9 @@ const rootOccurrencesCache = new Map();
 export const getRootOccurrences = async (root) => {
   if (!root) return null;
 
-  // Check cache first
-  if (rootOccurrencesCache.has(root)) {
-    return rootOccurrencesCache.get(root);
-  }
+  // PRO SCHOLAR V8: Check managed cache (returns null for missing entries)
+  const cached = rootOccurrencesCache.get(root);
+  if (cached) return cached;
 
   try {
     // Search Sefaria for the root

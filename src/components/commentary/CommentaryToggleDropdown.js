@@ -1,35 +1,39 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useSettings } from '../../context';
 import './CommentaryToggleDropdown.css';
 
 /**
  * Compact dropdown for toggling commentaries in the TorahReader toolbar.
  * Groups all commentary toggles into a single dropdown menu.
+ *
+ * PRO SCHOLAR V8: Refactored to use useSettings() directly
+ * This eliminates props drilling from TorahReader → ReaderControls → here.
  */
 const CommentaryToggleDropdown = ({
-  // Torah commentaries
-  showOnkelos,
-  onToggleOnkelos,
-  showRashi,
-  onToggleRashi,
-  showRamban,
-  onToggleRamban,
-  showIbnEzra,
-  onToggleIbnEzra,
-  showSforno,
-  onToggleSforno,
-  // Talmud commentaries
-  showTosafot,
-  onToggleTosafot,
-  showMaharsha,
-  onToggleMaharsha,
-  // Talmud translations
-  showSoncino,
-  onToggleSoncino,
+  // Context flags (still needed as props)
   hasSoncinoAvailable = false,
-  // Context
   isTorahBook = false,
   isTalmud = false,
 }) => {
+  // PRO SCHOLAR V8: Get all commentary settings from context directly
+  const {
+    showOnkelos,
+    toggleOnkelos: onToggleOnkelos,
+    showRashi,
+    toggleRashi: onToggleRashi,
+    showRamban,
+    toggleRamban: onToggleRamban,
+    showIbnEzra,
+    toggleIbnEzra: onToggleIbnEzra,
+    showSforno,
+    toggleSforno: onToggleSforno,
+    showTosafot,
+    toggleTosafot: onToggleTosafot,
+    showMaharsha,
+    toggleMaharsha: onToggleMaharsha,
+    showSoncino,
+    toggleSoncino: onToggleSoncino
+  } = useSettings();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 

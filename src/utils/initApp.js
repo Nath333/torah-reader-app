@@ -4,7 +4,8 @@
  */
 
 import { setGroqApiKey, getStoredApiKey } from '../services/groqService';
-import { initializePreload } from '../services/dictionaryPreloader';
+// PRO SCHOLAR V8: Use dictionaryLoader (consolidated from dictionaryPreloader)
+import { initializePreload } from '../services/dictionaryLoader';
 
 /**
  * Initialize API keys from environment variables

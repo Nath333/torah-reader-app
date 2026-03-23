@@ -1,7 +1,7 @@
 // =============================================================================
 // Services Index - Unified API for all application services
 // =============================================================================
-// Usage: import { sefariaApi, combinedTranslationService } from './services';
+// Usage: import { sefariaApi, unifiedLookupService } from './services';
 // =============================================================================
 
 // =============================================================================
@@ -14,14 +14,14 @@
  * └── audioService        - Text-to-speech for Hebrew
  *
  * DICTIONARY & TRANSLATION
- * ├── combinedTranslationService  - PRIMARY: Multi-source word lookup (Hebrew + Aramaic)
+ * ├── unifiedLookupService        - PRIMARY: Multi-source word lookup (Hebrew + Aramaic)
+ * ├── translationService          - Text translation (Hebrew → English sentences/commentary)
+ * ├── dictionaryLoader            - PRIMARY: Lazy dictionary loading (BDB, Jastrow, Strong's)
  * ├── hebrewDictionary            - Hebrew word analysis, prefix/suffix handling
  * ├── babylonianDictionary        - Aramaic language detection
  * ├── calDictionaryService        - CAL API for Aramaic (fallback)
  * ├── scholarlyLexiconService     - Sefaria lexicon wrapper
- * ├── translationService          - Legacy API wrapper
- * ├── englishToFrenchService      - English → French translation
- * └── dictionaryPreloader         - Cache warm-up on app start
+ * └── englishToFrenchService      - English → French translation
  *
  * COMMENTARY SERVICES
  * ├── rashiService        - Rashi commentary
@@ -81,18 +81,40 @@ export { default as targumService } from './targumService';
 // =============================================================================
 // DICTIONARY & TRANSLATION SERVICES
 // =============================================================================
-// PRIMARY SERVICE: Use combinedTranslationService for all word lookups
-// It handles Hebrew + Aramaic, context-awareness, multi-source, and caching
-export { default as combinedTranslationService } from './combinedTranslationService';
+// PRO SCHOLAR V10.3: All word lookup now uses unifiedLookupService
+export { default as unifiedLookupService } from './unifiedLookupService';
+export {
+  lookupWord as lookupWordAsync,
+  quickLookup as lookupWordSync,
+  warmCache as prefetchTranslations,
+  isCached as hasTranslation,
+  clearCaches as clearTranslationCaches,
+  preloadCommonWords,
+  isPreloadComplete,
+  getPreloadStatus
+} from './unifiedLookupService';
+
+// =============================================================================
+// TRANSLATION SERVICE (PRO SCHOLAR V10.2)
+// Pure text translation (Hebrew → English sentences/commentary)
+// =============================================================================
+export { default as translationService } from './translationService';
+export {
+  translateWord,
+  translateHebrewToEnglish,
+  translateCommentary,
+  isTranslatable,
+  translateWithSource,
+  batchTranslate
+} from './translationService';
 
 // Supporting Dictionary Services
 export { default as hebrewDictionary } from './hebrewDictionary';
 export { default as babylonianDictionary } from './babylonianDictionary';
 export { default as calDictionaryService } from './calDictionaryService';
 export { default as scholarlyLexiconService } from './scholarlyLexiconService';
-export { default as translationService } from './translationService';
 export { default as englishToFrenchService } from './englishToFrenchService';
-export { default as dictionaryPreloader } from './dictionaryPreloader';
+// PRIMARY: Use dictionaryLoader for all dictionary loading
 export { default as dictionaryLoader } from './dictionaryLoader';
 
 // =============================================================================
@@ -307,16 +329,6 @@ export {
   clearCache as clearDictionaryCache
 } from './dictionaryLoader';
 
-// =============================================================================
-// NAMED EXPORTS - Dictionary Preloader
-// =============================================================================
-export {
-  preloadCommonWords,
-  preloadVerseWords,
-  shouldPreload,
-  markPreloadComplete,
-  initializePreload
-} from './dictionaryPreloader';
 
 // =============================================================================
 // NAMED EXPORTS - Groq API (Low-Level)
@@ -746,11 +758,14 @@ export {
 } from './rootFormsService';
 
 // =============================================================================
-// PRO SCHOLAR v4 - Unified Feature Registry & Performance Layer
-// NOTE: Root extraction moved to unifiedRootService.js (V6)
-// v4 still valid for: FEATURES flags, telemetry, service cache management
+// FEATURE FLAGS - Unified Feature Registry & Performance Layer
+// PRO SCHOLAR V8: Renamed from proScholarV4.js to featureFlags.js
+// NOTE: Root extraction moved to rootExtraction.js (V5)
+// Still valid for: FEATURES flags, telemetry, service management
 // =============================================================================
-export { default as proScholarV4 } from './proScholarV4';
+export { default as featureFlags } from './featureFlags';
+// Legacy alias for backwards compatibility
+export { default as proScholarV4 } from './featureFlags';
 export {
   // Version & Feature Flags
   PRO_SCHOLAR_VERSION,
@@ -758,12 +773,6 @@ export {
 
   // Service Management
   getService as getProService,
-
-  // Unified Cache System
-  getCached,
-  setCached,
-  clearCache as clearProCache,
-  getCacheStats as getProCacheStats,
 
   // Unified API
   analyzeWord as proAnalyzeWord,
@@ -778,23 +787,147 @@ export {
 
   // Telemetry
   getTelemetry as getProTelemetry
-} from './proScholarV4';
+} from './featureFlags';
 
 // =============================================================================
-// WORD LOOKUP ORCHESTRATOR - Unified Word Lookup Interface
+// ★★★ UNIFIED LOOKUP SERVICE - PRIMARY WORD LOOKUP API ★★★
+// PRO SCHOLAR V10.1: Clean, fast, pipeline-based lookup
 // =============================================================================
-export { default as wordLookupOrchestrator } from './wordLookupOrchestrator';
+// USE THIS FOR NEW CODE! It's cleaner and more maintainable than combinedTranslationService.
+//
+// Quick usage:
+//   import { lookupWordUnified, quickLookupUnified, batchLookup } from './services';
+//
+//   // Async with optional online sources
+//   const result = await lookupWordUnified('תורה', { includeOnline: true });
+//
+//   // Fast sync (local dictionaries only)
+//   const quick = quickLookupUnified('משה');
+//
+//   // Efficient batch
+//   const results = await batchLookup(['תורה', 'שבת', 'מלך']);
+//
+export { default as unifiedLookupService } from './unifiedLookupService';
+export {
+  // Core lookup functions
+  lookupWord as lookupWordUnified,
+  quickLookup as quickLookupUnified,
+  batchLookup,
+  lookupAllLocalDictionaries,
+
+  // PRO SCHOLAR V2: Enhanced lookup with all enrichments
+  lookupWordEnriched,
+
+  // PRO SCHOLAR V2: Scholarly features
+  generateCitation,
+  generateAllCitations,
+  calculateConfidence,
+  getRootFamilyExpansion,
+  getMorphology,
+
+  // Compatibility layer (migrated from combinedTranslationService)
+  lookupParallel,
+  getSourceComparison,
+  lookupWordSync as lookupWordSyncUnified,
+  clearCaches as clearCachesUnified,
+
+  // Cache management
+  getCacheStats as getUnifiedCacheStats,
+  clearCache as clearUnifiedCache,
+  warmCache,
+  isCached,
+
+  // Preloading (PRO SCHOLAR V10.3: Migrated from combinedTranslationService)
+  preloadCommonWords as preloadCommonWordsUnified,
+  isPreloadComplete as isPreloadCompleteUnified,
+  getPreloadStatus as getPreloadStatusUnified,
+
+  // Translation
+  getFrenchTranslation,
+
+  // PRO SCHOLAR V2: Progressive lookup (non-blocking UI pattern)
+  progressiveLookup,
+  progressiveBatchLookup,
+
+  // PRO SCHOLAR V10.1: Semantic field enrichment
+  getSemanticField as getWordSemanticField,
+  enrichWithSemantics,
+  lookupWithSemantics,
+
+  // PRO SCHOLAR V10.2: Full enrichment (most comprehensive lookup)
+  lookupFullyEnriched,
+
+  // PRO SCHOLAR V10.2: Contextual definition ranking
+  rankDefinitionsByContext,
+  lookupWithContextRanking,
+
+  // PRO SCHOLAR V10.2: Word relationships (aliased to avoid collision)
+  getWordRelationships as getWordRelationshipsUnified,
+  lookupWithRelationships,
+
+  // PRO SCHOLAR V10.2: Scholarly uncertainty markers
+  generateScholarlyUncertainty,
+  UNCERTAINTY_LEVELS,
+
+  // PRO SCHOLAR V10.2: Export capabilities
+  exportToJsonLD,
+  exportToMarkdown,
+  exportToFlashcard,
+
+  // PRO SCHOLAR V10.2: Constants (aliased to avoid collision)
+  CONTEXT_TYPES as UNIFIED_CONTEXT_TYPES,
+  WORD_RELATIONSHIP_TYPES as UNIFIED_RELATIONSHIP_TYPES,
+
+  // PRO SCHOLAR V10.2: Advanced source management
+  raceWithEarlyReturn,
+  getResultQualityScore,
+  rankSourcesByTier,
+  SCHOLARLY_TIERS,
+  SEMANTIC_DOMAINS,
+  RELIABILITY_TIERS
+} from './unifiedLookupService';
+
+// =============================================================================
+// WORD LOOKUP - Legacy aliases (use unifiedLookupService exports above)
+// PRO SCHOLAR V10: wordLookupOrchestrator has been consolidated into unifiedLookupService
+// =============================================================================
+// Legacy alias - points to unifiedLookupService
+export { default as wordLookupOrchestrator } from './unifiedLookupService';
 export {
   lookupWord,
   quickLookup,
-  clearLookupCache,
+  clearCache as clearLookupCache,
   getCacheStats as getLookupCacheStats
-} from './wordLookupOrchestrator';
+} from './unifiedLookupService';
 
 // =============================================================================
-// PRO SCHOLAR V6.1 - Unified Root Extraction Service
+// LOOKUP PIPELINE - Context management and stage execution
+// PRO SCHOLAR V10.3: Pipeline architecture for word lookup
 // =============================================================================
-export { default as unifiedRootService } from './unifiedRootService';
+export { default as lookupPipeline } from './lookupPipeline';
+export {
+  LookupContext,
+  createPipeline,
+  runPipelineWithContext,
+  isValidHeadwordMatch,
+  namedStage,
+  safeStage,
+  conditionalStage
+} from './lookupPipeline';
+
+// =============================================================================
+// LOOKUP STAGES - Composable lookup stages
+// PRO SCHOLAR V10.3: Stage definitions for lookup pipeline
+// =============================================================================
+export { default as lookupStages, createStages, STAGE_ORDER } from './lookupStages';
+
+// =============================================================================
+// ROOT EXTRACTION - Unified Root Extraction Service
+// PRO SCHOLAR V8: Renamed from unifiedRootService.js to rootExtraction.js
+// =============================================================================
+export { default as rootExtraction } from './rootExtraction';
+// Legacy alias for backwards compatibility
+export { default as unifiedRootService } from './rootExtraction';
 export {
   // ★★★ PRO SCHOLAR V6.1: Complete scholarly analysis (NEWEST!)
   analyzeWordComplete,
@@ -843,7 +976,7 @@ export {
   // Telemetry
   getTelemetry as getRootTelemetry,
   resetTelemetry as resetRootTelemetry
-} from './unifiedRootService';
+} from './rootExtraction';
 
 // =============================================================================
 // Service Preloader - Parallel initialization
@@ -862,9 +995,12 @@ export {
 export { wordLookupCache, WordLookupCache } from './cacheOrchestrator';
 
 // =============================================================================
-// PRO SCHOLAR V6.1 - Advanced Linguistic Analysis + Historical & Cognate Data
+// LINGUISTIC ANALYSIS - Advanced Linguistic Analysis + Historical & Cognate Data
+// PRO SCHOLAR V8: Renamed from proScholarV6.js to linguisticAnalysis.js
 // =============================================================================
-export { default as proScholarV6 } from './proScholarV6';
+export { default as linguisticAnalysis } from './linguisticAnalysis';
+// Legacy alias for backwards compatibility
+export { default as proScholarV6 } from './linguisticAnalysis';
 export {
   PRO_SCHOLAR_V6_VERSION,
   // Binyan analysis
@@ -905,7 +1041,7 @@ export {
 
   // ★ PRO SCHOLAR V6.1: Enhanced Analysis
   analyzeWordV6Enhanced
-} from './proScholarV6';
+} from './linguisticAnalysis';
 
 // =============================================================================
 // PRO SCHOLAR ENGINE V7 - Unified Orchestrator
@@ -974,3 +1110,61 @@ export {
   resetTelemetry,
   exportTelemetry
 } from './telemetryService';
+
+// =============================================================================
+// PRO SCHOLAR V10 - SCHOLARLY SOURCE AGGREGATOR
+// Parallel source fetching with expert consensus scoring
+// =============================================================================
+export { default as scholarSourceAggregator } from './scholarSourceAggregator';
+export {
+  // Source tiers & classification
+  SCHOLARLY_TIERS,
+  CONSENSUS_LEVELS,
+  getSourceTier,
+
+  // Consensus analysis
+  calculateConsensus,
+  formatConsensusForUI,
+
+  // Parallel aggregation
+  parallelSourceLookup,
+  aggregateLocalSources,
+  createAggregatedResult,
+
+  // Enhanced parallel fetching (V11)
+  raceWithEarlyReturn,
+
+  // Pipeline integration helpers (V11)
+  mergeSourcesIntoContext,
+  rankSourcesByTier,
+  getResultQualityScore,
+
+  // Scholarly comparison
+  generateSourceComparison,
+  getCachedAggregation
+} from './scholarSourceAggregator';
+
+// =============================================================================
+// PRO SCHOLAR V10 - WORD PREFETCH SERVICE
+// Intelligent prefetching for faster lookup experience
+// =============================================================================
+export { default as wordPrefetchService } from './wordPrefetchService';
+export {
+  // Verse prefetching
+  prefetchVerse,
+  prefetchVerses,
+  prefetchWord,
+
+  // Queue management
+  clearPrefetchQueue,
+  getPrefetchStatus,
+
+  // Warmup
+  warmupCommonWords,
+
+  // React integration
+  createPrefetchHandlers,
+
+  // Configuration
+  PREFETCH_CONFIG
+} from './wordPrefetchService';

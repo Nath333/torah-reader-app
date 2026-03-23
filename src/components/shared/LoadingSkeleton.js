@@ -1,4 +1,5 @@
 import React from 'react';
+import LoadingSpinner from './LoadingSpinner';
 import './LoadingSkeleton.css';
 
 // Hebrew loading messages for Torah study context
@@ -138,15 +139,16 @@ const LoadingSkeleton = ({ count = 5, type = 'verse', message = null }) => {
     );
   }
 
-  // Inline spinner with message
+  // Inline spinner with message - uses shared LoadingSpinner component
   if (type === 'spinner') {
     const msg = message || hebrewMessages[0];
     return (
       <div className="skeleton-spinner">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <circle cx="12" cy="12" r="10" strokeDasharray="32" strokeLinecap="round" />
-        </svg>
-        <span>{typeof msg === 'string' ? msg : msg.english}</span>
+        <LoadingSpinner
+          size="sm"
+          text={typeof msg === 'string' ? msg : msg.english}
+          inline
+        />
       </div>
     );
   }

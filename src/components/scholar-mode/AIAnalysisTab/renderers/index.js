@@ -1,22 +1,24 @@
 /**
  * AI Analysis Renderers - Modular exports
- * SharedComponents extracted for reuse
+ * Each renderer is now in its own file for maintainability
  */
 
-// Shared utility components (extracted)
+// Shared utility components
 export { ResultSection, KeyPointsList, LoadingSkeleton, RAGIndicator } from './SharedComponents';
 
-// Mode-specific renderers (still in main file)
+// Individual mode-specific renderers (extracted to separate files)
+export { TreeResultComponent } from './TreeResultComponent';
+export { SugyaFlowResult } from './SugyaFlowResult';
+export { ShaklaVetaryaResult } from './ShaklaVetaryaResult';
+export { SugyaSummaryResult } from './SugyaSummaryResult';
+export { PassageAnalysisResult } from './PassageAnalysisResult';
+export { DeepStudyResult } from './DeepStudyResult';
+export { TaamimResult } from './TaamimResult';
+export { ShoreshResult } from './ShoreshResult';
+export { ChavrutaResult } from './ChavrutaResult';
+
+// Remaining renderers (still in main file - TODO: extract these too)
 export {
-  TreeResultComponent,
-  SugyaFlowResult,
-  ShaklaVetaryaResult,
-  SugyaSummaryResult,
-  PassageAnalysisResult,
-  DeepStudyResult,
-  TaamimResult,
-  ShoreshResult,
-  ChavrutaResult,
   ShiurResult,
   NafkaMinaResult,
   MekabilotResult,

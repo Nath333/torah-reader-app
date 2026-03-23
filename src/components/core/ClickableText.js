@@ -21,13 +21,15 @@ import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import PropTypes from 'prop-types';
 import './ClickableText.css';
 
-// Services - Use unified orchestrator
+// Services - PRO SCHOLAR V10: Use unifiedLookupService (consolidated)
 import { splitIntoWords, hasTranslation as hasLocalTranslation } from '../../services/hebrewDictionary';
 import {
   lookupWord,
   quickLookup,
-  getFrenchTranslation
-} from '../../services/wordLookupOrchestrator';
+  getFrenchTranslation,
+  lookupParallel
+} from '../../services/unifiedLookupService';
+import { prefetchWord } from '../../services/wordPrefetchService';
 
 // Constants
 import { CLICK_DEBOUNCE_MS } from '../../constants/clickableTextConstants';
@@ -175,6 +177,14 @@ const ClickableText = ({
     }
   }, [showFrench, translationData?.english, translationData?.french]);
 
+  // PRO SCHOLAR V10: Prefetch on hover for instant lookups
+  const handleWordHover = useCallback((word) => {
+    // Only prefetch if not already selected (avoid redundant work)
+    if (word && word !== selectedWord && word.length >= 2) {
+      prefetchWord(word, lookupParallel);
+    }
+  }, [selectedWord]);
+
   // Keyboard navigation
   const handleKeyDown = useCallback((e, word, index) => {
     switch (e.key) {
@@ -264,6 +274,8 @@ const ClickableText = ({
                 hasWord?.(word) && 'in-vocabulary'
               ].filter(Boolean).join(' ')}
               onClick={() => handleWordClick(word)}
+              onMouseEnter={() => handleWordHover(word)}
+              onFocus={() => handleWordHover(word)}
               onKeyDown={(e) => handleKeyDown(e, word, index)}
               role="button"
               tabIndex={0}

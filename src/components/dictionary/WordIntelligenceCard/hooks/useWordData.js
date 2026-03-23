@@ -12,12 +12,12 @@ import { useState, useEffect, useRef } from 'react';
 // SAFE IMPORTS - All services are optional
 // =============================================================================
 
-// Word lookup services
+// Word lookup services - PRO SCHOLAR V10: Use unifiedLookupService
 let lookupWord, quickLookup;
 try {
-  const orchestrator = require('../../../../services/wordLookupOrchestrator');
-  lookupWord = orchestrator.lookupWord;
-  quickLookup = orchestrator.quickLookup;
+  const unifiedService = require('../../../../services/unifiedLookupService');
+  lookupWord = unifiedService.lookupWord;
+  quickLookup = unifiedService.quickLookup;
 } catch (e) {
   lookupWord = async () => null;
   quickLookup = () => null;

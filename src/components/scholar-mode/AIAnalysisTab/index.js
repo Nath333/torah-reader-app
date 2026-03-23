@@ -3,6 +3,7 @@
  * Supports 25+ analysis modes including PaRDeS, Mussar, Gematria, etc.
  */
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { safeGet, safeSet } from '../../../utils/safeLocalStorage';
 import { analyzeCommentary, ANALYSIS_MODES, hasApiKey as checkHasApiKey } from '../../../services/groqService';
 import { clearConversation } from '../../../services/aiService';
 import {
@@ -602,24 +603,20 @@ const EmptyState = ({
 /**
  * AIAnalysisTab - Main Component
  */
-// Helper to get/set pinned mode per book from localStorage
+// Helper to get/set pinned mode per book - using safeLocalStorage
+const PINNED_MODES_KEY = 'torah-reader-pinned-modes';
+const AUTO_ANALYZE_KEY = 'torah-reader-auto-analyze';
+const FAVORITE_MODES_KEY = 'torah-reader-favorite-modes';
+
 const getPinnedModeForBook = (book) => {
-  try {
-    const pinned = JSON.parse(localStorage.getItem('torah-reader-pinned-modes') || '{}');
-    return pinned[book] || null;
-  } catch {
-    return null;
-  }
+  const pinned = safeGet(PINNED_MODES_KEY, {});
+  return pinned[book] || null;
 };
 
 const setPinnedModeForBook = (book, mode) => {
-  try {
-    const pinned = JSON.parse(localStorage.getItem('torah-reader-pinned-modes') || '{}');
-    pinned[book] = mode;
-    localStorage.setItem('torah-reader-pinned-modes', JSON.stringify(pinned));
-  } catch (e) {
-    console.warn('Failed to save pinned mode:', e);
-  }
+  const pinned = safeGet(PINNED_MODES_KEY, {});
+  pinned[book] = mode;
+  safeSet(PINNED_MODES_KEY, pinned);
 };
 
 const AIAnalysisTab = ({
@@ -661,20 +658,16 @@ const AIAnalysisTab = ({
   const [showProviderSettings, setShowProviderSettings] = useState(false);
   const [ollamaStatus, setOllamaStatus] = useState(null);
 
-  // Auto-analyze preference (persisted in localStorage)
+  // Auto-analyze preference (persisted using safeLocalStorage)
   const [autoAnalyze, setAutoAnalyze] = useState(() => {
-    try {
-      return localStorage.getItem('torah-reader-auto-analyze') === 'true';
-    } catch {
-      return false;
-    }
+    return safeGet(AUTO_ANALYZE_KEY, false);
   });
 
-  // Favorite/pinned modes (persisted in localStorage)
+  // Favorite/pinned modes (persisted using safeLocalStorage)
   const [favoriteModes, setFavoriteModes] = useState(() => {
     try {
-      const stored = localStorage.getItem('torah-reader-favorite-modes');
-      return stored ? new Set(JSON.parse(stored)) : new Set();
+      const stored = safeGet(FAVORITE_MODES_KEY, null);
+      return stored ? new Set(stored) : new Set();
     } catch {
       return new Set();
     }
@@ -748,22 +741,14 @@ const AIAnalysisTab = ({
     });
   }, []);
 
-  // Persist auto-analyze preference
+  // Persist auto-analyze preference using safeLocalStorage
   useEffect(() => {
-    try {
-      localStorage.setItem('torah-reader-auto-analyze', autoAnalyze.toString());
-    } catch (e) {
-      console.warn('Failed to save auto-analyze preference:', e);
-    }
+    safeSet(AUTO_ANALYZE_KEY, autoAnalyze);
   }, [autoAnalyze]);
 
-  // Persist favorite modes
+  // Persist favorite modes using safeLocalStorage
   useEffect(() => {
-    try {
-      localStorage.setItem('torah-reader-favorite-modes', JSON.stringify([...favoriteModes]));
-    } catch (e) {
-      console.warn('Failed to save favorite modes:', e);
-    }
+    safeSet(FAVORITE_MODES_KEY, [...favoriteModes]);
   }, [favoriteModes]);
 
   // Toggle favorite mode

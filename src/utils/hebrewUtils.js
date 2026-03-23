@@ -80,6 +80,59 @@ export const areSimilarWords = (word1, word2) => {
 };
 
 /**
+ * Calculate similarity between two Hebrew words using LCS (Longest Common Subsequence)
+ * PRO SCHOLAR V9: Single source of truth for headword validation
+ *
+ * @param {string} query - The search query
+ * @param {string} headword - The dictionary headword
+ * @returns {number} Similarity score 0-1
+ */
+export const calculateSimilarity = (query, headword) => {
+  if (!query || !headword) return 1; // No data to validate
+
+  const q = stripAllDiacritics(query);
+  const h = stripAllDiacritics(headword);
+
+  // Fast path: exact match
+  if (q === h) return 1;
+
+  // Fast path: containment (prefix/suffix)
+  if (q.includes(h) || h.includes(q)) {
+    return Math.min(q.length, h.length) / Math.max(q.length, h.length);
+  }
+
+  // LCS algorithm for thorough comparison
+  const lcs = (a, b) => {
+    const m = Array(b.length + 1).fill(null).map(() => Array(a.length + 1).fill(0));
+    for (let i = 1; i <= a.length; i++) {
+      for (let j = 1; j <= b.length; j++) {
+        m[j][i] = a[i - 1] === b[j - 1] ? m[j - 1][i - 1] + 1 : Math.max(m[j][i - 1], m[j - 1][i]);
+      }
+    }
+    return m[b.length][a.length];
+  };
+
+  return lcs(q, h) / Math.max(q.length, h.length);
+};
+
+/** Default threshold for headword matching */
+export const SIMILARITY_THRESHOLD = 0.65;
+
+/**
+ * Validate that a headword matches a query word
+ * PRO SCHOLAR V9: Prevents returning wrong dictionary entries
+ *
+ * @param {string} headword - Dictionary entry's headword
+ * @param {string} query - Search query
+ * @param {number} threshold - Minimum similarity (default 0.65)
+ * @returns {boolean} True if match is valid
+ */
+export const isValidHeadwordMatch = (headword, query, threshold = SIMILARITY_THRESHOLD) => {
+  if (!headword || !query || query.length < 3) return true;
+  return calculateSimilarity(query, headword) >= threshold;
+};
+
+/**
  * Clean a Hebrew word for dictionary lookup
  * Removes diacritics but PRESERVES gershayim (' ״) for abbreviation detection
  * @param {string} word - Hebrew word to clean
@@ -277,6 +330,10 @@ const hebrewUtils = {
   cleanHebrewWordStrict,
   normalizeFinals,
   areSimilarWords,
+  // PRO SCHOLAR V9: Unified similarity functions
+  calculateSimilarity,
+  isValidHeadwordMatch,
+  SIMILARITY_THRESHOLD,
   processHebrewText,
   hasVowels,
   hasCantillation,

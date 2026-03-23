@@ -71,7 +71,7 @@ const lookupWordTranslation = async (word) => {
 
   // Check Rashi vocabulary (shared constants)
   if (RASHI_VOCABULARY[cleaned]) {
-    const result = { meaning: RASHI_VOCABULARY[cleaned], root: null, source: 'Talmudic' };
+    const result = { meaning: RASHI_VOCABULARY[cleaned], root: null, source: 'Rabbinic' };
     translationCache.set(cleaned, result);
     return result;
   }

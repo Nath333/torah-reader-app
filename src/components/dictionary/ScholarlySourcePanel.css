@@ -1,0 +1,334 @@
+/* =============================================================================
+   PRO SCHOLAR V10: SCHOLARLY SOURCE PANEL STYLES
+   ============================================================================= */
+
+.scholarly-source-panel {
+  background: var(--bg-secondary, #f8fafc);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 8px;
+  padding: 16px;
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+}
+
+.scholarly-source-panel.empty {
+  text-align: center;
+  color: var(--text-muted, #64748b);
+}
+
+/* Panel Header */
+.panel-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+}
+
+.panel-title .hebrew {
+  font-family: var(--font-hebrew, 'SBL Hebrew', 'David', serif);
+  font-size: 1.3rem;
+  direction: rtl;
+}
+
+.source-count {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--text-muted, #64748b);
+}
+
+/* Consensus Badge */
+.consensus-badge-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.consensus-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: white;
+}
+
+.consensus-summary {
+  font-size: 0.85rem;
+  color: var(--text-muted, #64748b);
+}
+
+/* Tier Badges */
+.tier-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: white;
+  white-space: nowrap;
+}
+
+/* Source Cards */
+.source-card {
+  background: var(--bg-primary, white);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.source-card:hover {
+  border-color: var(--primary-color, #3b82f6);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+}
+
+.source-card:focus {
+  outline: 2px solid var(--primary-color, #3b82f6);
+  outline-offset: 2px;
+}
+
+.source-card.primary {
+  border-color: var(--primary-color, #3b82f6);
+  border-width: 2px;
+  background: linear-gradient(to bottom, var(--bg-primary, white), rgba(59, 130, 246, 0.02));
+}
+
+.source-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.source-name {
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+  font-size: 0.95rem;
+}
+
+.primary-badge {
+  background: var(--primary-color, #3b82f6);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.source-definition {
+  color: var(--text-secondary, #475569);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.source-full {
+  margin-top: 8px;
+}
+
+.source-full summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--primary-color, #3b82f6);
+}
+
+.source-full p {
+  margin: 8px 0 0;
+  padding: 8px;
+  background: var(--bg-tertiary, #f1f5f9);
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: var(--text-secondary, #475569);
+}
+
+.source-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 0.85rem;
+}
+
+.meta-label {
+  color: var(--text-muted, #64748b);
+}
+
+.meta-value {
+  color: var(--text-primary, #1e293b);
+  font-weight: 500;
+}
+
+.meta-value.hebrew {
+  font-family: var(--font-hebrew, 'SBL Hebrew', 'David', serif);
+  direction: rtl;
+}
+
+/* Alternatives Section */
+.alternatives-section {
+  margin-top: 16px;
+}
+
+.expand-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--bg-tertiary, #f1f5f9);
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: var(--text-secondary, #475569);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.expand-toggle:hover {
+  background: var(--bg-hover, #e2e8f0);
+}
+
+.alternatives-list {
+  margin-top: 12px;
+  padding-left: 8px;
+  border-left: 2px solid var(--border-color, #e2e8f0);
+}
+
+/* Divergent Opinions */
+.divergent-opinions {
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(220, 38, 38, 0.05);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: 6px;
+}
+
+.divergent-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #dc2626;
+}
+
+.divergent-icon {
+  font-size: 1.1rem;
+}
+
+.divergent-item {
+  padding: 8px;
+  margin-bottom: 8px;
+  background: var(--bg-primary, white);
+  border-radius: 4px;
+}
+
+.divergent-item:last-child {
+  margin-bottom: 0;
+}
+
+.divergent-sources {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted, #64748b);
+  margin-bottom: 4px;
+}
+
+.divergent-definition {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #475569);
+}
+
+/* Analysis Notes */
+.analysis-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-color, #e2e8f0);
+}
+
+.analysis-note {
+  font-size: 0.85rem;
+  color: var(--text-muted, #64748b);
+}
+
+/* No Sources */
+.no-sources {
+  padding: 24px;
+  color: var(--text-muted, #64748b);
+  font-style: italic;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .scholarly-source-panel {
+    background: var(--bg-secondary, #1e293b);
+    border-color: var(--border-color, #334155);
+  }
+
+  .source-card {
+    background: var(--bg-primary, #0f172a);
+    border-color: var(--border-color, #334155);
+  }
+
+  .source-card.primary {
+    background: linear-gradient(to bottom, var(--bg-primary, #0f172a), rgba(59, 130, 246, 0.05));
+  }
+
+  .expand-toggle {
+    background: var(--bg-tertiary, #334155);
+  }
+
+  .expand-toggle:hover {
+    background: var(--bg-hover, #475569);
+  }
+
+  .divergent-item {
+    background: var(--bg-primary, #0f172a);
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 640px) {
+  .scholarly-source-panel {
+    padding: 12px;
+  }
+
+  .panel-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .source-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .consensus-badge-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

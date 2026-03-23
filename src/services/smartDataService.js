@@ -299,8 +299,9 @@ export const smartLookup = async (word, options = {}) => {
 
   if (!shouldTryOnline) {
     // Return local dictionary result
-    const { lookupWordSync } = await import('./combinedTranslationService');
-    const localResult = lookupWordSync(cleaned);
+    // PRO SCHOLAR V10: Use unifiedLookupService (consolidated from combinedTranslationService)
+    const { quickLookup } = await import('./unifiedLookupService');
+    const localResult = quickLookup(cleaned);
 
     return {
       success: !!localResult?.english,
@@ -353,10 +354,11 @@ export const smartLookup = async (word, options = {}) => {
     console.warn('Online lookup failed, falling back:', error.message);
   }
 
-  // 5. Fallback to combined service
+  // 5. Fallback to unified lookup service
+  // PRO SCHOLAR V10: Use unifiedLookupService (consolidated from combinedTranslationService)
   try {
-    const { lookupWordAsync } = await import('./combinedTranslationService');
-    const combined = await lookupWordAsync(cleaned);
+    const { lookupWord } = await import('./unifiedLookupService');
+    const combined = await lookupWord(cleaned);
 
     if (combined?.english) {
       const output = {
@@ -379,8 +381,9 @@ export const smartLookup = async (word, options = {}) => {
   }
 
   // 6. Final fallback: local sync
-  const { lookupWordSync } = await import('./combinedTranslationService');
-  const local = lookupWordSync(cleaned);
+  // PRO SCHOLAR V10: Use unifiedLookupService (consolidated from combinedTranslationService)
+  const { quickLookup } = await import('./unifiedLookupService');
+  const local = quickLookup(cleaned);
 
   return {
     success: !!local?.english,

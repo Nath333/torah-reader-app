@@ -25,6 +25,7 @@ import { fetchWithFallback } from '../utils/http';
 import { cleanHtml } from '../utils/sanitize';
 import { getRashiOnTorah, getRashiOnTalmud, getRashiOnTanach, getRashiForVerse, getRashiForChapter } from './rashiService';
 import { getTosafotOnTalmud, getTosafotForDaf, isTosafotAvailable } from './tosafotService';
+// PRO SCHOLAR V10.2: Use translationService for text translation (separated from word lookup)
 import { translateCommentary } from './translationService';
 
 // Import shared book constants

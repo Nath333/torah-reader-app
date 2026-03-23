@@ -27,11 +27,12 @@ import { WEAK_VERB_DISPLAY } from '../constants/morphologyPatterns';
 // SAFE IMPORTS - All services are optional
 // =============================================================================
 
+// PRO SCHOLAR V8: Renamed from unifiedRootService to rootExtraction
 let UnifiedRootService = null;
 try {
-  UnifiedRootService = require('../services/unifiedRootService');
+  UnifiedRootService = require('../services/rootExtraction');
 } catch (e) {
-  console.warn('[useProScholarV6] unifiedRootService not available');
+  console.warn('[useProScholarV6] rootExtraction not available');
 }
 
 // PRO SCHOLAR V6.2: Import TelemetryService for unified telemetry

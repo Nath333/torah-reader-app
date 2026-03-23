@@ -6,6 +6,7 @@ export { default as ErrorBoundary } from './ErrorBoundary';
 export { default as FriendlyError } from './FriendlyError';
 export { default as HeaderGreeting } from './HeaderGreeting';
 export { default as LoadingSkeleton } from './LoadingSkeleton';
+export { default as LoadingSpinner, FullPageLoader, InlineLoader } from './LoadingSpinner';
 export { default as NoteEditor } from './NoteEditor';
 export { default as ScholarlySourceIndicator } from './ScholarlySourceIndicator';
 export { default as SourceBadge } from './SourceBadge';

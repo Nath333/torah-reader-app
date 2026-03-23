@@ -437,6 +437,7 @@
   border-radius: 12px;
   animation: tooltipEnhancedPop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 /* =============================================================================
@@ -1121,6 +1122,7 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .tooltip-headword {
@@ -6916,7 +6918,7 @@
 
 /* Halachic Context Override - Gold color to indicate recommended translation */
 .word-def-source-item[data-source="Halachic"] .source-badge,
-.word-def-source-item[data-source="Talmudic"] .source-badge {
+.word-def-source-item[data-source="Rabbinic"] .source-badge {
   background: linear-gradient(135deg, #d97706 0%, #fbbf24 100%);
   box-shadow: 0 2px 6px rgba(217, 119, 6, 0.35);
 }

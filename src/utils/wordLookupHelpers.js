@@ -9,8 +9,8 @@
  * These helpers are used by useWordLookup but can also be used independently.
  */
 
-// PRO SCHOLAR V4: Import from correct source services
-import { SEMANTIC_DOMAINS } from '../services/wordLookupOrchestrator';
+// PRO SCHOLAR V10: Import from single source of truth
+import { SEMANTIC_DOMAINS } from '../services/semanticFieldService';
 import { getWordFrequency } from '../services/wordFrequencyService';
 import { analyzeWord as analyzeWordForEnhancement } from '../services/grammarAnalysisService';
 import {
@@ -27,8 +27,8 @@ import {
   extractAramaicRoot,
   computeVerbTranslation
 } from '../constants/morphology';
-// PRO SCHOLAR V6: Multi-hypothesis root extraction with direct dictionary validation
-import { extractRootsWithDirectValidation } from '../services/unifiedRootService';
+// PRO SCHOLAR V8: Multi-hypothesis root extraction (renamed from unifiedRootService)
+import { extractRootsWithDirectValidation } from '../services/rootExtraction';
 // Grammar analysis for prefix/suffix meanings (used by getPrefixMeaning, getSuffixMeaning, isLikelyNoun)
 import { analyzeWord as analyzeWordForMorphology, GRAMMAR_CONSTANTS } from '../services/grammarAnalysisService';
 
@@ -712,8 +712,8 @@ export function createFunctionWordResult(word, cleaned, translation, confidenceA
     french: null,
     source: 'function-word',
     sources: [{
-      name: 'Talmudic',
-      fullName: 'Curated Talmudic Vocabulary',
+      name: 'Rabbinic',
+      fullName: 'Curated Rabbinic Vocabulary',
       definition: translation
     }],
     language: confidenceAnalysis?.bestGuess?.type?.includes('aramaic') ? 'Aramaic' : 'Hebrew',

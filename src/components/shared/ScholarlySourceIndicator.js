@@ -3,7 +3,7 @@
 // Shows which dictionary sources found a word with visual indicators
 // =============================================================================
 
-import React from 'react';
+import React, { memo } from 'react';
 import './ScholarlySourceIndicator.css';
 
 // Source metadata with colors and descriptions
@@ -88,7 +88,7 @@ const ALL_SOURCES = ['BDB', "Strong's", 'Jastrow', 'Klein'];
 /**
  * Display scholarly source indicators for a word lookup result
  */
-const ScholarlySourceIndicator = ({
+const ScholarlySourceIndicator = memo(({
   sources = [],
   showMissing = true,
   compact = false,
@@ -201,12 +201,13 @@ const ScholarlySourceIndicator = ({
       )}
     </div>
   );
-};
+});
+ScholarlySourceIndicator.displayName = 'ScholarlySourceIndicator';
 
 /**
  * Simple inline source badge
  */
-export const SourceBadge = ({ source, found = true }) => {
+export const SourceBadge = memo(({ source, found = true }) => {
   const meta = SOURCE_META[source] || { color: '#999', icon: source?.[0] || '?' };
 
   return (
@@ -218,6 +219,7 @@ export const SourceBadge = ({ source, found = true }) => {
       {meta.icon}
     </span>
   );
-};
+});
+SourceBadge.displayName = 'SourceBadge';
 
 export default ScholarlySourceIndicator;

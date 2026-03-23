@@ -1440,6 +1440,7 @@ a:focus-visible {
   border-left-width: 4px !important;
   border-left-style: solid !important;
   backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .translation-block.english,

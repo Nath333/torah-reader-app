@@ -11,7 +11,11 @@
 import {
   HEBREW_PREFIXES_ORDERED,
   STOP_WORDS as CENTRAL_STOP_WORDS,
-  isLikelyCompleteRoot
+  isLikelyCompleteRoot,
+  // PRO SCHOLAR V10.2: For tryHebrewVerbAnalysis (moved from combinedTranslationService)
+  extractHebrewRoot,
+  ROOT_MEANINGS,
+  HEBREW_BINYANIM as MORPHOLOGY_BINYANIM
 } from '../constants/morphology';
 
 // =============================================================================
@@ -35,30 +39,26 @@ import {
 //   - CAL API (Comprehensive Aramaic Lexicon - full database)
 // =============================================================================
 
-// ARAMAIC dictionaries (for Talmud)
-import { JASTROW_COMPLETE } from '../data/jastrowComplete';
+// ARAMAIC dictionaries (for Talmud) - use sync lookup functions to avoid deprecation warnings
+import { lookupJastrowSync, lookupBDBSync, lookupStrongsSync } from './dictionaryLoader';
 import { CAL_ARAMAIC } from '../data/calAramaic';
 import { JASTROW_ARAMAIC } from '../data/jastrowAramaic';
 import { BDB_ARAMAIC, KLEIN_LEXICON } from '../data/hebrewLexicons';
-
-// HEBREW dictionaries (for Torah/Tanakh)
-import { BDB_BY_WORD } from '../data/bdbComplete';
-import { STRONGS_BY_WORD } from '../data/strongsComplete';
 
 /**
  * SMART: Check if a word exists in ANY of our dictionaries
  * This validates that prefix stripping produced a REAL word
  *
  * For TALMUD/ARAMAIC context (Gemara, Rashi on Talmud):
- *   1. JASTROW_COMPLETE - 25K entries, best for Talmud
+ *   1. Jastrow (via sync lookup) - 25K entries, best for Talmud
  *   2. CAL_ARAMAIC - Comprehensive Aramaic Lexicon
  *   3. BDB_ARAMAIC - Aramaic section
  *   4. JASTROW_ARAMAIC - Small subset
  *
  * For TORAH/HEBREW context (Chumash, Tanakh):
- *   5. BDB_BY_WORD - Biblical Hebrew
+ *   5. BDB (via sync lookup) - Biblical Hebrew
  *   6. KLEIN_LEXICON - Etymology
- *   7. STRONGS_BY_WORD - Last resort (often wrong for Talmud)
+ *   7. Strong's (via sync lookup) - Last resort (often wrong for Talmud)
  */
 const isValidDictionaryWord = (word) => {
   if (!word || word.length < 2) return false;
@@ -66,7 +66,7 @@ const isValidDictionaryWord = (word) => {
   // === ARAMAIC DICTIONARIES (check first for Talmud) ===
 
   // 1. Jastrow Complete - PRIMARY for Talmudic Aramaic (25K entries)
-  if (JASTROW_COMPLETE?.[word]) return true;
+  if (lookupJastrowSync(word)) return true;
 
   // 2. CAL - Comprehensive Aramaic Lexicon
   if (CAL_ARAMAIC?.[word]) return true;
@@ -80,13 +80,13 @@ const isValidDictionaryWord = (word) => {
   // === HEBREW DICTIONARIES ===
 
   // 5. BDB - Biblical Hebrew
-  if (BDB_BY_WORD?.[word]) return true;
+  if (lookupBDBSync(word)) return true;
 
   // 6. Klein - Etymology
   if (KLEIN_LEXICON?.[word]) return true;
 
   // 7. Strong's - Biblical (skip for Talmud, but include for validation)
-  if (STRONGS_BY_WORD?.[word]) return true;
+  if (lookupStrongsSync(word)) return true;
 
   return false;
 };
@@ -98,16 +98,19 @@ const isValidDictionaryWord = (word) => {
 const getDictionarySource = (word) => {
   if (!word || word.length < 2) return null;
 
-  // Aramaic sources (for Talmud)
-  if (JASTROW_COMPLETE?.[word]) return { source: 'Jastrow', entry: JASTROW_COMPLETE[word], isAramaic: true };
+  // Aramaic sources (for Talmud) - use sync lookups for main dictionaries
+  const jastrowEntry = lookupJastrowSync(word);
+  if (jastrowEntry) return { source: 'Jastrow', entry: jastrowEntry, isAramaic: true };
   if (CAL_ARAMAIC?.[word]) return { source: 'CAL', entry: CAL_ARAMAIC[word], isAramaic: true };
   if (BDB_ARAMAIC?.[word]) return { source: 'BDB-Aramaic', entry: BDB_ARAMAIC[word], isAramaic: true };
   if (JASTROW_ARAMAIC?.[word]) return { source: 'Jastrow', entry: JASTROW_ARAMAIC[word], isAramaic: true };
 
-  // Hebrew sources (for Torah)
-  if (BDB_BY_WORD?.[word]) return { source: 'BDB', entry: BDB_BY_WORD[word], isAramaic: false };
+  // Hebrew sources (for Torah) - use sync lookups for main dictionaries
+  const bdbEntry = lookupBDBSync(word);
+  if (bdbEntry) return { source: 'BDB', entry: bdbEntry, isAramaic: false };
   if (KLEIN_LEXICON?.[word]) return { source: 'Klein', entry: KLEIN_LEXICON[word], isAramaic: false };
-  if (STRONGS_BY_WORD?.[word]) return { source: "Strong's", entry: STRONGS_BY_WORD[word], isAramaic: false };
+  const strongsEntry = lookupStrongsSync(word);
+  if (strongsEntry) return { source: "Strong's", entry: strongsEntry, isAramaic: false };
 
   return null;
 };
@@ -1088,6 +1091,122 @@ export function getAllBinyanim(includeAramaic = false) {
   return result;
 }
 
+// =============================================================================
+// PRO SCHOLAR V10.2: tryHebrewVerbAnalysis
+// Moved from combinedTranslationService to break circular dependency
+// =============================================================================
+
+/**
+ * Try to analyze a Hebrew verb and return root + binyan + translation
+ * Uses extractHebrewRoot from morphology constants for root extraction
+ *
+ * @param {string} word - Hebrew word (may include vowels)
+ * @returns {object|null} - { root, binyan, translation, ... } or null
+ */
+export const tryHebrewVerbAnalysis = (word) => {
+  if (!word || word.length < 3) return null;
+
+  const cleanedWord = word.replace(/[\u0591-\u05C7]/g, ''); // Remove vowels
+
+  // Common prefixes to try stripping
+  const VERB_PREFIXES = ['ל', 'ה', 'ו', 'וה', 'ול', 'וב', 'ומ', 'וכ'];
+
+  // Try the word as-is first
+  let verbResult = extractHebrewRoot(cleanedWord);
+
+  // If no result, try stripping prefixes
+  if (!verbResult || verbResult.uncertain) {
+    for (const prefix of VERB_PREFIXES) {
+      if (cleanedWord.startsWith(prefix) && cleanedWord.length > prefix.length + 2) {
+        const stem = cleanedWord.slice(prefix.length);
+        const stemResult = extractHebrewRoot(stem);
+
+        if (stemResult && stemResult.root && stemResult.confidence > 60) {
+          verbResult = {
+            ...stemResult,
+            strippedPrefix: prefix
+          };
+          break;
+        }
+      }
+    }
+  }
+
+  // If we found a valid verb with good confidence
+  if (verbResult && verbResult.root && verbResult.confidence >= 65) {
+    const rootInfo = ROOT_MEANINGS[verbResult.root];
+
+    if (rootInfo) {
+      // Determine the translation based on binyan
+      let translation = rootInfo.base || '';
+      let binyanEffect = '';
+
+      if (verbResult.binyan) {
+        const binyanName = verbResult.binyan.name || verbResult.binyan;
+
+        switch (binyanName) {
+          case 'Hifil':
+          case 'Hiphil':
+            // Causative: "come" → "bring", "know" → "make known"
+            translation = rootInfo.causative || `to cause to ${rootInfo.base}`;
+            binyanEffect = 'causative';
+            break;
+          case 'Piel':
+            // Intensive: "break" → "shatter"
+            translation = rootInfo.intensive || rootInfo.base;
+            binyanEffect = 'intensive';
+            break;
+          case 'Pual':
+            // Intensive passive
+            translation = `to be ${rootInfo.intensive || rootInfo.base}`;
+            binyanEffect = 'intensive passive';
+            break;
+          case 'Hitpael':
+            // Reflexive
+            translation = rootInfo.reflexive || `to ${rootInfo.base} oneself`;
+            binyanEffect = 'reflexive';
+            break;
+          case 'Nifal':
+            // Passive/reflexive
+            translation = rootInfo.passive || `to be ${rootInfo.base}`;
+            binyanEffect = 'passive';
+            break;
+          case 'Hufal':
+            // Causative passive
+            translation = `to be caused to ${rootInfo.base}`;
+            binyanEffect = 'causative passive';
+            break;
+          default:
+            // Qal (basic)
+            translation = rootInfo.base;
+            binyanEffect = 'basic';
+        }
+      }
+
+      // Add prefix meaning if stripped (infinitive construct)
+      if (verbResult.strippedPrefix === 'ל' && !translation.startsWith('to ')) {
+        translation = `to ${translation}`;
+      }
+
+      return {
+        root: verbResult.root,
+        binyan: verbResult.binyan || MORPHOLOGY_BINYANIM?.qal,
+        binyanEffect,
+        translation: translation,
+        fullTranslation: `${verbResult.binyan?.name || 'Qal'} of ${verbResult.root}: ${translation}`,
+        rootMeaning: rootInfo.base,
+        confidence: verbResult.confidence,
+        strippedPrefix: verbResult.strippedPrefix,
+        source: 'Root Database + Binyan',
+        etymology: rootInfo.etymology,
+        cognates: rootInfo.cognates
+      };
+    }
+  }
+
+  return null;
+};
+
 const grammarAnalysisService = {
   analyzeWord,
   analyzeVerb,
@@ -1100,6 +1219,7 @@ const grammarAnalysisService = {
   getInlineGloss,
   getDictionarySource,
   isValidDictionaryWord,
+  tryHebrewVerbAnalysis,
   GRAMMAR_CONSTANTS
 };
 

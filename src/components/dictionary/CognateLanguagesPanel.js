@@ -21,13 +21,14 @@ import './CognateLanguagesPanel.css';
 // SAFE IMPORTS
 // =============================================================================
 
+// PRO SCHOLAR V8: Renamed from proScholarV6 to linguisticAnalysis
 let getCognates, ROOT_COGNATES;
 try {
-  const proScholarV6 = require('../../services/proScholarV6');
-  getCognates = proScholarV6.getCognates;
-  ROOT_COGNATES = proScholarV6.ROOT_COGNATES;
+  const linguisticAnalysis = require('../../services/linguisticAnalysis');
+  getCognates = linguisticAnalysis.getCognates;
+  ROOT_COGNATES = linguisticAnalysis.ROOT_COGNATES;
 } catch (e) {
-  console.debug('[CognateLanguagesPanel] V6 service not available:', e.message);
+  console.debug('[CognateLanguagesPanel] linguisticAnalysis not available:', e.message);
   getCognates = () => null;
   ROOT_COGNATES = {};
 }

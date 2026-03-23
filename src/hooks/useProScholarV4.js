@@ -18,17 +18,18 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 
 // Lazy import to avoid circular dependencies
-let ProScholarV4 = null;
+// PRO SCHOLAR V8: Renamed from proScholarV4 to featureFlags
+let FeatureFlags = null;
 const getProScholar = () => {
-  if (!ProScholarV4) {
+  if (!FeatureFlags) {
     try {
-      ProScholarV4 = require('../services/proScholarV4');
+      FeatureFlags = require('../services/featureFlags');
     } catch (e) {
-      console.warn('[useProScholarV4] Failed to load ProScholarV4:', e.message);
-      ProScholarV4 = { default: null };
+      console.warn('[useProScholarV4] Failed to load featureFlags:', e.message);
+      FeatureFlags = { default: null };
     }
   }
-  return ProScholarV4.default || ProScholarV4;
+  return FeatureFlags.default || FeatureFlags;
 };
 
 /**

@@ -2,6 +2,17 @@
 @import './styles/modal.css';
 @import './styles/shared-ui.css';
 
+/* Smooth scrolling (respects user preferences) */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 /* Global base styles */
 body {
   margin: 0;
@@ -11,6 +22,7 @@ body {
   background: var(--bg);
   color: var(--text-primary);
   line-height: 1.5;
+  text-rendering: optimizeLegibility;
 }
 
 /* Smooth theme transition */

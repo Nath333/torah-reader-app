@@ -14,6 +14,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
+import { safeGet, safeSet } from '../utils/safeLocalStorage';
 
 const STORAGE_KEY = 'torah_mastery_data';
 
@@ -116,21 +117,12 @@ const isDueForReview = (lastReviewed, level) => {
  */
 const useMastery = () => {
   const [masteryData, setMasteryData] = useState(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? JSON.parse(stored) : { items: {}, stats: { totalItems: 0, totalReviews: 0 } };
-    } catch {
-      return { items: {}, stats: { totalItems: 0, totalReviews: 0 } };
-    }
+    return safeGet(STORAGE_KEY, { items: {}, stats: { totalItems: 0, totalReviews: 0 } });
   });
 
-  // Persist to localStorage
+  // Persist using safeLocalStorage
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(masteryData));
-    } catch (error) {
-      console.warn('Failed to save mastery data:', error);
-    }
+    safeSet(STORAGE_KEY, masteryData);
   }, [masteryData]);
 
   /**

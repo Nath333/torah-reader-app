@@ -22,9 +22,22 @@ import {
 // Prefer using the async lookup functions instead.
 // =============================================================================
 
+// Properties checked by React Fast Refresh - don't warn for these
+const REACT_INTERNAL_PROPS = new Set([
+  '$$typeof', 'prototype', 'render', 'displayName', 'name', 'length',
+  'propTypes', 'defaultProps', 'contextTypes', 'childContextTypes',
+  'getDerivedStateFromProps', 'getDerivedStateFromError', 'type',
+  Symbol.toStringTag, Symbol.iterator, 'then', 'constructor'
+]);
+
 /** @deprecated Use lookupBDBByWord() instead */
 export const BDB_BY_WORD = new Proxy({}, {
   get(target, prop) {
+    // Ignore React Fast Refresh internal property checks
+    if (REACT_INTERNAL_PROPS.has(prop) || typeof prop === 'symbol') {
+      return undefined;
+    }
+
     // Synchronous access - only works if data is already loaded
     const cached = syncLookup(prop);
     if (cached) return cached;
@@ -48,6 +61,10 @@ export const BDB_BY_WORD = new Proxy({}, {
 /** @deprecated Use lookupBDBByStrongs() instead */
 export const BDB_BY_STRONGS = new Proxy({}, {
   get(target, prop) {
+    // Ignore React Fast Refresh internal property checks
+    if (REACT_INTERNAL_PROPS.has(prop) || typeof prop === 'symbol') {
+      return undefined;
+    }
     console.warn('[BDB] Direct access to BDB_BY_STRONGS is deprecated. Use lookupBDBByStrongs() instead.');
     return undefined;
   }
