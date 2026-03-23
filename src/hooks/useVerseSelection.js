@@ -12,7 +12,7 @@
  * - Selection ripple effect tracking
  */
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useMemo } from 'react';
 
 /**
  * useVerseSelection - Hook for verse selection management
@@ -254,7 +254,16 @@ export function useVerseSelection({
     return verseIndex >= start && verseIndex <= end;
   }, [isDragging, dragStartVerse, dragCurrentVerse, verses]);
 
-  return {
+  // Memoize computed values
+  const computedValues = useMemo(() => ({
+    hasSelection: selectedVerses.length > 0,
+    selectionCount: selectedVerses.length,
+    isSingleSelection: selectedVerses.length === 1,
+    isMultiSelection: selectedVerses.length > 1
+  }), [selectedVerses.length]);
+
+  // Memoize the entire return object to provide stable reference
+  return useMemo(() => ({
     // State
     selectedVerses,
     isDragging,
@@ -288,11 +297,32 @@ export function useVerseSelection({
     highlightVerseTemporarily,
 
     // Computed values
-    hasSelection: selectedVerses.length > 0,
-    selectionCount: selectedVerses.length,
-    isSingleSelection: selectedVerses.length === 1,
-    isMultiSelection: selectedVerses.length > 1
-  };
+    ...computedValues
+  }), [
+    selectedVerses,
+    isDragging,
+    dragStartVerse,
+    dragCurrentVerse,
+    rippleVerse,
+    highlightedVerse,
+    lastSelectedIndex,
+    setSelectedVerses,
+    setHighlightedVerse,
+    toggleVerseSelection,
+    selectVerse,
+    addToSelection,
+    removeFromSelection,
+    clearSelection,
+    selectRange,
+    selectAll,
+    isVerseSelected,
+    handleDragStart,
+    handleDragMove,
+    handleDragEnd,
+    isInDragRange,
+    highlightVerseTemporarily,
+    computedValues
+  ]);
 }
 
 export default useVerseSelection;

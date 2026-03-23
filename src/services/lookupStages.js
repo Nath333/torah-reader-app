@@ -292,9 +292,14 @@ export const createStages = (lookups) => {
   // =========================================================================
   // STAGE 6: Aramaic verb pattern analysis
   // For conjugated forms like תפיקו → Aphel of נפק = "to bring out"
+  // PRO SCHOLAR V11: Even if we have a primaryEnglish from halachic lookup,
+  // we STILL run this stage to add ACADEMIC SOURCES (DJBA, Jastrow, etc.)
+  // This ensures תפיקו shows 🥇 Gold (DJBA) not 🥉 Rabbinic
   // =========================================================================
   const stageAramaicPatternAnalysis = namedStage('AramaicPatternAnalysis', (ctx) => {
-    if (ctx.isComplete || ctx.primaryEnglish || !ctx.isAramaic) return;
+    // Skip if already complete OR not Aramaic
+    // But DON'T skip just because we have primaryEnglish - we need to add academic sources!
+    if (ctx.isComplete || !ctx.isAramaic) return;
 
     const rootAnalysis = extractAramaicRoot(ctx.cleaned);
     if (!rootAnalysis || rootAnalysis.confidence < 70 || !rootAnalysis.root) return;
@@ -303,18 +308,31 @@ export const createStages = (lookups) => {
     if (!translation) return;
 
     // Try to get scholarly source for the root
+    // PRO SCHOLAR V11: Pass 'talmudic' context to ensure DJBA/DJPA are queried
     // lookupLocalDictionaries returns aggregated result: { primary: { definition, name, source }, allSources: [...] }
-    const rootLookup = lookupLocalDictionaries?.(rootAnalysis.root);
+    const rootLookup = lookupLocalDictionaries?.(rootAnalysis.root, ctx.contextMode || 'talmudic');
     const rootDefinition = rootLookup?.primary?.definition;
     const rootSourceName = rootLookup?.primary?.source || rootLookup?.primary?.name || 'Dictionary';
+    const rootTier = rootLookup?.primary?.tier?.level || (rootSourceName === 'DJBA' ? 1 : 3);
 
-    if (rootDefinition) {
+    // PRO SCHOLAR V11: Add ALL academic sources from the root lookup
+    if (rootLookup?.allSources?.length) {
+      for (const src of rootLookup.allSources) {
+        ctx.addSource({
+          name: (src.name || '').replace(' (Local)', ''),
+          fullName: `Root "${rootAnalysis.root}" from ${src.source || src.name}`,
+          definition: src.definition,
+          isRootSource: true,
+          tier: src.tier?.level || src.tier || 3
+        });
+      }
+    } else if (rootDefinition) {
       ctx.addSource({
         name: rootSourceName.replace(' (Local)', ''),
         fullName: `Root "${rootAnalysis.root}" from ${rootSourceName}`,
         definition: rootDefinition,
         isRootSource: true,
-        tier: rootLookup?.primary?.tier?.level || 3
+        tier: rootTier
       });
     }
     ctx.addSource({
@@ -323,8 +341,12 @@ export const createStages = (lookups) => {
       definition: `${rootAnalysis.pattern} of root ${rootAnalysis.root}${rootAnalysis.weakType ? ` (${rootAnalysis.weakType})` : ''}`
     });
 
+    // Only set primary if not already set (Stage 3 may have set it)
+    // But we've now added the ACADEMIC sources, so tier will be higher
     const sourceName = rootDefinition ? `${rootSourceName} + pattern` : 'pattern-analysis';
-    ctx.setPrimary(translation, sourceName);
+    if (!ctx.primaryEnglish) {
+      ctx.setPrimary(translation, sourceName);
+    }
     ctx.complete({
       isAramaic: true,
       language: 'Aramaic',
