@@ -7,6 +7,7 @@
 
 import { createLogger } from '../utils/debug';
 import { ROOT_MEANINGS } from '../constants/morphology';
+import { stripAllDiacritics } from '../utils/hebrewUtils';
 
 const log = createLogger('MorphAnalysis');
 const DEBUG = process.env.NODE_ENV === 'development';
@@ -117,7 +118,7 @@ const HEBREW_POSSESSIVE_SUFFIXES = {
 export const analyzeWordMorphology = (word, options = {}) => {
   if (!word || word.length < 2) return [];
 
-  const cleaned = word.replace(/[\u0591-\u05C7]/g, ''); // Remove vowels
+  const cleaned = stripAllDiacritics(word); // Remove vowels
   const analyses = [];
 
   // Strategy 1: Try as Aramaic noun with possessive suffix

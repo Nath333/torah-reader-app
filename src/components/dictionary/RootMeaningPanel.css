@@ -1,0 +1,337 @@
+/**
+ * RootMeaningPanel Styles
+ * PRO SCHOLAR V20: Shows root (shoresh) translation from dictionaries
+ */
+
+/* =============================================================================
+   PANEL CONTAINER
+   ============================================================================= */
+
+.root-meaning-panel {
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 8px;
+}
+
+.root-meaning-panel.dark {
+  background: var(--card-bg-dark, #1f2937);
+  border-color: var(--border-color-dark, #374151);
+}
+
+.root-meaning-panel.compact {
+  padding: 8px;
+}
+
+/* =============================================================================
+   HEADER
+   ============================================================================= */
+
+.rmp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+}
+
+.root-meaning-panel.dark .rmp-header {
+  border-bottom-color: var(--border-color-dark, #374151);
+}
+
+.rmp-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary, #1f2937);
+}
+
+.root-meaning-panel.dark .rmp-title {
+  color: var(--text-primary-dark, #f3f4f6);
+}
+
+.rmp-icon {
+  font-size: 1.1rem;
+}
+
+.rmp-root-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rmp-root-letters {
+  font-family: 'SBL Hebrew', 'Frank Ruehl CLM', 'Ezra SIL', serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #86efac;
+}
+
+.root-meaning-panel.dark .rmp-root-letters {
+  background: linear-gradient(135deg, #166534, #15803d);
+  border-color: #22c55e;
+  color: #f0fdf4;
+}
+
+.rmp-aramaic-badge {
+  background: #7c3aed;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+/* =============================================================================
+   PRIMARY DEFINITION (Quick Glance)
+   ============================================================================= */
+
+.rmp-primary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border-radius: 6px;
+  border-left: 3px solid #3b82f6;
+}
+
+.root-meaning-panel.dark .rmp-primary {
+  background: linear-gradient(135deg, #1e3a5f, #1e40af);
+  border-left-color: #60a5fa;
+}
+
+.rmp-primary-def {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-primary, #1f2937);
+  font-style: italic;
+}
+
+.root-meaning-panel.dark .rmp-primary-def {
+  color: var(--text-primary-dark, #f3f4f6);
+}
+
+.rmp-semantic {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--text-muted, #6b7280);
+  background: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+}
+
+.root-meaning-panel.dark .rmp-semantic {
+  background: #374151;
+  border-color: #4b5563;
+  color: #d1d5db;
+}
+
+/* =============================================================================
+   DEFINITIONS LIST
+   ============================================================================= */
+
+.rmp-definitions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rmp-definition {
+  background: color-mix(in srgb, var(--source-color, #6b7280) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--source-color, #6b7280) 25%, transparent);
+  border-radius: 6px;
+  padding: 8px 10px;
+  border-left: 3px solid var(--source-color, #6b7280);
+}
+
+.rmp-def-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.rmp-def-icon {
+  font-size: 0.9rem;
+}
+
+.rmp-def-source {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--source-color, #374151);
+}
+
+.rmp-def-pos {
+  font-size: 0.7rem;
+  color: var(--text-muted, #6b7280);
+  background: rgba(0, 0, 0, 0.06);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-style: italic;
+}
+
+.rmp-def-strong {
+  font-size: 0.7rem;
+  color: white;
+  background: var(--source-color, #6b7280);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+.rmp-def-text {
+  font-size: 0.9rem;
+  color: var(--text-primary, #374151);
+  line-height: 1.4;
+}
+
+.root-meaning-panel.dark .rmp-def-text {
+  color: var(--text-primary-dark, #e5e7eb);
+}
+
+.rmp-expand-btn {
+  background: none;
+  border: none;
+  color: var(--source-color, #3b82f6);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 4px;
+  text-decoration: underline;
+}
+
+.rmp-expand-btn:hover {
+  opacity: 0.7;
+}
+
+/* =============================================================================
+   SOURCES FOOTER
+   ============================================================================= */
+
+.rmp-sources {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color, #e5e7eb);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.root-meaning-panel.dark .rmp-sources {
+  border-top-color: var(--border-color-dark, #374151);
+}
+
+.rmp-sources-label {
+  font-size: 0.7rem;
+  color: var(--text-muted, #9ca3af);
+  font-weight: 500;
+}
+
+.rmp-sources-list {
+  font-size: 0.7rem;
+  color: var(--text-muted, #6b7280);
+}
+
+/* =============================================================================
+   LOADING & ERROR STATES
+   ============================================================================= */
+
+.rmp-loading,
+.rmp-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  color: var(--text-muted, #6b7280);
+  font-size: 0.9rem;
+}
+
+.rmp-loading-icon {
+  animation: rmp-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes rmp-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.rmp-error {
+  color: #dc2626;
+}
+
+/* =============================================================================
+   COMPACT MODE
+   ============================================================================= */
+
+.root-meaning-panel.compact .rmp-header {
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+}
+
+.root-meaning-panel.compact .rmp-title {
+  font-size: 0.85rem;
+}
+
+.root-meaning-panel.compact .rmp-root-letters {
+  font-size: 1.2rem;
+  padding: 3px 8px;
+}
+
+.root-meaning-panel.compact .rmp-primary {
+  padding: 6px 8px;
+  margin-bottom: 8px;
+}
+
+.root-meaning-panel.compact .rmp-definitions {
+  gap: 6px;
+}
+
+.root-meaning-panel.compact .rmp-definition {
+  padding: 6px 8px;
+}
+
+.root-meaning-panel.compact .rmp-def-text {
+  font-size: 0.85rem;
+}
+
+/* =============================================================================
+   RESPONSIVE
+   ============================================================================= */
+
+@media (max-width: 480px) {
+  .root-meaning-panel {
+    padding: 10px;
+  }
+
+  .rmp-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .rmp-primary {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .rmp-def-header {
+    flex-wrap: wrap;
+  }
+}

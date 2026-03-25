@@ -5,6 +5,7 @@
 
 import { cleanHebrewWord } from './hebrewDictionary';
 import { createLogger } from '../utils/debug';
+import { stripAllDiacritics } from '../utils/hebrewUtils';
 
 const log = createLogger('Prefetch');
 const DEBUG = process.env.NODE_ENV === 'development';
@@ -166,8 +167,7 @@ const extractHebrewWords = (verseText) => {
   if (!verseText) return [];
 
   // Remove nikud/cantillation and split by whitespace
-  const cleanText = verseText
-    .replace(/[\u0591-\u05BD\u05BF-\u05C7]/g, '') // Remove taamim and nikud
+  const cleanText = stripAllDiacritics(verseText)
     .replace(/[^\u05D0-\u05EA\s]/g, ' '); // Keep only Hebrew letters
 
   return cleanText

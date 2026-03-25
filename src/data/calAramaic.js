@@ -15,6 +15,7 @@
  */
 
 import { getCALAramaicData } from '../services/dictionaryLoader';
+import { stripAllDiacritics, normalizeFinals } from '../utils/hebrewUtils';
 
 // =============================================================================
 // LAZY-LOADED LEXICON ACCESS
@@ -63,7 +64,7 @@ export const lookupCAL = (word) => {
   if (!data) return null;
 
   // Clean the word of nikud/cantillation
-  const cleaned = word.replace(/[\u0591-\u05C7]/g, '');
+  const cleaned = stripAllDiacritics(word);
 
   // Direct lookup
   if (data[cleaned]) {
@@ -71,12 +72,7 @@ export const lookupCAL = (word) => {
   }
 
   // Try without final letters (כ→ך, מ→ם, etc.)
-  const normalized = cleaned
-    .replace(/ך/g, 'כ')
-    .replace(/ם/g, 'מ')
-    .replace(/ן/g, 'נ')
-    .replace(/ף/g, 'פ')
-    .replace(/ץ/g, 'צ');
+  const normalized = normalizeFinals(cleaned);
 
   if (data[normalized]) {
     return { ...data[normalized], source: 'CAL' };

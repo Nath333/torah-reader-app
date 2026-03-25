@@ -21,6 +21,7 @@
  * ├── babylonianDictionary        - Aramaic language detection
  * ├── calDictionaryService        - CAL API for Aramaic (fallback)
  * ├── scholarlyLexiconService     - Sefaria lexicon wrapper
+ * ├── wiktionaryService           - Wiktionary API (optional reference source)
  * └── englishToFrenchService      - English → French translation
  *
  * COMMENTARY SERVICES
@@ -112,6 +113,18 @@ export { default as babylonianDictionary } from './babylonianDictionary';
 export { default as calDictionaryService } from './calDictionaryService';
 export { default as scholarlyLexiconService } from './scholarlyLexiconService';
 export { default as englishToFrenchService } from './englishToFrenchService';
+// PRO SCHOLAR: Wiktionary - optional reference source (community-edited)
+export { default as wiktionaryService } from './wiktionaryService';
+export {
+  lookupWiktionary,
+  fetchWiktionaryEtymology,
+  isWiktionaryAvailable,
+  clearWiktionaryCache,
+  // PRO SCHOLAR: Proto-Semitic reconstruction functions
+  getProtoSemitic,
+  hasProtoSemitic,
+  loadCachedEtymology
+} from './wiktionaryService';
 // PRIMARY: Use dictionaryLoader for all dictionary loading
 export { default as dictionaryLoader } from './dictionaryLoader';
 
@@ -175,6 +188,33 @@ export {
 // =============================================================================
 export { default as grammarAnalysisService } from './grammarAnalysisService';
 export { default as semanticFieldService } from './semanticFieldService';
+// PRO SCHOLAR V12: Comparative Semitic linguistics
+export { default as comparativeSemiticService } from './comparativeSemiticService';
+export {
+  COGNATE_DATABASE,
+  getCognates as getComparativeCognates,
+  getCognatesAsync,
+  getCognatesWithCALSync,
+  hasCognates,
+  hasCognatesAsync,
+  getCognateStats,
+  getRootsByCategory,
+  formatCognatesForDisplay,
+  getCognateSummary
+} from './comparativeSemiticService';
+// PRO SCHOLAR V12: CAL Database integration (Aramaic)
+export { default as calService } from './calService';
+export {
+  lookupCAL,
+  lookupCALSync,
+  loadCALData,
+  getDialectInfo,
+  hasCALData,
+  getCALStats,
+  formatCALForDisplay,
+  clearCALCache,
+  CAL_DIALECTS
+} from './calService';
 
 // =============================================================================
 // TEXTUAL ANALYSIS SERVICES
@@ -1138,3 +1178,37 @@ export {
   // Configuration
   PREFETCH_CONFIG
 } from './wordPrefetchService';
+
+// =============================================================================
+// ETYMOLOGY ENRICHMENT SERVICE - Scholar Pro
+// Multi-source etymology: BDB, Jastrow, CAL, Sefaria (17,976+ entries)
+// =============================================================================
+export { default as etymologyEnrichmentService } from './etymologyEnrichmentService';
+export {
+  // Main etymology lookup
+  getEnrichedEtymology,
+  getEnrichedEtymologySync,
+
+  // Specific data access
+  getCognates as getEnrichedCognates,
+  getCrossReferences as getEnrichedCrossRefs,
+  isAramaic as isWordAramaic,
+  getSemanticField as getEnrichedSemanticField,
+
+  // Scholar Pro: Dialect & Attestation (CAL data)
+  getDialects as getWordDialects,
+  getAttestations as getWordAttestations,
+  getAllDefinitions as getAllWordDefinitions,
+
+  // Search functions
+  findWordsByCognateLanguage,
+  findWordsBySemanticField,
+  findWordsByDialect,
+
+  // Data management
+  getDataStatistics as getEtymologyStats,
+  getDataSource as getEtymologyDataSource,
+  preloadEnrichedData,
+  isDataLoaded as isEtymologyLoaded,
+  getRawEntry as getRawEtymologyEntry
+} from './etymologyEnrichmentService';

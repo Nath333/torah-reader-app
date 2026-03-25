@@ -27,6 +27,7 @@ import {
 } from './dictionaryLoader';
 // PRO SCHOLAR V5: Single source of truth for Aramaic particles
 import { ARAMAIC_PARTICLES } from './preClassificationService';
+import { stripAllDiacritics } from '../utils/hebrewUtils';
 
 // =============================================================================
 // FEATURE FLAGS
@@ -567,7 +568,7 @@ const PREFIXES = ['ו', 'ה', 'ב', 'ל', 'מ', 'כ', 'ש', 'ד', 'וה', 'ול'
  * These are CANDIDATES to validate against dictionaries
  */
 const generateRootHypotheses = (word) => {
-  const cleaned = word.replace(/[\u0591-\u05C7]/g, '');
+  const cleaned = stripAllDiacritics(word);
   const hypotheses = [];
 
   // Hypothesis 1: Word itself (maybe it's a root form)
@@ -893,7 +894,7 @@ const validateAgainstDictionaries = (hypotheses) => {
 export const extractAllPossibleRoots = (word, options = {}) => {
   if (!word || word.length < 2) return [];
 
-  const cleaned = word.replace(/[\u0591-\u05C7]/g, '');
+  const cleaned = stripAllDiacritics(word);
 
   // Step 0: Check if it's an Aramaic particle (fixed phrase)
   // PRO SCHOLAR V5: Now uses 75+ particles from preClassificationService

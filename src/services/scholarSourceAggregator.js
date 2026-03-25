@@ -442,7 +442,7 @@ export const aggregateLocalSources = (word, lookupFunctions, options = {}) => {
           name: sourceName,
           definition: result.english || result.definition,
           fullDefinition: result.fullDefinition || result.fullEnglish,
-          headword: result.headword || result.matchedForm,
+          headword: result.headword || result.matchedForm || result._matchedForm,
           source: result.source || sourceName,
           tier: getSourceTier(sourceName),
           raw: result,
@@ -451,7 +451,10 @@ export const aggregateLocalSources = (word, lookupFunctions, options = {}) => {
           language: result.language,
           strongNumber: result.strongNumber,
           strippedPrefix: result.strippedPrefix,
-          strippedSuffix: result.strippedSuffix
+          strippedSuffix: result.strippedSuffix,
+          // PRO SCHOLAR V13: Match type for UI display (how word was found)
+          _matchType: result._matchType || 'exact',
+          _matchedForm: result._matchedForm || result.matchedForm
         });
       }
     } catch (err) {

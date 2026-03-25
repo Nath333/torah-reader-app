@@ -4,6 +4,9 @@
 // objections, proofs, resolutions, and speaker attributions
 // =============================================================================
 
+// PRO SCHOLAR V12: Use centralized Hebrew utilities (DRY - single source of truth)
+import { stripAllDiacritics } from '../utils/hebrewUtils';
+
 /**
  * Talmudic Discourse Pattern Types
  * Based on scholarly research of formulaic terms in Talmud Bavli
@@ -73,6 +76,21 @@ export const DISCOURSE_PATTERNS = {
     color: '#6366F1', // Indigo
     description: 'External Tannaitic source (Baraita/Tosefta)',
     cssClass: 'discourse-baraita'
+  },
+
+  // PRO SCHOLAR V25: Parallel Mishna citation - "We learned elsewhere"
+  parallel_mishna: {
+    type: DISCOURSE_TYPES.SOURCE_CITATION,
+    markers: [
+      'תנן התם', 'תְּנַן הָתָם', 'תנינא התם', 'הא תנן', 'הָא תְּנַן',
+      'דתנן', 'דִּתְנַן', 'כדתנן', 'כִּדְתְנַן'
+    ],
+    label: 'Parallel Mishna',
+    hebrewLabel: 'משנה מקבילה',
+    icon: '📜',
+    color: '#0EA5E9', // Sky blue
+    description: 'Citation from another Mishna for comparison',
+    cssClass: 'discourse-parallel'
   },
 
   amoraic_statement: {
@@ -754,67 +772,135 @@ export function getPatternConfig(patternKey) {
 
 export const TALMUDIC_PATTERNS = {
   mishna: {
-    markers: ['מתני׳', 'תנן', 'שנינו', 'מתניתין'],
+    markers: ['מתני׳', 'תנן', 'שנינו', 'מתניתין', 'במתניתין', 'דתנן', 'מדתנן'],
     color: '#4A90D9', // blue
     label: 'Mishna',
     hebrewLabel: 'משנה',
     icon: '📘'
   },
   gemara: {
-    markers: ['גמ׳', 'גְּמָ׳', 'גמרא'],
+    // V30: Enhanced Gemara detection - includes explicit marker AND implicit Gemara starters
+    markers: [
+      'גמ׳', 'גְּמָ׳', 'גמרא', 'בגמרא',
+      // Implicit Gemara starters (when text starts discussing the Mishna)
+      'מאי קאמר', 'מאי קא משמע לן', 'במאי עסקינן', 'היכי דמי'
+    ],
     color: '#8B4513', // brown
     label: 'Gemara',
     hebrewLabel: 'גמרא',
     icon: '📜'
   },
   question: {
-    markers: ['מאי', 'מנא הני מילי', 'מאי טעמא', 'איבעיא להו', 'מאי בינייהו', 'מהו', 'מנלן'],
+    // V29: Question markers - removed כיצד (it's a Mishna case intro, not a Gemara question)
+    markers: [
+      'מאי', 'מנא הני מילי', 'מאי טעמא', 'איבעיא להו', 'מאי בינייהו', 'מהו', 'מנלן',
+      'היכי דמי', 'מאן תנא', 'פשיטא', 'למימרא', 'מה הן', 'היכי', 'מאי קאמר',
+      'מאי שנא', 'מה בין', 'באיזה', 'מי אמר', 'אימא', 'וכי'
+    ],
     color: '#E67E22', // orange
     label: 'Question',
     hebrewLabel: 'שאלה',
     icon: '❓'
   },
   objection: {
-    markers: ['מתקיף', 'מתיבי', 'ורמינהו', 'בשלמא', 'אלא'],
+    // V28: Expanded objection markers
+    markers: [
+      'מתקיף', 'מתיבי', 'ורמינהו', 'בשלמא', 'אלא',
+      'קשיא', 'תיקו', 'איתיביה', 'ומי', 'והא', 'והתניא',
+      'ולא', 'ליתא', 'קא קשיא', 'הא גופא קשיא'
+    ],
     color: '#E74C3C', // red
     label: 'Challenge',
     hebrewLabel: 'קושיא',
     icon: '⚡'
   },
   proof: {
-    markers: ['תא שמע', 'שמע מינה', 'תנא כוותיה', 'מסתברא'],
+    // V28: Expanded proof markers
+    markers: [
+      'תא שמע', 'שמע מינה', 'תנא כוותיה', 'מסתברא',
+      'ראיה', 'דתנן', 'מדתנן', 'דתניא', 'מדתניא', 'מיתיבי',
+      'לימא', 'איכא למימר', 'מכלל', 'אלמא'
+    ],
     color: '#27AE60', // green
     label: 'Proof',
     hebrewLabel: 'ראיה',
     icon: '✅'
   },
   resolution: {
-    markers: ['תיובתא', 'מסתברא', 'הלכתא', 'לא קשיא', 'הכי קאמר'],
+    // V30: Expanded resolution markers with more answer patterns
+    markers: [
+      'תיובתא', 'הלכתא', 'לא קשיא', 'הכי קאמר',
+      'משום', 'כדתניא', 'הכי נמי', 'לא צריכא',
+      'תרוץ', 'לעולם', 'שאני', 'כדאמרן',
+      // V30: Additional resolution patterns
+      'אלא אמר', 'הכא במאי עסקינן', 'אמר לך', 'תנאי היא',
+      'דאמר קרא', 'כדרב', 'כדשמואל', 'אין הכי נמי'
+    ],
     color: '#9B59B6', // purple
     label: 'Conclusion',
     hebrewLabel: 'מסקנא',
     icon: '🎯'
   },
   alternative: {
-    markers: ['איכא דאמרי', 'לישנא אחרינא', 'ואיכא דאמרי'],
+    // V28: Expanded alternative markers
+    markers: [
+      'איכא דאמרי', 'לישנא אחרינא', 'ואיכא דאמרי',
+      'אי נמי', 'אי הכי', 'או דילמא', 'אלא אי אמרת'
+    ],
     color: '#3498DB', // light blue
     label: 'Alternative View',
     hebrewLabel: 'לישנא אחרינא',
     icon: '🔀'
   },
   baraita: {
-    markers: ['תנו רבנן', 'תניא', 'ת״ר', 'תנא'],
+    // V28: Expanded baraita markers
+    markers: ['תנו רבנן', 'תניא', 'ת״ר', 'תנא', 'דתנא', 'כדתניא', 'ברייתא'],
     color: '#6366F1', // indigo
     label: 'Baraita',
     hebrewLabel: 'ברייתא',
     icon: '📋'
   },
   scripture: {
-    markers: ['שנאמר', 'דכתיב', 'כדכתיב', 'מנין'],
+    // V28: Expanded scripture markers
+    markers: [
+      'שנאמר', 'דכתיב', 'כדכתיב', 'מנין',
+      'וכתיב', 'ואומר', 'הכתוב', 'מקרא'
+    ],
     color: '#14B8A6', // teal
     label: 'Scripture',
     hebrewLabel: 'פסוק',
     icon: '📖'
+  },
+  // V30: Enhanced sage detection with more patterns
+  sage_statement: {
+    markers: [
+      // Standard attribution patterns
+      'אמר רב', 'אמר רבי', 'אמר ר\'', 'א"ר', 'אר"ש', 'אר"מ',
+      'רבא אמר', 'אביי אמר', 'רבי אומר', 'חכמים אומרים',
+      // V30: Additional sage patterns
+      'רב אמר', 'שמואל אמר', 'רבי יוחנן', 'ריש לקיש',
+      'רב הונא', 'רב נחמן', 'רב יוסף', 'רב ששת', 'רב חסדא',
+      'רבינא', 'רב אשי', 'מר זוטרא', 'רב פפא',
+      // Tannaim
+      'רבי מאיר', 'רבי יהודה', 'רבי שמעון', 'רבי יוסי',
+      'רבי עקיבא', 'רבי אליעזר', 'רבי יהושע', 'רבן גמליאל',
+      // Attribution verbs
+      'סבר', 'סבירא ליה', 'אמר ליה', 'א"ל'
+    ],
+    color: '#8B5CF6', // violet
+    label: 'Sage Statement',
+    hebrewLabel: 'דברי חכם',
+    icon: '👤'
+  },
+  legal_ruling: {
+    markers: [
+      'הלכה', 'דינא', 'הדין', 'חייב', 'פטור', 'מותר', 'אסור',
+      'כשר', 'פסול', 'טמא', 'טהור'
+    ],
+    color: '#DC2626', // dark red
+    label: 'Legal Ruling',
+    hebrewLabel: 'פסק הלכה',
+    icon: '⚖️'
   }
 };
 
@@ -824,8 +910,19 @@ export const TALMUDIC_PATTERNS = {
 // =============================================================================
 
 /**
+ * Strip Hebrew nikud (vowel marks) from text for pattern matching
+ * @param {string} text - Text with potential nikud
+ * @returns {string} Text without nikud
+ */
+// PRO SCHOLAR V12: stripNikudLocal now delegates to centralized stripAllDiacritics
+function stripNikudLocal(text) {
+  return stripAllDiacritics(text) || '';
+}
+
+/**
  * Detect structural markers in Hebrew text (simplified API)
  * Returns markers sorted by position with styling information
+ * PRO SCHOLAR: Now strips nikud for better matching with Sefaria text
  * @param {string} hebrewText - The text to analyze
  * @returns {Array} Array of detected markers with position, type, color, label
  */
@@ -835,26 +932,68 @@ export function detectStructuralMarkers(hebrewText) {
   const results = [];
   const seenPositions = new Set();
 
+  // Strip nikud from input text for matching
+  const cleanText = stripNikudLocal(hebrewText);
+
+  // PRO SCHOLAR V28: Build position mapping from clean text to original text
+  // This fixes the nikud position alignment issue where positions don't match
+  const cleanToOriginal = [];
+  let cleanIdx = 0;
+  for (let origIdx = 0; origIdx < hebrewText.length; origIdx++) {
+    const char = hebrewText[origIdx];
+    // Check if character is nikud/cantillation (will be stripped)
+    if (!/[\u0591-\u05C7]/.test(char)) {
+      cleanToOriginal[cleanIdx] = origIdx;
+      cleanIdx++;
+    }
+  }
+  // Add end mapping for slicing
+  cleanToOriginal[cleanIdx] = hebrewText.length;
+
   for (const [type, config] of Object.entries(TALMUDIC_PATTERNS)) {
     for (const marker of config.markers) {
-      const escapedMarker = marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      // Also strip nikud from marker and normalize punctuation
+      const cleanMarker = stripNikudLocal(marker);
+      const escapedMarker = cleanMarker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const regex = new RegExp(escapedMarker, 'g');
 
       let match;
-      while ((match = regex.exec(hebrewText)) !== null) {
-        const posKey = `${match.index}`;
+      while ((match = regex.exec(cleanText)) !== null) {
+        // Map clean text positions back to original text positions
+        const origStart = cleanToOriginal[match.index] ?? match.index;
+        const origEnd = cleanToOriginal[match.index + match[0].length] ?? (match.index + match[0].length);
+
+        const posKey = `${origStart}`;
         if (seenPositions.has(posKey)) continue;
         seenPositions.add(posKey);
 
+        // Get the original text at mapped position (with nikud) for display
+        const originalMarker = hebrewText.slice(origStart, origEnd);
+
+        // PRO SCHOLAR V23: Extract context after the marker (up to 60 chars or sentence end)
+        const contextStart = origEnd;
+        const contextEnd = Math.min(origEnd + 80, hebrewText.length);
+        let contextText = hebrewText.slice(contextStart, contextEnd).trim();
+        // Find natural break point (sentence end or colon)
+        const breakMatch = contextText.match(/[.!?:]/);
+        if (breakMatch && breakMatch.index > 10 && breakMatch.index < 60) {
+          contextText = contextText.slice(0, breakMatch.index + 1);
+        } else {
+          contextText = contextText.slice(0, 50);
+        }
+        // Strip HTML if any
+        contextText = contextText.replace(/<[^>]+>/g, '').trim();
+
         results.push({
           type,
-          marker: match[0],
-          position: match.index,
-          endPosition: match.index + match[0].length,
+          marker: originalMarker || cleanMarker,
+          position: origStart,
+          endPosition: origEnd,
           label: config.label,
           hebrewLabel: config.hebrewLabel,
           color: config.color,
-          icon: config.icon
+          icon: config.icon,
+          context: contextText // PRO SCHOLAR V23: Added context for better display
         });
       }
     }
@@ -1645,6 +1784,1222 @@ export function renderTzuratHaDafHtml(options = {}) {
 }
 
 // =============================================================================
+// MISHNA STRUCTURE ANALYSIS (PRO SCHOLAR V13)
+// =============================================================================
+
+/**
+ * Mishna Structure Patterns
+ * Detects enumeration, conditions, exceptions, and rulings in Mishnaic text
+ */
+export const MISHNA_STRUCTURE_PATTERNS = {
+  // Enumeration patterns - Enhanced for Shabbat 2a style (שתים שהן ארבע)
+  enumeration: {
+    patterns: [
+      /(?:שתים|שלש|ארבע|חמש|שש|שבע|שמונה|תשע|עשר|שנים עשר|שלושה|ארבעה|חמישה)\s+(?:דברים|מקומות|זמנים|אופנים|מינים|דרכים)/g,
+      /(?:שתים|שלש|ארבע)\s+שהן\s+(?:ארבע|שש|שמונה)/g, // שתים שהן ארבע
+      /ראשון\b|שני\b|שלישי\b|רביעי\b|חמישי\b/g,
+      /(?:אחד|שתים|שלש)\b.*?(?:ואחד|ושתים|ושלש)\b/g,
+      /(?:מבפנים|מבחוץ|בפנים|בחוץ)/g // Inside/outside cases
+    ],
+    label: 'ספירה',
+    icon: '🔢',
+    color: '#3B82F6'
+  },
+  // Conditional rulings - Enhanced for case scenarios
+  condition: {
+    patterns: [
+      /(?:אם|כל\s+ש|בזמן\s+ש|כשהוא|כש)\s+[\u0590-\u05FF]+/g,
+      /(?:היה|היו|היתה)\s+[\u0590-\u05FF]+/g,
+      /(?:עד\s+ש|משום\s+ש|מפני\s+ש)/g,
+      /(?:פשט\s+[\u0590-\u05FF]+\s+ידו|הכניס\s+ידו|הוציא\s+ידו)/g, // Hand extension cases
+      /(?:עני\s+[\u0590-\u05FF]*\s*עומד|בעל\s+הבית\s+[\u0590-\u05FF]*\s*עומד)/g // Poor man/homeowner standing
+    ],
+    label: 'תנאי',
+    icon: '🔀',
+    color: '#F59E0B'
+  },
+  // Exceptions
+  exception: {
+    patterns: [
+      /(?:חוץ\s+מ|אלא\s+א|אבל|ואם|אלא\s+ש)/g,
+      /(?:פרט\s+ל|להוציא|יצא)/g
+    ],
+    label: 'יוצא מן הכלל',
+    icon: '⚡',
+    color: '#EF4444'
+  },
+  // Legal rulings - Enhanced with liable/exempt pairs
+  ruling: {
+    patterns: [
+      /(?:מותר|אסור|פטור|חייב|טהור|טמא|כשר|פסול|יוצא|אינו יוצא)\b/g,
+      /(?:חייב\s+[\u0590-\u05FF]*\s*(?:ו|ה)?פטור|פטור\s+[\u0590-\u05FF]*\s*(?:ו|ה)?חייב)/g, // Liable-exempt pairs
+      /(?:העני\s+[\u0590-\u05FF]*\s*חייב|בעל\s+הבית\s+[\u0590-\u05FF]*\s*פטור)/g, // Poor man liable, homeowner exempt
+      /(?:חכמים אומרים|רבי\s+[\u0590-\u05FF]+\s+אומר)/g,
+      /(?:זה\s+הכלל|כלל\s+גדול)/g,
+      /(?:שניהם\s+פטורים|שניהם\s+חייבים)/g // Both exempt/liable
+    ],
+    label: 'פסק',
+    icon: '⚖️',
+    color: '#10B981'
+  },
+  // Disputes
+  dispute: {
+    patterns: [
+      /בית\s+(?:הלל|שמאי)\s+אומרים/g,
+      /(?:רבי\s+[\u0590-\u05FF]+)\s+אומר.*?(?:וחכמים אומרים|ורבי\s+[\u0590-\u05FF]+\s+אומר)/g,
+      /מחלוקת\b/g
+    ],
+    label: 'מחלוקת',
+    icon: '⚔️',
+    color: '#8B5CF6'
+  },
+  // Case structure - NEW for Shabbat 2a style
+  case_structure: {
+    patterns: [
+      /(?:יציאות\s+השבת|הוצאות\s+שבת)/g, // Shabbat carrying
+      /(?:רשות\s+היחיד|רשות\s+הרבים)/g, // Private/public domain
+      /(?:הכנסה|הוצאה)/g, // Bringing in/taking out
+      /(?:כיצד)/g // "How is this?"
+    ],
+    label: 'מקרה',
+    icon: '📋',
+    color: '#6366F1'
+  }
+};
+
+/**
+ * Analyze Mishna structure - detects enumeration, conditions, rulings
+ * @param {string} text - Mishna text to analyze
+ * @returns {Object} Structured analysis of the Mishna
+ */
+export function analyzeMishnaStructure(text) {
+  if (!text) return { elements: [], summary: null };
+
+  // PRO SCHOLAR V12: Using centralized stripAllDiacritics
+  const cleanText = stripAllDiacritics(text);
+
+  // PRO SCHOLAR V28: Build position mapping from clean text to original text
+  // This fixes the nikud position alignment issue where positions don't match
+  const cleanToOriginal = [];
+  let cleanIdx = 0;
+  for (let origIdx = 0; origIdx < text.length; origIdx++) {
+    const char = text[origIdx];
+    // Check if character is nikud/cantillation (will be stripped)
+    if (!/[\u0591-\u05C7]/.test(char)) {
+      cleanToOriginal[cleanIdx] = origIdx;
+      cleanIdx++;
+    }
+  }
+  // Add end mapping for slicing
+  cleanToOriginal[cleanIdx] = text.length;
+
+  const elements = [];
+  const seenPositions = new Set();
+
+  for (const [type, config] of Object.entries(MISHNA_STRUCTURE_PATTERNS)) {
+    for (const pattern of config.patterns) {
+      const regex = new RegExp(pattern.source, pattern.flags);
+      let match;
+      while ((match = regex.exec(cleanText)) !== null) {
+        // Map clean text positions back to original text positions
+        const origStart = cleanToOriginal[match.index] ?? match.index;
+        const origEnd = cleanToOriginal[match.index + match[0].length] ?? (match.index + match[0].length);
+
+        const posKey = `${origStart}-${type}`;
+        if (!seenPositions.has(posKey)) {
+          seenPositions.add(posKey);
+          // Extract original text with nikud
+          const originalText = text.slice(origStart, origEnd);
+          elements.push({
+            type,
+            text: originalText || match[0],
+            position: origStart,
+            endPosition: origEnd,
+            label: config.label,
+            icon: config.icon,
+            color: config.color
+          });
+        }
+      }
+    }
+  }
+
+  // Sort by position
+  elements.sort((a, b) => a.position - b.position);
+
+  // Generate summary
+  const summary = {
+    hasEnumeration: elements.some(e => e.type === 'enumeration'),
+    hasConditions: elements.some(e => e.type === 'condition'),
+    hasExceptions: elements.some(e => e.type === 'exception'),
+    hasRulings: elements.some(e => e.type === 'ruling'),
+    hasDisputes: elements.some(e => e.type === 'dispute'),
+    hasCaseStructure: elements.some(e => e.type === 'case_structure'),
+    totalElements: elements.length,
+    breakdown: {}
+  };
+
+  // Count by type
+  for (const el of elements) {
+    summary.breakdown[el.type] = (summary.breakdown[el.type] || 0) + 1;
+  }
+
+  return { elements, summary };
+}
+
+// =============================================================================
+// MISHNA SUMMARY GENERATOR (PRO SCHOLAR V26)
+// Generates meaningful one-liner summaries explaining the halacha
+// =============================================================================
+
+/**
+ * PRO SCHOLAR V26: Known Mishna opening patterns with explanations
+ * Maps famous opening phrases to descriptive summaries
+ */
+const KNOWN_MISHNA_OPENINGS = {
+  // Shabbat
+  'יציאות השבת': {
+    topic: 'הוצאה והכנסה בשבת',
+    summary: 'מלאכת הוצאה: העברת חפצים בין רשות היחיד לרשות הרבים',
+    details: 'שתים שהן ארבע - שני צדדים (הוצאה/הכנסה) × שני גורמים (עני/בעה"ב)'
+  },
+  'שתים שהן ארבע': {
+    topic: 'מניין חיובי הוצאה',
+    summary: 'ארבעה מקרים של הוצאה: מבפנים החוצה ומבחוץ פנימה, כל אחד על ידי עני או בעל הבית',
+    details: 'בפנים = רשות היחיד, בחוץ = רשות הרבים'
+  },
+  'במה מדליקין': {
+    topic: 'נרות שבת',
+    summary: 'חומרים כשרים ופסולים להדלקת נר שבת - פתילות ושמנים',
+    details: 'נר שבת חייב לדלוק כראוי לכבוד שבת'
+  },
+  'כירה': {
+    topic: 'שהיית תבשיל על האש',
+    summary: 'מתי מותר להשאיר תבשיל על כירה בשבת - גרוף וקטום',
+    details: 'חשש שמא יחתה בגחלים להגביר האש'
+  },
+  'במה טומנין': {
+    topic: 'הטמנת תבשיל',
+    summary: 'חומרים בהם מותר/אסור לעטוף סיר כדי לשמור חום',
+    details: 'מותר בדבר שאינו מוסיף הבל'
+  },
+  // Berakhot
+  'מאימתי קורין': {
+    topic: 'זמן קריאת שמע',
+    summary: 'זמני קריאת שמע של ערבית ושחרית',
+    details: 'משעה שהכהנים נכנסים לאכול בתרומתן'
+  },
+  'היה קורא': {
+    topic: 'קריאת שמע',
+    summary: 'דיני קריאת שמע - כוונה, הפסקות, וטעויות',
+    details: 'כוונה בפסוק ראשון מעכבת'
+  },
+  // General patterns
+  'שלשה דברים': {
+    topic: 'מנייה תלת',
+    summary: 'שלושה עניינים הקשורים בנושא המשנה',
+    details: 'מבנה של ספירה וסיווג'
+  },
+  'ארבעה דברים': {
+    topic: 'מנייה ארבע',
+    summary: 'ארבעה עניינים או סוגים בנושא הנידון',
+    details: 'מבנה של ספירה וסיווג'
+  }
+};
+
+/**
+ * Extract halachic ruling patterns from text
+ * @param {string} text - Hebrew text
+ * @returns {Object[]} Array of rulings with type and context
+ */
+function extractRulings(text) {
+  const rulings = [];
+  const patterns = [
+    { regex: /(?:העני|עני)\s*[\u0590-\u05FF]*\s*(?:חייב|פטור)/g, actor: 'עני', actionType: 'transfer' },
+    { regex: /(?:בעל\s+הבית|בעה"ב)\s*[\u0590-\u05FF]*\s*(?:חייב|פטור)/g, actor: 'בעל הבית', actionType: 'transfer' },
+    { regex: /שניהם\s+(?:פטורים|חייבים)/g, actor: 'שניהם', actionType: 'both' },
+    { regex: /(?:מותר|אסור)\s+[\u0590-\u05FF]{2,20}/g, actor: null, actionType: 'permission' },
+    { regex: /(?:חייב|פטור)\s+[\u0590-\u05FF]{2,20}/g, actor: null, actionType: 'liability' }
+  ];
+
+  for (const { regex, actor, actionType } of patterns) {
+    let match;
+    while ((match = regex.exec(text)) !== null) {
+      rulings.push({
+        text: match[0],
+        actor,
+        actionType,
+        isLiable: match[0].includes('חייב'),
+        isExempt: match[0].includes('פטור'),
+        isPermitted: match[0].includes('מותר'),
+        isForbidden: match[0].includes('אסור'),
+        position: match.index
+      });
+    }
+  }
+
+  return rulings;
+}
+
+/**
+ * PRO SCHOLAR V26: Generate a meaningful Mishna summary
+ * Creates a one-liner that explains the actual halachic content
+ * @param {string} text - Mishna text
+ * @param {Object} analysis - Output from analyzeMishnaStructure
+ * @returns {Object} Summary with oneLiner, topic, details, and rulings
+ */
+export function generateMishnaSummary(text, analysis = null) {
+  if (!text) return { oneLiner: '', topic: '', details: '', rulings: [] };
+
+  // PRO SCHOLAR V12: Using centralized stripAllDiacritics
+  const cleanText = stripAllDiacritics(text);
+
+  // Check for known Mishna openings
+  for (const [opening, info] of Object.entries(KNOWN_MISHNA_OPENINGS)) {
+    if (cleanText.includes(opening)) {
+      const rulings = extractRulings(cleanText);
+      return {
+        oneLiner: info.summary,
+        topic: info.topic,
+        details: info.details,
+        rulings,
+        isKnown: true
+      };
+    }
+  }
+
+  // Generate dynamic summary based on detected patterns
+  const structureAnalysis = analysis || analyzeMishnaStructure(text);
+  const { elements = [], summary = {} } = structureAnalysis;
+
+  // Extract key content
+  const rulings = extractRulings(cleanText);
+  const liableCount = rulings.filter(r => r.isLiable).length;
+  const exemptCount = rulings.filter(r => r.isExempt).length;
+
+  // Build summary based on detected elements
+  const summaryParts = [];
+
+  // Check for enumeration (שתים שהן ארבע pattern)
+  const enumMatch = cleanText.match(/(?:שתים|שלש|ארבע|חמש|שש|שבע)\s+(?:שהן|שהם)\s+(?:ארבע|שש|שמונה|עשר)/);
+  if (enumMatch) {
+    summaryParts.push(`מניין: ${enumMatch[0]}`);
+  }
+
+  // Count rulings
+  if (liableCount > 0 || exemptCount > 0) {
+    const ruleParts = [];
+    if (liableCount > 0) ruleParts.push(`${liableCount} מקרי חיוב`);
+    if (exemptCount > 0) ruleParts.push(`${exemptCount} מקרי פטור`);
+    summaryParts.push(ruleParts.join(' ו-'));
+  }
+
+  // Check for dispute
+  if (summary.hasDisputes) {
+    summaryParts.push('מחלוקת תנאים');
+  }
+
+  // Check for cases
+  if (elements.some(e => e.type === 'case_structure')) {
+    const caseTexts = elements.filter(e => e.type === 'case_structure').map(e => e.text);
+    if (caseTexts.length > 0) {
+      summaryParts.push(`מקרים: ${caseTexts.slice(0, 2).join(', ')}`);
+    }
+  }
+
+  // Generate one-liner
+  let oneLiner = '';
+  if (summaryParts.length > 0) {
+    oneLiner = summaryParts.join(' • ');
+  } else {
+    // Fallback: Extract first meaningful sentence
+    const firstSentence = cleanText.split(/[.:]/).filter(s => s.length > 10)[0];
+    if (firstSentence) {
+      oneLiner = firstSentence.trim().substring(0, 80) + (firstSentence.length > 80 ? '...' : '');
+    }
+  }
+
+  // Determine topic from content
+  let topic = 'נושא המשנה';
+  if (cleanText.includes('שבת') || cleanText.includes('הוצאה') || cleanText.includes('מלאכ')) {
+    topic = 'הלכות שבת';
+  } else if (cleanText.includes('קורא') || cleanText.includes('שמע')) {
+    topic = 'קריאת שמע';
+  } else if (cleanText.includes('תפל')) {
+    topic = 'הלכות תפילה';
+  }
+
+  return {
+    oneLiner,
+    topic,
+    details: `${elements.length} אלמנטים מבניים זוהו`,
+    rulings,
+    isKnown: false,
+    breakdown: summary.breakdown || {}
+  };
+}
+
+// =============================================================================
+// GEMARA Q&A FLOW EXTRACTOR (PRO SCHOLAR V26)
+// Enhanced to detect source-based and comparison-based Gemara flows
+// =============================================================================
+
+/**
+ * Extract Q&A flow from Gemara text
+ * Groups patterns into logical question-answer-resolution chains
+ * PRO SCHOLAR V25: Also detects source-based flows (e.g., "תנן התם")
+ * @param {string} text - Gemara text to analyze
+ * @returns {Object} Q&A flow with questions, challenges, proofs, and resolutions
+ */
+export function extractGemaraQA(text) {
+  if (!text) return { flow: [], summary: { questionsAsked: 0, challengesRaised: 0, proofsOffered: 0, resolved: 0, unresolved: 0 } };
+
+  // PRO SCHOLAR V12: Using centralized stripAllDiacritics
+  const cleanText = stripAllDiacritics(text);
+
+  // Detect all discourse patterns
+  const patterns = detectStructuralMarkers(cleanText);
+
+  // PRO SCHOLAR V26: Enhanced implicit question patterns for better Q&A detection
+  // Includes Shabbat 2a specific patterns and general Talmudic inquiry forms
+  const implicitQuestions = [];
+  const implicitPatterns = [
+    // Basic question forms
+    { regex: /מאי\s+[א-ת]{2,}/g, label: 'מאי (שאלה)', type: 'question' },
+    { regex: /מהו\s+[א-ת]{2,}/g, label: 'מהו', type: 'question' },
+    { regex: /מנא\s+הני\s+מילי/g, label: 'מנא הני מילי', type: 'question' },
+    { regex: /מנלן/g, label: 'מנלן', type: 'question' },
+    { regex: /היכי\s+דמי/g, label: 'היכי דמי', type: 'question' },
+    { regex: /פשיטא/g, label: 'פשיטא (קושיא)', type: 'objection' },
+    { regex: /למימרא/g, label: 'למימרא', type: 'question' },
+    { regex: /איבעיא\s+להו/g, label: 'איבעיא להו', type: 'disputed' },
+    // PRO SCHOLAR V29: כיצד is a Mishna case introduction, not a Gemara question
+    { regex: /כיצד/g, label: 'כיצד', type: 'case_structure' },
+    { regex: /הא\s+תנן/g, label: 'הא תנן', type: 'question' },
+    { regex: /מאי\s+טעמא/g, label: 'מה הטעם?', type: 'question' },
+    { regex: /מאי\s+שנא/g, label: 'מה שונה?', type: 'question' },
+    { regex: /למה\s+לי/g, label: 'למה לי?', type: 'question' },
+    { regex: /לאתויי\s+מאי/g, label: 'לאתויי מאי?', type: 'question' },
+    { regex: /אמאי/g, label: 'אמאי?', type: 'question' },
+    { regex: /מדוע/g, label: 'מדוע?', type: 'question' },
+    // Source-based questions
+    { regex: /תנן\s+התם/g, label: 'תנן התם', type: 'source_citation' },
+    { regex: /דתנן/g, label: 'דתנן', type: 'source_citation' },
+    { regex: /תנו\s+רבנן/g, label: 'תנו רבנן', type: 'source_citation' },
+    { regex: /תניא/g, label: 'תניא', type: 'source_citation' },
+    // Challenges and objections
+    { regex: /והאמר/g, label: 'והאמר', type: 'objection' },
+    { regex: /ורמינהו/g, label: 'ורמינהו', type: 'objection' },
+    { regex: /מיתיבי/g, label: 'מיתיבי', type: 'objection' },
+    { regex: /מתקיף\s+לה/g, label: 'מתקיף', type: 'objection' },
+    { regex: /קשיא/g, label: 'קשיא', type: 'objection' },
+    // Resolutions - V30: Significantly expanded
+    { regex: /לא\s+קשיא/g, label: 'לא קשיא', type: 'resolution' },
+    { regex: /הכא\s+במאי\s+עסקינן/g, label: 'הכא במאי עסקינן', type: 'resolution' },
+    { regex: /אמר\s+לך/g, label: 'אמר לך', type: 'resolution' },
+    { regex: /הכי\s+קאמר/g, label: 'הכי קאמר', type: 'resolution' },
+    { regex: /אלא\s+אמר/g, label: 'אלא אמר', type: 'resolution' },
+    { regex: /הכי\s+נמי/g, label: 'הכי נמי', type: 'resolution' },
+    { regex: /שאני/g, label: 'שאני (חילוק)', type: 'resolution' },
+    { regex: /לעולם/g, label: 'לעולם', type: 'resolution' },
+    { regex: /כדאמרן/g, label: 'כדאמרן', type: 'resolution' },
+    { regex: /לא\s+צריכא/g, label: 'לא צריכא', type: 'resolution' },
+    { regex: /דאמר\s+קרא/g, label: 'דאמר קרא', type: 'resolution' },
+    { regex: /תנאי\s+היא/g, label: 'תנאי היא', type: 'resolution' },
+    { regex: /אין\s+הכי\s+נמי/g, label: 'אין הכי נמי', type: 'resolution' },
+    { regex: /הא\s+מני/g, label: 'הא מני', type: 'resolution' },
+    { regex: /כגון/g, label: 'כגון', type: 'resolution' },
+    // Unresolved markers - V30: Track open questions
+    { regex: /תיקו/g, label: 'תיקו', type: 'unresolved' },
+    { regex: /צריך\s+עיון/g, label: 'צריך עיון', type: 'unresolved' },
+    { regex: /קשיא$/gm, label: 'נשאר בקשיא', type: 'unresolved' },
+    // Conclusions
+    { regex: /שמע\s+מינה/g, label: 'שמע מינה', type: 'halachic_conclusion' },
+    { regex: /מכלל\s+ד/g, label: 'מכלל', type: 'halachic_conclusion' },
+    { regex: /הלכתא/g, label: 'הלכתא', type: 'halachic_conclusion' },
+    { regex: /אלמא/g, label: 'אלמא', type: 'halachic_conclusion' },
+    { regex: /נמצא/g, label: 'נמצא', type: 'halachic_conclusion' }
+  ];
+
+  for (const { regex, label, type } of implicitPatterns) {
+    let match;
+    while ((match = regex.exec(cleanText)) !== null) {
+      implicitQuestions.push({
+        marker: match[0],
+        label,
+        type,
+        category: type,
+        position: match.index
+      });
+    }
+  }
+
+  // Combine and sort all patterns
+  const allPatterns = [...patterns, ...implicitQuestions].sort((a, b) => a.position - b.position);
+
+  // Group into Q&A units
+  const flow = [];
+  let currentUnit = null;
+
+  const questionTypes = ['question', 'disputed'];
+  const challengeTypes = ['objection', 'contradiction'];
+  const proofTypes = ['proof'];
+  const sourceTypes = ['source_citation', 'tannaitic_source'];
+  const resolutionTypes = ['resolution', 'halachic_conclusion'];
+  const startUnitTypes = ['source_citation', 'tannaitic_source', 'explication'];
+
+  for (const pattern of allPatterns) {
+    const patternType = pattern.category || pattern.type;
+
+    // Start new Q&A unit on question
+    if (questionTypes.includes(patternType)) {
+      if (currentUnit) flow.push(currentUnit);
+      currentUnit = {
+        type: 'qa_unit',
+        question: pattern,
+        sources: [],
+        challenges: [],
+        proofs: [],
+        resolution: null,
+        speakers: []
+      };
+    }
+    // PRO V25: Start unit on source citation if no unit exists (common in Bavli)
+    else if (startUnitTypes.includes(patternType) && !currentUnit) {
+      currentUnit = {
+        type: 'source_unit',
+        question: { marker: pattern.marker, label: pattern.hebrewLabel || pattern.label, type: 'source' },
+        sources: [pattern],
+        challenges: [],
+        proofs: [],
+        resolution: null,
+        speakers: []
+      };
+    }
+    // Add challenge to current unit or start new unit
+    else if (challengeTypes.includes(patternType)) {
+      if (!currentUnit) {
+        currentUnit = {
+          type: 'challenge_unit',
+          question: { marker: pattern.marker, label: 'קושיא', type: 'challenge' },
+          sources: [],
+          challenges: [],
+          proofs: [],
+          resolution: null,
+          speakers: []
+        };
+      }
+      currentUnit.challenges.push(pattern);
+    }
+    // Add source/proof to current unit
+    else if (sourceTypes.includes(patternType) && currentUnit) {
+      currentUnit.sources.push(pattern);
+    }
+    else if (proofTypes.includes(patternType) && currentUnit) {
+      currentUnit.proofs.push(pattern);
+    }
+    // Set resolution
+    else if (resolutionTypes.includes(patternType) && currentUnit) {
+      currentUnit.resolution = pattern;
+      flow.push(currentUnit);
+      currentUnit = null;
+    }
+    // Track speakers
+    else if (patternType === 'speaker' && currentUnit) {
+      currentUnit.speakers.push(pattern);
+    }
+  }
+
+  // Push final unit if exists
+  if (currentUnit) flow.push(currentUnit);
+
+  // Generate summary
+  const summary = {
+    totalUnits: flow.length,
+    questionsAsked: flow.filter(u => u.type === 'qa_unit').length,
+    sourceCitations: flow.filter(u => u.type === 'source_unit').length,
+    challengesRaised: flow.reduce((sum, u) => sum + u.challenges.length, 0),
+    proofsOffered: flow.reduce((sum, u) => sum + (u.proofs?.length || 0) + (u.sources?.length || 0), 0),
+    resolved: flow.filter(u => u.resolution).length,
+    unresolved: flow.filter(u => !u.resolution).length
+  };
+
+  return { flow, summary };
+}
+
+/**
+ * PRO SCHOLAR V30: Enhanced visual flow diagram with subgraphs and cross-references
+ * Enhanced to include Mishna structure, cross-refs, and sage statements
+ * @param {string} text - Gemara text
+ * @returns {string} Mermaid diagram code
+ */
+export function generateQAFlowDiagram(text) {
+  const { flow, summary } = extractGemaraQA(text);
+  const mishnaAnalysis = analyzeMishnaStructure(text);
+  const mishnaSummary = generateMishnaSummary(text, mishnaAnalysis);
+
+  // V28: Also try to generate from structural markers if flow is empty
+  if (flow.length === 0 && mishnaAnalysis.elements.length === 0) {
+    // Fall back to pattern-based diagram generation
+    return generatePatternBasedDiagram(text);
+  }
+
+  // V30: Extract cross-references and sages for enhanced diagram
+  const crossRefs = extractEnhancedCrossRefs(text);
+  const sages = extractSagesFromText(text);
+
+  let mermaid = 'flowchart TD\n';
+
+  // V30: Enhanced styling with better visuals
+  mermaid += '  classDef mishna fill:#DBEAFE,stroke:#3B82F6,color:#1E40AF,font-weight:bold,stroke-width:2px\n';
+  mermaid += '  classDef question fill:#FEF3C7,stroke:#F59E0B,color:#92400E,stroke-width:2px\n';
+  mermaid += '  classDef challenge fill:#FEE2E2,stroke:#EF4444,color:#991B1B,stroke-width:2px\n';
+  mermaid += '  classDef proof fill:#D1FAE5,stroke:#10B981,color:#047857,stroke-width:2px\n';
+  mermaid += '  classDef resolution fill:#DDD6FE,stroke:#7C3AED,color:#5B21B6,stroke-width:2px\n';
+  mermaid += '  classDef liable fill:#FEE2E2,stroke:#DC2626,color:#7F1D1D,stroke-width:2px\n';
+  mermaid += '  classDef exempt fill:#D1FAE5,stroke:#10B981,color:#065F46,stroke-width:2px\n';
+  mermaid += '  classDef gemara fill:#FEF9C3,stroke:#CA8A04,color:#713F12,stroke-width:2px\n';
+  mermaid += '  classDef sage fill:#F3E8FF,stroke:#8B5CF6,color:#6D28D9,stroke-width:2px\n';
+  mermaid += '  classDef crossref fill:#E0F2FE,stroke:#0EA5E9,color:#0369A1,stroke-width:1px,stroke-dasharray:3\n';
+  mermaid += '  classDef baraita fill:#E0E7FF,stroke:#6366F1,color:#4338CA,stroke-width:2px\n';
+  mermaid += '  classDef scripture fill:#CCFBF1,stroke:#14B8A6,color:#0F766E,stroke-width:2px\n';
+  mermaid += '  classDef conclusion fill:#FDF4FF,stroke:#D946EF,color:#A21CAF,stroke-width:3px\n\n';
+
+  let nodeIndex = 0;
+  let prevNode = null;
+  const mishnaNodeIds = [];
+  const gemaraNodeIds = [];
+
+  // V30: Create Mishna subgraph if we have content
+  const hasMishnaContent = mishnaSummary?.topic || (mishnaSummary?.rulings?.length > 0);
+  if (hasMishnaContent) {
+    mermaid += '  subgraph MISHNA["📘 משנה"]\n';
+    mermaid += '    direction TB\n';
+
+    // Add Mishna topic header if available
+    if (mishnaSummary?.topic && mishnaSummary.isKnown) {
+      const topicId = `T${nodeIndex++}`;
+      const topicText = mishnaSummary.topic.replace(/"/g, "'").substring(0, 22);
+      mermaid += `    ${topicId}["${topicText}"]\n`;
+      mishnaNodeIds.push(topicId);
+      prevNode = topicId;
+    }
+
+    // Add Mishna rulings to the diagram
+    if (mishnaSummary?.rulings && mishnaSummary.rulings.length > 0) {
+      const uniqueRulings = [...new Set(mishnaSummary.rulings.map(r => r.text))].slice(0, 4);
+      uniqueRulings.forEach((ruling, i) => {
+        const rulingId = `R${nodeIndex++}`;
+        const rulingText = ruling.replace(/"/g, "'").substring(0, 18);
+        const isLiable = ruling.includes('חייב');
+        const icon = isLiable ? '🔴' : '🟢';
+        mermaid += `    ${rulingId}["${icon} ${rulingText}"]\n`;
+        mishnaNodeIds.push(rulingId);
+
+        if (prevNode) {
+          mermaid += `    ${prevNode} --> ${rulingId}\n`;
+        }
+        prevNode = rulingId;
+      });
+    }
+
+    mermaid += '  end\n\n';
+  }
+
+  // V30: Create Gemara subgraph with Q&A flow
+  const hasGemaraContent = flow.length > 0 || sages.length > 0;
+  if (hasGemaraContent) {
+    mermaid += '  subgraph GEMARA["📜 גמרא"]\n';
+    mermaid += '    direction TB\n';
+
+    // Add Gemara header
+    const gemaraId = `G${nodeIndex++}`;
+    mermaid += `    ${gemaraId}["גמרא"]\n`;
+    gemaraNodeIds.push({ id: gemaraId, type: 'gemara' });
+
+    if (prevNode && hasMishnaContent) {
+      // Will link after subgraph
+    }
+    prevNode = gemaraId;
+
+    // V30: Add sage statements as nodes
+    const uniqueSages = [...new Set(sages.map(s => s.name))].slice(0, 3);
+    uniqueSages.forEach((sageName, i) => {
+      const sageId = `S${nodeIndex++}`;
+      const sageText = sageName.substring(0, 12).replace(/"/g, "'");
+      mermaid += `    ${sageId}["👤 ${sageText}"]\n`;
+      gemaraNodeIds.push({ id: sageId, type: 'sage' });
+    });
+
+    // Q&A flow
+    flow.forEach((unit, i) => {
+      const qId = `Q${nodeIndex++}`;
+      const qText = (unit.question?.marker?.substring(0, 14) || `שאלה ${i + 1}`).replace(/"/g, "'");
+      mermaid += `    ${qId}["❓ ${qText}"]\n`;
+      gemaraNodeIds.push({ id: qId, type: 'question' });
+
+      if (prevNode) {
+        mermaid += `    ${prevNode} --> ${qId}\n`;
+      }
+
+      // Add challenges
+      unit.challenges.forEach((c, j) => {
+        const cId = `C${nodeIndex++}`;
+        const cText = (c.marker?.substring(0, 10) || 'קושיא').replace(/"/g, "'");
+        mermaid += `    ${cId}["⚡ ${cText}"]\n`;
+        mermaid += `    ${qId} --> ${cId}\n`;
+        gemaraNodeIds.push({ id: cId, type: 'challenge' });
+      });
+
+      // Add proofs
+      unit.proofs.forEach((p, j) => {
+        const pId = `P${nodeIndex++}`;
+        const pText = (p.marker?.substring(0, 10) || 'ראיה').replace(/"/g, "'");
+        mermaid += `    ${pId}["✅ ${pText}"]\n`;
+        mermaid += `    ${qId} --> ${pId}\n`;
+        gemaraNodeIds.push({ id: pId, type: 'proof' });
+      });
+
+      // Add resolution with thick arrow
+      if (unit.resolution) {
+        const rId = `RS${nodeIndex++}`;
+        const rText = (unit.resolution.marker?.substring(0, 10) || 'תירוץ').replace(/"/g, "'");
+        mermaid += `    ${rId}["🎯 ${rText}"]\n`;
+        mermaid += `    ${qId} ==> ${rId}\n`;
+        gemaraNodeIds.push({ id: rId, type: 'resolution' });
+        prevNode = rId;
+      } else {
+        prevNode = qId;
+      }
+    });
+
+    mermaid += '  end\n\n';
+  }
+
+  // V30: Add cross-references subgraph if present
+  if (crossRefs.length > 0) {
+    mermaid += '  subgraph REFS["🔗 הפניות"]\n';
+    mermaid += '    direction LR\n';
+
+    const refNodeIds = [];
+    crossRefs.slice(0, 4).forEach((ref, i) => {
+      const refId = `XR${nodeIndex++}`;
+      const refText = (ref.text || ref.tractate || 'מקור').substring(0, 12).replace(/"/g, "'");
+      const icon = ref.icon || '📚';
+      mermaid += `    ${refId}["${icon} ${refText}"]\n`;
+      refNodeIds.push(refId);
+    });
+
+    mermaid += '  end\n\n';
+
+    // Link refs to main content with dashed lines
+    if (mishnaNodeIds.length > 0 && refNodeIds.length > 0) {
+      mermaid += `  ${mishnaNodeIds[0]} -.- ${refNodeIds[0]}\n`;
+    }
+
+    // Apply crossref class
+    if (refNodeIds.length > 0) {
+      mermaid += `  class ${refNodeIds.join(',')} crossref\n`;
+    }
+  }
+
+  // Apply classes to nodes
+  if (mishnaNodeIds.length > 0) {
+    mermaid += `  class ${mishnaNodeIds.join(',')} mishna\n`;
+  }
+  gemaraNodeIds.forEach(n => {
+    mermaid += `  class ${n.id} ${n.type}\n`;
+  });
+
+  // Link Mishna to Gemara subgraphs
+  if (hasMishnaContent && hasGemaraContent && mishnaNodeIds.length > 0 && gemaraNodeIds.length > 0) {
+    mermaid += `  ${mishnaNodeIds[mishnaNodeIds.length - 1]} --> ${gemaraNodeIds[0].id}\n`;
+  }
+
+  // Add unresolved indicator
+  if (summary.unresolved > 0) {
+    const unresolvedId = `U${nodeIndex++}`;
+    mermaid += `  ${unresolvedId}["⏳ ${summary.unresolved} פתוחות"]\n`;
+    mermaid += `  class ${unresolvedId} question\n`;
+    if (prevNode) {
+      mermaid += `  ${prevNode} -.-> ${unresolvedId}\n`;
+    }
+  }
+
+  // V30: Add conclusion node if there are resolutions
+  if (summary.resolutions > 0) {
+    const conclusionId = `CON${nodeIndex++}`;
+    mermaid += `  ${conclusionId}(["🎯 מסקנה"])\n`;
+    mermaid += `  class ${conclusionId} conclusion\n`;
+    if (prevNode) {
+      mermaid += `  ${prevNode} ==> ${conclusionId}\n`;
+    }
+  }
+
+  return mermaid;
+}
+
+/**
+ * V30: Extract cross-references for diagram
+ * @param {string} text - Source text
+ * @returns {Array} Array of cross-reference objects
+ */
+function extractEnhancedCrossRefs(text) {
+  if (!text) return [];
+
+  const cleanText = stripNikudLocal(text);
+  const refs = [];
+
+  // Parallel Mishna pattern
+  const mishnaPattern = /תנן\s+התם\s*([\u0590-\u05FF\s]{3,30})/g;
+  let match;
+  while ((match = mishnaPattern.exec(cleanText)) !== null) {
+    refs.push({ type: 'mishna', text: match[1]?.trim(), icon: '📘' });
+  }
+
+  // Baraita pattern
+  const baraitaPattern = /(?:תניא|תנו\s*רבנן)\s*([\u0590-\u05FF\s]{3,30})/g;
+  while ((match = baraitaPattern.exec(cleanText)) !== null) {
+    refs.push({ type: 'baraita', text: match[1]?.trim(), icon: '📋' });
+  }
+
+  // Scripture pattern
+  const scripturePattern = /(?:דכתיב|שנאמר)\s*([\u0590-\u05FF\s]{3,30})/g;
+  while ((match = scripturePattern.exec(cleanText)) !== null) {
+    refs.push({ type: 'scripture', text: match[1]?.trim(), icon: '📖' });
+  }
+
+  // Tractate references
+  const tractatePattern = /במסכת\s+(\S+)|כדאמרינן\s+ב(\S+)/g;
+  while ((match = tractatePattern.exec(cleanText)) !== null) {
+    const tractate = match[1] || match[2];
+    if (tractate) {
+      refs.push({ type: 'tractate', tractate: tractate.trim(), text: tractate, icon: '📚' });
+    }
+  }
+
+  return refs.slice(0, 6);
+}
+
+/**
+ * V30: Extract sage names from text
+ * @param {string} text - Source text
+ * @returns {Array} Array of sage objects
+ */
+function extractSagesFromText(text) {
+  if (!text) return [];
+
+  const cleanText = stripNikudLocal(text);
+  const sages = [];
+  const seenNames = new Set();
+
+  // Sage statement patterns
+  const patterns = [
+    /אמר\s+(רב[יא]?\s*\S{2,10})/g,
+    /אמר\s+(ר['׳]\s*\S{2,10})/g,
+    /א"ר\s*(\S{2,10})/g
+  ];
+
+  patterns.forEach(pattern => {
+    let match;
+    const regex = new RegExp(pattern.source, pattern.flags);
+    while ((match = regex.exec(cleanText)) !== null) {
+      const name = match[1]?.trim();
+      if (name && name.length >= 2 && !seenNames.has(name)) {
+        seenNames.add(name);
+        sages.push({ name, position: match.index });
+      }
+    }
+  });
+
+  return sages.slice(0, 5);
+}
+
+/**
+ * V28: Generate a Mermaid diagram from structural markers
+ * Fallback for when Q&A flow extraction doesn't find structured units
+ */
+function generatePatternBasedDiagram(text) {
+  const markers = detectStructuralMarkers(text);
+  if (!markers || markers.length === 0) return null;
+
+  let mermaid = 'flowchart TD\n';
+  mermaid += '  classDef mishna fill:#DBEAFE,stroke:#3B82F6\n';
+  mermaid += '  classDef gemara fill:#FEF3C7,stroke:#D97706\n';
+  mermaid += '  classDef question fill:#FEF3C7,stroke:#F59E0B\n';
+  mermaid += '  classDef objection fill:#FEE2E2,stroke:#EF4444\n';
+  mermaid += '  classDef proof fill:#D1FAE5,stroke:#10B981\n';
+  mermaid += '  classDef resolution fill:#DDD6FE,stroke:#7C3AED\n';
+  mermaid += '  classDef legal fill:#FEE2E2,stroke:#DC2626\n';
+  mermaid += '  classDef sage fill:#F3E8FF,stroke:#8B5CF6\n';
+  mermaid += '  classDef baraita fill:#E0E7FF,stroke:#6366F1\n';
+  mermaid += '  classDef scripture fill:#CCFBF1,stroke:#14B8A6\n\n';
+
+  // Build nodes
+  let prevId = null;
+  markers.forEach((m, i) => {
+    const nodeId = `N${i}`;
+    const nodeText = m.marker?.substring(0, 15)?.replace(/"/g, "'") || m.type;
+    const icon = TALMUDIC_PATTERNS[m.type]?.icon || '📝';
+    const cssClass = getCssClassForType(m.type);
+
+    mermaid += `  ${nodeId}["${icon} ${nodeText}"]:::${cssClass}\n`;
+
+    // Link to previous node
+    if (prevId !== null) {
+      // Use different arrow styles based on relationship
+      const arrowStyle = getArrowStyle(markers[i - 1]?.type, m.type);
+      mermaid += `  ${prevId} ${arrowStyle} ${nodeId}\n`;
+    }
+    prevId = nodeId;
+  });
+
+  return mermaid;
+}
+
+/**
+ * V28: Get CSS class for pattern type
+ */
+function getCssClassForType(type) {
+  const typeMap = {
+    mishna: 'mishna',
+    gemara: 'gemara',
+    question: 'question',
+    objection: 'objection',
+    proof: 'proof',
+    resolution: 'resolution',
+    legal_ruling: 'legal',
+    sage_statement: 'sage',
+    baraita: 'baraita',
+    scripture: 'scripture',
+    alternative: 'question'
+  };
+  return typeMap[type] || 'question';
+}
+
+/**
+ * V28: Get arrow style based on pattern relationship
+ */
+function getArrowStyle(prevType, currentType) {
+  // Question to resolution: thick arrow
+  if (prevType === 'question' && currentType === 'resolution') {
+    return '==>';
+  }
+  // Objection to resolution: thick arrow
+  if (prevType === 'objection' && currentType === 'resolution') {
+    return '==>';
+  }
+  // Normal flow
+  return '-->';
+}
+
+// =============================================================================
+// PRO SCHOLAR V30: SVARA (LOGIC) DETECTION
+// Detects underlying logical principles and hermeneutic rules
+// =============================================================================
+
+/**
+ * PRO SCHOLAR V30: Detect Svara (logical reasoning) patterns in Talmudic text
+ * Identifies hermeneutic rules, logical principles, and reasoning patterns
+ * @param {string} text - Hebrew/Aramaic text to analyze
+ * @returns {Array} Array of detected svara patterns with type and context
+ */
+export function detectSvarot(text) {
+  if (!text) return [];
+
+  // PRO SCHOLAR V12: Using centralized stripAllDiacritics
+  const cleanText = stripAllDiacritics(text);
+
+  const svaraPatterns = [
+    // Logical reasoning
+    { regex: /מסתברא\s+([\u0590-\u05FF\s]{5,50})/g, type: 'logical_reasoning', label: 'מסתברא', icon: '🧠' },
+    { regex: /סברא\s+היא/g, type: 'logical_principle', label: 'סברא היא', icon: '💭' },
+    { regex: /מה\s+טעם/g, type: 'reason_inquiry', label: 'מה טעם', icon: '❓' },
+
+    // Hermeneutic rules (מידות שהתורה נדרשת בהן)
+    { regex: /קל\s+וחומר/g, type: 'kal_vachomer', label: 'קל וחומר', icon: '⬆️', description: 'A fortiori' },
+    { regex: /גזרה\s+שוה/g, type: 'gezera_shava', label: 'גזרה שוה', icon: '🔗', description: 'Word analogy' },
+    { regex: /בנין\s+אב/g, type: 'binyan_av', label: 'בנין אב', icon: '🏛️', description: 'Prototype' },
+    { regex: /מה\s+מצינו/g, type: 'mah_matzinu', label: 'מה מצינו', icon: '🔍', description: 'What we find' },
+    { regex: /היקש/g, type: 'hekesh', label: 'היקש', icon: '⚖️', description: 'Juxtaposition' },
+    { regex: /סמוכין/g, type: 'semuchin', label: 'סמוכין', icon: '📐', description: 'Proximity' },
+    { regex: /כלל\s+ופרט/g, type: 'klal_uprat', label: 'כלל ופרט', icon: '📊', description: 'General/specific' },
+    { regex: /ריבוי\s+ומיעוט/g, type: 'ribui_miut', label: 'ריבוי ומיעוט', icon: '±', description: 'Include/exclude' },
+
+    // Logical distinctions
+    { regex: /אין\s+למדין\s+מן\s+הכללות/g, type: 'klalot_rule', label: 'אין למדין מן הכללות', icon: '⚠️' },
+    { regex: /כל\s+היכא\s+ד/g, type: 'general_principle', label: 'כל היכא ד', icon: '📜' },
+    { regex: /מידי\s+דהוה/g, type: 'comparison', label: 'מידי דהוה', icon: '↔️' },
+    { regex: /לאו\s+כל\s+כמינך/g, type: 'limitation', label: 'לאו כל כמינך', icon: '🚫' },
+
+    // Assumptions and conclusions
+    { regex: /הוה\s+אמינא/g, type: 'initial_thought', label: 'הו"א', icon: '💭', description: 'I would have thought' },
+    { regex: /קא\s+משמע\s+לן/g, type: 'teaching', label: 'קמ"ל', icon: '💡', description: 'It teaches us' },
+    { regex: /צריכא/g, type: 'necessity', label: 'צריכא', icon: '✓', description: 'Necessary' },
+    { regex: /למעוטי\s+מאי/g, type: 'exclusion', label: 'למעוטי מאי', icon: '➖' }
+  ];
+
+  const results = [];
+  for (const { regex, type, label, icon, description } of svaraPatterns) {
+    let match;
+    while ((match = regex.exec(cleanText)) !== null) {
+      results.push({
+        type,
+        label,
+        icon,
+        description: description || '',
+        text: match[0],
+        context: match[1] || '',
+        position: match.index
+      });
+    }
+  }
+
+  return results.sort((a, b) => a.position - b.position);
+}
+
+// =============================================================================
+// PRO SCHOLAR V30: HALACHIC CONCLUSION EXTRACTOR
+// =============================================================================
+
+/**
+ * PRO SCHOLAR V30: Extract halachic conclusions and rulings from text
+ * @param {string} text - Hebrew/Aramaic text to analyze
+ * @returns {Array} Array of halachic conclusions with classification
+ */
+export function extractHalachicConclusions(text) {
+  if (!text) return [];
+
+  // PRO SCHOLAR V12: Using centralized stripAllDiacritics
+  const cleanText = stripAllDiacritics(text);
+
+  const conclusions = [];
+
+  const patterns = [
+    // Definitive rulings
+    { regex: /הלכה\s+כ([\u0590-\u05FF]+)/g, type: 'ruling_like', extract: 1, icon: '⚖️' },
+    { regex: /הלכתא\s+([\u0590-\u05FF\s]{3,30})/g, type: 'halachta', extract: 1, icon: '⚖️' },
+    { regex: /קיימא\s+לן/g, type: 'established_law', icon: '✓' },
+    { regex: /הכי\s+נקטינן/g, type: 'we_hold', icon: '✓' },
+
+    // Liability rulings
+    { regex: /(חייב)\s+([\u0590-\u05FF\s]{2,25})/g, type: 'liable', extract: 0, icon: '🔴' },
+    { regex: /(פטור)\s+([\u0590-\u05FF\s]{2,25})/g, type: 'exempt', extract: 0, icon: '🟢' },
+    { regex: /(מותר)\s+([\u0590-\u05FF\s]{2,25})/g, type: 'permitted', extract: 0, icon: '✅' },
+    { regex: /(אסור)\s+([\u0590-\u05FF\s]{2,25})/g, type: 'forbidden', extract: 0, icon: '🚫' },
+
+    // Ritual status
+    { regex: /(טהור|טמא)\s*([\u0590-\u05FF\s]{0,20})/g, type: 'purity_status', extract: 0, icon: '🔵' },
+    { regex: /(כשר|פסול)\s*([\u0590-\u05FF\s]{0,20})/g, type: 'validity_status', extract: 0, icon: '✓' },
+
+    // Final statements
+    { regex: /נמצא\s+([\u0590-\u05FF\s]{5,40})/g, type: 'conclusion', extract: 1, icon: '📝' },
+    { regex: /אלמא\s+([\u0590-\u05FF\s]{5,40})/g, type: 'therefore', extract: 1, icon: '➡️' }
+  ];
+
+  for (const { regex, type, extract, icon } of patterns) {
+    let match;
+    while ((match = regex.exec(cleanText)) !== null) {
+      const fullText = match[0];
+      conclusions.push({
+        type,
+        icon,
+        fullText,
+        extracted: extract !== undefined ? (match[extract] || fullText) : fullText,
+        position: match.index,
+        isLiable: fullText.includes('חייב'),
+        isExempt: fullText.includes('פטור'),
+        isPermitted: fullText.includes('מותר'),
+        isForbidden: fullText.includes('אסור')
+      });
+    }
+  }
+
+  return conclusions.sort((a, b) => a.position - b.position);
+}
+
+// =============================================================================
+// PRO SCHOLAR V30: CROSS-REFERENCE DETECTION
+// =============================================================================
+
+/**
+ * PRO SCHOLAR V30: Detect cross-references to other Talmudic sources
+ * @param {string} text - Hebrew/Aramaic text to analyze
+ * @returns {Object} Categorized cross-references
+ */
+export function detectCrossReferences(text) {
+  if (!text) return { parallel_sugya: [], mishna_elsewhere: [], baraita: [], scripture: [], yerushalmi: [], midrash: [] };
+
+  // PRO SCHOLAR V12: Using centralized stripAllDiacritics
+  const cleanText = stripAllDiacritics(text);
+
+  const refs = {
+    parallel_sugya: [],
+    mishna_elsewhere: [],
+    baraita: [],
+    scripture: [],
+    yerushalmi: [],
+    midrash: []
+  };
+
+  // Parallel Mishna references
+  const mishnaPattern = /(?:תנן\s+התם|הא\s+תנן|כדתנן|דתנן)\s*([\u0590-\u05FF\s]{3,50})/g;
+  let match;
+  while ((match = mishnaPattern.exec(cleanText)) !== null) {
+    refs.mishna_elsewhere.push({ marker: match[0].trim(), context: match[1]?.trim() || '', position: match.index, icon: '📘' });
+  }
+
+  // Baraita references
+  const baraitaPattern = /(?:תנו\s+רבנן|תניא|ת"ר|דתניא)\s*([\u0590-\u05FF\s]{3,60})/g;
+  while ((match = baraitaPattern.exec(cleanText)) !== null) {
+    refs.baraita.push({ marker: match[0].trim(), context: match[1]?.trim() || '', position: match.index, icon: '📋' });
+  }
+
+  // Scripture citations
+  const scripturePattern = /(?:שנאמר|דכתיב|כדכתיב|הכתוב\s+אומר)\s*([\u0590-\u05FF\s]{3,60})/g;
+  while ((match = scripturePattern.exec(cleanText)) !== null) {
+    refs.scripture.push({ marker: match[0].trim(), verse: match[1]?.trim() || '', position: match.index, icon: '📖' });
+  }
+
+  // Other tractate references
+  const tractatePattern = /(?:כדאמרינן|כדאיתא)\s+(?:ב)?(שבת|עירובין|פסחים|ברכות|יומא|סוכה|ביצה|מגילה|יבמות|כתובות|גיטין|קידושין|בבא\s*קמא|בבא\s*מציעא|בבא\s*בתרא|סנהדרין|מכות|חולין|נדה)/g;
+  while ((match = tractatePattern.exec(cleanText)) !== null) {
+    refs.parallel_sugya.push({ marker: match[0], tractate: match[1], position: match.index, icon: '📚' });
+  }
+
+  // Yerushalmi references
+  const yerushalmiPattern = /(?:ירושלמי|תלמודא\s*דמערבא)/g;
+  while ((match = yerushalmiPattern.exec(cleanText)) !== null) {
+    refs.yerushalmi.push({ marker: match[0], position: match.index, icon: '🏛️' });
+  }
+
+  return refs;
+}
+
+// =============================================================================
+// PRO SCHOLAR V30: ARGUMENT CHAIN TRACKING
+// =============================================================================
+
+/**
+ * PRO SCHOLAR V30: Build argument chain with depth tracking
+ * @param {string} text - Hebrew/Aramaic text to analyze
+ * @returns {Object} Argument chain with depth, status, and relationships
+ */
+export function buildArgumentChain(text) {
+  if (!text) return { chain: [], maxDepth: 0, unresolvedCount: 0, summary: {} };
+
+  const markers = detectStructuralMarkers(text);
+  const chain = [];
+  let depth = 0;
+  let maxDepth = 0;
+  let questionId = 0;
+
+  for (let i = 0; i < markers.length; i++) {
+    const m = markers[i];
+    const node = { ...m, id: `node-${i}`, depth, direction: 'statement', status: null, resolvedBy: null, questionId: null };
+
+    if (['question', 'objection'].includes(m.type)) {
+      depth++;
+      maxDepth = Math.max(maxDepth, depth);
+      node.depth = depth;
+      node.direction = 'question';
+      node.status = 'open';
+      node.questionId = ++questionId;
+      chain.push(node);
+    }
+    else if (['resolution', 'proof', 'halachic_conclusion'].includes(m.type)) {
+      const openQuestions = chain.filter(c => c.status === 'open');
+      const matchingQuestion = openQuestions[openQuestions.length - 1];
+
+      if (matchingQuestion) {
+        matchingQuestion.status = 'resolved';
+        matchingQuestion.resolvedBy = `node-${i}`;
+        node.resolves = matchingQuestion.id;
+      }
+
+      node.depth = Math.max(depth, 1);
+      node.direction = 'answer';
+      chain.push(node);
+      depth = Math.max(0, depth - 1);
+    }
+    else if (['mishna', 'gemara'].includes(m.type)) {
+      depth = 0;
+      node.depth = 0;
+      node.direction = 'structure';
+      chain.push(node);
+    }
+    else {
+      chain.push(node);
+    }
+  }
+
+  const unresolvedCount = chain.filter(c => c.status === 'open').length;
+  const resolvedCount = chain.filter(c => c.status === 'resolved').length;
+  const totalQuestions = chain.filter(c => c.direction === 'question').length;
+
+  return {
+    chain,
+    maxDepth,
+    unresolvedCount,
+    summary: {
+      totalNodes: chain.length,
+      totalQuestions,
+      resolvedCount,
+      unresolvedCount,
+      resolutionRate: totalQuestions > 0 ? Math.round((resolvedCount / totalQuestions) * 100) : 100,
+      complexity: maxDepth < 2 ? 'simple' : maxDepth < 4 ? 'moderate' : 'complex'
+    }
+  };
+}
+
+/**
+ * PRO SCHOLAR V30: Get comprehensive sugya analysis
+ * Combines all analysis functions for a complete picture
+ * @param {string} text - Hebrew/Aramaic text to analyze
+ * @returns {Object} Complete sugya analysis with all components
+ */
+export function getComprehensiveSugyaAnalysis(text) {
+  if (!text) return null;
+
+  const markers = detectStructuralMarkers(text);
+  const mishnaAnalysis = analyzeMishnaStructure(text);
+  const mishnaSummary = generateMishnaSummary(text, mishnaAnalysis);
+  const qaFlow = extractGemaraQA(text);
+  const svarot = detectSvarot(text);
+  const halachicConclusions = extractHalachicConclusions(text);
+  const crossRefs = detectCrossReferences(text);
+  const argumentChain = buildArgumentChain(text);
+
+  const hasMishna = markers.some(m => m.type === 'mishna');
+  const hasGemara = markers.some(m => m.type === 'gemara') || markers.some(m => ['question', 'objection', 'resolution'].includes(m.type));
+  const hasSages = markers.some(m => m.type === 'sage_statement');
+
+  return {
+    hasMishna,
+    hasGemara,
+    hasSages,
+    markers,
+    mishnaAnalysis,
+    mishnaSummary,
+    qaFlow,
+    argumentChain,
+    svarot,
+    halachicConclusions,
+    crossRefs,
+    statistics: {
+      totalMarkers: markers.length,
+      mishnaElements: mishnaAnalysis.elements.length,
+      qaUnits: qaFlow.flow.length,
+      svarotCount: svarot.length,
+      conclusionsCount: halachicConclusions.length,
+      crossRefCount: Object.values(crossRefs).flat().length,
+      argumentDepth: argumentChain.maxDepth,
+      resolutionRate: argumentChain.summary.resolutionRate
+    }
+  };
+}
+
+// =============================================================================
 // DEFAULT EXPORT
 // =============================================================================
 
@@ -1654,6 +3009,7 @@ const discoursePatternService = {
   DISCOURSE_PATTERNS,
   RABBI_PATTERNS,
   TALMUDIC_PATTERNS,
+  MISHNA_STRUCTURE_PATTERNS,
 
   // Core detection
   detectDiscoursePatterns,
@@ -1664,6 +3020,19 @@ const discoursePatternService = {
   analyzeDiscourseStructure,
   getPatternSummary,
   hasTalmudicStructure,
+
+  // PRO SCHOLAR V26 - Mishna & Gemara Analysis
+  analyzeMishnaStructure,
+  generateMishnaSummary,
+  extractGemaraQA,
+  generateQAFlowDiagram,
+
+  // PRO SCHOLAR V30 - Enhanced Analysis
+  detectSvarot,
+  extractHalachicConclusions,
+  detectCrossReferences,
+  buildArgumentChain,
+  getComprehensiveSugyaAnalysis,
 
   // Visualization
   generateDiscourseFlowVisualization,

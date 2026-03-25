@@ -45,12 +45,6 @@ jest.mock('./services/dictionaryLoader', () => {
     }
   };
 
-  // Klein lexicon data (etymological)
-  const kleinData = {
-    'מלך': { definition: 'king', etymology: 'Proto-Semitic *mlk' },
-    'ארץ': { definition: 'land', etymology: 'Common Semitic' },
-  };
-
   // CAL Aramaic data
   const calAramaicData = {
     'מלכא': { definition: 'king', dialect: 'Jewish Palestinian Aramaic' },
@@ -61,6 +55,12 @@ jest.mock('./services/dictionaryLoader', () => {
     'מלכא': { definition: 'king', source: 'Jastrow Aramaic' },
   };
 
+  // PRO SCHOLAR V15: Academic Sources (streamlined - only FREE sources)
+  // Gesenius - Classical Hebrew grammar reference (public domain)
+  const geseniusData = {
+    'מלך': { lemma: 'מֶלֶךְ', definition: 'king', pos: 'noun', source: 'Gesenius' },
+  };
+
   return {
     __esModule: true,
     // Data getters (primary interface for unifiedLookupService)
@@ -68,9 +68,13 @@ jest.mock('./services/dictionaryLoader', () => {
     getJastrowData: jest.fn(() => jastrowData),
     getStrongsData: jest.fn(() => strongsData),
     // Additional data getters for unifiedLookupService
-    getKleinLexiconData: jest.fn(() => kleinData),
     getCALAramaicData: jest.fn(() => calAramaicData),
     getJastrowAramaicData: jest.fn(() => jastrowAramaicData),
+    // PRO SCHOLAR V15: Academic Sources (streamlined)
+    getGeseniusLexiconData: jest.fn(() => geseniusData),
+    // PRO SCHOLAR V15: Async loaders for academic sources
+    getGeseniusLexicon: jest.fn().mockResolvedValue(geseniusData),
+    preloadAcademicSources: jest.fn().mockResolvedValue(undefined),
     // Async loaders
     getBDB: jest.fn().mockResolvedValue({ byWord: bdbData }),
     getJastrow: jest.fn().mockResolvedValue(jastrowData),
@@ -106,5 +110,37 @@ jest.mock('./services/dictionaryLoader', () => {
     // Common words for preloading
     COMMON_HEBREW_WORDS: ['מלך', 'ארץ', 'כל', 'בית'],
     COMMON_ARAMAIC_WORDS: ['מלכא', 'ארעא'],
+    // PRO SCHOLAR V12: Etymology databases
+    getSefariaCache: jest.fn().mockResolvedValue({
+      'מלך': { definition: 'king', root: 'מלך', source: 'BDB Dictionary' },
+    }),
+    getRootMeaningsPro: jest.fn().mockResolvedValue({
+      'מלך': { root: 'מלך', cognates: { akkadian: ['malku'] }, qualityScore: 80 },
+    }),
+    getEtymologyBDB: jest.fn().mockResolvedValue({
+      'מלך': { cognates: { akkadian: [{ word: 'malku', meaning: 'king' }] } },
+    }),
+    getEtymologyJastrow: jest.fn().mockResolvedValue({
+      'מלכא': { crossRefs: ['מלך'] },
+    }),
+    getWiktionaryCache: jest.fn().mockResolvedValue({
+      'מלך': { protoSemitic: '*mlk', cognates: { arabic: ['malik'] } },
+    }),
+    // PRO SCHOLAR V12: Comprehensive lookup function
+    lookupAllEtymology: jest.fn().mockImplementation((word) => {
+      return Promise.resolve({
+        sefaria: word === 'מלך' ? { definition: 'king', root: 'מלך' } : null,
+        rootMeaningsPro: word === 'מלך' ? { root: 'מלך', qualityScore: 80 } : null,
+        etymologyBDB: word === 'מלך' ? { cognates: { akkadian: [{ word: 'malku' }] } } : null,
+        etymologyJastrow: null,
+        wiktionary: word === 'מלך' ? { protoSemitic: '*mlk' } : null,
+        hasEtymology: word === 'מלך'
+      });
+    }),
+    // PRO SCHOLAR V12: Etymology database preloading
+    preloadEtymologyDatabases: jest.fn().mockResolvedValue(undefined),
+    // PRO SCHOLAR V13: Preload synchronization
+    waitForPreload: jest.fn().mockResolvedValue(true),
+    isCoreDictionariesLoaded: jest.fn(() => true),
   };
 });

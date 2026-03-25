@@ -254,4 +254,81 @@ export const isBiblicalName = (word) => {
   return word in BIBLICAL_NAMES;
 };
 
+// =============================================================================
+// PRO SCHOLAR V12: ACADEMIC CRITICAL WORDS (Tier 1 - HALOT, DJBA, Jastrow)
+// =============================================================================
+
+let academicData = null;
+let academicDataLoading = false;
+let academicDataLoadPromise = null;
+
+/**
+ * Load academic critical words data from JSON
+ * @returns {Promise<Object>} Academic data with full scholarly info
+ */
+export const loadAcademicCriticalWords = async () => {
+  if (academicData) return academicData;
+  if (academicDataLoading) return academicDataLoadPromise;
+
+  academicDataLoading = true;
+  academicDataLoadPromise = fetch('/data/critical_words_academic.json')
+    .then(res => res.ok ? res.json() : null)
+    .then(data => {
+      if (data) {
+        // Flatten all categories into a single lookup map
+        academicData = {};
+        const categories = ['biblicalNames', 'divineNames', 'talmudicTerms',
+                          'halachicTerms', 'abbreviations', 'shabbatTerms', 'talmudicSages'];
+        for (const cat of categories) {
+          if (data[cat]) {
+            for (const [key, entry] of Object.entries(data[cat])) {
+              academicData[key] = { ...entry, _category: cat };
+            }
+          }
+        }
+      }
+      academicDataLoading = false;
+      return academicData;
+    })
+    .catch(() => {
+      academicDataLoading = false;
+      academicData = {};
+      return academicData;
+    });
+
+  return academicDataLoadPromise;
+};
+
+/**
+ * PRO SCHOLAR V12: Look up critical word with full academic data
+ * @param {string} word - Hebrew word to look up
+ * @returns {Object|null} Full scholarly entry with source, etymology, etc.
+ */
+export const lookupAcademicCriticalWord = (word) => {
+  if (!academicData) return null;
+  return academicData[word] || null;
+};
+
+/**
+ * PRO SCHOLAR V12: Async lookup with auto-loading
+ * @param {string} word - Hebrew word
+ * @returns {Promise<Object|null>} Full scholarly entry
+ */
+export const lookupAcademicCriticalWordAsync = async (word) => {
+  await loadAcademicCriticalWords();
+  return lookupAcademicCriticalWord(word);
+};
+
+/**
+ * PRO SCHOLAR V12: Get category-specific entries
+ * @param {string} category - Category name
+ * @returns {Object} Entries for that category
+ */
+export const getAcademicCategory = (category) => {
+  if (!academicData) return {};
+  return Object.fromEntries(
+    Object.entries(academicData).filter(([_, v]) => v._category === category)
+  );
+};
+
 export default CRITICAL_WORDS;

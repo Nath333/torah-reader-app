@@ -8,6 +8,7 @@
  */
 
 import { createManagedCache } from './cacheOrchestrator';
+import { stripVowels } from '../utils/hebrewUtils';
 
 // Frequency bands for pedagogical purposes
 export const FREQUENCY_BANDS = {
@@ -418,10 +419,7 @@ function calculateLearningPriority(wordData) {
   return priority;
 }
 
-// Helper function to strip vowels
-function stripVowels(word) {
-  return word.replace(/[\u05B0-\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7]/g, '');
-}
+// stripVowels imported from hebrewUtils (DRY)
 
 // Export all band keys for UI
 export const BAND_KEYS = Object.keys(FREQUENCY_BANDS);

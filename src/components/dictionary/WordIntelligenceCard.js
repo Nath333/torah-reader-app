@@ -86,7 +86,8 @@ import { analyzeVerbGrammar } from '../../utils/morphology/verbGrammar';
 // Root extraction service
 import {
   detectDialect,
-  getSemanticField
+  getSemanticField,
+  getAllAlternativeRoots
 } from '../../services/rootExtraction';
 
 // Confidence utilities
@@ -122,11 +123,18 @@ const SEMANTIC_FIELD_DISPLAY = {
   SPATIAL: { name: 'Spatial', hebrew: 'מרחבי', icon: '📍', color: '#84cc16', bg: '#ecfccb' }
 };
 
-/** Dictionary tier display - PRO SCHOLAR V6 */
+/** Dictionary tier display - PRO SCHOLAR V13 */
 const TIER_DISPLAY = {
-  gold: { icon: '🥇', label: 'Gold Standard', color: '#b8860b', bg: '#fef3c7' },
-  silver: { icon: '🥈', label: 'Standard', color: '#6b7280', bg: '#f3f4f6' },
-  bronze: { icon: '🥉', label: 'Supplementary', color: '#b45309', bg: '#fef3c7' }
+  // Modern keys (from dictionarySources.js RELIABILITY_TIERS)
+  academic: { icon: '🥇', label: 'Academic', color: '#059669', bg: '#dcfce7' },
+  scholarly: { icon: '🥈', label: 'Reference', color: '#0891b2', bg: '#cffafe' },
+  curated: { icon: '🥉', label: 'Curated', color: '#6366f1', bg: '#e0e7ff' },
+  derived: { icon: '⚙️', label: 'Derived', color: '#8b5cf6', bg: '#ede9fe' },
+  reference: { icon: '📑', label: 'General', color: '#64748b', bg: '#f1f5f9' },
+  // Legacy keys (for backward compatibility)
+  gold: { icon: '🥇', label: 'Academic', color: '#059669', bg: '#dcfce7' },
+  silver: { icon: '🥈', label: 'Reference', color: '#0891b2', bg: '#cffafe' },
+  bronze: { icon: '🥉', label: 'Curated', color: '#6366f1', bg: '#e0e7ff' }
 };
 
 // =============================================================================
@@ -531,6 +539,95 @@ const WeakVerbReconstruction = memo(function WeakVerbReconstruction({ rootAnalys
           <span className="reconstruction-label">Root (נ restored)</span>
         </div>
       </div>
+    </div>
+  );
+});
+
+/**
+ * PRO SCHOLAR V20: Alternative Roots Display
+ * Shows scholarly alternative root suggestions when etymology is uncertain
+ * @param {Object} props
+ * @param {string} props.word - Hebrew word
+ * @param {Function} [props.onRootClick] - Callback when clicking alternative root
+ */
+const AlternativeRootsSection = memo(function AlternativeRootsSection({ word, onRootClick }) {
+  const [expanded, setExpanded] = useState(false);
+
+  const altRoots = useMemo(() => {
+    try {
+      return getAllAlternativeRoots?.(word);
+    } catch {
+      return null;
+    }
+  }, [word]);
+
+  if (!altRoots?.hasMultiple) return null;
+
+  const typeLabels = {
+    comparison: { label: 'Compare', icon: '↔️', color: '#6366f1' },
+    uncertain: { label: 'Perhaps', icon: '❓', color: '#f59e0b' },
+    cognate: { label: 'Cognate', icon: '🔗', color: '#10b981' },
+    related: { label: 'Related', icon: '≈', color: '#8b5cf6' },
+    denominative: { label: 'Denom.', icon: '📝', color: '#0891b2' },
+    derivation: { label: 'From', icon: '←', color: '#059669' },
+    root_symbol: { label: 'Root', icon: '√', color: '#2563eb' },
+    cross_reference: { label: 'See', icon: '→', color: '#64748b' }
+  };
+
+  return (
+    <div className="wic-alternative-roots">
+      <button
+        className="alt-roots-toggle"
+        onClick={() => setExpanded(!expanded)}
+        aria-expanded={expanded}
+      >
+        <span className="alt-roots-icon">🌿</span>
+        <span className="alt-roots-title">Alternative Roots</span>
+        <span className="alt-roots-count">{altRoots.alternatives.length}</span>
+        <span className={`alt-roots-arrow ${expanded ? 'expanded' : ''}`}>▼</span>
+      </button>
+
+      {altRoots.scholarlyNote && (
+        <div className="alt-roots-note">
+          <span className="note-icon">📚</span>
+          <span className="note-text">{altRoots.scholarlyNote}</span>
+        </div>
+      )}
+
+      {expanded && (
+        <div className="alt-roots-content">
+          {altRoots.alternatives.map((alt, i) => {
+            const typeInfo = typeLabels[alt.type] || { label: alt.type, icon: '•', color: '#6b7280' };
+            return (
+              <div key={i} className="alt-root-item">
+                <div className="alt-root-header">
+                  <button
+                    className="alt-root-word"
+                    onClick={() => onRootClick?.(alt.root)}
+                    dir="rtl"
+                    style={{ borderColor: typeInfo.color }}
+                  >
+                    {alt.root}
+                  </button>
+                  <span
+                    className="alt-root-type"
+                    style={{ backgroundColor: `${typeInfo.color}15`, color: typeInfo.color }}
+                  >
+                    {typeInfo.icon} {typeInfo.label}
+                  </span>
+                  <span className="alt-root-confidence">{alt.confidence}%</span>
+                </div>
+                {alt.context && (
+                  <div className="alt-root-context">
+                    <span className="context-source">{alt.source}:</span>
+                    <span className="context-text">{alt.context}</span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 });
@@ -1948,6 +2045,13 @@ function WordIntelligenceCard({
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {showEtymology && !compact && (
         <EtymologySection rootData={rootData} root={root} />
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* PRO SCHOLAR V20: ALTERNATIVE ROOTS */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {showEtymology && !compact && (
+        <AlternativeRootsSection word={word} onRootClick={onWordClick} />
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════ */}

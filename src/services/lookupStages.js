@@ -179,7 +179,8 @@ export const createStages = (lookups) => {
       name: result.source || 'Rabbinic',
       fullName: 'Rabbinic Context Dictionary',
       definition: fullDef,
-      recommended: true
+      recommended: true,
+      tier: { level: 3 } // Bronze tier - curated local vocabulary
     });
     ctx.setPrimary(fullDef, result.source || 'Rabbinic');
     ctx.setMetadata({
@@ -205,7 +206,8 @@ export const createStages = (lookups) => {
       fullName: 'Curated Rabbinic Vocabulary',
       definition: translation,
       recommended: true,
-      isLocal: true
+      isLocal: true,
+      tier: { level: 3 } // Bronze tier - curated local vocabulary
     });
     ctx.setPrimary(translation, 'Rabbinic');
     ctx.setMetadata({ _functionWord: true });
@@ -215,6 +217,7 @@ export const createStages = (lookups) => {
   // =========================================================================
   // STAGE 5: Local dictionaries (Jastrow, BDB, Strong's, Klein, CAL)
   // PRO SCHOLAR V10: Parallel aggregation with ALL sources + consensus
+  // PRO SCHOLAR V13: Fixed to use allSources from aggregateLocalSources
   // =========================================================================
   const stageLocalDictionaries = namedStage('LocalDictionaries', (ctx) => {
     if (ctx.isComplete || ctx.skipDictionary) return;
@@ -222,24 +225,28 @@ export const createStages = (lookups) => {
     // Try original word
     let localResult = lookupLocalDictionaries?.(ctx.cleaned, ctx.contextMode);
 
+    // PRO SCHOLAR V13: aggregateLocalSources returns allSources, not sources
+    const getSources = (result) => result?.allSources || result?.sources || [];
+
     // Fallback to root if we have one from halachic lookup
-    if (!localResult?.sources?.length && ctx.metadata.root) {
+    if (!getSources(localResult).length && ctx.metadata.root) {
       localResult = lookupLocalDictionaries?.(ctx.metadata.root, ctx.contextMode);
     }
 
-    if (!localResult?.sources?.length) return;
+    if (!getSources(localResult).length) return;
 
-    // Validate headword match
-    const headword = localResult.headword || localResult.matchedForm;
-    if (!isValidHeadwordMatch(headword, ctx.cleaned)) {
+    // Validate headword match using primary source
+    const primaryHeadword = localResult.primary?.headword || localResult.primary?._matchedForm;
+    if (primaryHeadword && !isValidHeadwordMatch(primaryHeadword, ctx.cleaned)) {
       if (DEBUG) {
-        log.debug(`[LocalDict] Headword mismatch: "${headword}" vs query "${ctx.cleaned}"`);
+        log.debug(`[LocalDict] Headword mismatch: "${primaryHeadword}" vs query "${ctx.cleaned}"`);
       }
       return;
     }
 
     // PRO SCHOLAR V10: Enrich sources with tier info and add ALL sources
-    const validSources = localResult.sources
+    // PRO SCHOLAR V13: Use allSources from aggregated result
+    const validSources = getSources(localResult)
       .filter(s => s.definition)
       .map(s => {
         const tier = getSourceTier(s.name);
@@ -292,9 +299,9 @@ export const createStages = (lookups) => {
   // =========================================================================
   // STAGE 6: Aramaic verb pattern analysis
   // For conjugated forms like תפיקו → Aphel of נפק = "to bring out"
-  // PRO SCHOLAR V11: Even if we have a primaryEnglish from halachic lookup,
-  // we STILL run this stage to add ACADEMIC SOURCES (DJBA, Jastrow, etc.)
-  // This ensures תפיקו shows 🥇 Gold (DJBA) not 🥉 Rabbinic
+  // PRO SCHOLAR V12: Even if we have a primaryEnglish from halachic lookup,
+  // we STILL run this stage to add ACADEMIC SOURCES (Jastrow, CAL, etc.)
+  // This ensures תפיקו shows 🥇 Gold tier not 🥉 Rabbinic
   // =========================================================================
   const stageAramaicPatternAnalysis = namedStage('AramaicPatternAnalysis', (ctx) => {
     // Skip if already complete OR not Aramaic
@@ -308,12 +315,12 @@ export const createStages = (lookups) => {
     if (!translation) return;
 
     // Try to get scholarly source for the root
-    // PRO SCHOLAR V11: Pass 'talmudic' context to ensure DJBA/DJPA are queried
+    // PRO SCHOLAR V12: Pass 'talmudic' context to ensure Jastrow/CAL are queried
     // lookupLocalDictionaries returns aggregated result: { primary: { definition, name, source }, allSources: [...] }
     const rootLookup = lookupLocalDictionaries?.(rootAnalysis.root, ctx.contextMode || 'talmudic');
     const rootDefinition = rootLookup?.primary?.definition;
     const rootSourceName = rootLookup?.primary?.source || rootLookup?.primary?.name || 'Dictionary';
-    const rootTier = rootLookup?.primary?.tier?.level || (rootSourceName === 'DJBA' ? 1 : 3);
+    const rootTier = rootLookup?.primary?.tier?.level || (rootSourceName === 'Jastrow' ? 1 : 3);
 
     // PRO SCHOLAR V11: Add ALL academic sources from the root lookup
     if (rootLookup?.allSources?.length) {

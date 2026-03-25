@@ -9,7 +9,7 @@
  *    - Cross-references expanded
  *    - Slow, thorough study
  *
- * 2. BEKIUT (בקיאות) - Broad Coverage
+ * 2. BEKIUS (בקיאות) - Broad Coverage
  *    - Minimal interruption
  *    - Quick translations only
  *    - Focus on reading flow
@@ -24,23 +24,28 @@
 
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import useLocalStorage from '../hooks/useLocalStorage';
+import {
+  STUDY_MODES as BASE_STUDY_MODES,
+  STUDY_MODE_KEYS
+} from '../constants/talmudStudy';
 
 // =============================================================================
-// Study Mode Definitions
+// Study Mode Definitions - Import from single source of truth (DRY)
+// Re-export with enum-style keys for backwards compatibility
 // =============================================================================
 
 export const STUDY_MODES = {
-  IYUN: 'iyun',
-  BEKIUT: 'bekiut',
-  CHAZARA: 'chazara'
+  IYUN: STUDY_MODE_KEYS.IYUN,
+  BEKIUS: STUDY_MODE_KEYS.BEKIUS,  // Fixed: was BEKIUT
+  CHAZARA: STUDY_MODE_KEYS.CHAZARA
 };
 
+// Extended config with feature flags (unique to this context)
 export const STUDY_MODE_CONFIG = {
   [STUDY_MODES.IYUN]: {
-    name: 'עיון',
+    ...BASE_STUDY_MODES.iyun,
+    name: BASE_STUDY_MODES.iyun.hebrew,
     englishName: 'Iyun (Deep Study)',
-    description: 'Deep analysis with full commentaries and AI insights',
-    icon: '🔬',
     features: {
       showAllCommentaries: true,
       enableAI: true,
@@ -53,11 +58,10 @@ export const STUDY_MODE_CONFIG = {
       readingSpeed: 'slow'
     }
   },
-  [STUDY_MODES.BEKIUT]: {
-    name: 'בקיאות',
-    englishName: 'Bekiut (Broad Coverage)',
-    description: 'Quick reading with essential translations only',
-    icon: '📖',
+  [STUDY_MODES.BEKIUS]: {
+    ...BASE_STUDY_MODES.bekius,
+    name: BASE_STUDY_MODES.bekius.hebrew,
+    englishName: 'Bekius (Broad Coverage)',
     features: {
       showAllCommentaries: false,
       enableAI: false,
@@ -71,10 +75,9 @@ export const STUDY_MODE_CONFIG = {
     }
   },
   [STUDY_MODES.CHAZARA]: {
-    name: 'חזרה',
+    ...BASE_STUDY_MODES.chazara,
+    name: BASE_STUDY_MODES.chazara.hebrew,
     englishName: 'Chazara (Review)',
-    description: 'Review mode with testing and spaced repetition',
-    icon: '🔄',
     features: {
       showAllCommentaries: false,
       enableAI: true,

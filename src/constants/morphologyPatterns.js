@@ -14,6 +14,8 @@
  * import { WEAK_VERB_RULES, BINYANIM, ARAMAIC_BINYANIM } from '../constants/morphologyPatterns';
  */
 
+import { stripVowels } from '../utils/hebrewUtils';
+
 // =============================================================================
 // WEAK VERB CLASSIFICATION - Complete Rules with Display Config
 // =============================================================================
@@ -554,7 +556,7 @@ export const ARAMAIC_VERB_REGEX = [
 export function detectWeakVerbType(root) {
   if (!root || root.length < 2) return null;
 
-  const cleaned = root.replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '');
+  const cleaned = stripVowels(root);
 
   for (const [key, rule] of Object.entries(WEAK_VERB_RULES)) {
     if (rule.detect && rule.detect(cleaned)) {

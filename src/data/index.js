@@ -87,17 +87,16 @@ export {
 } from './calAramaic';
 
 // =============================================================================
-// Combined Hebrew Lexicons (BDB, Klein, Jastrow, Strong)
+// Combined Hebrew Lexicons (BDB, Jastrow, Strong)
+// PRO SCHOLAR V15: Removed copyrighted Klein
 // =============================================================================
 export {
   BDB_LEXICON,
   BDB_ARAMAIC,
-  KLEIN_LEXICON,
   JASTROW_LEXICON,
   STRONG_LEXICON,
   lookupAllLexicons,
   lookupBDB,
-  lookupKlein,
   lookupJastrowLocal as lookupJastrowSync,
   lookupStrong,
   getLexiconStats

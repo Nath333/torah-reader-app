@@ -1,17 +1,15 @@
 /**
- * useProScholarV6 - PRO SCHOLAR V6 Integration Hook
+ * useProScholar - PRO SCHOLAR Integration Hook
+ * @module useProScholarV6
  *
- * Connects React components to the unified root service V6 features:
- * - Multi-hypothesis root extraction with direct dictionary validation
- * - Binyan analysis (Hebrew & Aramaic)
+ * Connects React components to the unified root extraction service:
+ * - Multi-hypothesis root extraction with dictionary validation
+ * - Binyan analysis (Hebrew & Aramaic verb patterns)
  * - Weak verb type detection (8 types)
- * - Dialect detection (Biblical Hebrew, Mishnaic, Talmudic Aramaic, etc.)
+ * - Dialect detection (Biblical Hebrew, Mishnaic, Talmudic Aramaic)
  * - Semantic field categorization
  * - Root family expansion
- * - Citation detection
  * - Telemetry access
- *
- * @module useProScholarV6
  */
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
@@ -27,7 +25,7 @@ import { WEAK_VERB_DISPLAY } from '../constants/morphologyPatterns';
 // SAFE IMPORTS - All services are optional
 // =============================================================================
 
-// PRO SCHOLAR V8: Renamed from unifiedRootService to rootExtraction
+// PRO SCHOLAR: Root extraction service
 let UnifiedRootService = null;
 try {
   UnifiedRootService = require('../services/rootExtraction');
@@ -68,10 +66,11 @@ const {
   VERSION = '6.0.0'
 } = UnifiedRootService || {};
 
-// PRO SCHOLAR V6.2: Use TelemetryService if available, otherwise fallback to local
-const getTelemetry = TelemetryService?.getTelemetry || getLocalTelemetry;
-const resetTelemetry = TelemetryService?.resetTelemetry || resetLocalTelemetry;
-const getCacheStats = TelemetryService?.getCacheStats || getLocalCacheStats;
+// PRO SCHOLAR V12: Use rootExtraction's telemetry directly (it tracks the actual lookups)
+// TelemetryService is for general app telemetry, rootExtraction has root-specific metrics
+const getTelemetry = getLocalTelemetry || TelemetryService?.getTelemetry || (() => ({}));
+const resetTelemetry = resetLocalTelemetry || TelemetryService?.resetTelemetry || (() => {});
+const getCacheStats = getLocalCacheStats || TelemetryService?.getCacheStats || (() => ({ size: 0, hits: 0, misses: 0 }));
 
 // =============================================================================
 // CONSTANTS - Most are now imported from '../constants/morphologyPatterns'
@@ -79,29 +78,18 @@ const getCacheStats = TelemetryService?.getCacheStats || getLocalCacheStats;
 
 // NOTE: WEAK_VERB_DISPLAY is now imported from morphologyPatterns.js (single source of truth)
 
-/** Dictionary tier display configuration */
+/** Dictionary tier display configuration - PRO SCHOLAR V13 */
 const TIER_DISPLAY = {
-  gold: {
-    icon: '🥇',
-    label: 'Gold Standard',
-    color: '#b8860b',
-    bg: '#fef3c7',
-    description: 'Highly authoritative academic source'
-  },
-  silver: {
-    icon: '🥈',
-    label: 'Standard',
-    color: '#6b7280',
-    bg: '#f3f4f6',
-    description: 'Reliable reference source'
-  },
-  bronze: {
-    icon: '🥉',
-    label: 'Supplementary',
-    color: '#b45309',
-    bg: '#fef3c7',
-    description: 'Supplementary reference'
-  }
+  // Modern keys (from dictionarySources.js RELIABILITY_TIERS)
+  academic: { icon: '🥇', label: 'Academic', color: '#059669', bg: '#dcfce7', description: 'Academic lexicon - peer-reviewed' },
+  scholarly: { icon: '🥈', label: 'Reference', color: '#0891b2', bg: '#cffafe', description: 'Scholarly reference work' },
+  curated: { icon: '🥉', label: 'Curated', color: '#6366f1', bg: '#e0e7ff', description: 'Curated vocabulary list' },
+  derived: { icon: '⚙️', label: 'Derived', color: '#8b5cf6', bg: '#ede9fe', description: 'Morphological derivation' },
+  reference: { icon: '📑', label: 'General', color: '#64748b', bg: '#f1f5f9', description: 'General reference' },
+  // Legacy keys (for backward compatibility)
+  gold: { icon: '🥇', label: 'Academic', color: '#059669', bg: '#dcfce7', description: 'Academic lexicon - peer-reviewed' },
+  silver: { icon: '🥈', label: 'Reference', color: '#0891b2', bg: '#cffafe', description: 'Scholarly reference work' },
+  bronze: { icon: '🥉', label: 'Curated', color: '#6366f1', bg: '#e0e7ff', description: 'Curated vocabulary list' }
 };
 
 /** Dialect display configuration */
@@ -412,6 +400,21 @@ export function useProScholarTelemetry() {
 // =============================================================================
 
 /**
+ * Helper to normalize root family result to array
+ * @param {*} result - Result from getRootFamily (array or object)
+ * @returns {Array} Normalized array
+ */
+function normalizeRootFamily(result) {
+  if (!result) return [];
+  if (Array.isArray(result)) return result;
+  // Handle object responses with various property names
+  if (typeof result === 'object') {
+    return result.words || result.entries || result.members || result.family || [];
+  }
+  return [];
+}
+
+/**
  * Hook for getting root family expansion
  * @param {string} root - 3-letter Hebrew root
  */
@@ -427,8 +430,9 @@ export function useRootFamily(root) {
 
     setIsLoading(true);
     try {
-      const result = getRootFamily(root) || [];
-      setFamily(result);
+      const result = getRootFamily(root);
+      // Normalize to array (handles object responses)
+      setFamily(normalizeRootFamily(result));
     } catch (err) {
       console.warn('[useRootFamily] Error:', err);
       setFamily([]);
@@ -488,7 +492,9 @@ export {
   NOUN_PATTERNS,
   WEAK_VERB_TYPES,
   BINYANIM,
-  VERSION
+  VERSION,
+  // Utility helpers
+  normalizeRootFamily
 };
 
 export default useProScholarV6;

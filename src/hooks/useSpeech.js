@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { stripCantillation } from '../utils/hebrewUtils';
 
 /**
  * Smart Hebrew Text-to-Speech Hook
@@ -47,8 +48,7 @@ const useSpeech = () => {
    */
   const cleanHebrewText = useCallback((text) => {
     if (!text) return '';
-    return text
-      .replace(/[\u0591-\u05AF]/g, '')  // Remove cantillation marks (taamim)
+    return stripCantillation(text)
       .replace(/[\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7]/g, '') // Remove other marks
       .replace(/[׃׀]/g, '') // Remove Hebrew punctuation
       .replace(/\s+/g, ' ') // Normalize whitespace

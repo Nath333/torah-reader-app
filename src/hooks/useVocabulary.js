@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useEffect } from 'react';
 import useLocalStorage from './useLocalStorage';
+import { cleanHebrewWordStrict } from '../utils/hebrewUtils';
 import {
   initializeSRS,
   createCard,
@@ -85,9 +86,7 @@ export const useVocabulary = () => {
 
   // Add a word to vocabulary
   const addWord = useCallback((word, english, french = '', context = '') => {
-    const cleanWord = word
-      .replace(/[\u0591-\u05C7]/g, '') // Remove cantillation and vowels
-      .replace(/[^\u05D0-\u05EA]/g, ''); // Keep only Hebrew letters
+    const cleanWord = cleanHebrewWordStrict(word);
 
     setVocabulary(prev => {
       // Check if word already exists
@@ -179,18 +178,14 @@ export const useVocabulary = () => {
   // Check if word is in vocabulary
   const hasWord = useCallback((word) => {
     if (!word) return false;
-    const cleanWord = word
-      .replace(/[\u0591-\u05C7]/g, '')
-      .replace(/[^\u05D0-\u05EA]/g, '');
+    const cleanWord = cleanHebrewWordStrict(word);
     return vocabulary.some(w => w.hebrew === cleanWord);
   }, [vocabulary]);
 
   // Check if word is marked as "known" (mastered or high repetitions)
   const isKnown = useCallback((word) => {
     if (!word) return false;
-    const cleanWord = word
-      .replace(/[\u0591-\u05C7]/g, '')
-      .replace(/[^\u05D0-\u05EA]/g, '');
+    const cleanWord = cleanHebrewWordStrict(word);
     const wordEntry = vocabulary.find(w => w.hebrew === cleanWord);
     // Consider "known" if mastered or has 3+ successful reviews
     return wordEntry ? (wordEntry.mastered || (wordEntry.repetitions || 0) >= 3) : false;
@@ -199,9 +194,7 @@ export const useVocabulary = () => {
   // Toggle a word's known status (quick mark as known/unknown)
   const toggleKnown = useCallback((word) => {
     if (!word) return;
-    const cleanWord = word
-      .replace(/[\u0591-\u05C7]/g, '')
-      .replace(/[^\u05D0-\u05EA]/g, '');
+    const cleanWord = cleanHebrewWordStrict(word);
 
     setVocabulary(prev => {
       const existingIdx = prev.findIndex(w => w.hebrew === cleanWord);

@@ -1,0 +1,1533 @@
+{
+  "_meta": {
+    "source": "Wiktionary (English Edition)",
+    "url": "https://en.wiktionary.org",
+    "fetchedAt": "2026-03-23T22:08:56.284Z",
+    "totalAttempted": 3000,
+    "totalSuccess": 108,
+    "totalFailed": 2892,
+    "totalSkipped": 0,
+    "protoSemiticFound": 1,
+    "successRate": "3.6%",
+    "protoSemiticRate": "0.9%",
+    "note": "Proto-Semitic reconstructions and cognate data"
+  },
+  "entries": {
+    "אב": {
+      "word": "אב",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "أب"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic &#42;ʔabw-. Doublet of אַבָּא (ába), which was borrowed from Aramaic. Cognate with Arabic أب.",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אבד": {
+      "word": "אבד",
+      "protoSemitic": null,
+      "cognates": {
+        "aramaic": [
+          "אֲבַד"
+        ],
+        "ugaritic": [
+          "[script"
+        ],
+        "syriac": [
+          "[script"
+        ]
+      },
+      "etymologyText": "Compare Moabite אבד ('-b-d, “to perish”), Aramaic אֲבַד ('avad), Classical Syriac [script needed] ('evad, “he perished”), Ugaritic [script needed] ('bd, “to perish”)",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אבה": {
+      "word": "אבה",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "𒁍𒀪𒄿𒌈"
+        ],
+        "arabic": [
+          "أَبَى"
+        ]
+      },
+      "etymologyText": "Inherited from Proto-Semitic &#42;ʔabay-. Compare Akkadian 𒁍𒀪𒄿𒌈 (bu-ʾ-i-tum /⁠buʾītu⁠/, “a thing wished, willed, desired”), Arabic أَبَى (ʔabā, “he rejected, refused, was unwilling, unwilling to do otherwise; originally to hold back, to desire to stay or wish to remain”) and the root ء ب ب (ʔ b b, “to prepare to go out for”) in the phrase أَبَّ إِلَى (ʔabba ʔilā, “to long after, to want to go forth to, to yearn or have a desire to go to something”), Egyptian ꜣbj (“to desire, to want, to be h",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אגוז": {
+      "word": "אגוז",
+      "protoSemitic": "angauza",
+      "cognates": {
+        "aramaic": [
+          "גּוֹזָא"
+        ]
+      },
+      "etymologyText": "Borrowed from Aramaic גּוֹזָא (gōzā), אמגוזא, from unattested Old Persian *angauza, see Old Armenian ընկոյզ (ənkoyz) for more.",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אגם": {
+      "word": "אגם",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "𒀀𒂵𒈬𒌝"
+        ],
+        "arabic": [
+          "أَجَمَة"
+        ],
+        "syriac": [
+          "ܐܓܡܐ"
+        ]
+      },
+      "etymologyText": "Borrowed into West Semitic from Akkadian 𒀀𒂵𒈬𒌝 (agammum), from Sumerian 𒀀𒂵𒄠 (agam). Compare Classical Syriac ܐܓܡܐ (ʾaḡmā, “marsh, swamp”) and Arabic أَجَمَة (ʔajama, “jungle, brushwood”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אדון": {
+      "word": "אדון",
+      "protoSemitic": null,
+      "cognates": {
+        "ugaritic": [
+          "𐎀𐎄𐎚"
+        ],
+        "phoenician": [
+          "𐤀𐤃𐤍"
+        ]
+      },
+      "etymologyText": "Perhaps related to דִּין (dín, “law”) or from Proto-Semitic &#42;ʾadan- (“to rule, judge”). Compare Ugaritic 𐎀𐎄𐎚 (ảdt, “lady”), Phoenician 𐤀𐤃𐤍 (ʾdn, “lord”), Ancient Greek Ἄδωνις (Ádōnis, “mortal lover of the goddess Aphrodite”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אדם": {
+      "word": "אדם",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "𒀀𒁕𒄠𒈬",
+          "𒀀𒁕𒈠𒌈",
+          "𒀀𒁕𒈬"
+        ],
+        "ugaritic": [
+          "𐎀𐎄𐎎"
+        ],
+        "ethiopic": [
+          "ዶም"
+        ],
+        "phoenician": [
+          "𐤀𐤃𐤌"
+        ]
+      },
+      "etymologyText": "Inherited from Proto-Semitic &#42;ʔadam-. Comparable to Phoenician 𐤀𐤃𐤌 (ʾdm, “man, earthling”), Ugaritic 𐎀𐎄𐎎 (ảdm, “man; red earth, red ochre”), Old South Arabian 𐩱𐩵𐩣 (ʾdm, “vassals, subjects”), Ge'ez ዶም (dom, “slave”), Akkadian 𒀀𒁕𒄠𒈬 (a-da-am-mu /⁠adamu⁠/, “blood”), Akkadian 𒀀𒁕𒈠𒌈 (a-da-ma-tum /⁠adamātu⁠/, “dark red earth or dye”), Akkadian 𒀀𒁕𒈬 (a-da-mu /⁠adamu⁠/, “a red garment”), Akkadian 𒀀𒁕𒈬 (a-da-mu /⁠adamu⁠/, “an important or noble person”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אדר": {
+      "word": "אדר",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "𒌚𒊺"
+        ]
+      },
+      "etymologyText": "From Akkadian 𒌚𒊺 (Addarum).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אדרמלך": {
+      "word": "אדרמלך",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "𒀭𒁇𒂷𒆪"
+        ]
+      },
+      "etymologyText": "Derived from Akkadian 𒀭𒁇𒂷𒆪 (A-dar-milku) or 𒀭𒊩𒌆𒅁𒂷𒆪 (A-dar-ra-milku).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אהב": {
+      "word": "אהב",
+      "protoSemitic": null,
+      "cognates": {
+        "ugaritic": [
+          "𐎀𐎅𐎁"
+        ]
+      },
+      "etymologyText": "Compare Ugaritic 𐎀𐎅𐎁 (ảhb).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "או": {
+      "word": "או",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "أَوْ"
+        ],
+        "ugaritic": [
+          "𐎜"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic &#42;ʔaw. Cognate with Arabic أَوْ (ʔaw) and Ugaritic 𐎜 (ʾō).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אור": {
+      "word": "אור",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "أُوَار"
+        ]
+      },
+      "etymologyText": "Compare Arabic أُوَار (ʔuwār).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אריה": {
+      "word": "אריה",
+      "protoSemitic": null,
+      "cognates": {
+        "ethiopic": [
+          "አርዌ"
+        ]
+      },
+      "etymologyText": "Inherited from Proto-Semitic &#42;ʔarway-. Cognate with Ge'ez አርዌ (ʾärwe, “animal, beast”). By surface analysis, אֲרִי +&#8206; ־ֵה.",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אז": {
+      "word": "אז",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "إِذ"
+        ],
+        "aramaic": [
+          "אֱדַיִן"
+        ]
+      },
+      "etymologyText": "Cognate to Aramaic אֱדַיִן (ʾĕḏáyin, “then, at that time”), Arabic إِذ (ʔiḏ), إِذَا (ʔiḏā), إِذًا (ʔiḏan).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אזוב": {
+      "word": "אזוב",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "𒍪𒌑𒁍"
+        ],
+        "aramaic": [
+          "אֵיזוֹבָא"
+        ],
+        "syriac": [
+          "ܙܘܦܐ"
+        ]
+      },
+      "etymologyText": "Related to Classical Syriac ܙܘܦܐ (zōṗā), Akkadian 𒍪𒌑𒁍 (/⁠zūpu⁠/), Jewish Palestinian Aramaic אֵיזוֹבָא (ʾēzōḇa), Ancient Greek ὕσσωπος (hússōpos).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אזור": {
+      "word": "אזור",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "إِزَار"
+        ]
+      },
+      "etymologyText": "Compare Arabic إِزَار (ʔizār).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אחות": {
+      "word": "אחות",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "أخت"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic &#42;ʔaḫwat-. Cognate with Arabic أخت.",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אחז": {
+      "word": "אחז",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "أَخَذَ"
+        ]
+      },
+      "etymologyText": "Cognate with Arabic أَخَذَ (ʔaḵaḏa).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אחמתא": {
+      "word": "אחמתא",
+      "protoSemitic": null,
+      "cognates": {
+        "aramaic": [
+          "אַחְמְתָא"
+        ]
+      },
+      "etymologyText": "Borrowed from Aramaic אַחְמְתָא (ʾaḥməṯā), eventually from Old Persian 𐏃𐎥𐎶𐎫𐎠𐎴 (h-g-m-t-a-n /⁠Haⁿgmatānaʰ⁠/). Doublet of Doublet of המדאן. Cognate with English Ecbatana, English Hamadan, and Persian همدان (hamedân).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אטר": {
+      "word": "אטר",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "أَطَرَ"
+        ]
+      },
+      "etymologyText": "Biblical hapax legomenon, cognate with Arabic أَطَرَ (to bend, curve).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אי": {
+      "word": "אי",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "أوى",
+          "form"
+        ],
+        "phoenician": [
+          "𐤀𐤉"
+        ]
+      },
+      "etymologyText": "Compare Egyptian jw (“island”) and Phoenician 𐤀𐤉 (ʾy). Probably related to Arabic أوى (“to look for shelter; to retreat”) and cognate to an Arabic form &#42;أِوْي (&#42;ʔiwy).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "איב": {
+      "word": "איב",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "وَئِبَ"
+        ]
+      },
+      "etymologyText": "Possibly cognate with Arabic وَئِبَ (waʔiba, “to get angry (with)”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "איוב": {
+      "word": "איוב",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "أَوَّاب"
+        ]
+      },
+      "etymologyText": "Possibly from early northwest Semitic dialectal name meaning \"where is the father?\" from אַי (ʾay, “where”) and אוֹבּ (ʾôb, “father”), dialectal variant of אב ('áv, “father”). Or, akin to אויב (oyév, “enemy”).&#91;1&#93; Some biblical scholars have suggested that it is related to Arabic أَوَّاب (ʔawwāb, “returning”), from the root ء و ب (ʔ w b).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אין": {
+      "word": "אין",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "إِنْ"
+        ],
+        "ugaritic": [
+          "𐎛𐎐"
+        ]
+      },
+      "etymologyText": "Compare Ugaritic 𐎛𐎐 (ỉn) and Arabic إِنْ (ʔin).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אכד": {
+      "word": "אכד",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "𒌵𒆠"
+        ]
+      },
+      "etymologyText": "From Akkadian 𒌵𒆠 (akkade).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אכל": {
+      "word": "אכל",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "أَكَلَ"
+        ],
+        "aramaic": [
+          "אֲכַל"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic &#42;ʔakal-. Compare Aramaic אֲכַל (ʾăḵal), Arabic أَكَلَ (ʔakala).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אל": {
+      "word": "אל",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "𒀭"
+        ],
+        "arabic": [
+          "إِل"
+        ],
+        "aramaic": [
+          "אלה"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic &#42;ʾil-. Cognate with Akkadian 𒀭 (ilum), Arabic إِل (ʔil), إِلَٰه (ʔilāh), Aramaic אלה (aláh).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אלא": {
+      "word": "אלא",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "إِلَّا"
+        ],
+        "ethiopic": [
+          "አላ"
+        ]
+      },
+      "etymologyText": "Related to Arabic إِلَّا (ʔillā), Ge'ez አላ (ʾälla).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אלדעה": {
+      "word": "אלדעה",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "دَعَا"
+        ]
+      },
+      "etymologyText": "From אֵל (el, “god, deity”) +&#8206; דָּעָה (da'a, “to call”). Note that דעה is an unused construction coming from the root י־ד־ע (y-d-') relating to \"knowing\". A similar construction is found in the Arabic دَعَا (da'a, “to call”). The name thus can be translated as \"the one whom God calls\".",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אלה": {
+      "word": "אלה",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "أُولَاءِ"
+        ]
+      },
+      "etymologyText": "Compare Arabic أُولَاءِ (ʔulāʔi).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אלמנה": {
+      "word": "אלמנה",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "أَلَم",
+          "أَرْمَلَة"
+        ],
+        "aramaic": [
+          "אַרְמַלְתָּא"
+        ]
+      },
+      "etymologyText": "Possibly from the root א־ל־ם, and if so comparable to Arabic أَلَم (ʔalam, “pain, ache”). But compare also Aramaic אַרְמַלְתָּא (ʾarmaltā) and Arabic أَرْمَلَة (ʔarmala). One of the two consonantisms is likely due to assimilation and dissimilation processes.",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אלף": {
+      "word": "אלף",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "ألف"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic &#42;ʔalp- (“thousand; cattle”). Cognate with Arabic ألف (ʔalf).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אמר": {
+      "word": "אמר",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "أَمَرَ"
+        ]
+      },
+      "etymologyText": "Cognate to Arabic أَمَرَ (ʔamara, “to command”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אמש": {
+      "word": "אמש",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "أَمْس"
+        ]
+      },
+      "etymologyText": "Cognate with Arabic أَمْس (ʔams, “yesterday”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אנוש": {
+      "word": "אנוש",
+      "protoSemitic": null,
+      "cognates": {
+        "aramaic": [
+          "אֱינָשׁ"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic &#42;ʔināš-. Max Wagner thinks it is an old borrowing from Aramaic אֱינָשׁ (ʾěnāš) under Hebraization of the vocalism.",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אנחנו": {
+      "word": "אנחנו",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "نَحْنُ"
+        ]
+      },
+      "etymologyText": "From Biblical Hebrew 𐤀𐤍𐤇𐤍𐤅 (ʾnḥnw), from Proto-Semitic &#42;niḥnu. Cognate with Arabic نَحْنُ (naḥnu).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אסתר": {
+      "word": "אסתר",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "Ištar"
+        ]
+      },
+      "etymologyText": "Said to be borrowed from Old Persian [script needed] (sitareh, “star”), from Proto-Iranian &#42;Hstā́ (“star”), or Akkadian Ištar (“Ishtar”).&#91;1&#93;",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אפעה": {
+      "word": "אפעה",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "أَفْعًى"
+        ],
+        "ugaritic": [
+          "𐎀𐎔𐎓"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic &#42;ʔapʕaw-, compare Arabic أَفْعًى (ʔafʕan), Eblaite 𒉌𒁀𒅇𒌝 (ì-pá-ù-um), and Ugaritic 𐎀𐎔𐎓 (ảpʿ).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אצר": {
+      "word": "אצר",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "أَصَرَ"
+        ],
+        "aramaic": [
+          "אֲצַר"
+        ]
+      },
+      "etymologyText": "Cognate with Aramaic אֲצַר and Arabic أَصَرَ (ʔaṣara, “to confine, to shut up, to restrain”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "שטר": {
+      "word": "שטר",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "𒊬"
+        ],
+        "arabic": [
+          "سَطْر"
+        ]
+      },
+      "etymologyText": "From Akkadian 𒊬 (šaṭārum, “written document”). Also borrowed into Arabic سَطْر (saṭr).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "שכם": {
+      "word": "שכם",
+      "protoSemitic": null,
+      "cognates": {
+        "ugaritic": [
+          "𐎘𐎋𐎎"
+        ]
+      },
+      "etymologyText": "Cognate with Ugaritic 𐎘𐎋𐎎 (ṯkm, “shoulders”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "שלג": {
+      "word": "שלג",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "𒊭𒀠𒄖𒌝"
+        ],
+        "arabic": [
+          "ثَلْج"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic &#42;ṯalg- (“snow”). Cognate with Akkadian 𒊭𒀠𒄖𒌝 (šalgum) and Arabic ثَلْج (ṯalj).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "שלום": {
+      "word": "שלום",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "سلام"
+        ],
+        "aramaic": [
+          "שְׁלָמָא"
+        ],
+        "ugaritic": [
+          "𐎌𐎍𐎎"
+        ],
+        "phoenician": [
+          "𐤔𐤋𐤌"
+        ]
+      },
+      "etymologyText": "Etymologically related to שָׁלָה (šālâ, “to be quiet, tranquil”). Compare also שָׁלַו (šālaw, “to be quiet, at ease”). Common Northwest Semitic, Phoenician 𐤔𐤋𐤌 (šlm /⁠šalōm⁠/), Aramaic שְׁלָמָא (šlāmā) / ܫܠܡܐ (šlāmā), Ugaritic 𐎌𐎍𐎎 (šlm /⁠šalāmu⁠/). Cognate with Arabic سلام (salām).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "שלט": {
+      "word": "שלט",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "سَلَّطَ"
+        ],
+        "syriac": [
+          "ܫܰܠܚܬ"
+        ]
+      },
+      "etymologyText": "Cognate with Arabic سَلَّطَ (sallaṭa), Classical Syriac ܫܰܠܚܬ.",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "שלמנאסר": {
+      "word": "שלמנאסר",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "Salmānu-ašarēd"
+        ],
+        "aramaic": [
+          "ܫܠܡܢܥܣܪ"
+        ],
+        "syriac": [
+          "ܫܠܡܢܥܣܪ"
+        ]
+      },
+      "etymologyText": "From Akkadian Salmānu-ašarēd (“Shulmanu is foremost”). Cognate with Assyrian Neo-Aramaic ܫܠܡܢܥܣܪ (šalmāniˁsar) and Classical Syriac ܫܠܡܢܥܣܪ (šalmanaʿsar).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "שם": {
+      "word": "שם",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "اسم"
+        ],
+        "aramaic": [
+          "שְׁמָא"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic &#42;šim-, from Proto-Afroasiatic &#42;sim- (“name”). Cognate with Arabic اسم (ism, “name”) and Aramaic שְׁמָא (šəmā).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "שמאל": {
+      "word": "שמאל",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "𒆏"
+        ],
+        "arabic": [
+          "شِمَال"
+        ],
+        "aramaic": [
+          "סְמָלָא"
+        ],
+        "ugaritic": [
+          "𐎌𐎎𐎀𐎍"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic &#42;śimaʔl-. Cognate with Arabic شِمَال (šimāl), Akkadian 𒆏 (šumēlum), Aramaic סְמָלָא (səmālā), שְׂמָאלָא (śəmālā), ܣܸܡܵܠܵܐ (semmālā), Ugaritic 𐎌𐎎𐎀𐎍 (šmảl). The north sense derives from the direction being on the left side facing the sunrise, this sense also exists in Arabic.",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "שמיכה": {
+      "word": "שמיכה",
+      "protoSemitic": null,
+      "cognates": {
+        "aramaic": [
+          "מַשְׁכָּא"
+        ]
+      },
+      "etymologyText": "Perhaps from an unused verb in the root ס־מ־ך (s-m-k), alternatively borrowed from Aramaic מַשְׁכָּא.",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "שמע": {
+      "word": "שמע",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "سَمِعَ"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic &#42;šamiʕ-. Cognate with Arabic سَمِعَ (samiʕa, “to hear”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "שנן": {
+      "word": "שנן",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "سَنَّ"
+        ],
+        "aramaic": [
+          "שְׁנַן"
+        ]
+      },
+      "etymologyText": "Cognate with Aramaic שְׁנַן (shnan, “to sharpen”) and Arabic سَنَّ (sanna, “to sharpen”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "שנער": {
+      "word": "שנער",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "𒆠𒂗𒄀"
+        ]
+      },
+      "etymologyText": "Related to Akkadian 𒆠𒂗𒄀 (Šumerum, “Sumer”), Egyptian sꜣngꜣr (“Babylonia”), Hittite 𒋗𒈨𒊒 (/⁠šanhar(a)⁠/), all likely ultimately from Sumerian 𒌦𒊕𒈪𒂵 (ug̃₃ sag̃-gig₂-ga /⁠ug̃ Sag̃-Giga⁠/, “Sumerians”, literally “black-headed people”) or 𒆠𒂗𒄀 (ki-en-gi /⁠Kengir⁠/, “Sumer”, literally “place of the noble lords”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "שעה": {
+      "word": "שעה",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "سَاعَة"
+        ],
+        "aramaic": [
+          "שעתא"
+        ]
+      },
+      "etymologyText": "From Aramaic שעתא (šāʿəṯā). Cognate with Arabic سَاعَة (sāʕa).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "שפך": {
+      "word": "שפך",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "سَفَك"
+        ]
+      },
+      "etymologyText": "Cognate to Arabic سَفَك (safak, “to shed, spill”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "שקל": {
+      "word": "שקל",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "ثقل"
+        ],
+        "aramaic": [
+          "תקל"
+        ]
+      },
+      "etymologyText": "From the root שׁ־ק־ל (sh-q-l), in the pa`ál conjugation. From Proto-Semitic &#42;ṯql (“to weigh; burden, weight”); cognate with Arabic ثقل and Aramaic תקל.",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "שרה": {
+      "word": "שרה",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "𒊩𒈗"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic &#42;śarār (“to rule”). Cognate with Akkadian 𒊩𒈗 (šarratum, “queen”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "שתה": {
+      "word": "שתה",
+      "protoSemitic": null,
+      "cognates": {
+        "aramaic": [
+          "אִשְׁתִּי"
+        ],
+        "ethiopic": [
+          "ሰትየ"
+        ]
+      },
+      "etymologyText": "Compare Aramaic אִשְׁתִּי (ʾištī), Ge'ez ሰትየ (sätyä).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "שתל": {
+      "word": "שתל",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "[script needed]"
+        ]
+      },
+      "etymologyText": "Already in Canaanite&#160;times loaned from Akkadian [script needed] (satālu).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "תאנה": {
+      "word": "תאנה",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "تين"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic &#42;tiʔin-. Cognate to Arabic تين (tīn).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "תבן": {
+      "word": "תבן",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "𒅔𒉡𒁕"
+        ],
+        "arabic": [
+          "تِبْن"
+        ],
+        "aramaic": [
+          "תִּבְנָא"
+        ]
+      },
+      "etymologyText": "Cognate with Aramaic תִּבְנָא / ܬܒܢܐ (teḇnā, “straw”) whence Arabic تِبْن (tibn) and cognate to or derived from Akkadian 𒅔𒉡𒁕 (/⁠tibnu⁠/, “straw”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "תורה": {
+      "word": "תורה",
+      "protoSemitic": null,
+      "cognates": {
+        "aramaic": [
+          "אוֹרַיְתָא"
+        ],
+        "ethiopic": [
+          "ኦሪት"
+        ]
+      },
+      "etymologyText": "Representing a &#42;tawrawat- prefixed from Proto-West Semitic &#42;waraw- (“to throw, cast, lead, guide”).&#91;1&#93; Compare Aramaic אוֹרַיְתָא (ʾōrayṯā), Ge'ez ኦሪት (ʾorit).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "תחש": {
+      "word": "תחש",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "دُخَس"
+        ]
+      },
+      "etymologyText": "Compare Arabic دُخَس (duḵas). In the “badger” sense, a phono-semantic matching of German Dachs.",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "תיש": {
+      "word": "תיש",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "تَيْس"
+        ],
+        "aramaic": [
+          "תֵּישָׁא"
+        ]
+      },
+      "etymologyText": "Compare Aramaic תֵּישָׁא &#47; תַּיְשָׁא (tēšā / tayšā), Arabic تَيْس (tays).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "תמה": {
+      "word": "תמה",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "تَمِهَ"
+        ],
+        "aramaic": [
+          "תְּמַהּ"
+        ]
+      },
+      "etymologyText": "Related to Arabic تَمِهَ (tamiha), Aramaic תְּמַהּ (təmah).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "תמוז": {
+      "word": "תמוז",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "𒌗𒋗"
+        ]
+      },
+      "etymologyText": "From Akkadian 𒌗𒋗 (itiDuʾzu/Dūzu), from Sumerian 𒌉𒍣 (DUMU.ZID, “the true son”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "תמיד": {
+      "word": "תמיד",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "مَدَّ",
+          "تَأْمِيد",
+          "مَادَ"
+        ]
+      },
+      "etymologyText": "Ernest Klein connects the term to Hebrew מוד, which is associated with מדד (“to measure”) and the Arabic مَدَّ (madda, “to stretch, prolong”). He also notes that Hommel links it to Arabic تَأْمِيد (taʔmīd, “fixing, establishing”), the verbal noun of أَمَّدَ (ʔammada). Furthermore, Klein reports that Geiger and Peres consider it a contraction of תעמיד, derived from עמד (“to stand”). Conversely, Even-Shoshan identifies מוד as the root and Arabic مَادَ (māda) as a cognate, while also mentioning tha",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "תמים": {
+      "word": "תמים",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "تَمَام"
+        ]
+      },
+      "etymologyText": "Compare Arabic تَمَام (tamām).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "תנור": {
+      "word": "תנור",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "𒅎𒋗𒆸"
+        ],
+        "arabic": [
+          "تَنُّور"
+        ],
+        "aramaic": [
+          "as"
+        ]
+      },
+      "etymologyText": "Loanword from Akkadian 𒅎𒋗𒆸 (tinūrum). Compare also Middle Persian tnwl (tanūr, “oven”). This word has been borrowed into Aramaic as תנורא / ܬܰܢܽܘܪܳܐ (tannūrā) and therethrough spawned Arabic تَنُّور (tannūr).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "תנין": {
+      "word": "תנין",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "𒆗𒉌𒉡"
+        ],
+        "aramaic": [
+          "תַּנִּינָא"
+        ],
+        "ugaritic": [
+          "𐎚𐎐𐎐"
+        ]
+      },
+      "etymologyText": "From Akkadian 𒆗𒉌𒉡 (danninu, “netherworld; source of earthquakes; the inaccessible land where the dead remain”), whence also Aramaic תַּנִּינָא / ܬܱܢܺܝܢܳܐ (tannīnā, “sea serpent, monster”) and Ugaritic 𐎚𐎐𐎐 (tnn).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "תקן": {
+      "word": "תקן",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "تِقن"
+        ]
+      },
+      "etymologyText": "Compare with Arabic تِقن (tiqn, “improvement, perfection”) and تَقَانَة (taqāna, “firmness, solidity”)",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "תרגם": {
+      "word": "תרגם",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "تَرْجَمَ"
+        ],
+        "aramaic": [
+          "תרגם"
+        ],
+        "ethiopic": [
+          "ተርጐመ"
+        ]
+      },
+      "etymologyText": "Compare Aramaic תרגם, Arabic تَرْجَمَ (tarjama), Ge'ez ተርጐመ (tärgʷämä).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "תשעים": {
+      "word": "תשעים",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "تِسْعُونَ"
+        ]
+      },
+      "etymologyText": "Inherited from Proto-Semitic &#42;tišʿū-. Cognate with Arabic تِسْعُونَ (tisʕūna).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אביב": {
+      "word": "אביב",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "أَبّ"
+        ]
+      },
+      "etymologyText": "From the root meaning \"to be thick,\" \"to swell,\" or \"to ripen.\" Possible cognate to Arabic أَبّ (ʔabb, “pasture, herbage”). Not related to Coptic ⲉⲡⲏⲡ (epēp, “November”), a false friend.",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אביון": {
+      "word": "אביון",
+      "protoSemitic": null,
+      "cognates": {
+        "ugaritic": [
+          "𐎀𐎁𐎊𐎐"
+        ]
+      },
+      "etymologyText": "Cognate with Ugaritic 𐎀𐎁𐎊𐎐 (ảbyn, “poor, impoverished”). Borrowed into Late Egyptian, producing Coptic ⲉⲃⲓⲏⲛ (ebiēn, “miserable, wretched”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אהבה": {
+      "word": "אהבה",
+      "protoSemitic": null,
+      "cognates": {
+        "ugaritic": [
+          "𐎀𐎅𐎁𐎚"
+        ]
+      },
+      "etymologyText": "Properly the infinitive construct of אָהַב (aháv, “to love”).&#91;1&#93; Compare Ugaritic 𐎀𐎅𐎁𐎚 (ảhbt).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "און": {
+      "word": "און",
+      "protoSemitic": null,
+      "cognates": {
+        "ugaritic": [
+          "𐎀𐎐"
+        ]
+      },
+      "etymologyText": "Compare Ugaritic 𐎀𐎐 (ản /⁠ʾānu⁠/, “power”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אות": {
+      "word": "אות",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "آية"
+        ],
+        "aramaic": [
+          "אתא"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic &#42;awayat-, cognate with Aramaic אתא (ʾāṯāh, “sign”) and Arabic آية (ʔāya, “sign”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אחי": {
+      "word": "אחי",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "أَخِ"
+        ]
+      },
+      "etymologyText": "From אח (akh, “brother of”) +&#8206; ־י (-í, “my”). Cognate with Arabic أَخِ (akh)",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אלון": {
+      "word": "אלון",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "𒀠𒆷𒀭"
+        ],
+        "aramaic": [
+          "אִילָנָא"
+        ],
+        "syriac": [
+          "ܐܺܝܠܳܢܳܐ"
+        ]
+      },
+      "etymologyText": "Uncertain; doublet of אֵלוֹן (elón), which possibly is the native Canaanite counterpart, compare Aramaic אִילָנָא (ʾīlānā, “tree”) and Classical Syriac ܐܺܝܠܳܢܳܐ (ʾīlānā, “tree”). The present form with a short /a/ and a geminated /l/ on the other hand may be a borrowing from Akkadian 𒀠𒆷𒀭 (ʾallānu, alyānu, “oak; acorn”). For a similar situation see אֵלָה (elá) and אַלָּה (alá).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אילן": {
+      "word": "אילן",
+      "protoSemitic": null,
+      "cognates": {
+        "aramaic": [
+          "אִילָנָא"
+        ]
+      },
+      "etymologyText": "Borrowed from Aramaic אִילָנָא / ܐܺܝܠܳܢܳܐ (ʾīlānā, “tree”). Doublet of אֵלוֹן (elōn, “great tree”) and אַלּוֹן (allōn, “great tree; oak”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אכלה": {
+      "word": "אכלה",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "أُكْلَة"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic &#42;ʔuklat-. Feminine of אוכל &#47; אֹכֶל (“food”), or a feminine infinitive form of the verb אָכַל (“to eat”). Compare Arabic أُكْلَة (ʔukla).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אלול": {
+      "word": "אלול",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "𒌗𒆥"
+        ]
+      },
+      "etymologyText": "From Akkadian 𒌗𒆥 (itieluli).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אלוף": {
+      "word": "אלוף",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "أَلُوف"
+        ]
+      },
+      "etymologyText": "From root א־ל־ף (“to associate”). Cognate with Arabic أَلُوف (ʔalūf).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אסר": {
+      "word": "אסר",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "أَسَرَ"
+        ]
+      },
+      "etymologyText": "Inherited from Proto-Semitic &#42;ʔasar-; cognate with Arabic أَسَرَ (ʔasara, “to capture, seize”), etc.",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אפס": {
+      "word": "אפס",
+      "protoSemitic": null,
+      "cognates": {
+        "ugaritic": [
+          "𐎀𐎔𐎒"
+        ]
+      },
+      "etymologyText": "Compare Ugaritic 𐎀𐎔𐎒 (ảps, “edge, end, extremity”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אפרים": {
+      "word": "אפרים",
+      "protoSemitic": null,
+      "cognates": {
+        "aramaic": [
+          "𐡐𐡀𐡓𐡀"
+        ]
+      },
+      "etymologyText": "According to the Book of Genesis, from a word meaning \"being fruitful;\" compare Aramaic 𐡐𐡀𐡓𐡀 (pera, “fruit”).&#91;1&#93;",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אציל": {
+      "word": "אציל",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "أَصِيل"
+        ]
+      },
+      "etymologyText": "Cognate with Arabic أَصِيل (ʔaṣīl).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "אשה": {
+      "word": "אשה",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "أُنْثَى"
+        ],
+        "aramaic": [
+          "אִנְתְּתָא"
+        ],
+        "ugaritic": [
+          "𐎀𐎘𐎚"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic &#42;ʔanθ-at-. Cognate with Ugaritic 𐎀𐎘𐎚 (ảṯt), Aramaic אִנְתְּתָא (ʾintəṯā), אִיתְּתָא (ʾittəṯā), Arabic أُنْثَى (ʔunṯā).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "בית": {
+      "word": "בית",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "𒂍"
+        ],
+        "arabic": [
+          "بَيْت"
+        ],
+        "amharic": [
+          "ቤት"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic &#42;bayt- (“house”). Cognate with Akkadian 𒂍 (bītum), Arabic بَيْت (bayt) and Amharic ቤት (bet).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "בטן": {
+      "word": "בטן",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "بَطْن"
+        ]
+      },
+      "etymologyText": "Cognate with Arabic بَطْن (baṭn, “stomach”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "בכור": {
+      "word": "בכור",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "بِكْر"
+        ]
+      },
+      "etymologyText": "Compare Arabic بِكْر (bikr, “firstborn”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "בלא": {
+      "word": "בלא",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "بِلَا"
+        ]
+      },
+      "etymologyText": "בְּ־ +&#8206; לֹא. Compare Arabic بِلَا (bilā).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "ברד": {
+      "word": "ברד",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "بَرَد"
+        ],
+        "aramaic": [
+          "בַּרְדָא"
+        ],
+        "ethiopic": [
+          "በረድ"
+        ]
+      },
+      "etymologyText": "Compare Aramaic בַּרְדָא (barḏā), Arabic بَرَد (barad), Ge'ez በረድ (bäräd).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "גורל": {
+      "word": "גורל",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "جَرَل"
+        ]
+      },
+      "etymologyText": "Cognate with Arabic جَرَل (jaral, “pebble”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "גלות": {
+      "word": "גלות",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "جلاء"
+        ],
+        "aramaic": [
+          "גָּלוּתָא"
+        ],
+        "syriac": [
+          "ܓܠܘܬܐ"
+        ]
+      },
+      "etymologyText": "From גָּלָה (galá, “to be exiled”) +&#8206; ־וּת (-út). Compare Aramaic גָּלוּתָא (gālūṯā), Classical Syriac ܓܠܘܬܐ (gālūṯā) Arabic جلاء (jalā').",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "גשם": {
+      "word": "גשם",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "جِسْم"
+        ],
+        "aramaic": [
+          "parts"
+        ],
+        "ugaritic": [
+          "𐎂𐎌𐎎"
+        ],
+        "syriac": [
+          "ܓܘܫܡܐ"
+        ]
+      },
+      "etymologyText": "Compare Ugaritic 𐎂𐎌𐎎 (gšm, “rain, downpour”). The sense \"body\" (and, by extension, \"substance\") is first attested in Aramaic parts of the Book of Daniel and later gained currency in Medieval Hebrew. This sense appears to represent a borrowing from Aramaic, for which compare Classical Syriac ܓܘܫܡܐ and confer Arabic جِسْم (jism).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "דבק": {
+      "word": "דבק",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "دِبْق"
+        ],
+        "syriac": [
+          "ܕܘܒܩܐ"
+        ]
+      },
+      "etymologyText": "Compare Arabic دِبْق (dibq, “birdlime”) and دَبِقَ (dabiqa, “to stick, adhere, cleave, cling”); also Classical Syriac ܕܘܒܩܐ (dubbāqā, “birdlime”) (from ܕܒܩ (dbaq, “to stick”)).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "דוב": {
+      "word": "דוב",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "دُبٌّ"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic &#42;dubb- (“bear”). Cognate with Arabic دُبٌّ (dubbun, “bear”). Named after either their slow and soft gait,&#91;1&#93;&#91;2&#93; or their murmuring.&#91;3&#93;",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "דין": {
+      "word": "דין",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "دِين"
+        ],
+        "aramaic": [
+          "דִּינָא"
+        ],
+        "ugaritic": [
+          "𐎄𐎊𐎐"
+        ],
+        "amharic": [
+          "ዳኛ"
+        ]
+      },
+      "etymologyText": "Cognate with Arabic دِين (dīn), Aramaic דִּינָא (dīnā), Amharic ዳኛ (daña) and Ugaritic 𐎄𐎊𐎐 (dyn).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "דלי": {
+      "word": "דלי",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "دَلْو"
+        ],
+        "syriac": [
+          "ܕܰܘܠܳܐ"
+        ]
+      },
+      "etymologyText": "Either derived or merely related to דָּלָה (dalá, “to dangle, suspend”), as buckets were hanging above the water in a well. Compare Classical Syriac ܕܰܘܠܳܐ (dawlā), Arabic دَلْو (dalw), as well as Old Armenian դոյլ (doyl), a Semitic borrowing.",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "דק": {
+      "word": "דק",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "دَقِيق"
+        ]
+      },
+      "etymologyText": "Compare Arabic دَقِيق (daqīq).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "דרור": {
+      "word": "דרור",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "𒀭𒁺𒊏𒊒"
+        ]
+      },
+      "etymologyText": "Borrowed from Akkadian 𒀭𒁺𒊏𒊒 (andurāru, “remission of debts, manumission of slaves, cancelling of illegal impositions on free persons”) or 𒁕𒊏𒊒 (darāru, “freedom; to become free of a task, to move about freely, to run off”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "הר": {
+      "word": "הר",
+      "protoSemitic": null,
+      "cognates": {
+        "ugaritic": [
+          "𐎅𐎗"
+        ]
+      },
+      "etymologyText": "Compare Ugaritic 𐎅𐎗 (hr, “mountain”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "זכוכית": {
+      "word": "זכוכית",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "𒍝𒅗𒅗𒌈"
+        ],
+        "arabic": [
+          "زُجَاج"
+        ],
+        "aramaic": [
+          "זְכוּכִיתָא",
+          "ܙܓ݂ܘܿܓ݂ܝܼܬ݂ܵܐ"
+        ]
+      },
+      "etymologyText": "Compare Aramaic זְכוּכִיתָא (zkūkītā), זְגוּגִיתָא (zgūgītā), Assyrian Neo-Aramaic ܙܓ݂ܘܿܓ݂ܝܼܬ݂ܵܐ (zḡōḡīṯā), Akkadian 𒍝𒅗𒅗𒌈 (/⁠zakakatu⁠/) and Arabic زُجَاج (zujāj).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "זן": {
+      "word": "זן",
+      "protoSemitic": null,
+      "cognates": {
+        "aramaic": [
+          "זנא"
+        ]
+      },
+      "etymologyText": "Via&#160;Aramaic זנא / זנה&#160;/ ܙܢܐ descending from Proto-Iranian &#42;jánHah, Proto-Indo-Iranian &#42;ȷ́ánHas.",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "זנב": {
+      "word": "זנב",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "ذَنَب"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic &#42;ḏanab-. Cognate with Arabic ذَنَب (tail, end).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "זרוע": {
+      "word": "זרוע",
+      "protoSemitic": null,
+      "cognates": {
+        "arabic": [
+          "ذِرَاع"
+        ],
+        "aramaic": [
+          "דְּרָעָא"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic &#42;ḏirāʕ- (“arm”). Compare Aramaic דְּרָעָא (dərāʿā), Arabic ذِرَاع (ḏirāʕ).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "חבקוק": {
+      "word": "חבקוק",
+      "protoSemitic": null,
+      "cognates": {
+        "akkadian": [
+          "𒄩𒄠𒁀𒄣𒄣"
+        ]
+      },
+      "etymologyText": "Uncertain; possibly comes from חָבַק (ḥāḇaq, “embrace”), from the root ח־ב־ק (“embrace”) or perhaps from Akkadian 𒄩𒄠𒁀𒄣𒄣 (ḫambaqūqu [ḫa-am-ba-qu-qu], “garden herb”).",
+      "root": null,
+      "source": "Wiktionary"
+    },
+    "חד": {
+      "word": "חד",
+      "protoSemitic": null,
+      "cognates": {
+        "aramaic": [
+          "חד"
+        ]
+      },
+      "etymologyText": "From Aramaic חד, which is cognate with Hebrew אֶחָד (ekhád, “one”).",
+      "root": null,
+      "source": "Wiktionary"
+    }
+  }
+}

@@ -10,6 +10,7 @@
  */
 
 // PRO SCHOLAR V10: Import from single source of truth
+import { stripAllDiacritics } from './hebrewUtils';
 import { SEMANTIC_DOMAINS } from '../services/semanticFieldService';
 import { getWordFrequency } from '../services/wordFrequencyService';
 import { analyzeWord as analyzeWordForEnhancement } from '../services/grammarAnalysisService';
@@ -121,10 +122,9 @@ export function getSourceCategory(source) {
 export function calculateHeadwordSimilarity(query, headword) {
   if (!query || !headword) return 1; // No headword to validate, trust it
 
-  // Strip vowels (nikud) for comparison
-  const stripVowels = (s) => s.replace(/[\u05B0-\u05C7]/g, '');
-  const q = stripVowels(query);
-  const h = stripVowels(headword);
+  // Strip vowels (nikud) for comparison - use hebrewUtils (DRY)
+  const q = stripAllDiacritics(query);
+  const h = stripAllDiacritics(headword);
 
   // Exact match
   if (q === h) return 1;

@@ -5,6 +5,7 @@
 // =============================================================================
 
 import { createLogger } from '../utils/debug';
+import { stripVowels } from '../utils/hebrewUtils';
 // PRO SCHOLAR V5: Frequency analysis (single source of truth)
 import {
   getWordFrequency as _getWordFrequency,
@@ -1173,7 +1174,7 @@ export const COMMON_VERB_FORMS = {
 
 // Helper: Look up verb form
 export const lookupVerbForm = (word) => {
-  const cleaned = word.replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '');
+  const cleaned = stripVowels(word);
   return normalizedLookup(COMMON_VERB_FORMS, cleaned) || normalizedLookup(COMMON_VERB_FORMS, word) || null;
 };
 
@@ -1453,7 +1454,7 @@ export const HOMOGRAPHS = {
 
 // Helper: Get homograph info
 export const getHomographInfo = (word) => {
-  const cleaned = word.replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '');
+  const cleaned = stripVowels(word);
   return HOMOGRAPHS[cleaned] || HOMOGRAPHS[word] || null;
 };
 
@@ -2103,7 +2104,7 @@ export const expandAbbreviation = (abbrev) => {
  */
 export const isProperName = (word) => {
   if (!word) return false;
-  const cleaned = word.replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '');
+  const cleaned = stripVowels(word);
   return !!(BIBLICAL_NAMES[word] || BIBLICAL_NAMES[cleaned] ||
             TALMUDIC_SAGES[word] || TALMUDIC_SAGES[cleaned]);
 };
@@ -2115,7 +2116,7 @@ export const isProperName = (word) => {
  */
 export const isTechnicalTerm = (word) => {
   if (!word) return false;
-  const cleaned = word.replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '');
+  const cleaned = stripVowels(word);
   return !!(TALMUDIC_TECHNICAL_TERMS[word] || TALMUDIC_TECHNICAL_TERMS[cleaned]);
 };
 

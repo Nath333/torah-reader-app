@@ -42,6 +42,10 @@ import RootFamilyTree from './RootFamilyTree';
 // PRO SCHOLAR V6: Historical layer and cognate panels
 import HistoricalLayerPanel from './HistoricalLayerPanel';
 import CognateLanguagesPanel from './CognateLanguagesPanel';
+// PRO SCHOLAR V20: Text attestations panel
+import TextAttestationsPanel from './TextAttestationsPanel';
+// PRO SCHOLAR V20: Root meaning panel
+import RootMeaningPanel from './RootMeaningPanel';
 // PRO SCHOLAR V6: Analysis badge for header
 import V6AnalysisBadge from './V6AnalysisBadge';
 // PRO SCHOLAR V5: Loading skeleton for better UX
@@ -78,7 +82,8 @@ const WordDefinitionCard = React.memo(function WordDefinitionCard({
 
   const translation = translationData?.english || translationData?.translation;
   const french = translationData?.french;
-  const root = translationData?.root;
+  // PRO SCHOLAR V12: Prefer extractedRoot (from smart lookup) over dictionary root
+  const root = translationData?.extractedRoot || translationData?.root;
   const headword = translationData?.headword;
   const morphology = translationData?.morphology;
   const cognates = translationData?.cognates;
@@ -377,18 +382,31 @@ const WordDefinitionCard = React.memo(function WordDefinitionCard({
             <span className="wdc-meta-item wdc-root-item">
               <span className="wdc-meta-label">שורש</span>
               <span className="wdc-meta-val wdc-root-val" dir="rtl">{root}</span>
-              {/* PRO SCHOLAR: Show confidence badge for computed roots */}
-              {translationData?.morphologyInfo?.confidence && (
+              {/* PRO SCHOLAR V12: Show confidence badge - prefer rootData.confidence, fallback to morphologyInfo */}
+              {(translationData?.rootData?.confidence || translationData?.morphologyInfo?.confidence) && (
                 <span
                   className={`wdc-confidence-badge ${
-                    translationData.morphologyInfo.confidence >= 85 ? 'high' :
-                    translationData.morphologyInfo.confidence >= 70 ? 'medium' : 'low'
+                    (translationData?.rootData?.confidence || translationData?.morphologyInfo?.confidence) >= 85 ? 'high' :
+                    (translationData?.rootData?.confidence || translationData?.morphologyInfo?.confidence) >= 70 ? 'medium' : 'low'
                   }`}
-                  title={`Root extraction confidence: ${translationData.morphologyInfo.confidence}%${
-                    translationData.morphologyInfo.wasComputed ? ' (computed algorithmically)' : ''
+                  title={`Root extraction confidence: ${translationData?.rootData?.confidence || translationData?.morphologyInfo?.confidence}%${
+                    translationData?.rootData?.source ? ` (${translationData.rootData.source})` :
+                    translationData?.morphologyInfo?.wasComputed ? ' (computed algorithmically)' : ''
                   }`}
                 >
-                  {translationData.morphologyInfo.confidence}%
+                  {translationData?.rootData?.confidence || translationData?.morphologyInfo?.confidence}%
+                </span>
+              )}
+              {/* PRO SCHOLAR V12: Show root source badge */}
+              {translationData?.rootData?.source && (
+                <span
+                  className={`wdc-source-badge ${
+                    translationData.rootData.source.includes('Jastrow') || translationData.rootData.source.includes('BDB') ? 'academic' :
+                    translationData.rootData.source.includes('Strong') ? 'reference' : 'computed'
+                  }`}
+                  title={`Root verified by: ${translationData.rootData.source}`}
+                >
+                  {translationData.rootData.source.replace(' (Local)', '').replace('Local', '').split(' ')[0]}
                 </span>
               )}
               {/* PRO SCHOLAR: Show weak verb type badge */}
@@ -952,6 +970,21 @@ const WordDefinitionCard = React.memo(function WordDefinitionCard({
         </details>
       )}
 
+      {/* PRO SCHOLAR V20: Root Meaning Panel - Shows shoresh translation */}
+      {root && showMorphology && (
+        <details className="wdc-root-meaning-details">
+          <summary className="wdc-root-meaning-summary">
+            <span className="summary-icon">📖</span>
+            <span className="summary-text">Root Meaning (שורש)</span>
+          </summary>
+          <RootMeaningPanel
+            root={root}
+            word={word}
+            compact={true}
+          />
+        </details>
+      )}
+
       {/* PRO SCHOLAR V6: Historical Layer Panel - Shows word's historical period */}
       {root && showMorphology && (
         <details className="wdc-historical-details">
@@ -977,6 +1010,20 @@ const WordDefinitionCard = React.memo(function WordDefinitionCard({
           </summary>
           <CognateLanguagesPanel
             root={root}
+            word={word}
+            compact={true}
+          />
+        </details>
+      )}
+
+      {/* PRO SCHOLAR V20: Text Attestations Panel - Shows where word appears */}
+      {word && showMorphology && (
+        <details className="wdc-attestations-details">
+          <summary className="wdc-attestations-summary">
+            <span className="summary-icon">📚</span>
+            <span className="summary-text">Found in Texts</span>
+          </summary>
+          <TextAttestationsPanel
             word={word}
             compact={true}
           />

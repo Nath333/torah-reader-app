@@ -15,8 +15,8 @@ const THEMES = {
 // Auto-scroll speed options (in seconds)
 const SCROLL_SPEEDS = [3, 5, 8, 12, 20];
 
-// Study view modes
-const STUDY_MODES = {
+// Focus view modes (different from Talmud STUDY_MODES in talmudStudy.js)
+const FOCUS_VIEW_MODES = {
   single: { name: 'Single Verse', icon: '1️⃣' },
   context: { name: 'With Context', icon: '📖' },
   learning: { name: 'Learning Mode', icon: '🎓' }
@@ -812,9 +812,9 @@ const FocusMode = React.memo(function FocusMode({
             <button
               className={`control-btn study-mode-btn ${studyMode !== 'single' ? 'active' : ''}`}
               onClick={() => setStudyMode(prev => prev === 'single' ? 'context' : prev === 'context' ? 'learning' : 'single')}
-              title={`Study Mode: ${STUDY_MODES[studyMode].name} (M)`}
+              title={`Study Mode: ${FOCUS_VIEW_MODES[studyMode].name} (M)`}
             >
-              <span className="study-mode-icon">{STUDY_MODES[studyMode].icon}</span>
+              <span className="study-mode-icon">{FOCUS_VIEW_MODES[studyMode].icon}</span>
             </button>
 
             {/* Notes toggle */}
@@ -1119,7 +1119,7 @@ const FocusMode = React.memo(function FocusMode({
           {/* Study mode indicator */}
           {studyMode !== 'single' && (
             <div className="study-mode-indicator">
-              {STUDY_MODES[studyMode].icon} {STUDY_MODES[studyMode].name}
+              {FOCUS_VIEW_MODES[studyMode].icon} {FOCUS_VIEW_MODES[studyMode].name}
             </div>
           )}
         </div>

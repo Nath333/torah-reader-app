@@ -312,11 +312,14 @@ export function useCommentaryLoader({
         let newData = {};
         const dafKey = `${book}:${chapter}`;
 
-        if (usesVerseMap && result instanceof Map) {
+        // Handle Map results (check both instanceof and duck typing for get/forEach)
+        const isMapResult = result instanceof Map || (result && typeof result.get === 'function' && typeof result.forEach === 'function');
+
+        if (usesVerseMap && isMapResult) {
           if (talmud && talmudDafLevel) {
             const allComments = result.get('all') || [];
             newData[dafKey] = allComments;
-            log.debug(`${name}: Loaded ${allComments.length} Talmud comments`);
+            log.debug(`${name}: Loaded ${allComments.length} Talmud comments for ${dafKey}`);
           } else {
             result.forEach((comments, verseNum) => {
               const cacheKey = `${book}:${chapter}:${verseNum}`;
@@ -324,6 +327,10 @@ export function useCommentaryLoader({
             });
             log.debug(`${name}: Loaded ${result.size} verses`);
           }
+        } else if (result && Array.isArray(result.comments)) {
+          // Fallback: Handle direct object with comments array (e.g., getRashiOnTalmud result)
+          newData[dafKey] = result.comments;
+          log.debug(`${name}: Loaded ${result.comments.length} comments (direct) for ${dafKey}`);
         } else {
           newData[dafKey] = wrapInComments ? { comments: result } : result;
           log.debug(`${name}: Loaded ${Array.isArray(result) ? result.length : 0} comments`);

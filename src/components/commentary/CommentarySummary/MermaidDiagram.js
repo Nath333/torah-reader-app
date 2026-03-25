@@ -66,17 +66,41 @@ function MermaidDiagram({ chart, id, explanation }) {
   // Parse the chart to extract node labels for fallback display
   const extractedNodes = useMemo(() => {
     if (!chart) return [];
-    const nodePattern = /\[([^\]]+)\]/g;
+    // Match content inside brackets/quotes: ["text"], ("text"), {{"text"}}, etc.
+    const nodePattern = /[\[({]["']?([^\]"')}]+)["']?[\])}]/g;
+    const seen = new Set();
     const nodes = [];
     let match;
     while ((match = nodePattern.exec(chart)) !== null) {
-      const label = match[1].trim();
-      if (label && !nodes.includes(label)) {
+      let label = match[1].trim()
+        .replace(/\\n/g, ' ')  // Replace newlines with spaces
+        .replace(/^[📊🔄👥📚📋📖📜📐📝📍👤⚖️⚔️🧠🔴🟢🟡✅🚫⭐❓⚡✓💬📅]\s*/g, '')  // Remove leading emojis
+        .trim();
+      // Skip short fragments, IDs, and duplicates
+      if (label && label.length >= 3 && !seen.has(label) && !/^[a-z]+\d+$/.test(label)) {
+        seen.add(label);
         nodes.push(label);
       }
     }
-    return nodes;
+    return nodes.slice(0, 12);  // Limit to prevent overflow
   }, [chart]);
+
+  // Group nodes by type for organized fallback display
+  const groupedNodes = useMemo(() => {
+    const groups = { concepts: [], rulings: [], sages: [], other: [] };
+    extractedNodes.forEach(node => {
+      if (/חייב|פטור|מותר|אסור|ספק/.test(node)) {
+        groups.rulings.push(node);
+      } else if (/רב|רבי|מר|אמר/.test(node)) {
+        groups.sages.push(node);
+      } else if (node.length > 5) {
+        groups.concepts.push(node);
+      } else {
+        groups.other.push(node);
+      }
+    });
+    return groups;
+  }, [extractedNodes]);
 
   useEffect(() => {
     let timeoutId;
@@ -129,8 +153,23 @@ function MermaidDiagram({ chart, id, explanation }) {
       } catch (err) {
         if (!isCancelled) {
           clearTimeout(timeoutId);
+          // Enhanced error logging for debugging
           console.error('Mermaid rendering error:', err);
-          setError(err.message || 'Failed to render diagram');
+          console.error('Chart that failed:', chart?.substring(0, 500));
+
+          // Provide user-friendly error message
+          const errorMsg = err.message || 'Failed to render diagram';
+          // Extract line/column info if available
+          const lineMatch = errorMsg.match(/line (\d+)/i);
+          const syntaxMatch = errorMsg.match(/Parse error|Syntax error|Unexpected/i);
+
+          if (syntaxMatch && lineMatch) {
+            setError(`Diagram syntax error at line ${lineMatch[1]}`);
+          } else if (errorMsg.includes('Maximum call stack')) {
+            setError('Diagram too complex to render');
+          } else {
+            setError(errorMsg);
+          }
         }
       } finally {
         if (!isCancelled) {
@@ -157,33 +196,61 @@ function MermaidDiagram({ chart, id, explanation }) {
   }
 
   if (error || !svg) {
-    // Show a user-friendly visual fallback instead of raw code
+    // Show a user-friendly visual fallback with extracted content
     return (
-      <div className="mermaid-fallback">
-        <div className="fallback-header">
-          <span className="fallback-icon">🗺️</span>
-          <span>Concept Flow</span>
-        </div>
+      <div className="mermaid-fallback scholarly">
         {explanation && (
-          <p className="fallback-explanation">{explanation}</p>
+          <div className="fallback-title">{explanation}</div>
         )}
         {extractedNodes.length > 0 ? (
-          <div className="fallback-flow">
-            {extractedNodes.map((node, i) => (
-              <React.Fragment key={i}>
-                <div className="fallback-node">
-                  <span className="fallback-node-text">{node}</span>
+          <div className="fallback-grid">
+            {groupedNodes.concepts.length > 0 && (
+              <div className="fallback-section">
+                <div className="section-label">מושגים</div>
+                <div className="concept-tags">
+                  {groupedNodes.concepts.slice(0, 4).map((node, i) => (
+                    <span key={i} className="concept-tag">{node}</span>
+                  ))}
                 </div>
-                {i < extractedNodes.length - 1 && (
-                  <div className="fallback-arrow">→</div>
-                )}
-              </React.Fragment>
-            ))}
+              </div>
+            )}
+            {groupedNodes.rulings.length > 0 && (
+              <div className="fallback-section">
+                <div className="section-label">דינים</div>
+                <div className="ruling-tags">
+                  {groupedNodes.rulings.slice(0, 4).map((node, i) => (
+                    <span key={i} className={`ruling-tag ${/חייב|אסור/.test(node) ? 'strict' : 'lenient'}`}>
+                      {node}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {groupedNodes.sages.length > 0 && (
+              <div className="fallback-section">
+                <div className="section-label">חכמים</div>
+                <div className="sage-tags">
+                  {groupedNodes.sages.slice(0, 3).map((node, i) => (
+                    <span key={i} className="sage-tag">{node}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {groupedNodes.other.length > 0 && groupedNodes.concepts.length === 0 && (
+              <div className="fallback-section">
+                <div className="concept-tags">
+                  {groupedNodes.other.slice(0, 6).map((node, i) => (
+                    <span key={i} className="concept-tag">{node}</span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
-          <p className="fallback-message">
-            Visual diagram could not be rendered. The key concepts are shown in the summary above.
-          </p>
+          <div className="fallback-empty">
+            <span className="empty-icon">📜</span>
+            <span>לא נמצא תוכן לתצוגה</span>
+          </div>
         )}
       </div>
     );

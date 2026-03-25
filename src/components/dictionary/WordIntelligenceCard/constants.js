@@ -17,11 +17,18 @@ export const SEMANTIC_FIELD_DISPLAY = {
   SPATIAL: { name: 'Spatial', hebrew: 'מרחבי', icon: '📍', color: '#84cc16', bg: '#ecfccb' }
 };
 
-/** Dictionary tier display - PRO SCHOLAR V6 */
+/** Dictionary tier display - PRO SCHOLAR V13 */
 export const TIER_DISPLAY = {
-  gold: { icon: '🥇', label: 'Gold Standard', color: '#b8860b', bg: '#fef3c7' },
-  silver: { icon: '🥈', label: 'Standard', color: '#6b7280', bg: '#f3f4f6' },
-  bronze: { icon: '🥉', label: 'Supplementary', color: '#b45309', bg: '#fef3c7' }
+  // Modern keys (from dictionarySources.js RELIABILITY_TIERS)
+  academic: { icon: '🥇', label: 'Academic', color: '#059669', bg: '#dcfce7' },
+  scholarly: { icon: '🥈', label: 'Reference', color: '#0891b2', bg: '#cffafe' },
+  curated: { icon: '🥉', label: 'Curated', color: '#6366f1', bg: '#e0e7ff' },
+  derived: { icon: '⚙️', label: 'Derived', color: '#8b5cf6', bg: '#ede9fe' },
+  reference: { icon: '📑', label: 'General', color: '#64748b', bg: '#f1f5f9' },
+  // Legacy keys (for backward compatibility)
+  gold: { icon: '🥇', label: 'Academic', color: '#059669', bg: '#dcfce7' },
+  silver: { icon: '🥈', label: 'Reference', color: '#0891b2', bg: '#cffafe' },
+  bronze: { icon: '🥉', label: 'Curated', color: '#6366f1', bg: '#e0e7ff' }
 };
 
 /** Source category configurations */

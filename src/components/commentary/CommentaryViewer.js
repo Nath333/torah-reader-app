@@ -239,7 +239,7 @@ const extractEnglishDiburHaMatchil = (text) => {
 };
 
 // Commentary Display Card
-const CommentaryDisplay = ({ source, commentaries, showTranslation, enableClickableText, verse, onClose }) => {
+const CommentaryDisplay = ({ source, commentaries, showTranslation, enableClickableText, verse, onClose, isTalmud = false, isMishnah = false }) => {
   const [showSummary, setShowSummary] = useState(false);
   const [showMetadata, setShowMetadata] = useState(false);
   const [showDictTest, setShowDictTest] = useState(false); // NEW: Dict test toggle
@@ -282,7 +282,7 @@ const CommentaryDisplay = ({ source, commentaries, showTranslation, enableClicka
         <div className="source-info">
           <span className="source-icon">{info.icon}</span>
           <span className="source-hebrew">{info.hebrewName}</span>
-          {isRashi && <span className="rashi-subtitle">Rashi on Torah</span>}
+          {isRashi && <span className="rashi-subtitle">{isTalmud ? 'Rashi on Gemara' : isMishnah ? 'Rashi on Mishnah' : 'Rashi on Torah'}</span>}
           {!isRashi && <span className="source-english">{source}</span>}
           <span className="source-era">{info.era}</span>
           <button
@@ -650,6 +650,8 @@ const CommentaryViewer = ({
                   enableClickableText={enableClickableText}
                   verse={verseRef}
                   onClose={selectedSources.length > 1 ? () => toggleSource(source) : null}
+                  isTalmud={isTalmud}
+                  isMishnah={isMishnah}
                 />
               ))}
             </div>

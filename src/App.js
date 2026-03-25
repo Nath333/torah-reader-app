@@ -114,13 +114,28 @@ function App() {
   const { view, setView, goToReader, toggleView } = useViewRouting(torah.book, torah.chapter);
   const { getShareLink } = useUrlState(torah.book, torah.chapter, torah.goTo);
 
-  // Initialize dictionary preloading on mount
+  // Initialize dictionary preloading AFTER initial render (deferred for fast startup)
   useEffect(() => {
-    initializePreload();
-    // PRO SCHOLAR V7: Preload common words for faster lookups
-    preloadCommonWords().catch(err => {
-      console.debug('[App] Preload error:', err.message);
-    });
+    // Use requestIdleCallback to defer preloading until browser is idle
+    const schedulePreload = window.requestIdleCallback || ((cb) => setTimeout(cb, 100));
+
+    const preloadId = schedulePreload(() => {
+      // Defer dictionary preload to not block initial render
+      initializePreload();
+
+      // PRO SCHOLAR V7: Preload common words for faster lookups (also deferred)
+      setTimeout(() => {
+        preloadCommonWords().catch(err => {
+          console.debug('[App] Preload error:', err.message);
+        });
+      }, 500); // Extra delay for word preload
+    }, { timeout: 2000 }); // Max 2 seconds before forcing preload
+
+    return () => {
+      if (window.cancelIdleCallback) {
+        window.cancelIdleCallback(preloadId);
+      }
+    };
   }, []);
 
   // =============================================================================

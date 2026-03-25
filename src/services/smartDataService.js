@@ -6,6 +6,7 @@
 
 // PRO SCHOLAR V6.2: Use CacheOrchestrator for unified cache management
 import { createManagedCache } from './cacheOrchestrator';
+import { stripAllDiacritics } from '../utils/hebrewUtils';
 
 // =============================================================================
 // Connectivity Detection & Management
@@ -272,7 +273,7 @@ const memoryCache = {
 export const smartLookup = async (word, options = {}) => {
   const { forceOnline = false, includeFrench = true } = options;
 
-  const cleaned = word.replace(/[\u0591-\u05C7]/g, '').trim();
+  const cleaned = stripAllDiacritics(word).trim();
   if (!cleaned || cleaned.length < 2) {
     return { success: false, error: 'Word too short' };
   }
@@ -558,7 +559,7 @@ export const prefetchWordLookups = async (words) => {
   // Clean and filter words
   const uniqueWords = [...new Set(
     words
-      .map(w => w.replace(/[\u0591-\u05C7]/g, '').trim())
+      .map(w => stripAllDiacritics(w).trim())
       .filter(w => w.length >= 2)
   )].slice(0, 20); // Limit to 20 words
 

@@ -71,3 +71,9 @@ export { default as V6TelemetryDashboard } from './V6TelemetryDashboard';
 // PRO SCHOLAR V6 - Historical Layers & Cognates
 export { default as HistoricalLayerPanel } from './HistoricalLayerPanel';
 export { default as CognateLanguagesPanel } from './CognateLanguagesPanel';
+
+// PRO SCHOLAR V20 - Text Attestations (where word appears in texts)
+export { default as TextAttestationsPanel } from './TextAttestationsPanel';
+
+// PRO SCHOLAR V20 - Root Meaning Panel (shoresh translation)
+export { default as RootMeaningPanel } from './RootMeaningPanel';

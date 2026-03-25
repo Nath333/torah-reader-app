@@ -18,6 +18,14 @@ export { default as useViewRouting } from './useViewRouting';
 // ============================================================================
 export { default as useAsyncOperation, useAsyncCallback } from './useAsyncOperation';
 export {
+  default as usePanelData,
+  useSetToggle,
+  buildPanelClassName,
+  toggleSetItem,
+  renderPanelLoading,
+  renderPanelError
+} from './usePanelData';
+export {
   default as useToggleSetting,
   useToggleState,
   useToggleWithCallback,

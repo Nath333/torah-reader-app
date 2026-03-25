@@ -15,7 +15,8 @@ import { MiniFlowBar } from '../visualization/SugyaFlowVisualization';
 import { getFlowDiagram } from '../../services/discoursePatternService';
 import { getCompleteScholarlyAnalysis, addVocalization } from '../../services/scholarlyApiService';
 // Entity detection removed - entities tab consolidated into other features
-import { isTalmudBook, getSefarimCategories, getChapters, getVerses } from '../../services/sefariaApi';
+import { isTalmudBook, isMishnahBook, isTorahBook, getSefarimCategories, getChapters, getVerses } from '../../services/sefariaApi';
+import { NEVIIM_BOOKS, KETUVIM_BOOKS } from '../../constants/bookConstants';
 import './ScholarModePanel.css';
 
 // Import extracted components - 5 TAB STRUCTURE (with Talmud tools for Talmud mode)
@@ -267,7 +268,12 @@ const ScholarModePanel = ({
   // Auto-detect text type if not provided
   const detectedTextType = useMemo(() => {
     if (textType) return textType;
-    if (selectedBook && isTalmudBook(selectedBook)) return 'talmud';
+    if (!selectedBook) return 'torah';
+    if (isTalmudBook(selectedBook)) return 'talmud';
+    if (isMishnahBook(selectedBook)) return 'mishna';
+    if (isTorahBook(selectedBook)) return 'torah';
+    if (NEVIIM_BOOKS.includes(selectedBook)) return 'neviim';
+    if (KETUVIM_BOOKS.includes(selectedBook)) return 'ketuvim';
     return 'torah';
   }, [textType, selectedBook]);
 
@@ -1016,6 +1022,7 @@ const ScholarModePanel = ({
               <TalmudToolsTab
                 text={text}
                 reference={reference}
+                textType={detectedTextType}
               />
             )}
 

@@ -16,7 +16,8 @@
 import React, { useState, memo, useMemo, useCallback } from 'react';
 // Note: useEffect available if needed for async loading
 import PropTypes from 'prop-types';
-import { useRootFamily } from '../../hooks/useProScholarV6';
+import { useRootFamily, normalizeRootFamily } from '../../hooks/useProScholarV6';
+import { stripVowels } from '../../utils/hebrewUtils';
 import './RootFamilyTree.css';
 
 // =============================================================================
@@ -275,8 +276,38 @@ function RootFamilyTree({
   compact = false,
   className = ''
 }) {
-  // Fetch root family from V6 service
-  const { family, isLoading } = useRootFamily(root);
+  // PRO SCHOLAR V12: Smart root extraction for derived words like יציאות → יצא
+  const cleanedRoot = useMemo(() => {
+    if (!root) return null;
+    // Remove nikud first
+    const stripped = stripVowels(root);
+    // If already 3 letters, return as-is
+    if (stripped.length === 3) return stripped;
+
+    // Try action noun pattern: יציאות → יצא
+    if (stripped.endsWith('ות') && stripped.length >= 5) {
+      const stem = stripped.slice(0, -2);
+      if (stem.length === 4 && stem[2] === 'י') {
+        return stem[0] + stem[1] + stem[3];
+      }
+    }
+    // Try feminine singular: יציאה → יצא
+    if (stripped.endsWith('ה') && stripped.length >= 4) {
+      const stem = stripped.slice(0, -1);
+      if (stem.length === 4 && stem[2] === 'י') {
+        return stem[0] + stem[1] + stem[3];
+      }
+    }
+    // Fall back to original
+    return stripped;
+  }, [root]);
+
+  // Fetch root family from V6 service using cleaned root
+  const { family: rawFamily, isLoading } = useRootFamily(cleanedRoot);
+
+  // Normalize family to array (handles object responses like { words: [...] })
+  // Uses shared utility from useProScholarV6 to avoid code duplication
+  const family = useMemo(() => normalizeRootFamily(rawFamily), [rawFamily]);
 
   // Categorize words
   const categorizedWords = useMemo(() => {

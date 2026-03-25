@@ -41,17 +41,28 @@
 }
 
 .clp-icon {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
 }
 
 .clp-title-text {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: #5b21b6;
 }
 
 .dark .clp-title-text {
   color: #c4b5fd;
+}
+
+.clp-theological-badge {
+  font-size: 0.9rem;
+  margin-left: 4px;
+}
+
+.clp-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .clp-root-badge {
@@ -69,6 +80,82 @@
   background: rgba(167, 139, 250, 0.2);
   color: #ddd6fe;
   border-color: rgba(167, 139, 250, 0.4);
+}
+
+/* =============================================================================
+   SOURCE TIER BADGE
+   ============================================================================= */
+
+.clp-source-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--tier-color, #6b7280);
+  border: 1px solid var(--tier-color, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.dark .clp-source-badge {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.clp-source-dot {
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+.clp-source-label {
+  line-height: 1;
+}
+
+/* =============================================================================
+   PROTO-SEMITIC BADGE
+   ============================================================================= */
+
+.clp-proto-semitic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(90deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.2));
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-bottom: 12px;
+  border: 1px dashed rgba(139, 92, 246, 0.3);
+}
+
+.dark .clp-proto-semitic {
+  background: linear-gradient(90deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.25));
+}
+
+.clp-proto-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #7c3aed;
+  font-weight: 600;
+}
+
+.dark .clp-proto-label {
+  color: #a78bfa;
+}
+
+.clp-proto-form {
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-style: italic;
+  color: #5b21b6;
+  font-family: 'Times New Roman', serif;
+}
+
+.dark .clp-proto-form {
+  color: #e9d5ff;
 }
 
 /* =============================================================================
@@ -126,6 +213,7 @@
   border-radius: 10px;
   padding: 12px;
   transition: all 0.2s ease;
+  border-left: 3px solid var(--lang-color, #8b5cf6);
 }
 
 .dark .clp-cognate-card {
@@ -144,13 +232,20 @@
 
 .clp-cognate-header {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  align-items: flex-start;
+  gap: 8px;
   margin-bottom: 8px;
 }
 
 .clp-language-flag {
-  font-size: 1.1rem;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.clp-language-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
 }
 
 .clp-language-name {
@@ -158,11 +253,22 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.3px;
-  color: #7c3aed;
+  color: var(--lang-color, #7c3aed);
+  line-height: 1.2;
 }
 
 .dark .clp-language-name {
   color: #c4b5fd;
+}
+
+.clp-language-desc {
+  font-size: 0.6rem;
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+.dark .clp-language-desc {
+  color: #6b7280;
 }
 
 .clp-cognate-word {
@@ -186,6 +292,22 @@
   color: #c4b5fd;
 }
 
+.clp-cognate-note {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  margin-top: 6px;
+  font-style: italic;
+}
+
+.clp-period {
+  display: inline-block;
+  background: rgba(139, 92, 246, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 4px;
+  font-style: normal;
+}
+
 .clp-cognate-form {
   font-size: 0.65rem;
   text-transform: uppercase;
@@ -199,6 +321,83 @@
 .dark .clp-cognate-form {
   color: #a78bfa;
   border-top-color: rgba(167, 139, 250, 0.2);
+}
+
+/* =============================================================================
+   LOADING STATE
+   ============================================================================= */
+
+.clp-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px;
+  color: #7c3aed;
+  font-size: 0.85rem;
+}
+
+.dark .clp-loading {
+  color: #a78bfa;
+}
+
+.clp-loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(139, 92, 246, 0.2);
+  border-top-color: #7c3aed;
+  border-radius: 50%;
+  animation: clp-spin 0.8s linear infinite;
+}
+
+@keyframes clp-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* =============================================================================
+   SUMMARY
+   ============================================================================= */
+
+.clp-summary {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(139, 92, 246, 0.2);
+}
+
+.clp-count {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* =============================================================================
+   SCHOLARLY NOTE (updated)
+   ============================================================================= */
+
+.clp-scholarly-note {
+  background: rgba(139, 92, 246, 0.08);
+  border-radius: 8px;
+  padding: 12px;
+  border-left: 3px solid #8b5cf6;
+  margin-top: 12px;
+}
+
+.dark .clp-scholarly-note {
+  background: rgba(139, 92, 246, 0.12);
+}
+
+.clp-note-content {
+  font-size: 0.85rem;
+  color: #5b21b6;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.dark .clp-note-content {
+  color: #ddd6fe;
 }
 
 /* =============================================================================

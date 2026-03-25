@@ -10,6 +10,8 @@
 // - HALOT Hebrew & Aramaic Lexicon of the Old Testament
 // =============================================================================
 
+import { cleanHebrewWordStrict } from '../utils/hebrewUtils';
+
 /**
  * Clean an Aramaic/Hebrew word by removing cantillation marks and vowels
  * @param {string} word - The word to clean
@@ -17,9 +19,7 @@
  */
 export const cleanAramaicWord = (word) => {
   if (!word || typeof word !== 'string') return '';
-  return word
-    .replace(/[\u0591-\u05C7]/g, '') // Remove cantillation and vowels
-    .replace(/[^\u05D0-\u05EA]/g, ''); // Keep only Hebrew letters
+  return cleanHebrewWordStrict(word); // Remove diacritics and keep only Hebrew letters
 };
 
 // =============================================================================

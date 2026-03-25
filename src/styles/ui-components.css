@@ -696,9 +696,7 @@
   border-width: 4px;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+/* @keyframes spin - defined in animations.css */
 
 /* Skeleton loader */
 .skeleton {

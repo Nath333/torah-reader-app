@@ -17,6 +17,8 @@ import {
   ROOT_MEANINGS,
   HEBREW_BINYANIM as MORPHOLOGY_BINYANIM
 } from '../constants/morphology';
+// PRO SCHOLAR V12: Use centralized Hebrew utilities (DRY)
+import { cleanHebrewWordStrict as cleanHebrewWord, stripAllDiacritics } from '../utils/hebrewUtils';
 
 // =============================================================================
 // ALL AVAILABLE DICTIONARIES for validation
@@ -32,7 +34,7 @@ import {
 // HEBREW (for Torah/Tanakh):
 //   - BDB_BY_WORD (8,050 entries) - Biblical Hebrew
 //   - STRONGS_BY_WORD (8,674 entries) - Strong's Concordance
-//   - KLEIN_LEXICON (~4,500 entries) - Etymology dictionary
+//   - Gesenius (6,979 entries) - Classical Hebrew grammar
 //
 // 🌐 ONLINE APIs (scholarlyLexiconService.js, calDictionaryService.js):
 //   - Sefaria API (BDB, Jastrow, Strong's online)
@@ -47,14 +49,14 @@ import {
   getCALAramaicData,
   getJastrowAramaicData,
   getBDBAramaicData,
-  getKleinLexiconData
+  getGeseniusLexiconData
 } from './dictionaryLoader';
 
 // Helper functions to access lazy-loaded lexicons (returns null if not loaded yet)
 const getCAL = () => getCALAramaicData();
 const getJastrowAramaic = () => getJastrowAramaicData();
 const getBDBAramaic = () => getBDBAramaicData();
-const getKleinLexicon = () => getKleinLexiconData();
+const getGesenius = () => getGeseniusLexiconData();
 
 /**
  * SMART: Check if a word exists in ANY of our dictionaries
@@ -68,7 +70,7 @@ const getKleinLexicon = () => getKleinLexiconData();
  *
  * For TORAH/HEBREW context (Chumash, Tanakh):
  *   5. BDB (via sync lookup) - Biblical Hebrew
- *   6. KLEIN_LEXICON - Etymology
+ *   6. Gesenius - Classical Hebrew grammar
  *   7. Strong's (via sync lookup) - Last resort (often wrong for Talmud)
  */
 const isValidDictionaryWord = (word) => {
@@ -96,9 +98,9 @@ const isValidDictionaryWord = (word) => {
   // 5. BDB - Biblical Hebrew
   if (lookupBDBSync(word)) return true;
 
-  // 6. Klein - Etymology (lazy-loaded)
-  const kleinData = getKleinLexicon();
-  if (kleinData?.[word]) return true;
+  // 6. Gesenius - Classical Hebrew (lazy-loaded)
+  const geseniusData = getGesenius();
+  if (geseniusData?.[word]) return true;
 
   // 7. Strong's - Biblical (skip for Talmud, but include for validation)
   if (lookupStrongsSync(word)) return true;
@@ -131,8 +133,8 @@ const getDictionarySource = (word) => {
   const bdbEntry = lookupBDBSync(word);
   if (bdbEntry) return { source: 'BDB', entry: bdbEntry, isAramaic: false };
 
-  const kleinData = getKleinLexicon();
-  if (kleinData?.[word]) return { source: 'Klein', entry: kleinData[word], isAramaic: false };
+  const geseniusData = getGesenius();
+  if (geseniusData?.[word]) return { source: 'Gesenius', entry: geseniusData[word], isAramaic: false };
 
   const strongsEntry = lookupStrongsSync(word);
   if (strongsEntry) return { source: "Strong's", entry: strongsEntry, isAramaic: false };
@@ -486,16 +488,7 @@ export const SUFFIXES = {
   'הן': { type: 'pronominal', person: '3rd', number: 'plural', gender: 'feminine', meaning: 'their (f.)' }
 };
 
-/**
- * Clean Hebrew/Aramaic word by removing vowels, cantillation, and punctuation
- */
-const cleanHebrewWord = (word) => {
-  if (!word) return '';
-  return word
-    .replace(/[\u0591-\u05C7]/g, '') // Remove cantillation and nikud
-    .replace(/[׳״'`"]/g, '')         // Remove geresh and gershayim (abbreviation marks)
-    .replace(/[^\u05D0-\u05EA]/g, ''); // Keep only Hebrew letters
-};
+// cleanHebrewWord imported from hebrewUtils (PRO SCHOLAR V12: DRY)
 
 /**
  * Check if word is a known Talmudic term/abbreviation
@@ -686,7 +679,7 @@ export function detectBinyan(word) {
   if (!word) return { binyan: null, confidence: 'none', indicators: [] };
 
   const withNikud = word;
-  const cleaned = word.replace(/[\u0591-\u05C7]/g, '');
+  const cleaned = stripAllDiacritics(word);
   const indicators = [];
   let binyan = null;
   let confidence = 'low';
@@ -824,7 +817,7 @@ export function analyzeVerb(word, context = {}) {
   const binyanResult = detectBinyan(word);
 
   // Detect tense from context and form
-  const cleaned = word.replace(/[\u0591-\u05C7]/g, '');
+  const cleaned = stripAllDiacritics(word);
   let detectedTense = null;
   let tenseConfidence = 'low';
 
@@ -903,7 +896,7 @@ export function analyzeWord(word, context = {}) {
   }
 
   // Remove nikud for analysis but keep original
-  const withoutNikud = word.replace(/[\u0591-\u05C7]/g, '');
+  const withoutNikud = stripAllDiacritics(word);
   const rootAnalysis = extractRoot(word);
 
   // Determine part of speech heuristically
@@ -1131,7 +1124,7 @@ export function getAllBinyanim(includeAramaic = false) {
 export const tryHebrewVerbAnalysis = (word) => {
   if (!word || word.length < 3) return null;
 
-  const cleanedWord = word.replace(/[\u0591-\u05C7]/g, ''); // Remove vowels
+  const cleanedWord = stripAllDiacritics(word);
 
   // Common prefixes to try stripping
   const VERB_PREFIXES = ['ל', 'ה', 'ו', 'וה', 'ול', 'וב', 'ומ', 'וכ'];

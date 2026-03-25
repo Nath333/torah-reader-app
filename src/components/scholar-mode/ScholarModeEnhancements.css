@@ -534,6 +534,34 @@
   border-bottom: 1px solid rgba(6, 95, 70, 0.2);
 }
 
+/* PRO SCHOLAR V20: Root Meaning Panel Styling */
+.wdc-root-meaning-details {
+  margin-top: 12px;
+  border: 1px solid var(--border-light, #e0e0e0);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface-elevated, #f8f9fa);
+}
+
+.wdc-root-meaning-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--text-primary, #1f2937);
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+}
+
+.wdc-root-meaning-summary:hover {
+  background: linear-gradient(135deg, #bbf7d0 0%, #86efac 100%);
+}
+
+.wdc-root-meaning-details[open] .wdc-root-meaning-summary {
+  border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+}
+
 /* PRO SCHOLAR V6: Historical Layer Panel Styling */
 .wdc-historical-details {
   margin-top: 12px;
@@ -588,6 +616,30 @@
 
 .wdc-cognate-details[open] .wdc-cognate-summary {
   border-bottom: 1px solid rgba(146, 64, 14, 0.2);
+}
+
+/* PRO SCHOLAR V20: Text Attestations Panel Styling */
+.wdc-attestations-details {
+  margin-top: 12px;
+  border: 1px solid var(--border-light, #e0e0e0);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface-elevated, #f8f9fa);
+}
+
+.wdc-attestations-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--text-primary, #1f2937);
+  background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
+}
+
+.wdc-attestations-details[open] .wdc-attestations-summary {
+  border-bottom: 1px solid rgba(37, 99, 235, 0.2);
 }
 
 /* =============================================================================
@@ -696,6 +748,34 @@
   border-color: var(--primary, #2563eb);
 }
 
+/* Period badges for rabbi chips - תנא/אמורא */
+.rabbi-chip .period-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.rabbi-chip.period-tanna .period-badge {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.rabbi-chip.period-amora .period-badge {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.rabbi-chip.active .period-badge {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+}
+
 .quick-reference {
   display: flex;
   flex-direction: column;
@@ -764,4 +844,1776 @@
     background: var(--surface-dark-elevated, #374151);
     border-color: #4b5563;
   }
+}
+
+/* =============================================================================
+   PRO SCHOLAR V13: Mishna Analysis Panel Styles
+   ============================================================================= */
+
+.mishna-analysis-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 12px;
+}
+
+.mishna-analysis-empty,
+.gemara-qa-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px;
+  color: var(--text-secondary, #6b7280);
+  text-align: center;
+}
+
+.mishna-analysis-empty .empty-icon,
+.gemara-qa-empty .empty-icon {
+  font-size: 32px;
+  opacity: 0.5;
+}
+
+.mishna-summary-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.summary-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.summary-badge.enumeration {
+  background: #DBEAFE;
+  color: #1E40AF;
+}
+
+.summary-badge.condition {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.summary-badge.exception {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.summary-badge.ruling {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.summary-badge.dispute {
+  background: #E0E7FF;
+  color: #3730A3;
+}
+
+.mishna-elements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mishna-element {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--surface, #fff);
+  border-radius: 8px;
+  border-left: 4px solid;
+}
+
+.mishna-element .element-icon {
+  font-size: 16px;
+}
+
+.mishna-element .element-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary, #6b7280);
+  min-width: 80px;
+}
+
+.mishna-element .element-text {
+  flex: 1;
+  font-family: "SBL Hebrew", "Frank Ruehl", serif;
+  font-size: 15px;
+}
+
+/* =============================================================================
+   PRO SCHOLAR V13: Gemara Q&A Panel Styles
+   ============================================================================= */
+
+.gemara-qa-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 12px;
+}
+
+.qa-summary-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  padding: 12px;
+  background: var(--surface, #f9fafb);
+  border-radius: 12px;
+}
+
+.qa-summary-stats .stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 60px;
+}
+
+.qa-summary-stats .stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary, #2563eb);
+}
+
+.qa-summary-stats .stat-label {
+  font-size: 11px;
+  color: var(--text-secondary, #6b7280);
+}
+
+.qa-summary-stats .stat-item.resolved .stat-value {
+  color: #059669;
+}
+
+.qa-summary-stats .stat-item.unresolved .stat-value {
+  color: #DC2626;
+}
+
+.toggle-diagram-btn {
+  align-self: center;
+  padding: 8px 16px;
+  background: var(--primary-light, #dbeafe);
+  border: none;
+  border-radius: 20px;
+  color: var(--primary, #2563eb);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.toggle-diagram-btn:hover {
+  background: var(--primary, #2563eb);
+  color: white;
+}
+
+.qa-diagram-container {
+  padding: 16px;
+  background: var(--surface, #fff);
+  border-radius: 12px;
+  border: 1px solid var(--border-light, #e5e7eb);
+  overflow-x: auto;
+}
+
+.qa-flow-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.qa-unit {
+  background: var(--surface, #fff);
+  border-radius: 12px;
+  border: 1px solid var(--border-light, #e5e7eb);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.qa-question,
+.qa-challenge,
+.qa-proof,
+.qa-resolution,
+.qa-unresolved {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.qa-question {
+  background: #FEF3C7;
+}
+
+.qa-challenge {
+  background: #FEE2E2;
+  margin-right: 16px;
+}
+
+.qa-proof {
+  background: #D1FAE5;
+  margin-right: 16px;
+}
+
+.qa-resolution {
+  background: #DDD6FE;
+}
+
+.qa-unresolved {
+  background: #F3F4F6;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.qa-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.qa-marker {
+  font-family: "SBL Hebrew", "Frank Ruehl", serif;
+  font-size: 14px;
+  direction: rtl;
+}
+
+.qa-challenges,
+.qa-proofs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Dark mode for new panels */
+@media (prefers-color-scheme: dark) {
+  .mishna-analysis-panel,
+  .gemara-qa-panel {
+    background: var(--surface-dark, #1f2937);
+  }
+
+  .mishna-element {
+    background: var(--surface-dark-elevated, #374151);
+  }
+
+  .qa-summary-stats {
+    background: var(--surface-dark-elevated, #374151);
+  }
+
+  .qa-unit {
+    background: var(--surface-dark-elevated, #374151);
+    border-color: #4b5563;
+  }
+
+  .qa-question { background: rgba(254, 243, 199, 0.15); }
+  .qa-challenge { background: rgba(254, 226, 226, 0.15); }
+  .qa-proof { background: rgba(209, 250, 229, 0.15); }
+  .qa-resolution { background: rgba(221, 214, 254, 0.15); }
+  .qa-unresolved { background: rgba(243, 244, 246, 0.1); }
+
+  .summary-badge.enumeration { background: rgba(59, 130, 246, 0.2); color: #93C5FD; }
+  .summary-badge.condition { background: rgba(245, 158, 11, 0.2); color: #FCD34D; }
+  .summary-badge.exception { background: rgba(239, 68, 68, 0.2); color: #FCA5A5; }
+  .summary-badge.ruling { background: rgba(16, 185, 129, 0.2); color: #6EE7B7; }
+  .summary-badge.dispute { background: rgba(99, 102, 241, 0.2); color: #A5B4FC; }
+}
+
+/* =============================================================================
+   PRO SCHOLAR V13: Main/Sub Tab Structure
+   ============================================================================= */
+
+.tab-toggle.main-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  background: var(--surface, #f9fafb);
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+
+.tab-toggle.main-tabs .tab-btn.main-tab {
+  flex: 1;
+  max-width: 140px;
+  padding: 10px 16px;
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.tab-toggle.main-tabs .tab-btn.main-tab:hover {
+  background: var(--primary-light, #dbeafe);
+}
+
+.tab-toggle.main-tabs .tab-btn.main-tab.active {
+  background: var(--primary, #2563eb);
+  color: white;
+  border-color: var(--primary, #2563eb);
+}
+
+.tab-toggle.sub-tabs {
+  display: flex;
+  justify-content: flex-start;
+  gap: 4px;
+  padding: 8px 12px;
+  background: var(--surface-alt, #f3f4f6);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  overflow-x: auto;
+}
+
+.tab-toggle.sub-tabs .tab-btn.sub-tab {
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.tab-toggle.sub-tabs .tab-btn.sub-tab:hover {
+  background: var(--surface, #fff);
+  border-color: var(--border-light, #d1d5db);
+}
+
+.tab-toggle.sub-tabs .tab-btn.sub-tab.active {
+  background: var(--surface, #fff);
+  border-color: var(--primary, #2563eb);
+  color: var(--primary, #2563eb);
+  font-weight: 600;
+}
+
+.tab-toggle.sub-tabs .tab-btn.sub-tab .tab-icon {
+  font-size: 14px;
+}
+
+/* Dark mode for tabs */
+@media (prefers-color-scheme: dark) {
+  .tab-toggle.main-tabs {
+    background: var(--surface-dark, #1f2937);
+  }
+
+  .tab-toggle.main-tabs .tab-btn.main-tab:hover {
+    background: rgba(59, 130, 246, 0.15);
+  }
+
+  .tab-toggle.sub-tabs {
+    background: var(--surface-dark-elevated, #374151);
+  }
+
+  .tab-toggle.sub-tabs .tab-btn.sub-tab:hover {
+    background: var(--surface-dark, #1f2937);
+    border-color: #4b5563;
+  }
+
+  .tab-toggle.sub-tabs .tab-btn.sub-tab.active {
+    background: var(--surface-dark, #1f2937);
+    border-color: var(--primary, #3b82f6);
+    color: var(--primary-light, #93c5fd);
+  }
+}
+
+/* =============================================================================
+   PRO SCHOLAR V15: Unified Sugya Analysis - Enhanced Scholarly Interface
+   ============================================================================= */
+
+/* Main container */
+.unified-sugya-pro {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ============= Stats Bar ============= */
+.sugya-stats-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #dbeafe 100%);
+  border-radius: 14px;
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.08);
+}
+
+.stat-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: white;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stat-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.stat-icon { font-size: 14px; }
+.stat-value { font-weight: 700; color: #1e293b; }
+.stat-label { font-size: 11px; color: #64748b; font-weight: 500; }
+
+/* Stat type colors */
+.stat-question { border-left: 3px solid #f59e0b; }
+.stat-challenge { border-left: 3px solid #ef4444; }
+.stat-resolved { border-left: 3px solid #10b981; }
+.stat-resolved.active { background: linear-gradient(135deg, #ecfdf5, #d1fae5); }
+.stat-sages { border-left: 3px solid #8b5cf6; }
+.stat-markers { border-left: 3px solid #3b82f6; }
+
+/* Resolution progress */
+.resolution-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.progress-bar {
+  width: 60px;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: var(--progress, 0%);
+  background: linear-gradient(90deg, #10b981, #059669);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 12px;
+  font-weight: 700;
+  color: #059669;
+}
+
+/* ============= Collapsible Sections ============= */
+.sugya-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sugya-section {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sugya-section.open {
+  border-color: var(--section-accent, #3b82f6);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.section-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: right;
+  direction: rtl;
+  transition: background 0.15s ease;
+}
+
+.section-header:hover {
+  background: #f8fafc;
+}
+
+.section-icon { font-size: 18px; }
+.section-title { flex: 1; color: #1e293b; }
+
+.section-badge {
+  padding: 3px 10px;
+  background: #fef3c7;
+  color: #92400e;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.section-count {
+  padding: 3px 10px;
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.section-chevron {
+  opacity: 0.4;
+  font-size: 12px;
+  transition: transform 0.2s ease;
+}
+
+.sugya-section.open .section-chevron {
+  opacity: 0.6;
+}
+
+.section-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.section-content.expanded {
+  max-height: 2000px;
+  padding: 0 18px 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* ============= Mishna Breakdown ============= */
+.mishna-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 14px;
+}
+
+.mishna-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  direction: rtl;
+}
+
+.cat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.cat-badge.enumeration { background: #dbeafe; color: #1d4ed8; }
+.cat-badge.condition { background: #fef3c7; color: #92400e; }
+.cat-badge.exception { background: #fee2e2; color: #dc2626; }
+.cat-badge.ruling { background: #d1fae5; color: #047857; }
+.cat-badge.dispute { background: #ede9fe; color: #6d28d9; }
+
+.mishna-elements {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mishna-element {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border-right: 4px solid var(--element-color, #e5e7eb);
+  direction: rtl;
+}
+
+.el-marker {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.el-text {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #374151;
+}
+
+.el-label {
+  padding: 2px 8px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  font-size: 11px;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+/* ============= Q&A Flow Tree ============= */
+.qa-flow-tree {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 14px;
+}
+
+.qa-mini-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border-radius: 10px;
+  direction: rtl;
+}
+
+.mini-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.mini-stat.questions { color: #b45309; }
+.mini-stat.challenges { color: #dc2626; }
+.mini-stat.proofs { color: #7c3aed; }
+.mini-stat.resolved { color: #059669; }
+.mini-stat.unresolved { color: #6b7280; }
+
+.diagram-toggle {
+  align-self: flex-start;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.diagram-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.qa-units {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.qa-unit {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 14px;
+  border: 1px solid #e5e7eb;
+}
+
+.qa-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  direction: rtl;
+}
+
+.qa-node {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.qa-node.question {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  font-weight: 600;
+}
+
+.qa-node.challenge {
+  background: #fee2e2;
+  margin-right: 20px;
+}
+
+.qa-node.proof {
+  background: #ede9fe;
+  margin-right: 20px;
+}
+
+.qa-node.resolution {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  font-weight: 600;
+}
+
+.qa-node.pending {
+  background: #f3f4f6;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.node-connector {
+  font-family: monospace;
+  color: #9ca3af;
+  font-size: 16px;
+}
+
+.node-icon { font-size: 14px; }
+.node-text { flex: 1; color: #374151; }
+
+.qa-diagram {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px;
+  background: white;
+  overflow-x: auto;
+}
+
+/* ============= Sages Panel ============= */
+.sages-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 14px;
+}
+
+.sage-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+  background: #f8fafc;
+  border-radius: 10px;
+  direction: rtl;
+}
+
+.sage-group.tannaim { border-right: 4px solid #f59e0b; background: linear-gradient(135deg, #fffbeb, #fef3c7); }
+.sage-group.amoraim { border-right: 4px solid #3b82f6; background: linear-gradient(135deg, #eff6ff, #dbeafe); }
+
+.group-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.group-badge {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.group-badge.tanna { background: #f59e0b; color: white; }
+.group-badge.amora { background: #3b82f6; color: white; }
+
+.group-title { font-weight: 600; font-size: 14px; color: #374151; flex: 1; }
+.group-count { font-size: 12px; color: #6b7280; }
+
+.sage-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sage-chip {
+  padding: 6px 14px;
+  background: white;
+  border-radius: 20px;
+  font-size: 13px;
+  font-family: var(--font-hebrew, serif);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: transform 0.15s ease;
+}
+
+.sage-chip:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+.sage-chip.tanna { border-left: 3px solid #f59e0b; }
+.sage-chip.amora { border-left: 3px solid #3b82f6; }
+
+/* ============= Sugya Diagram ============= */
+.sugya-diagram {
+  padding: 16px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  overflow-x: auto;
+  margin-top: 8px;
+}
+
+/* ============= Tools Panel (Tab 2) ============= */
+.tools-panel { display: flex; flex-direction: column; gap: 16px; }
+.tool-section { background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; overflow: hidden; }
+.tool-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  background: #f8fafc;
+  font-weight: 600;
+  font-size: 14px;
+  border-bottom: 1px solid #e5e7eb;
+  direction: rtl;
+}
+.tool-badge {
+  display: inline-flex;
+  padding: 3px 10px;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: white;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.citations-section { margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb; }
+
+/* =============================================================================
+   PRO SCHOLAR V25: Enhanced Unified Sugya Analysis
+   Complete Gemara learning: Mishna -> Shakla V'Tarya -> Resolution
+   ============================================================================= */
+
+/* V25 Main Container */
+.unified-sugya-pro.v25 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Empty State */
+.unified-sugya-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: #64748b;
+}
+.unified-sugya-empty .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.6; }
+.unified-sugya-empty .empty-title { font-size: 16px; font-weight: 600; color: #1e293b; margin-bottom: 8px; }
+.unified-sugya-empty .empty-text { font-size: 13px; max-width: 280px; }
+
+/* V25 Stats Bar - Compact with click-to-jump */
+.sugya-stats-bar.v25 {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  flex-wrap: wrap;
+}
+
+.stats-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.stats-group.main { flex-shrink: 0; }
+.stats-group.secondary { flex-shrink: 0; }
+.stats-divider {
+  color: #cbd5e1;
+  margin: 0 4px;
+  font-size: 12px;
+}
+
+/* V25 Stat Badge - Clickable button */
+.sugya-stats-bar.v25 .stat-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.sugya-stats-bar.v25 .stat-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border-color: var(--section-accent, #3b82f6);
+}
+.sugya-stats-bar.v25 .stat-badge .stat-icon { font-size: 12px; }
+.sugya-stats-bar.v25 .stat-badge .stat-value { font-weight: 700; color: #1e293b; }
+.sugya-stats-bar.v25 .stat-question { border-color: #fcd34d; }
+.sugya-stats-bar.v25 .stat-challenge { border-color: #fca5a5; }
+.sugya-stats-bar.v25 .stat-resolved { border-color: #86efac; }
+.sugya-stats-bar.v25 .stat-resolved.active { background: #dcfce7; }
+.sugya-stats-bar.v25 .stat-sages { border-color: #c4b5fd; }
+.sugya-stats-bar.v25 .stat-markers { border-color: #93c5fd; }
+.sugya-stats-bar.v25 .stat-pesukim { border-color: #fcd34d; }
+
+/* V25 Resolution Progress - Inline */
+.resolution-progress.v25 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: auto;
+  padding: 4px 10px;
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #d1fae5;
+}
+.progress-track {
+  width: 50px;
+  height: 5px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #059669);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+.progress-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #059669;
+}
+
+/* V25 Collapsible Sections */
+.sugya-sections.v25 {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sugya-section.pro-v25 {
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+.sugya-section.pro-v25.open {
+  border-color: var(--section-accent, #6366f1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.section-header.pro {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.15s ease;
+}
+.section-header.pro:hover { background: #f8fafc; }
+
+.section-header.pro .header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-header.pro .header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-header.pro .section-chevron {
+  font-size: 10px;
+  color: var(--section-accent, #64748b);
+  transition: transform 0.2s ease;
+}
+.sugya-section.pro-v25.open .section-chevron { transform: rotate(0deg); }
+.sugya-section.pro-v25.collapsed .section-chevron { transform: rotate(-90deg); }
+.section-header.pro .section-icon { font-size: 16px; }
+.section-header.pro .section-title { color: #1e293b; }
+.section-header.pro .section-summary {
+  font-size: 11px;
+  font-weight: 500;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 3px 8px;
+  border-radius: 10px;
+}
+.section-header.pro .section-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #fef3c7;
+  color: #92400e;
+}
+.section-header.pro .section-count {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(99, 102, 241, 0.1);
+  color: #4f46e5;
+}
+
+/* V25 Section Content */
+.sugya-section.pro-v25 .section-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease-out, padding 0.25s ease-out;
+}
+.sugya-section.pro-v25 .section-content.expanded {
+  max-height: 2000px;
+  padding: 12px 14px 14px;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* V25 Pesukim List */
+.pesukim-list.v25 {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 8px;
+}
+.pesukim-list.v25 .pasuk-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border-radius: 8px;
+  border-right: 3px solid #f59e0b;
+  font-size: 13px;
+  direction: rtl;
+}
+.pesukim-list.v25 .pasuk-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: #f59e0b;
+  color: white;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.pesukim-list.v25 .pasuk-text {
+  flex: 1;
+  font-family: var(--font-hebrew, serif);
+  line-height: 1.6;
+}
+
+/* V25 Sugya Diagram */
+.sugya-diagram.v25 {
+  padding: 14px;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  overflow-x: auto;
+  margin-top: 8px;
+}
+
+/* V25 Footer Actions */
+.sugya-footer.v25 {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding-top: 8px;
+}
+.sugya-footer.v25 button {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: white;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.sugya-footer.v25 button:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+  border-color: #cbd5e1;
+}
+
+/* =============================================================================
+   PRO SCHOLAR V25: Enhanced MishnaBreakdown
+   ============================================================================= */
+
+.mishna-breakdown.v25 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 12px;
+}
+
+/* V25 Summary Bar */
+.mishna-summary-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border-radius: 8px;
+  border-right: 3px solid #10b981;
+  direction: rtl;
+}
+.mishna-summary-bar .summary-icon { font-size: 14px; }
+.mishna-summary-bar .summary-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: #047857;
+}
+
+/* V25 Category badges enhanced */
+.mishna-breakdown.v25 .mishna-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  direction: rtl;
+}
+
+.mishna-breakdown.v25 .cat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: default;
+  transition: transform 0.15s ease;
+}
+.mishna-breakdown.v25 .cat-badge:hover {
+  transform: translateY(-1px);
+}
+
+.mishna-breakdown.v25 .cat-badge.enumeration {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  color: #92400e;
+}
+.mishna-breakdown.v25 .cat-badge.condition {
+  background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+  color: #4338ca;
+}
+.mishna-breakdown.v25 .cat-badge.exception {
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  color: #dc2626;
+}
+.mishna-breakdown.v25 .cat-badge.ruling {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  color: #047857;
+}
+.mishna-breakdown.v25 .cat-badge.dispute {
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  color: #6d28d9;
+}
+.mishna-breakdown.v25 .cat-badge.case-structure {
+  background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+  color: #0369a1;
+}
+
+/* V25 Grouped elements */
+.mishna-elements.grouped {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.element-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+.element-group .group-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 4px;
+  direction: rtl;
+}
+
+/* Group type borders */
+.element-group.enumeration-group { border-right: 3px solid #f59e0b; }
+.element-group.ruling-group { border-right: 3px solid #10b981; }
+.element-group.dispute-group { border-right: 3px solid #8b5cf6; }
+.element-group.condition-group { border-right: 3px solid #3b82f6; }
+.element-group.exception-group { border-right: 3px solid #ef4444; }
+.element-group.case-structure-group { border-right: 3px solid #0284c7; }
+.element-group.other-group { border-right: 3px solid #6b7280; }
+
+.mishna-elements.grouped .mishna-element {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 10px;
+  background: white;
+  border-radius: 6px;
+  font-size: 13px;
+  direction: rtl;
+  transition: background 0.15s ease;
+}
+.mishna-elements.grouped .mishna-element:hover {
+  background: #f1f5f9;
+}
+.mishna-elements.grouped .el-marker {
+  flex-shrink: 0;
+  font-size: 14px;
+}
+.mishna-elements.grouped .el-text {
+  flex: 1;
+  font-family: var(--font-hebrew, serif);
+  line-height: 1.5;
+  color: #1e293b;
+}
+.mishna-elements.grouped .el-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: #94a3b8;
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* =============================================================================
+   PRO SCHOLAR V25: Enhanced QAFlowTree
+   ============================================================================= */
+
+.qa-flow-tree {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 10px;
+}
+
+/* V25 Mini Stats */
+.qa-mini-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border-radius: 8px;
+  direction: rtl;
+}
+.qa-mini-stats .mini-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 10px;
+  background: white;
+  border: 1px solid #e5e7eb;
+}
+.mini-stat.questions { border-color: #fcd34d; color: #92400e; }
+.mini-stat.challenges { border-color: #fca5a5; color: #dc2626; }
+.mini-stat.proofs { border-color: #93c5fd; color: #1d4ed8; }
+.mini-stat.resolved { border-color: #86efac; color: #047857; background: #dcfce7; }
+.mini-stat.unresolved { border-color: #fcd34d; color: #a16207; background: #fef3c7; }
+
+/* Diagram toggle */
+.diagram-toggle {
+  align-self: flex-end;
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: white;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.diagram-toggle:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+/* V25 Q&A Units */
+.qa-units {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.qa-unit {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.qa-thread {
+  display: flex;
+  flex-direction: column;
+  direction: rtl;
+}
+
+.qa-node {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.15s ease;
+}
+.qa-node:last-child { border-bottom: none; }
+.qa-node:hover { background: #fafafa; }
+
+.qa-node .node-connector {
+  font-size: 12px;
+  color: #cbd5e1;
+  margin-left: 4px;
+}
+.qa-node .node-icon { font-size: 14px; }
+.qa-node .node-text {
+  flex: 1;
+  font-family: var(--font-hebrew, serif);
+  color: #374151;
+}
+
+/* Node type styling */
+.qa-node.question {
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+  border-right: 3px solid #f59e0b;
+  font-weight: 500;
+}
+.qa-node.challenge {
+  background: #fff5f5;
+  border-right: 3px solid #ef4444;
+  padding-right: 20px;
+}
+.qa-node.proof {
+  background: #f0fdf4;
+  border-right: 3px solid #10b981;
+  padding-right: 20px;
+}
+.qa-node.resolution {
+  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+  border-right: 3px solid #7c3aed;
+  font-weight: 500;
+}
+.qa-node.pending {
+  background: #fefce8;
+  border-right: 3px solid #eab308;
+  opacity: 0.8;
+}
+
+/* Q&A Diagram container */
+.qa-diagram {
+  padding: 12px;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  overflow-x: auto;
+}
+
+/* PRO V25: Empty state */
+.qa-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  text-align: center;
+  color: #94a3b8;
+  gap: 8px;
+}
+.qa-empty .empty-icon { font-size: 28px; opacity: 0.6; }
+.qa-empty .empty-text { font-size: 12px; }
+
+/* PRO V25: Source node styling */
+.qa-node.source {
+  background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+  border-right: 3px solid #0ea5e9;
+  font-weight: 500;
+}
+.qa-node.source-child {
+  background: #f0f9ff;
+  border-right: 3px solid #7dd3fc;
+  padding-right: 20px;
+}
+.qa-node.challenge-start {
+  background: linear-gradient(135deg, #fff1f2, #fecaca);
+  border-right: 3px solid #f87171;
+  font-weight: 500;
+}
+
+/* PRO V25: Node label */
+.qa-node .node-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: #64748b;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: auto;
+}
+
+/* PRO V25: Unit type variations */
+.qa-unit.type-source_unit {
+  border: 1px solid #7dd3fc;
+}
+.qa-unit.type-challenge_unit {
+  border: 1px solid #fca5a5;
+}
+
+/* PRO V25: Total mini-stat */
+.mini-stat.total {
+  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+  border-color: #0ea5e9;
+  color: #0369a1;
+  font-weight: 600;
+}
+.mini-stat.sources {
+  border-color: #7dd3fc;
+  color: #0284c7;
+}
+
+/* ============= Dark Mode ============= */
+@media (prefers-color-scheme: dark) {
+  .sugya-stats-bar {
+    background: linear-gradient(135deg, #1e3a5f, #1e293b);
+    border-color: rgba(59, 130, 246, 0.3);
+  }
+  .stat-badge {
+    background: #374151;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+  .stat-value { color: #f1f5f9; }
+  .stat-label { color: #94a3b8; }
+  .resolution-progress { background: #374151; }
+  .progress-bar { background: #4b5563; }
+
+  .sugya-section { background: #1f2937; border-color: #374151; }
+  .sugya-section.open { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); }
+  .section-header:hover { background: #374151; }
+  .section-title { color: #f1f5f9; }
+  .section-content.expanded { border-color: #374151; }
+
+  .mishna-element, .qa-unit, .sage-group, .qa-mini-stats { background: #374151; }
+  .el-text, .node-text { color: #e2e8f0; }
+
+  .qa-node.question { background: linear-gradient(135deg, #78350f, #92400e); }
+  .qa-node.challenge { background: #7f1d1d; }
+  .qa-node.proof { background: #4c1d95; }
+  .qa-node.resolution { background: linear-gradient(135deg, #064e3b, #047857); }
+  .qa-node.pending { background: #374151; color: #9ca3af; }
+
+  .sage-group.tannaim { background: linear-gradient(135deg, #78350f, #451a03); }
+  .sage-group.amoraim { background: linear-gradient(135deg, #1e3a8a, #1e293b); }
+  .sage-chip { background: #4b5563; box-shadow: none; }
+
+  .sugya-diagram, .qa-diagram { background: #1f2937; border-color: #374151; }
+
+  .tool-section { background: #1f2937; border-color: #374151; }
+  .tool-header { background: #374151; border-color: #4b5563; }
+}
+
+/* =============================================================================
+   PRO SCHOLAR V27: IYUN DEEP ANALYSIS PANEL
+   Extracts sevara, logical reasoning, and learning prompts
+   ============================================================================= */
+
+.iyun-deep-panel {
+  background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+  border: 1px solid #c4b5fd;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.iyun-deep-panel .iyun-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.iyun-deep-panel .iyun-icon {
+  font-size: 1.4rem;
+}
+
+.iyun-deep-panel .iyun-title {
+  flex: 1;
+  font-weight: 700;
+  color: #6d28d9;
+  font-size: 1.1rem;
+}
+
+.iyun-deep-panel .iyun-badge {
+  background: #a78bfa;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Prompts Carousel */
+.iyun-deep-panel .iyun-prompts {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 14px;
+}
+
+.iyun-deep-panel .prompt-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: white;
+}
+
+.iyun-deep-panel .prompt-icon {
+  font-size: 1.6rem;
+  background: rgba(255, 255, 255, 0.2);
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+}
+
+.iyun-deep-panel .prompt-text {
+  flex: 1;
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.iyun-deep-panel .prompt-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.iyun-deep-panel .prompt-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.iyun-deep-panel .prompt-dot:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.iyun-deep-panel .prompt-dot.active {
+  background: white;
+  transform: scale(1.3);
+}
+
+/* Analysis Sections */
+.iyun-deep-panel .iyun-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.iyun-deep-panel .iyun-section {
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #e9d5ff;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.iyun-deep-panel .iyun-section.expanded {
+  border-color: #a78bfa;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.1);
+}
+
+.iyun-deep-panel .section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s ease;
+}
+
+.iyun-deep-panel .section-header:hover {
+  background: #faf5ff;
+}
+
+.iyun-deep-panel .section-icon {
+  font-size: 1.1rem;
+}
+
+.iyun-deep-panel .section-title {
+  flex: 1;
+  text-align: right;
+  font-weight: 600;
+  color: #5b21b6;
+  font-size: 0.95rem;
+}
+
+.iyun-deep-panel .section-count {
+  background: #f3e8ff;
+  color: #7c3aed;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.iyun-deep-panel .section-chevron {
+  color: #a78bfa;
+  font-size: 0.75rem;
+}
+
+.iyun-deep-panel .section-content {
+  padding: 12px 14px;
+  border-top: 1px solid #f3e8ff;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Insight Items */
+.iyun-deep-panel .insight-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  background: #faf5ff;
+  border-radius: 8px;
+  border-right: 4px solid #a78bfa;
+}
+
+.iyun-deep-panel .insight-item.sevara {
+  border-right-color: #fbbf24;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+}
+
+.iyun-deep-panel .insight-item.distinction {
+  border-right-color: #3b82f6;
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+}
+
+.iyun-deep-panel .insight-item.assumption {
+  border-right-color: #10b981;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+}
+
+.iyun-deep-panel .insight-item.keypoint {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.iyun-deep-panel .insight-item.keypoint.resolved {
+  border-right-color: #10b981;
+}
+
+.iyun-deep-panel .insight-item.keypoint.open {
+  border-right-color: #f59e0b;
+}
+
+.iyun-deep-panel .insight-label {
+  font-weight: 600;
+  color: #6d28d9;
+  font-size: 0.9rem;
+}
+
+.iyun-deep-panel .insight-marker {
+  font-weight: 700;
+  color: #059669;
+  font-size: 0.95rem;
+  font-family: 'David Libre', serif;
+}
+
+.iyun-deep-panel .insight-context {
+  font-size: 0.9rem;
+  color: #4a4540;
+  line-height: 1.5;
+  font-family: 'David Libre', serif;
+}
+
+.iyun-deep-panel .keypoint-status {
+  font-size: 1.1rem;
+}
+
+.iyun-deep-panel .keypoint-text {
+  flex: 1;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+/* Tip */
+.iyun-deep-panel .iyun-tip {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: rgba(124, 58, 237, 0.1);
+  border-radius: 8px;
+  color: #6d28d9;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .iyun-deep-panel {
+    background: linear-gradient(135deg, #2e1065 0%, #4c1d95 100%);
+    border-color: #7c3aed;
+  }
+  .iyun-deep-panel .iyun-title { color: #c4b5fd; }
+  .iyun-deep-panel .iyun-section {
+    background: #1e1b4b;
+    border-color: #4c1d95;
+  }
+  .iyun-deep-panel .section-title { color: #c4b5fd; }
+  .iyun-deep-panel .section-content { border-color: #4c1d95; }
+  .iyun-deep-panel .insight-item {
+    background: rgba(0, 0, 0, 0.2);
+  }
+  .iyun-deep-panel .insight-context { color: #e2e8f0; }
+  .iyun-deep-panel .keypoint-text { color: #e2e8f0; }
 }

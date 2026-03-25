@@ -28,26 +28,29 @@ import {
   getBDBData,
   getJastrowData,
   getStrongsData,
-  getKleinLexiconData,
   getCALAramaicData,
   getJastrowAramaicData,
-  // PRO SCHOLAR V11: New Academic Sources (Tier 1 & 2)
-  getHALOTLexiconData,
-  getDJBALexiconData,
-  getDJPALexiconData,
+  // PRO SCHOLAR V16: Academic sources (FREE public domain sources)
   getGeseniusLexiconData,
-  getTWOTLexiconData,
-  getTargumLexiconData,
+  getKleinLexiconData,
   COMMON_HEBREW_WORDS,
-  COMMON_ARAMAIC_WORDS
+  COMMON_ARAMAIC_WORDS,
+  // PRO SCHOLAR V13: Preload synchronization
+  waitForPreload
 } from './dictionaryLoader';
 import { lookupAramaicWord as lookupCalAramaic } from './calDictionaryService';
 import { lookupWordSefaria } from './scholarlyLexiconService';
-import { normalizeFinals, stripAllDiacritics } from '../utils/hebrewUtils';
+// PRO SCHOLAR: Optional reference source (community-edited)
+import { lookupWiktionary, fetchWiktionaryEtymology, getProtoSemitic } from './wiktionaryService';
+// PRO SCHOLAR V12: Comparative Semitic - CURATED cognates (primary source)
+import { getCognates as getCuratedCognates, getCognatesAsync } from './comparativeSemiticService';
+// PRO SCHOLAR V12: Etymology enrichment with ALL scholarly databases (78,000+ entries)
+import { getComprehensiveEtymology } from './etymologyEnrichmentService';
+import { normalizeFinals, stripAllDiacritics, restoreFinals } from '../utils/hebrewUtils';
 import { pickBestDefinition } from '../utils/definitionCleaner';
 // Grammar and morphological analysis
 import { tryHebrewVerbAnalysis } from './grammarAnalysisService';
-import { extractRootsWithDirectValidation, getRootFamily } from './rootExtraction';
+import { extractRootsWithDirectValidation, extractRootsWithAsyncValidation, getRootFamily } from './rootExtraction';
 import { analyzeWordMorphology } from './morphologicalAnalysisService';
 // Semantic field integration
 import {
@@ -78,7 +81,13 @@ import {
   WORD_RELATIONSHIPS_DB
 } from './wordRelationshipService';
 // Critical word fallback for common words
-import { lookupCriticalWord, isBiblicalName } from '../constants/criticalWords';
+import {
+  lookupCriticalWord,
+  isBiblicalName,
+  // PRO SCHOLAR V12: Academic critical words with full scholarly data
+  lookupAcademicCriticalWord,
+  loadAcademicCriticalWords
+} from '../constants/criticalWords';
 // Telemetry integration for tracking lookup performance
 import { recordLookup, recordDictionaryLookup } from './telemetryService';
 
@@ -142,6 +151,73 @@ let preloadedCount = 0;
 // =============================================================================
 
 /**
+ * PRO SCHOLAR V13: Common Hebrew prefixes that should be stripped for lookup
+ * Order matters: longer prefixes first to avoid partial matches
+ */
+const HEBREW_PREFIXES = ['וה', 'וב', 'וכ', 'ול', 'ומ', 'וש', 'הב', 'הכ', 'הל', 'המ', 'מה', 'שה', 'ב', 'כ', 'ל', 'מ', 'ה', 'ו', 'ש'];
+
+/**
+ * PRO SCHOLAR V13: Generate all morphological variants for dictionary lookup
+ * Handles: diacritics, finals, plurals, prefixes
+ * @param {string} word - Hebrew/Aramaic word
+ * @returns {Array<{form: string, type: string}>} Variants with type info
+ */
+const generateLookupVariants = (word) => {
+  const variants = [];
+  const stripped = stripAllDiacritics(word);
+  const normalized = normalizeFinals(stripped);
+
+  // Helper to add variant if not duplicate
+  const addVariant = (form, type) => {
+    if (form && !variants.some(v => v.form === form)) {
+      variants.push({ form, type });
+    }
+  };
+
+  // 1. Original forms
+  addVariant(word, 'exact');
+  addVariant(stripped, 'stripped');
+  addVariant(normalized, 'normalized');
+
+  // 2. Plural → singular transformations (with final letter restoration)
+  if (stripped.endsWith('ות') && stripped.length > 3) {
+    const stem = stripped.slice(0, -2);
+    addVariant(stem + 'ה', 'fem-singular'); // יציאות → יציאה
+    addVariant(restoreFinals(stem), 'stem'); // יציאות → יציא (with proper final)
+  }
+  if (stripped.endsWith('ים') && stripped.length > 3) {
+    const stem = stripped.slice(0, -2);
+    addVariant(restoreFinals(stem), 'masc-singular'); // כהנים → כהן (not כהנ)
+    addVariant(stem, 'masc-singular-raw'); // Also try without final restoration
+  }
+  if (stripped.endsWith('ין') && stripped.length > 3) {
+    const stem = stripped.slice(0, -2);
+    addVariant(restoreFinals(stem), 'aramaic-singular'); // מלכין → מלך
+    addVariant(stem + 'א', 'aramaic-emphatic'); // מלכא
+  }
+
+  // 3. Prefix stripping (בפנים → פנים, הגדול → גדול)
+  for (const prefix of HEBREW_PREFIXES) {
+    if (stripped.startsWith(prefix) && stripped.length > prefix.length + 1) {
+      const withoutPrefix = stripped.slice(prefix.length);
+      addVariant(withoutPrefix, `prefix-${prefix}`);
+      // Also try plural→singular on the prefix-stripped form
+      if (withoutPrefix.endsWith('ים') && withoutPrefix.length > 3) {
+        const stem = withoutPrefix.slice(0, -2);
+        addVariant(restoreFinals(stem), `prefix-${prefix}-singular`); // הכהנים → כהן
+        addVariant(stem, `prefix-${prefix}-singular-raw`);
+      }
+      if (withoutPrefix.endsWith('ות') && withoutPrefix.length > 3) {
+        const stem = withoutPrefix.slice(0, -2);
+        addVariant(stem + 'ה', `prefix-${prefix}-fem-singular`);
+      }
+    }
+  }
+
+  return variants;
+};
+
+/**
  * Get lazy-loaded dictionary data (includes Jastrow Aramaic for Talmudic lookup)
  * All lexicons are now lazy-loaded from JSON files
  * @returns {Object} Dictionary data sources
@@ -150,16 +226,11 @@ const getDictionaries = () => ({
   bdb: getBDBData(),
   jastrow: getJastrowData(),
   strongs: getStrongsData(),
-  klein: getKleinLexiconData(),
   calAramaic: getCALAramaicData(),
   jastrowAramaic: getJastrowAramaicData(),
-  // PRO SCHOLAR V11: New Academic Sources (Tier 1 & 2)
-  halot: getHALOTLexiconData(),
-  djba: getDJBALexiconData(),
-  djpa: getDJPALexiconData(),
+  // PRO SCHOLAR V16: Academic sources (FREE public domain sources)
   gesenius: getGeseniusLexiconData(),
-  twot: getTWOTLexiconData(),
-  targum: getTargumLexiconData()
+  klein: getKleinLexiconData()
 });
 
 // =============================================================================
@@ -310,23 +381,27 @@ export const calculateConfidence = (result) => {
 
 /**
  * Lookup in BDB dictionary
+ * PRO SCHOLAR V13: Enhanced with morphological variants
  */
 const lookupBDB = (word, dicts) => {
   const bdb = dicts.bdb?.byWord || dicts.bdb;
   if (!bdb) return null;
 
-  const variants = [word, normalizeFinals(word), stripAllDiacritics(word)];
+  // PRO SCHOLAR V13: Use unified variant generator (handles prefixes, plurals, etc.)
+  const variants = generateLookupVariants(word);
 
-  for (const variant of variants) {
-    const entry = bdb[variant];
+  for (const { form, type } of variants) {
+    const entry = bdb[form];
     if (entry) {
       return {
         name: 'BDB',
         definition: entry.definition || entry.gloss || entry.english,
         fullDefinition: entry.fullDefinition,
-        headword: entry.headword || variant,
+        headword: entry.headword || form,
         source: 'BDB (1906)',
-        strongNumber: entry.strongNumber
+        strongNumber: entry.strongNumber,
+        _matchedForm: type !== 'exact' ? form : undefined,
+        _matchType: type
       };
     }
   }
@@ -335,23 +410,27 @@ const lookupBDB = (word, dicts) => {
 
 /**
  * Lookup in Jastrow dictionary
+ * PRO SCHOLAR V13: Enhanced with full morphological variants (plural→singular, prefixes, etc.)
  */
 const lookupJastrowLocal = (word, dicts) => {
   const jastrow = dicts.jastrow;
   if (!jastrow) return null;
 
-  const variants = [word, normalizeFinals(word), stripAllDiacritics(word)];
+  // PRO SCHOLAR V13: Use unified variant generator (handles prefixes, plurals, etc.)
+  const variants = generateLookupVariants(word);
 
-  for (const variant of variants) {
-    const entry = jastrow[variant];
+  for (const { form, type } of variants) {
+    const entry = jastrow[form];
     if (entry) {
       return {
         name: 'Jastrow',
         definition: entry.definition || entry.english,
         fullDefinition: entry.fullDefinition,
-        headword: entry.headword || variant,
+        headword: entry.headword || form,
         source: 'Jastrow (1903)',
-        isAramaic: entry.isAramaic || entry.language === 'Aramaic'
+        isAramaic: entry.isAramaic || entry.language === 'Aramaic',
+        _matchedForm: type !== 'exact' ? form : undefined,
+        _matchType: type
       };
     }
   }
@@ -360,268 +439,154 @@ const lookupJastrowLocal = (word, dicts) => {
 
 /**
  * Lookup in Strong's dictionary
+ * PRO SCHOLAR V13: Enhanced with prefix stripping
  */
 const lookupStrongs = (word, dicts) => {
   const strongs = dicts.strongs?.byWord || dicts.strongs;
   if (!strongs) return null;
 
-  const variants = [word, normalizeFinals(word)];
+  const variants = generateLookupVariants(word);
 
-  for (const variant of variants) {
-    const entry = strongs[variant];
+  for (const { form, type } of variants) {
+    const entry = strongs[form];
     if (entry) {
       return {
         name: "Strong's",
         definition: entry.definition || entry.kjv_def || entry.strongs_def,
-        headword: entry.headword || variant,
+        headword: entry.headword || form,
         source: "Strong's Concordance",
-        strongNumber: entry.strongNumber || entry.H
+        strongNumber: entry.strongNumber || entry.H,
+        _matchedForm: type !== 'exact' ? form : undefined,
+        _matchType: type
       };
     }
-  }
-  return null;
-};
-
-/**
- * Lookup in Klein etymological dictionary
- */
-const lookupKlein = (word, dicts) => {
-  const klein = dicts.klein;
-  if (!klein) return null;
-
-  const entry = klein[word] || klein[normalizeFinals(word)];
-  if (entry) {
-    return {
-      name: 'Klein',
-      definition: entry.definition || entry.english,
-      headword: entry.headword || word,
-      source: 'Klein Etymology',
-      etymology: entry.etymology
-    };
   }
   return null;
 };
 
 /**
  * Lookup in CAL Aramaic dictionary (local subset)
+ * PRO SCHOLAR V13: Enhanced with prefix stripping
  */
 const lookupCALLocal = (word, dicts) => {
   const cal = dicts.calAramaic;
   if (!cal) return null;
 
-  const entry = cal[word] || cal[normalizeFinals(word)];
-  if (entry) {
-    return {
-      name: 'CAL',
-      definition: entry.definition || entry.english,
-      headword: entry.headword || word,
-      source: 'CAL (Comprehensive Aramaic Lexicon)',
-      isAramaic: true,
-      language: 'Aramaic'
-    };
+  const variants = generateLookupVariants(word);
+  for (const { form, type } of variants) {
+    const entry = cal[form];
+    if (entry) {
+      return {
+        name: 'CAL',
+        definition: entry.definition || entry.english,
+        headword: entry.headword || form,
+        source: 'CAL (Comprehensive Aramaic Lexicon)',
+        isAramaic: true,
+        language: 'Aramaic',
+        _matchedForm: type !== 'exact' ? form : undefined,
+        _matchType: type
+      };
+    }
   }
   return null;
 };
 
 /**
  * Lookup in Jastrow Aramaic subset (Talmudic/Rabbinic Aramaic vocabulary)
+ * PRO SCHOLAR V13: Enhanced with prefix stripping
  */
 const lookupJastrowAramaic = (word, dicts) => {
   const jastrowAram = dicts.jastrowAramaic;
   if (!jastrowAram) return null;
 
-  const variants = [word, normalizeFinals(word), stripAllDiacritics(word)];
+  const variants = generateLookupVariants(word);
 
-  for (const variant of variants) {
-    const entry = jastrowAram[variant];
+  for (const { form, type } of variants) {
+    const entry = jastrowAram[form];
     if (entry) {
       return {
         name: 'Jastrow (Aramaic)',
         definition: entry.definition || entry.english,
         fullDefinition: entry.fullDefinition,
-        headword: entry.headword || variant,
+        headword: entry.headword || form,
         source: 'Jastrow (1903) - Aramaic',
         isAramaic: true,
         language: 'Aramaic',
-        dialect: entry.dialect || 'Babylonian'
-      };
-    }
-  }
-  return null;
-};
-
-// =============================================================================
-// PRO SCHOLAR V11: NEW ACADEMIC LEXICON LOOKUPS (Tier 1 & 2)
-// =============================================================================
-
-/**
- * Lookup in HALOT - Hebrew and Aramaic Lexicon of the Old Testament (Tier 1)
- * Modern academic standard by Koehler-Baumgartner
- */
-const lookupHALOT = (word, dicts) => {
-  const halot = dicts.halot;
-  if (!halot) return null;
-
-  const variants = [word, normalizeFinals(word), stripAllDiacritics(word)];
-
-  for (const variant of variants) {
-    const entry = halot[variant];
-    if (entry) {
-      return {
-        name: 'HALOT',
-        definition: entry.definition || entry.english,
-        fullDefinition: entry.fullDefinition,
-        headword: entry.lemma || entry.headword || variant,
-        source: 'HALOT (2000)',
-        etymology: entry.etymology,
-        cognates: entry.cognates,
-        language: entry.language || 'Hebrew',
-        pos: entry.pos,
-        tier: { level: 1, name: 'Academic' }
-      };
-    }
-  }
-  return null;
-};
-
-/**
- * Lookup in DJBA - Dictionary of Jewish Babylonian Aramaic (Tier 1)
- * Michael Sokoloff - Essential for Talmud Bavli
- */
-const lookupDJBA = (word, dicts) => {
-  const djba = dicts.djba;
-  if (!djba) return null;
-
-  const variants = [word, normalizeFinals(word), stripAllDiacritics(word)];
-
-  for (const variant of variants) {
-    const entry = djba[variant];
-    if (entry) {
-      return {
-        name: 'DJBA',
-        definition: entry.definition || entry.english,
-        fullDefinition: entry.fullDefinition,
-        headword: entry.lemma || entry.headword || variant,
-        source: 'DJBA (Sokoloff 2002)',
-        isAramaic: true,
-        language: 'Aramaic',
         dialect: entry.dialect || 'Babylonian',
-        pos: entry.pos,
-        tier: { level: 1, name: 'Academic' }
+        _matchedForm: type !== 'exact' ? form : undefined,
+        _matchType: type
       };
     }
   }
   return null;
 };
 
-/**
- * Lookup in DJPA - Dictionary of Jewish Palestinian Aramaic (Tier 1)
- * Michael Sokoloff - Essential for Jerusalem Talmud and Midrash
- */
-const lookupDJPA = (word, dicts) => {
-  const djpa = dicts.djpa;
-  if (!djpa) return null;
-
-  const variants = [word, normalizeFinals(word), stripAllDiacritics(word)];
-
-  for (const variant of variants) {
-    const entry = djpa[variant];
-    if (entry) {
-      return {
-        name: 'DJPA',
-        definition: entry.definition || entry.english,
-        fullDefinition: entry.fullDefinition,
-        headword: entry.lemma || entry.headword || variant,
-        source: 'DJPA (Sokoloff 2002)',
-        isAramaic: true,
-        language: 'Aramaic',
-        dialect: entry.dialect || 'Palestinian',
-        pos: entry.pos,
-        tier: { level: 1, name: 'Academic' }
-      };
-    }
-  }
-  return null;
-};
+// =============================================================================
+// PRO SCHOLAR V15: ACADEMIC LEXICON LOOKUPS (Streamlined - FREE sources only)
+// =============================================================================
 
 /**
  * Lookup in Gesenius - Classical Hebrew grammar reference (Tier 1)
  * Wilhelm Gesenius - Foundational Hebrew grammar
+ * PRO SCHOLAR V13: Enhanced with prefix stripping
  */
 const lookupGesenius = (word, dicts) => {
   const gesenius = dicts.gesenius;
   if (!gesenius) return null;
 
-  const entry = gesenius[word] || gesenius[normalizeFinals(word)];
-  if (entry) {
-    return {
-      name: 'Gesenius',
-      definition: entry.definition || entry.english,
-      fullDefinition: entry.fullDefinition,
-      headword: entry.lemma || entry.headword || word,
-      source: 'Gesenius (1910)',
-      grammar: entry.grammar,
-      forms: entry.forms,
-      language: 'Hebrew',
-      pos: entry.pos,
-      tier: { level: 1, name: 'Academic' }
-    };
-  }
-  return null;
-};
-
-/**
- * Lookup in TWOT - Theological Wordbook of the Old Testament (Tier 2)
- * Harris, Archer, Waltke - Theological word studies
- */
-const lookupTWOT = (word, dicts) => {
-  const twot = dicts.twot;
-  if (!twot) return null;
-
-  const entry = twot[word] || twot[normalizeFinals(word)];
-  if (entry) {
-    return {
-      name: 'TWOT',
-      definition: entry.definition || entry.english,
-      fullDefinition: entry.fullDefinition,
-      headword: entry.lemma || entry.headword || word,
-      source: 'TWOT (1980)',
-      twotNumber: entry.twotNumber,
-      semanticField: entry.semanticField,
-      theologicalNotes: entry.theologicalNotes,
-      language: 'Hebrew',
-      pos: entry.pos,
-      tier: { level: 2, name: 'Scholarly' }
-    };
-  }
-  return null;
-};
-
-/**
- * Lookup in Targum Lexicon - Targumic Aramaic vocabulary (Tier 2)
- * Vocabulary from Aramaic Bible translations
- */
-const lookupTargum = (word, dicts) => {
-  const targum = dicts.targum;
-  if (!targum) return null;
-
-  const variants = [word, normalizeFinals(word), stripAllDiacritics(word)];
-
-  for (const variant of variants) {
-    const entry = targum[variant];
-    if (entry) {
+  const variants = generateLookupVariants(word);
+  for (const { form, type } of variants) {
+    const entry = gesenius[form];
+    if (entry && form !== '_meta') {
       return {
-        name: 'Targum',
+        name: 'Gesenius',
         definition: entry.definition || entry.english,
         fullDefinition: entry.fullDefinition,
-        headword: entry.lemma || entry.headword || variant,
-        source: 'Targum Lexicon',
-        isAramaic: true,
-        language: 'Aramaic',
-        dialect: entry.dialect || 'Targumic',
-        targumSource: entry.source,
+        headword: entry.lemma || entry.headword || form,
+        source: 'Gesenius (1910)',
+        grammar: entry.grammar_note || entry.grammar,
+        forms: entry.forms,
+        pattern: entry.pattern,
+        usage: entry.usage,
+        language: 'Hebrew',
         pos: entry.pos,
-        tier: { level: 2, name: 'Scholarly' }
+        tier: { level: 1, name: 'Academic' },
+        _matchedForm: type !== 'exact' ? form : undefined,
+        _matchType: type
+      };
+    }
+  }
+  return null;
+};
+
+/**
+ * Lookup in Klein - Etymology-focused Hebrew lexicon (Tier 2)
+ * Ernest Klein - Comprehensive Etymological Dictionary of the Hebrew Language
+ * PRO SCHOLAR V16: Etymology-rich entries with cognates
+ */
+const lookupKlein = (word, dicts) => {
+  const klein = dicts.klein;
+  if (!klein) return null;
+
+  const variants = generateLookupVariants(word);
+  for (const { form, type } of variants) {
+    const entry = klein[form];
+    if (entry && form !== '_meta') {
+      return {
+        name: 'Klein',
+        definition: entry.definition || entry.gloss,
+        fullDefinition: entry.fullDefinition,
+        headword: entry.lemma || entry.headword || form,
+        source: 'Klein (1987)',
+        etymology: entry.etymology,
+        cognates: entry.cognates,
+        protoSemitic: entry.protoSemitic,
+        semanticField: entry.semanticField,
+        language: 'Hebrew',
+        pos: entry.pos,
+        tier: { level: 2, name: 'Scholarly' },
+        _matchedForm: type !== 'exact' ? form : undefined,
+        _matchType: type
       };
     }
   }
@@ -645,13 +610,15 @@ export const getRootFamilyExpansion = async (word, options = {}) => {
 
   try {
     // Extract roots from the word
-    const roots = await extractRootsWithDirectValidation(word);
-    if (!roots || roots.length === 0) {
+    // PRO SCHOLAR V12: Use async version to ensure dictionaries are loaded
+    const rootResult = await extractRootsWithAsyncValidation(word);
+    const bestRoot = rootResult?.bestMatch || rootResult?.hypotheses?.[0] || rootResult?.allMatches?.[0];
+    if (!bestRoot?.root) {
       return { root: null, related: [], hasFamily: false };
     }
 
     // Get the best root
-    const primaryRoot = roots[0]?.root || roots[0];
+    const primaryRoot = bestRoot.root;
     if (!primaryRoot || primaryRoot.length < 3) {
       return { root: null, related: [], hasFamily: false };
     }
@@ -687,11 +654,11 @@ export const getRootFamilyExpansion = async (word, options = {}) => {
 
     return {
       root: primaryRoot,
-      rootMeaning: roots[0]?.meaning || family?.meaning,
-      confidence: roots[0]?.confidence,
+      rootMeaning: bestRoot?.meaning || family?.meaning,
+      confidence: bestRoot?.confidence,
       related,
       hasFamily: related.length > 0,
-      binyan: roots[0]?.binyan,
+      binyan: bestRoot?.binyan,
       semanticField: family?.semanticField
     };
   } catch (err) {
@@ -783,31 +750,35 @@ export const lookupAllLocalDictionaries = (word, contextMode = null) => {
   const isAramaic = isLikelyAramaic(word);
   const isTalmudic = contextMode === 'talmudic' || contextMode === 'rabbinic';
 
+  // PRO SCHOLAR V13: Log dictionary availability for debugging
+  if (DEBUG) {
+    const available = Object.entries(dicts)
+      .filter(([_, v]) => v !== null)
+      .map(([k]) => k);
+    if (available.length < 3) {
+      log.debug(`[LookupAllLocal] Warning: Only ${available.length} dictionaries loaded: ${available.join(', ')}`);
+    }
+  }
+
   // Define lookup functions for parallel aggregation
   // Order determines priority when sources have equal tier
-  // PRO SCHOLAR V11: Added all academic sources for comprehensive scholarly coverage
+  // PRO SCHOLAR V16: All FREE academic sources
   const lookupFunctions = {
     // Tier 1 Academic (Hebrew)
     'BDB': () => lookupBDB(word, dicts),
-    'HALOT': () => lookupHALOT(word, dicts),
     'Gesenius': () => lookupGesenius(word, dicts),
     // Tier 1 Academic (Aramaic) - always check for potential Aramaic
     'Jastrow': () => lookupJastrowLocal(word, dicts),
-    // Tier 2 Scholarly
-    "Strong's": () => lookupStrongs(word, dicts),
+    // Tier 2 Scholarly (Etymology-focused)
     'Klein': () => lookupKlein(word, dicts),
-    'TWOT': () => lookupTWOT(word, dicts)
+    "Strong's": () => lookupStrongs(word, dicts)
   };
 
   // Add Aramaic sources if word is likely Aramaic or in Talmudic context
   if (isAramaic || isTalmudic) {
-    // Tier 1 Academic Aramaic (Sokoloff)
-    lookupFunctions['DJBA'] = () => lookupDJBA(word, dicts);
-    lookupFunctions['DJPA'] = () => lookupDJPA(word, dicts);
+    // CAL - 12,243 Aramaic entries (FREE from Hebrew Union College!)
     lookupFunctions['Jastrow (Aramaic)'] = () => lookupJastrowAramaic(word, dicts);
     lookupFunctions['CAL'] = () => lookupCALLocal(word, dicts);
-    // Tier 2 Targumic
-    lookupFunctions['Targum'] = () => lookupTargum(word, dicts);
   }
 
   // Use synchronous aggregation for local dictionaries
@@ -823,21 +794,16 @@ export const lookupAllLocalDictionaries = (word, contextMode = null) => {
   const confidence = calculateConfidence(aggregated);
 
   // Record dictionary lookups for telemetry
-  // PRO SCHOLAR V11: Track all academic sources for analytics
+  // PRO SCHOLAR V16: Track sources for analytics
   const sources = aggregated.allSources || [];
   for (const src of sources) {
     const sourceName = (src.name || '').toLowerCase();
     if (sourceName.includes('bdb')) recordDictionaryLookup('bdb', true);
-    else if (sourceName.includes('halot')) recordDictionaryLookup('halot', true);
     else if (sourceName.includes('gesenius')) recordDictionaryLookup('gesenius', true);
-    else if (sourceName.includes('djba')) recordDictionaryLookup('djba', true);
-    else if (sourceName.includes('djpa')) recordDictionaryLookup('djpa', true);
+    else if (sourceName.includes('klein')) recordDictionaryLookup('klein', true);
     else if (sourceName.includes('jastrow')) recordDictionaryLookup('jastrow', true);
     else if (sourceName.includes('strong')) recordDictionaryLookup('strongs', true);
-    else if (sourceName.includes('klein')) recordDictionaryLookup('klein', true);
-    else if (sourceName.includes('twot')) recordDictionaryLookup('twot', true);
     else if (sourceName.includes('cal')) recordDictionaryLookup('cal', true);
-    else if (sourceName.includes('targum')) recordDictionaryLookup('targum', true);
   }
 
   return {
@@ -964,27 +930,113 @@ export const lookupWord = async (word, options = {}) => {
  * morphology, root extraction, confidence scoring, citations, source comparison
  */
 const executeLookup = async (word, cleaned, contextMode, includeOnline) => {
-  // Run local pipeline first (synchronous)
+  // PRO SCHOLAR V13: Ensure dictionaries are loaded before lookup
+  // This prevents returning null/empty results when user clicks before preload completes
+  await waitForPreload();
+
+  // Run local pipeline first (synchronous - now safe since dictionaries are loaded)
   const runPipeline = getPipeline();
   const localResult = runPipeline(word, { contextMode });
 
   const morphology = getMorphology(cleaned);
 
-  // Extract root with validation
+  // Extract root with validation + Proto-Semitic in parallel
   let rootData = null;
+  let protoSemiticData = null;
+
   try {
-    const roots = await extractRootsWithDirectValidation(cleaned);
-    if (roots && roots.length > 0) {
+    // Run root extraction first
+    // PRO SCHOLAR V12: Use async version to ensure dictionaries are loaded before validation
+    // This fixes the race condition where roots were empty on initial load
+    const rootResult = await extractRootsWithAsyncValidation(cleaned);
+
+    // PRO SCHOLAR V12: Use bestMatch first, then first hypothesis
+    const bestRoot = rootResult?.bestMatch || rootResult?.hypotheses?.[0] || rootResult?.allMatches?.[0];
+    if (bestRoot?.root) {
       rootData = {
-        root: roots[0].root,
-        confidence: roots[0].confidence,
-        source: roots[0].source,
-        binyan: roots[0].binyan,
-        weakVerb: roots[0].weakVerb
+        root: bestRoot.root,
+        confidence: bestRoot.confidence,
+        source: bestRoot.source,
+        binyan: bestRoot.binyan,
+        weakVerb: bestRoot.weakVerb
       };
     }
+
+    // PRO SCHOLAR V12: Fallback root extraction for action nouns (יציאות → יצא)
+    // If async extraction didn't find a root, try direct pattern matching
+    if (!rootData?.root && cleaned.length >= 4) {
+      // Pattern 1: Action nouns ending in -ות (plural) like יציאות → יצא
+      if (cleaned.endsWith('ות') && cleaned.length >= 5) {
+        const stem = cleaned.slice(0, -2); // Remove -ות
+        // Check for yod-infix pattern: R1-R2-י-R3 → R1-R2-R3
+        if (stem.length === 4 && stem[2] === 'י') {
+          const extractedRoot = stem[0] + stem[1] + stem[3];
+          rootData = {
+            root: extractedRoot,
+            confidence: 75,
+            source: 'Pattern Analysis',
+            note: 'Action noun pattern (קְטִילָה)'
+          };
+        }
+      }
+      // Pattern 2: Feminine singular -ה like יציאה → יצא
+      else if (cleaned.endsWith('ה') && cleaned.length >= 4) {
+        const stem = cleaned.slice(0, -1); // Remove -ה
+        if (stem.length === 4 && stem[2] === 'י') {
+          const extractedRoot = stem[0] + stem[1] + stem[3];
+          rootData = {
+            root: extractedRoot,
+            confidence: 75,
+            source: 'Pattern Analysis',
+            note: 'Action noun pattern (קְטִילָה)'
+          };
+        }
+      }
+    }
+
+    // PRO SCHOLAR V12: Multi-tier Proto-Semitic lookup chain
+    // Priority 1: Curated comparative Semitic database (hand-verified scholarly data)
+    const rootForCognates = rootData?.root || cleaned;
+    let curatedCognates = getCuratedCognates(rootForCognates);
+
+    if (curatedCognates?.protoSemitic) {
+      protoSemiticData = {
+        form: curatedCognates.protoSemitic,
+        cognates: curatedCognates, // Full cognate data
+        meaning: curatedCognates.meaning,
+        source: 'Comparative Semitic (curated)',
+        tier: 1,
+        tierName: 'Gold (Academic)'
+      };
+    } else {
+      // Priority 2: Async lookup (CAL + extracted BDB/Jastrow)
+      const asyncCognates = await getCognatesAsync(rootForCognates).catch(() => null);
+      if (asyncCognates?.protoSemitic) {
+        protoSemiticData = {
+          form: asyncCognates.protoSemitic,
+          cognates: asyncCognates,
+          meaning: asyncCognates.meaning,
+          source: asyncCognates.tierName || asyncCognates.source || 'CAL/BDB',
+          tier: asyncCognates.tier || 2,
+          tierName: asyncCognates.tierName || 'Silver (Dictionary)'
+        };
+      } else {
+        // Priority 3: Wiktionary fallback (community source)
+        const protoSemitic = await getProtoSemitic(cleaned).catch(() => null);
+        if (protoSemitic) {
+          protoSemiticData = {
+            form: protoSemitic.protoSemitic,
+            cognates: protoSemitic.cognates,
+            etymologyText: protoSemitic.etymologyText,
+            source: 'Wiktionary (community)',
+            tier: 5,
+            tierName: 'Reference (Community)'
+          };
+        }
+      }
+    }
   } catch (err) {
-    if (DEBUG) log.debug(`[Root] Extraction failed: ${err.message}`);
+    if (DEBUG) log.debug(`[Root/ProtoSemitic] Extraction failed: ${err.message}`);
   }
 
   const confidence = calculateConfidence(localResult);
@@ -1001,10 +1053,28 @@ const executeLookup = async (word, cleaned, contextMode, includeOnline) => {
   }
 
   // Build enriched result
+  // PRO SCHOLAR V12: Add extractedRoot at top level for WordDefinitionCard
+  // This is the properly extracted 3-letter root (e.g., יציאות → יצא)
+  const extractedRoot = rootData?.root && rootData.root !== cleaned ? rootData.root : null;
+
+  // PRO SCHOLAR V12: Determine the best root to display
+  // Priority: extractedRoot (if it's a proper 3-letter root) > localResult.root
+  // This ensures יציאות shows root יצא instead of the full word
+  const isProperExtractedRoot = extractedRoot && extractedRoot.length >= 2 && extractedRoot.length <= 4;
+  const localRootIsFullWord = localResult.root === cleaned || localResult.root === word;
+  const bestRoot = (isProperExtractedRoot && (localRootIsFullWord || !localResult.root))
+    ? extractedRoot
+    : (localResult.root || extractedRoot);
+
   let enrichedResult = {
     ...localResult,
     morphology,
     rootData,
+    // PRO SCHOLAR V12: extractedRoot at top level so WordDefinitionCard can display it
+    extractedRoot,
+    // PRO SCHOLAR V12: Use bestRoot logic - prefer extracted 3-letter root over full word
+    root: bestRoot,
+    protoSemitic: protoSemiticData, // PRO SCHOLAR: Proto-Semitic reconstruction
     confidence,
     citations,
     sourceComparison,
@@ -1015,7 +1085,8 @@ const executeLookup = async (word, cleaned, contextMode, includeOnline) => {
       ),
       hasMorphology: !!morphology,
       hasRoot: !!rootData,
-      hasComparison: !!sourceComparison
+      hasComparison: !!sourceComparison,
+      hasProtoSemitic: !!protoSemiticData?.form // PRO SCHOLAR
     }
   };
 
@@ -1086,21 +1157,50 @@ const fetchOnlineSources = async (word, contextMode) => {
       'Sefaria': () => lookupWordSefaria(word)
     };
 
-    // Add CAL API for Aramaic contexts
-    if (contextMode === 'talmudic' || isLikelyAramaic(word)) {
-      lookupFunctions['CAL API'] = async () => {
-        const result = await lookupCalAramaic(word);
-        if (result) {
-          return { ...result, isAramaic: true };
-        }
-        return null;
-      };
-    }
+    // PRO SCHOLAR: Always include CAL API for comprehensive Aramaic coverage
+    // Many Hebrew words have Aramaic cognates or Talmudic usage
+    // CAL provides academic-grade Aramaic data (Sokoloff's DJBA/DJPA)
+    lookupFunctions['CAL API'] = async () => {
+      const result = await lookupCalAramaic(word);
+      if (result) {
+        return { ...result, isAramaic: true, source: 'CAL (Hebrew Union College)' };
+      }
+      return null;
+    };
+
+    // PRO SCHOLAR: Wiktionary as optional reference source (community-edited)
+    // Reliability tier: Reference (tier 5) - useful for modern Hebrew and fallback
+    // Not peer-reviewed but provides broad coverage + Proto-Semitic etymology
+    lookupFunctions['Wiktionary'] = async () => {
+      // Fetch definition and etymology in parallel
+      const [definition, etymology] = await Promise.all([
+        lookupWiktionary(word),
+        fetchWiktionaryEtymology(word).catch(() => null)
+      ]);
+
+      if (definition || etymology) {
+        return {
+          ...(definition || {}),
+          source: 'Wiktionary',
+          reliability: 'reference',
+          isCommunitySource: true,
+          // PRO SCHOLAR: Include etymology data if available
+          etymology: etymology ? {
+            protoSemitic: etymology.protoSemitic,
+            cognates: etymology.cognates,
+            etymologyText: etymology.etymologyText,
+            root: etymology.root
+          } : null
+        };
+      }
+      return null;
+    };
 
     // Use raceWithEarlyReturn for parallel fetching with early return
     // Returns as soon as a tier-1 (academic) source is found
+    // Increased timeout for slower connections and comprehensive results
     const result = await raceWithEarlyReturn(word, lookupFunctions, {
-      timeout: 2000,
+      timeout: 4000,
       earlyReturnOnTier1: true,
       minSourcesForEarlyReturn: 1
     });
@@ -1166,7 +1266,43 @@ export const quickLookup = (word, options = {}) => {
     return result;
   }
 
-  // CRITICAL_WORDS fallback for common words
+  // PRO SCHOLAR V12: Academic critical words (HALOT, DJBA, Jastrow) - Tier 1
+  // Try scholarly source first for common terms (sync - uses preloaded data)
+  const academicEntry = lookupAcademicCriticalWord(cleaned);
+  if (academicEntry) {
+    if (DEBUG) {
+      log.debug(`[AcademicCritical] ${cleaned} → ${academicEntry.definition} (${academicEntry.source})`);
+    }
+    const academicResult = {
+      word,
+      cleanedWord: cleaned,
+      english: academicEntry.definition,
+      fullDefinition: academicEntry.fullDefinition,
+      source: academicEntry.source,
+      etymology: academicEntry.etymology,
+      cognates: academicEntry.cognates,
+      citation: academicEntry.citation,
+      frequency: academicEntry.frequency,
+      category: academicEntry.category || academicEntry._category,
+      pos: academicEntry.pos,
+      lemma: academicEntry.lemma,
+      isAramaic: academicEntry.isAramaic,
+      sources: [{
+        name: academicEntry.source,
+        definition: academicEntry.fullDefinition || academicEntry.definition,
+        tier: { level: 1, name: 'Academic (HALOT/DJBA)' },
+        citation: academicEntry.citation
+      }],
+      language: academicEntry.isAramaic ? 'Aramaic' : 'Hebrew',
+      offline: true,
+      isAcademic: true,
+      tier: { level: 1, name: 'Academic Critical' }
+    };
+    lookupCache.set(cacheKey, academicResult);
+    return academicResult;
+  }
+
+  // CRITICAL_WORDS fallback for common words (simple string translations)
   // Final fallback for common words when all dictionary lookups fail
   const criticalTranslation = lookupCriticalWord(cleaned) || lookupCriticalWord(word);
   if (criticalTranslation) {
@@ -1808,6 +1944,9 @@ export const preloadCommonWords = async (words = null) => {
   if (preloadingComplete) return preloadedCount;
 
   preloadingPromise = (async () => {
+    // PRO SCHOLAR V12: Preload academic critical words first (fast, ~100 entries)
+    await loadAcademicCriticalWords().catch(() => null);
+
     // Get word list - either provided or defaults
     const wordList = words || [...COMMON_HEBREW_WORDS, ...COMMON_ARAMAIC_WORDS];
 
@@ -2109,10 +2248,34 @@ export const getHistoricalUsageTimeline = (word) => {
 
 export const CITATION_FORMATS = { SBL: { name: 'Society of Biblical Literature' }, CHICAGO: { name: 'Chicago Manual of Style' } };
 
-export const generateSBLCitation = (sourceName, headword) => {
+/**
+ * PRO SCHOLAR V12: Enhanced SBL citation with page numbers
+ * @param {string} sourceName - Dictionary name
+ * @param {string} headword - Entry headword
+ * @param {Object} citationData - Optional { page, entryId } from dictionary entry
+ * @returns {Object} Full academic citation
+ */
+export const generateSBLCitation = (sourceName, headword, citationData = {}) => {
   const info = getSourceInfo(sourceName);
   if (!info) return { footnote: sourceName, bibliography: sourceName, short: sourceName };
-  return { footnote: `${info.author}, "${headword}," in ${info.title} (${info.location}: ${info.publisher}, ${info.year}).`, bibliography: `${info.author}. ${info.title}. ${info.location}: ${info.publisher}, ${info.year}.`, short: `${info.shortName || info.author.split(',')[0]}, s.v. "${headword}"`, format: 'SBL' };
+
+  // Build page reference if available (PRO SCHOLAR V12)
+  const pageRef = citationData.page ? `, ${citationData.page}` : '';
+  const entryRef = citationData.entryId ? ` (${citationData.entryId})` : '';
+
+  // SBL Handbook format for lexicons
+  const footnote = `${info.author}, "${headword},"${entryRef} *${info.title}* (${info.location}: ${info.publisher}, ${info.year})${pageRef}.`;
+  const bibliography = `${info.author}. *${info.title}*. ${info.location}: ${info.publisher}, ${info.year}.`;
+  const short = `${info.shortName || info.author.split(',')[0]}${pageRef ? pageRef : `, s.v. "${headword}"`}`;
+
+  return {
+    footnote,
+    bibliography,
+    short,
+    format: 'SBL',
+    page: citationData.page || null,
+    entryId: citationData.entryId || null
+  };
 };
 
 export const generateAcademicCitations = (sources, format = 'SBL') => {
@@ -2140,17 +2303,47 @@ export const getCrossReferences = (word) => {
 // =============================================================================
 
 export const lookupFullyEnrichedV3 = async (word, options = {}) => {
-  const { contextMode = null, reference = null, surroundingText = '', userLevel = 'scholar', includeOnline = false, includeContextRanking = true, includeRelationships = true, includeMorphology = true, includeRootFamily = true, includeCitations = true, includeSemantics = true, includeUncertainty = true, includeDialectalAnalysis = true, includeHapaxInfo = true, includeComparativeSemitic = true, includeHistoricalTimeline = true, includeCrossReferences = true, citationFormat = 'SBL' } = options;
+  const { contextMode = null, reference = null, surroundingText = '', userLevel = 'scholar', includeOnline = false, includeContextRanking = true, includeRelationships = true, includeMorphology = true, includeRootFamily = true, includeCitations = true, includeSemantics = true, includeUncertainty = true, includeDialectalAnalysis = true, includeHapaxInfo = true, includeComparativeSemitic = true, includeHistoricalTimeline = true, includeCrossReferences = true, includeEtymology = true, citationFormat = 'SBL' } = options;
   const result = await lookupFullyEnriched(word, { contextMode, reference, surroundingText, userLevel, includeOnline, includeContextRanking, includeRelationships, includeMorphology, includeRootFamily, includeCitations, includeSemantics, includeUncertainty });
   if (includeDialectalAnalysis) result.dialectalAnalysis = analyzeDialectalPeriod(word, result);
   if (includeHapaxInfo) { const hapax = getHapaxInfo(word); if (hapax) { result.hapaxInfo = hapax; result.isHapax = true; } else if (isLikelyHapax(result)) { result.hapaxInfo = { isHapax: true, word: result.cleanedWord, scholarlyNote: 'Likely hapax based on dictionary descriptions' }; result.isHapax = true; } }
   if (includeComparativeSemitic) { const cognates = getComparativeSemiticData(word); if (cognates) { result.comparativeSemitic = cognates; result.hasComparativeData = true; } }
+  // PRO SCHOLAR V12: Comprehensive etymology from ALL scholarly databases (78,000+ entries)
+  // Sources: Sefaria (2,493), Root Pro (18,898), BDB (2,591), Jastrow (16,794), Wiktionary (168+)
+  if (includeEtymology) {
+    const etymology = await getComprehensiveEtymology(word);
+    if (etymology) {
+      result.etymology = {
+        protoSemitic: etymology.protoSemitic,
+        cognates: etymology.cognates,
+        relatedRoots: etymology.relatedRoots,
+        references: etymology.references,
+        confidence: etymology.confidence,
+        root: etymology.root,
+        dialects: etymology.dialects,
+        crossReferences: etymology.crossReferences,
+        loanwords: etymology.loanwords,
+        qualityScore: etymology.qualityScore,
+        qualityLevel: etymology.qualityLevel,
+        sources: etymology.sources,
+        // PRO SCHOLAR V12: Additional data from comprehensive lookup
+        sefariaData: etymology.sefariaData,
+        rootProData: etymology.rootProData,
+        bdbEtymology: etymology.bdbEtymology,
+        jastrowEtymology: etymology.jastrowEtymology,
+        wiktionaryData: etymology.wiktionaryData,
+        sourceCount: etymology.sources?.length || 0
+      };
+      result.hasEtymology = true;
+      result.etymologySourceCount = etymology.sources?.length || 0;
+    }
+  }
   if (includeHistoricalTimeline) { const timeline = getHistoricalUsageTimeline(word); if (timeline) { result.historicalTimeline = timeline; result.hasSemanticEvolution = true; } }
   if (includeCrossReferences) { const crossRefs = getCrossReferences(word); if (crossRefs) { result.crossReferences = crossRefs; result.hasCrossReferences = true; } }
   if (includeCitations && citationFormat === 'SBL') result.academicCitations = generateAcademicCitations(result.sources || [], 'SBL');
   result.isFullyEnriched = true;
-  result.enrichmentLevel = 'pro_scholar_v10.3';
-  result.enrichmentFeatures = { dialectalAnalysis: !!result.dialectalAnalysis, hapaxInfo: !!result.hapaxInfo, comparativeSemitic: !!result.comparativeSemitic, historicalTimeline: !!result.historicalTimeline, crossReferences: !!result.crossReferences };
+  result.enrichmentLevel = 'pro_scholar_v12';
+  result.enrichmentFeatures = { dialectalAnalysis: !!result.dialectalAnalysis, hapaxInfo: !!result.hapaxInfo, comparativeSemitic: !!result.comparativeSemitic, etymology: !!result.etymology, historicalTimeline: !!result.historicalTimeline, crossReferences: !!result.crossReferences };
   return result;
 };
 

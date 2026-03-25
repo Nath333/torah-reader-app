@@ -1,0 +1,1003 @@
+{
+  "_meta": {
+    "name": "Critical Words Academic",
+    "fullName": "High-Frequency Terms with Academic Citations",
+    "description": "Academic definitions for common Hebrew/Aramaic terms, sourced from Jastrow, HALOT, and DJBA",
+    "tier": 1,
+    "note": "Provides proper academic citations for frequently used fallback terms"
+  },
+  "biblicalNames": {
+    "משה": {
+      "lemma": "מֹשֶׁה",
+      "key": "משה",
+      "pos": "proper noun",
+      "definition": "Moses",
+      "fullDefinition": "Moses, the lawgiver and prophet; from Egyptian ms 'child' or Hebrew משה 'to draw out'",
+      "etymology": "Possibly Egyptian ms 'child' or Hebrew משה 'to draw out' (Exod 2:10)",
+      "source": "HALOT",
+      "frequency": "766x in Hebrew Bible",
+      "category": "biblical_name"
+    },
+    "אהרן": {
+      "lemma": "אַהֲרֹן",
+      "key": "אהרן",
+      "pos": "proper noun",
+      "definition": "Aaron",
+      "fullDefinition": "Aaron, brother of Moses and first High Priest",
+      "etymology": "Etymology uncertain",
+      "source": "HALOT",
+      "frequency": "347x in Hebrew Bible",
+      "category": "biblical_name"
+    },
+    "אברהם": {
+      "lemma": "אַבְרָהָם",
+      "key": "אברהם",
+      "pos": "proper noun",
+      "definition": "Abraham",
+      "fullDefinition": "Abraham, patriarch; originally Abram, name changed by God (Gen 17:5)",
+      "etymology": "From אָב 'father' + רָהָם 'multitude' or 'exalted father'",
+      "source": "HALOT",
+      "frequency": "175x in Hebrew Bible",
+      "category": "biblical_name"
+    },
+    "יצחק": {
+      "lemma": "יִצְחָק",
+      "key": "יצחק",
+      "pos": "proper noun",
+      "definition": "Isaac",
+      "fullDefinition": "Isaac, son of Abraham and Sarah",
+      "etymology": "From צחק 'to laugh' (Gen 21:6)",
+      "source": "HALOT",
+      "frequency": "112x in Hebrew Bible",
+      "category": "biblical_name"
+    },
+    "יעקב": {
+      "lemma": "יַעֲקֹב",
+      "key": "יעקב",
+      "pos": "proper noun",
+      "definition": "Jacob",
+      "fullDefinition": "Jacob, patriarch; later named Israel (Gen 32:29)",
+      "etymology": "From עָקֵב 'heel' (Gen 25:26)",
+      "source": "HALOT",
+      "frequency": "349x in Hebrew Bible",
+      "category": "biblical_name"
+    },
+    "דוד": {
+      "lemma": "דָּוִד",
+      "key": "דוד",
+      "pos": "proper noun",
+      "definition": "David",
+      "fullDefinition": "David, king of Israel",
+      "etymology": "From דוד 'beloved' or 'uncle'",
+      "source": "HALOT",
+      "frequency": "1076x in Hebrew Bible",
+      "category": "biblical_name"
+    },
+    "שלמה": {
+      "lemma": "שְׁלֹמֹה",
+      "key": "שלמה",
+      "pos": "proper noun",
+      "definition": "Solomon",
+      "fullDefinition": "Solomon, king of Israel, son of David",
+      "etymology": "From שָׁלוֹם 'peace'",
+      "source": "HALOT",
+      "frequency": "293x in Hebrew Bible",
+      "category": "biblical_name"
+    },
+    "שרה": {
+      "lemma": "שָׂרָה",
+      "key": "שרה",
+      "pos": "proper noun",
+      "definition": "Sarah",
+      "fullDefinition": "Sarah, wife of Abraham; originally Sarai",
+      "etymology": "From שָׂרָה 'princess'",
+      "source": "HALOT",
+      "frequency": "38x in Hebrew Bible",
+      "category": "biblical_name"
+    },
+    "רבקה": {
+      "lemma": "רִבְקָה",
+      "key": "רבקה",
+      "pos": "proper noun",
+      "definition": "Rebecca",
+      "fullDefinition": "Rebecca, wife of Isaac",
+      "source": "HALOT",
+      "frequency": "30x in Hebrew Bible",
+      "category": "biblical_name"
+    },
+    "רחל": {
+      "lemma": "רָחֵל",
+      "key": "רחל",
+      "pos": "proper noun",
+      "definition": "Rachel",
+      "fullDefinition": "Rachel, wife of Jacob",
+      "etymology": "From רָחֵל 'ewe'",
+      "source": "HALOT",
+      "frequency": "47x in Hebrew Bible",
+      "category": "biblical_name"
+    },
+    "לאה": {
+      "lemma": "לֵאָה",
+      "key": "לאה",
+      "pos": "proper noun",
+      "definition": "Leah",
+      "fullDefinition": "Leah, wife of Jacob, sister of Rachel",
+      "source": "HALOT",
+      "frequency": "34x in Hebrew Bible",
+      "category": "biblical_name"
+    },
+    "יוסף": {
+      "lemma": "יוֹסֵף",
+      "key": "יוסף",
+      "pos": "proper noun",
+      "definition": "Joseph",
+      "fullDefinition": "Joseph, son of Jacob and Rachel",
+      "etymology": "From יסף 'to add' (Gen 30:24)",
+      "source": "HALOT",
+      "frequency": "213x in Hebrew Bible",
+      "category": "biblical_name"
+    },
+    "בנימין": {
+      "lemma": "בִּנְיָמִין",
+      "key": "בנימין",
+      "pos": "proper noun",
+      "definition": "Benjamin",
+      "fullDefinition": "Benjamin, youngest son of Jacob",
+      "etymology": "From בֵּן 'son' + יָמִין 'right hand'",
+      "source": "HALOT",
+      "frequency": "167x in Hebrew Bible",
+      "category": "biblical_name"
+    }
+  },
+  "divineNames": {
+    "יהוה": {
+      "lemma": "יְהוָה",
+      "key": "יהוה",
+      "pos": "proper noun",
+      "definition": "YHWH, the LORD, the Tetragrammaton",
+      "fullDefinition": "The proper name of the God of Israel; traditionally read as אֲדֹנָי",
+      "etymology": "Related to היה 'to be'; possibly 'He who causes to be'",
+      "source": "HALOT",
+      "frequency": "6828x in Hebrew Bible",
+      "category": "divine_name"
+    },
+    "אלהים": {
+      "lemma": "אֱלֹהִים",
+      "key": "אלהים",
+      "pos": "noun, masculine plural",
+      "definition": "God, gods, divine beings",
+      "fullDefinition": "1. God (with singular verb); 2. gods, deities (polytheistic); 3. divine beings, angels; 4. judges (as divine representatives)",
+      "etymology": "Plural of אלוה, from אל 'god'",
+      "cognates": "Akk. ilu, Ug. ʾil, Ar. ʾilāh",
+      "source": "HALOT",
+      "frequency": "2602x in Hebrew Bible",
+      "category": "divine_name"
+    },
+    "אלקים": {
+      "lemma": "אֱלֹקִים",
+      "key": "אלקים",
+      "pos": "noun, masculine plural",
+      "definition": "God (liturgical spelling)",
+      "fullDefinition": "Alternative spelling of אלהים used to avoid pronouncing the divine name",
+      "source": "HALOT",
+      "category": "divine_name"
+    },
+    "אדני": {
+      "lemma": "אֲדֹנָי",
+      "key": "אדני",
+      "pos": "noun",
+      "definition": "Lord, my Lord",
+      "fullDefinition": "1. my Lord (form of address to God); 2. substitute pronunciation for YHWH",
+      "etymology": "From אָדוֹן 'lord' + possessive suffix",
+      "source": "HALOT",
+      "frequency": "439x in Hebrew Bible",
+      "category": "divine_name"
+    },
+    "שדי": {
+      "lemma": "שַׁדַּי",
+      "key": "שדי",
+      "pos": "proper noun",
+      "definition": "Shaddai, Almighty",
+      "fullDefinition": "Divine epithet, traditionally 'Almighty'; etymology debated",
+      "etymology": "Possibly from שדד 'to overpower' or Akkadian šadû 'mountain'",
+      "source": "HALOT",
+      "frequency": "48x in Hebrew Bible",
+      "category": "divine_name"
+    },
+    "צבאות": {
+      "lemma": "צְבָאוֹת",
+      "key": "צבאות",
+      "pos": "noun",
+      "definition": "hosts, armies (divine epithet)",
+      "fullDefinition": "Plural of צָבָא 'army'; used in יהוה צבאות 'LORD of Hosts'",
+      "source": "HALOT",
+      "frequency": "486x in Hebrew Bible",
+      "category": "divine_name"
+    },
+    "הקב\"ה": {
+      "lemma": "הַקָּדוֹשׁ בָּרוּךְ הוּא",
+      "key": "הקב\"ה",
+      "pos": "epithet",
+      "definition": "the Holy One, blessed be He",
+      "fullDefinition": "Rabbinic circumlocution for God; Hebrew הַקָּדוֹשׁ בָּרוּךְ הוּא",
+      "source": "Jastrow",
+      "category": "divine_name",
+      "isAramaic": false
+    },
+    "רבש\"ע": {
+      "lemma": "רִבּוֹנוֹ שֶׁל עוֹלָם",
+      "key": "רבש\"ע",
+      "pos": "epithet",
+      "definition": "Master of the Universe",
+      "fullDefinition": "Rabbinic epithet for God; Hebrew רִבּוֹנוֹ שֶׁל עוֹלָם",
+      "source": "Jastrow",
+      "category": "divine_name"
+    }
+  },
+  "talmudicTerms": {
+    "תנא": {
+      "lemma": "תַּנָּא",
+      "key": "תנא",
+      "pos": "noun",
+      "definition": "Tanna, Mishnaic sage, one who teaches",
+      "fullDefinition": "Sage of the Tannaitic period (pre-200 CE); teacher/reciter of Mishnah/Baraita",
+      "etymology": "From Aramaic תני 'to teach, repeat'",
+      "source": "DJBA",
+      "citation": "Jastrow, תְּנָא",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "תני": {
+      "lemma": "תְּנִי",
+      "key": "תני",
+      "pos": "verb",
+      "definition": "to teach, recite, study (oral tradition)",
+      "fullDefinition": "Peal: to teach, recite (Mishnah/Baraita); forms: תנן (we learned), תניא (it was taught)",
+      "source": "DJBA",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "תנן": {
+      "lemma": "תְּנַן",
+      "key": "תנן",
+      "pos": "verb form",
+      "definition": "we learned (in the Mishnah)",
+      "fullDefinition": "First person plural perfect of תני; introduces Mishnaic citations",
+      "source": "DJBA",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "תניא": {
+      "lemma": "תַּנְיָא",
+      "key": "תניא",
+      "pos": "verb form",
+      "definition": "it was taught (in a Baraita)",
+      "fullDefinition": "Third person singular passive of תני; introduces Baraita citations",
+      "source": "DJBA",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "מתני": {
+      "lemma": "מַתְנִיתִין",
+      "key": "מתני",
+      "pos": "noun",
+      "definition": "our Mishnah",
+      "fullDefinition": "Abbreviation for מתניתין 'our Mishnah'; the Mishnah under discussion",
+      "source": "DJBA",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "אמר": {
+      "lemma": "אֲמַר",
+      "key": "אמר",
+      "pos": "verb",
+      "definition": "to say, speak, tell",
+      "fullDefinition": "Peal: to say, speak. Common formula: אמר רב 'Rav said'",
+      "source": "DJBA",
+      "citation": "Jastrow, אָמַר",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "סברא": {
+      "lemma": "סְבָרָא",
+      "key": "סברא",
+      "pos": "noun",
+      "definition": "logical reasoning, opinion",
+      "fullDefinition": "1. logical reasoning; 2. opinion, view; סברא הוא 'it is logical reasoning'",
+      "etymology": "From סבר 'to think, reason'",
+      "source": "DJBA",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "קשיא": {
+      "lemma": "קַשְׁיָא",
+      "key": "קשיא",
+      "pos": "noun/adjective",
+      "definition": "difficulty, objection; it is difficult",
+      "fullDefinition": "1. difficulty (remains unresolved); 2. technical term for unresolved contradiction; קשיא 'it remains a difficulty'",
+      "source": "DJBA",
+      "citation": "Jastrow, קַשְׁיָא II: 'difficult, open to objection; unanswerable objection; contradiction'",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "תיובתא": {
+      "lemma": "תְּיוּבְתָּא",
+      "key": "תיובתא",
+      "pos": "noun",
+      "definition": "refutation, decisive objection",
+      "fullDefinition": "Decisive refutation that defeats an opinion (stronger than קשיא)",
+      "source": "DJBA",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "תירוץ": {
+      "lemma": "תֵּירוּץ",
+      "key": "תירוץ",
+      "pos": "noun",
+      "definition": "answer, resolution",
+      "fullDefinition": "Resolution to a difficulty or contradiction",
+      "etymology": "From תרץ 'to make straight'",
+      "source": "Jastrow",
+      "category": "talmudic_term"
+    },
+    "תרץ": {
+      "lemma": "תֵּרֵץ",
+      "key": "תרץ",
+      "pos": "verb",
+      "definition": "he resolved, he answered",
+      "fullDefinition": "Piel: to resolve, answer a difficulty",
+      "source": "Jastrow",
+      "category": "talmudic_term"
+    },
+    "שמעתא": {
+      "lemma": "שְׁמַעְתָּא",
+      "key": "שמעתא",
+      "pos": "noun",
+      "definition": "teaching, tradition, sugya",
+      "fullDefinition": "1. oral teaching; 2. a Talmudic passage/discussion (sugya)",
+      "etymology": "From שמע 'to hear'",
+      "source": "DJBA",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "סוגיא": {
+      "lemma": "סוּגְיָא",
+      "key": "סוגיא",
+      "pos": "noun",
+      "definition": "passage, discussion, sugya",
+      "fullDefinition": "A unit of Talmudic discussion on a particular topic",
+      "etymology": "From סגי 'to go'",
+      "source": "DJBA",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "מימרא": {
+      "lemma": "מֵימְרָא",
+      "key": "מימרא",
+      "pos": "noun",
+      "definition": "statement, saying",
+      "fullDefinition": "A statement or teaching of an Amora",
+      "etymology": "From אמר 'to say'",
+      "source": "DJBA",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "ברייתא": {
+      "lemma": "בָּרַיְתָא",
+      "key": "ברייתא",
+      "pos": "noun",
+      "definition": "Baraita, external Tannaitic teaching",
+      "fullDefinition": "Tannaitic teaching not included in the Mishnah; 'external' teaching",
+      "etymology": "From בר 'outside'",
+      "source": "DJBA",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "משנה": {
+      "lemma": "מִשְׁנָה",
+      "key": "משנה",
+      "pos": "noun",
+      "definition": "Mishnah, a teaching",
+      "fullDefinition": "1. the Mishnah (compiled by Rabbi Judah HaNasi ~200 CE); 2. a specific Mishnaic teaching",
+      "etymology": "From שנה 'to repeat, teach'",
+      "source": "HALOT",
+      "category": "talmudic_term"
+    },
+    "גמרא": {
+      "lemma": "גְּמָרָא",
+      "key": "גמרא",
+      "pos": "noun",
+      "definition": "Gemara, Talmudic discussion",
+      "fullDefinition": "1. the Gemara (Amoraic commentary on Mishnah); 2. Talmudic learning; 3. tradition",
+      "etymology": "From גמר 'to complete, finish'",
+      "source": "DJBA",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "רבנן": {
+      "lemma": "רַבָּנָן",
+      "key": "רבנן",
+      "pos": "noun",
+      "definition": "the Rabbis, sages",
+      "fullDefinition": "Plural of רב; collective term for the sages",
+      "source": "DJBA",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "הלכה": {
+      "lemma": "הֲלָכָה",
+      "key": "הלכה",
+      "pos": "noun",
+      "definition": "halacha, law, legal ruling",
+      "fullDefinition": "1. halacha, Jewish law; 2. legal ruling; 3. accepted practice",
+      "etymology": "From הלך 'to go, walk'",
+      "source": "HALOT",
+      "category": "talmudic_term"
+    },
+    "הלכתא": {
+      "lemma": "הִלְכְתָא",
+      "key": "הלכתא",
+      "pos": "noun",
+      "definition": "the law is (Aramaic)",
+      "fullDefinition": "Aramaic form of הלכה; הלכתא כוותיה 'the law is according to him'",
+      "source": "DJBA",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "פשיטא": {
+      "lemma": "פְּשִׁיטָא",
+      "key": "פשיטא",
+      "pos": "adjective/interjection",
+      "definition": "obvious, simple, it is obvious",
+      "fullDefinition": "From פשט 'to be simple'; indicates something is self-evident",
+      "source": "DJBA",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "מאי": {
+      "lemma": "מַאי",
+      "key": "מאי",
+      "pos": "interrogative",
+      "definition": "what?",
+      "fullDefinition": "Aramaic interrogative; מאי טעמא 'what is the reason?'",
+      "source": "DJBA",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "היכי": {
+      "lemma": "הֵיכִי",
+      "key": "היכי",
+      "pos": "interrogative",
+      "definition": "how?",
+      "fullDefinition": "Aramaic interrogative adverb",
+      "source": "DJBA",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "אמאי": {
+      "lemma": "אַמַּאי",
+      "key": "אמאי",
+      "pos": "interrogative",
+      "definition": "why?",
+      "fullDefinition": "Aramaic interrogative; contraction of על מאי 'for what?'",
+      "source": "DJBA",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "אלא": {
+      "lemma": "אֶלָּא",
+      "key": "אלא",
+      "pos": "conjunction",
+      "definition": "rather, but, except",
+      "fullDefinition": "1. but, rather (introducing correction); 2. except; אלא מאי 'but what then?'",
+      "source": "DJBA",
+      "category": "talmudic_term"
+    },
+    "דילמא": {
+      "lemma": "דִּילְמָא",
+      "key": "דילמא",
+      "pos": "adverb",
+      "definition": "perhaps, maybe",
+      "fullDefinition": "Introduces alternative possibility or objection",
+      "source": "DJBA",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "איכא": {
+      "lemma": "אִיכָּא",
+      "key": "איכא",
+      "pos": "particle",
+      "definition": "there is, there are",
+      "fullDefinition": "Existential particle; איכא למימר 'one could say'",
+      "source": "DJBA",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "ליכא": {
+      "lemma": "לֵיכָּא",
+      "key": "ליכא",
+      "pos": "particle",
+      "definition": "there is not, there are not",
+      "fullDefinition": "Negative existential particle; לא + איכא",
+      "source": "DJBA",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "בעי": {
+      "lemma": "בָּעֵי",
+      "key": "בעי",
+      "pos": "verb",
+      "definition": "he asked, needs, wants",
+      "fullDefinition": "Peal: 1. to ask, inquire; 2. to need, want; בעי מיניה 'he asked him'",
+      "source": "DJBA",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "איבעיא": {
+      "lemma": "אִיבַּעְיָא",
+      "key": "איבעיא",
+      "pos": "verb form",
+      "definition": "it was asked, a question arose",
+      "fullDefinition": "Ithpeel of בעי; introduces a Talmudic question (בעיא)",
+      "source": "DJBA",
+      "category": "talmudic_term",
+      "isAramaic": true
+    },
+    "מלכא": {
+      "lemma": "מַלְכָּא",
+      "key": "מלכא",
+      "pos": "noun",
+      "definition": "king",
+      "fullDefinition": "Aramaic emphatic form of מלך; the king",
+      "source": "DJBA",
+      "citation": "Jastrow, מַלְכָּא",
+      "category": "aramaic_noun",
+      "isAramaic": true
+    },
+    "דינא": {
+      "lemma": "דִּינָא",
+      "key": "דינא",
+      "pos": "noun",
+      "definition": "law, judgment, court case",
+      "fullDefinition": "1. law; 2. judgment, verdict; 3. court case; דינא דמלכותא דינא 'the law of the kingdom is law'",
+      "source": "DJBA",
+      "category": "aramaic_noun",
+      "isAramaic": true
+    },
+    "ביתא": {
+      "lemma": "בֵּיתָא",
+      "key": "ביתא",
+      "pos": "noun",
+      "definition": "house",
+      "fullDefinition": "Aramaic emphatic form of בית; the house",
+      "source": "DJBA",
+      "category": "aramaic_noun",
+      "isAramaic": true
+    },
+    "ארעא": {
+      "lemma": "אַרְעָא",
+      "key": "ארעא",
+      "pos": "noun",
+      "definition": "land, earth, ground",
+      "fullDefinition": "Aramaic emphatic form; ארעא דישראל 'the Land of Israel'",
+      "source": "DJBA",
+      "citation": "Jastrow, אַרְעָא: 'land, earth, ground'",
+      "category": "aramaic_noun",
+      "isAramaic": true
+    },
+    "יומא": {
+      "lemma": "יוֹמָא",
+      "key": "יומא",
+      "pos": "noun",
+      "definition": "day",
+      "fullDefinition": "Aramaic emphatic form of יום; האי יומא 'this day'",
+      "source": "DJBA",
+      "category": "aramaic_noun",
+      "isAramaic": true
+    },
+    "גברא": {
+      "lemma": "גַּבְרָא",
+      "key": "גברא",
+      "pos": "noun",
+      "definition": "man, person",
+      "fullDefinition": "Aramaic emphatic form; גברא רבה 'a great man'",
+      "source": "DJBA",
+      "citation": "Jastrow, גַּבְרָא: 'man'",
+      "category": "aramaic_noun",
+      "isAramaic": true
+    },
+    "להו": {
+      "lemma": "לְהוּ",
+      "key": "להו",
+      "pos": "pronoun",
+      "definition": "to them",
+      "fullDefinition": "Aramaic dative pronoun; ל + הו (3rd person plural)",
+      "source": "DJBA",
+      "category": "aramaic_pronoun",
+      "isAramaic": true
+    }
+  },
+  "halachicTerms": {
+    "טהור": {
+      "lemma": "טָהוֹר",
+      "key": "טהור",
+      "pos": "adjective",
+      "definition": "pure, clean (ritually)",
+      "fullDefinition": "1. ritually pure; 2. clean; 3. free from contamination",
+      "etymology": "From טהר 'to be pure'",
+      "source": "HALOT",
+      "citation": "Jastrow, טָהוֹר: 'clean, pure'",
+      "category": "halachic_term"
+    },
+    "טמא": {
+      "lemma": "טָמֵא",
+      "key": "טמא",
+      "pos": "adjective",
+      "definition": "impure, unclean (ritually)",
+      "fullDefinition": "1. ritually impure; 2. unclean; 3. contaminated",
+      "etymology": "From טמא 'to be impure'",
+      "source": "HALOT",
+      "citation": "Jastrow, טָמֵא: 'unclean'",
+      "category": "halachic_term"
+    },
+    "טהרה": {
+      "lemma": "טָהֳרָה",
+      "key": "טהרה",
+      "pos": "noun",
+      "definition": "purity, ritual purity",
+      "fullDefinition": "State of being ritually pure; laws of purity",
+      "source": "HALOT",
+      "category": "halachic_term"
+    },
+    "טומאה": {
+      "lemma": "טֻמְאָה",
+      "key": "טומאה",
+      "pos": "noun",
+      "definition": "impurity, ritual impurity",
+      "fullDefinition": "State of being ritually impure; source of contamination",
+      "source": "HALOT",
+      "category": "halachic_term"
+    },
+    "מלאכה": {
+      "lemma": "מְלָאכָה",
+      "key": "מלאכה",
+      "pos": "noun",
+      "definition": "work, labor (forbidden on Shabbat)",
+      "fullDefinition": "1. work, labor; 2. skilled work; 3. forbidden Shabbat labor (39 categories)",
+      "etymology": "From לאך or מלאך",
+      "source": "HALOT",
+      "frequency": "167x in Hebrew Bible",
+      "category": "halachic_term"
+    },
+    "אב": {
+      "lemma": "אָב",
+      "key": "אב",
+      "pos": "noun",
+      "definition": "father; primary category (of forbidden labor)",
+      "fullDefinition": "In halachic context: אב מלאכה 'primary category of forbidden labor'",
+      "source": "HALOT",
+      "category": "halachic_term"
+    },
+    "תולדה": {
+      "lemma": "תּוֹלָדָה",
+      "key": "תולדה",
+      "pos": "noun",
+      "definition": "offspring; derivative category (of forbidden labor)",
+      "fullDefinition": "In halachic context: derivative of a primary forbidden labor category",
+      "source": "HALOT",
+      "category": "halachic_term"
+    },
+    "מוקצה": {
+      "lemma": "מֻקְצֶה",
+      "key": "מוקצה",
+      "pos": "adjective",
+      "definition": "set aside, forbidden to move (on Shabbat)",
+      "fullDefinition": "Items designated as not to be moved or used on Shabbat",
+      "etymology": "From קצה 'to set apart'",
+      "source": "Jastrow",
+      "category": "halachic_term"
+    },
+    "רשות": {
+      "lemma": "רְשׁוּת",
+      "key": "רשות",
+      "pos": "noun",
+      "definition": "domain, authority, permission",
+      "fullDefinition": "1. domain (private/public); 2. authority; 3. permission; רשות הרבים 'public domain'",
+      "source": "HALOT",
+      "category": "halachic_term"
+    },
+    "הפקר": {
+      "lemma": "הֶפְקֵר",
+      "key": "הפקר",
+      "pos": "noun",
+      "definition": "ownerless property",
+      "fullDefinition": "Property that has been declared ownerless; anyone may acquire it",
+      "source": "Jastrow",
+      "category": "halachic_term"
+    },
+    "חזקה": {
+      "lemma": "חֲזָקָה",
+      "key": "חזקה",
+      "pos": "noun",
+      "definition": "presumption, possession, established status",
+      "fullDefinition": "1. legal presumption; 2. established possession; 3. strong evidence",
+      "etymology": "From חזק 'to be strong'",
+      "source": "HALOT",
+      "category": "halachic_term"
+    },
+    "איסור": {
+      "lemma": "אִיסּוּר",
+      "key": "איסור",
+      "pos": "noun",
+      "definition": "prohibition, forbidden thing",
+      "fullDefinition": "1. prohibition; 2. something forbidden; opposite of היתר",
+      "etymology": "From אסר 'to bind, forbid'",
+      "source": "Jastrow",
+      "citation": "Jastrow, אֵיסוּר: 'imprisonment' and in later usage 'prohibition'",
+      "category": "halachic_term"
+    },
+    "היתר": {
+      "lemma": "הֶיתֵּר",
+      "key": "היתר",
+      "pos": "noun",
+      "definition": "permission, permissibility",
+      "fullDefinition": "1. permission; 2. something permitted; opposite of איסור",
+      "etymology": "From נתר/התר 'to loosen'",
+      "source": "Jastrow",
+      "category": "halachic_term"
+    },
+    "מותר": {
+      "lemma": "מֻתָּר",
+      "key": "מותר",
+      "pos": "adjective",
+      "definition": "permitted, allowed",
+      "fullDefinition": "That which is halachically permitted",
+      "source": "Jastrow",
+      "category": "halachic_term"
+    },
+    "אסור": {
+      "lemma": "אָסוּר",
+      "key": "אסור",
+      "pos": "adjective",
+      "definition": "forbidden, prohibited",
+      "fullDefinition": "That which is halachically forbidden",
+      "source": "Jastrow",
+      "category": "halachic_term"
+    },
+    "חייב": {
+      "lemma": "חַיָּב",
+      "key": "חייב",
+      "pos": "adjective",
+      "definition": "obligated, liable, guilty",
+      "fullDefinition": "1. obligated to perform; 2. liable for punishment; 3. guilty",
+      "etymology": "From חוב 'to be indebted'",
+      "source": "HALOT",
+      "category": "halachic_term"
+    },
+    "פטור": {
+      "lemma": "פָּטוּר",
+      "key": "פטור",
+      "pos": "adjective",
+      "definition": "exempt, free from obligation",
+      "fullDefinition": "1. exempt from obligation; 2. not liable; opposite of חייב",
+      "etymology": "From פטר 'to release'",
+      "source": "HALOT",
+      "category": "halachic_term"
+    },
+    "כשר": {
+      "lemma": "כָּשֵׁר",
+      "key": "כשר",
+      "pos": "adjective",
+      "definition": "kosher, valid, fit",
+      "fullDefinition": "1. fit for use; 2. valid; 3. proper according to halacha",
+      "etymology": "From כשר 'to be proper'",
+      "source": "HALOT",
+      "category": "halachic_term"
+    },
+    "פסול": {
+      "lemma": "פָּסוּל",
+      "key": "פסול",
+      "pos": "adjective",
+      "definition": "invalid, unfit, disqualified",
+      "fullDefinition": "1. invalid for use; 2. disqualified; opposite of כשר",
+      "etymology": "From פסל 'to reject'",
+      "source": "HALOT",
+      "category": "halachic_term"
+    },
+    "מצוה": {
+      "lemma": "מִצְוָה",
+      "key": "מצוה",
+      "pos": "noun",
+      "definition": "commandment, religious duty",
+      "fullDefinition": "1. divine commandment; 2. good deed; 3. religious obligation",
+      "etymology": "From צוה 'to command'",
+      "source": "HALOT",
+      "citation": "Jastrow, מִצְוָה: 'commandment'",
+      "frequency": "181x in Hebrew Bible",
+      "category": "halachic_term"
+    },
+    "עבירה": {
+      "lemma": "עֲבֵירָה",
+      "key": "עבירה",
+      "pos": "noun",
+      "definition": "transgression, sin",
+      "fullDefinition": "Violation of a commandment; sinful act",
+      "etymology": "From עבר 'to cross over'",
+      "source": "Jastrow",
+      "category": "halachic_term"
+    },
+    "תשובה": {
+      "lemma": "תְּשׁוּבָה",
+      "key": "תשובה",
+      "pos": "noun",
+      "definition": "repentance, return, answer",
+      "fullDefinition": "1. repentance, return to God; 2. answer, response",
+      "etymology": "From שוב 'to return'",
+      "source": "HALOT",
+      "category": "halachic_term"
+    },
+    "כפרה": {
+      "lemma": "כַּפָּרָה",
+      "key": "כפרה",
+      "pos": "noun",
+      "definition": "atonement, expiation",
+      "fullDefinition": "Act of atonement; removal of sin",
+      "etymology": "From כפר 'to cover, atone'",
+      "source": "HALOT",
+      "category": "halachic_term"
+    }
+  },
+  "abbreviations": {
+    "וגו": {
+      "lemma": "וְגוֹ׳",
+      "key": "וגו",
+      "pos": "abbreviation",
+      "definition": "etc., and so forth (in verse citations)",
+      "fullDefinition": "Abbreviation for וְגוֹמֵר 'and the rest'; indicates continuation of a verse",
+      "source": "standard_abbreviation",
+      "category": "abbreviation"
+    },
+    "וכו": {
+      "lemma": "וְכוּ׳",
+      "key": "וכו",
+      "pos": "abbreviation",
+      "definition": "etc., and so forth",
+      "fullDefinition": "Abbreviation for וְכוּלֵּי 'and all the rest'",
+      "source": "standard_abbreviation",
+      "category": "abbreviation"
+    },
+    "ע\"ה": {
+      "lemma": "עָלָיו הַשָּׁלוֹם",
+      "key": "ע\"ה",
+      "pos": "abbreviation",
+      "definition": "peace be upon him",
+      "fullDefinition": "Honorific used after names of prophets and righteous individuals",
+      "source": "standard_abbreviation",
+      "category": "abbreviation"
+    },
+    "ז\"ל": {
+      "lemma": "זִכְרוֹנוֹ לִבְרָכָה",
+      "key": "ז\"ל",
+      "pos": "abbreviation",
+      "definition": "of blessed memory",
+      "fullDefinition": "Honorific used after names of deceased righteous individuals",
+      "source": "standard_abbreviation",
+      "category": "abbreviation"
+    },
+    "ע\"ש": {
+      "lemma": "עַיֵּין שָׁם",
+      "key": "ע\"ש",
+      "pos": "abbreviation",
+      "definition": "see there",
+      "fullDefinition": "Reference marker directing reader to another source",
+      "source": "standard_abbreviation",
+      "category": "abbreviation"
+    },
+    "רה\"ר": {
+      "lemma": "רְשׁוּת הָרַבִּים",
+      "key": "רה\"ר",
+      "pos": "abbreviation",
+      "definition": "public domain",
+      "fullDefinition": "Halachic term for public area; relevant to Shabbat laws",
+      "source": "halachic_abbreviation",
+      "category": "domain_abbreviation"
+    },
+    "רה\"י": {
+      "lemma": "רְשׁוּת הַיָּחִיד",
+      "key": "רה\"י",
+      "pos": "abbreviation",
+      "definition": "private domain",
+      "fullDefinition": "Halachic term for private area; relevant to Shabbat laws",
+      "source": "halachic_abbreviation",
+      "category": "domain_abbreviation"
+    }
+  },
+  "shabbatTerms": {
+    "שבת": {
+      "lemma": "שַׁבָּת",
+      "key": "שבת",
+      "pos": "noun, feminine",
+      "definition": "Sabbath, rest, cessation",
+      "fullDefinition": "1. Sabbath (seventh day); 2. rest, cessation; 3. sabbatical year",
+      "etymology": "From שבת 'to cease, rest'",
+      "source": "HALOT",
+      "frequency": "111x in Hebrew Bible",
+      "category": "shabbat"
+    },
+    "השבת": {
+      "lemma": "הַשַּׁבָּת",
+      "key": "השבת",
+      "pos": "noun with article",
+      "definition": "the Sabbath",
+      "fullDefinition": "Definite form: the Sabbath",
+      "source": "HALOT",
+      "category": "shabbat"
+    },
+    "לשבת": {
+      "lemma": "לְשַׁבָּת",
+      "key": "לשבת",
+      "pos": "preposition + noun",
+      "definition": "for Shabbat",
+      "fullDefinition": "Prepositional phrase: for/to Shabbat",
+      "source": "HALOT",
+      "category": "shabbat"
+    },
+    "בשבת": {
+      "lemma": "בְּשַׁבָּת",
+      "key": "בשבת",
+      "pos": "preposition + noun",
+      "definition": "on Shabbat",
+      "fullDefinition": "Prepositional phrase: on/during Shabbat",
+      "source": "HALOT",
+      "category": "shabbat"
+    }
+  },
+  "talmudicSages": {
+    "רב": {
+      "lemma": "רַב",
+      "key": "רב",
+      "pos": "title/proper noun",
+      "definition": "Rav (Abba Arikha), Babylonian Amora",
+      "fullDefinition": "1. title meaning 'master, teacher'; 2. Rav (Abba Arikha), founder of Sura academy",
+      "source": "DJBA",
+      "category": "talmudic_sage"
+    },
+    "שמואל": {
+      "lemma": "שְׁמוּאֵל",
+      "key": "שמואל",
+      "pos": "proper noun",
+      "definition": "Shmuel, Babylonian Amora",
+      "fullDefinition": "Mar Shmuel, head of Nehardea academy; colleague/disputant of Rav",
+      "source": "DJBA",
+      "category": "talmudic_sage"
+    },
+    "רבא": {
+      "lemma": "רָבָא",
+      "key": "רבא",
+      "pos": "proper noun",
+      "definition": "Rava, Babylonian Amora",
+      "fullDefinition": "Rava bar Yosef bar Hama, 4th generation Amora; disputant of Abaye",
+      "source": "DJBA",
+      "category": "talmudic_sage"
+    },
+    "אביי": {
+      "lemma": "אַבַּיֵי",
+      "key": "אביי",
+      "pos": "proper noun",
+      "definition": "Abaye, Babylonian Amora",
+      "fullDefinition": "Abaye Nahmani, 4th generation Amora; disputant of Rava",
+      "source": "DJBA",
+      "category": "talmudic_sage"
+    },
+    "מר": {
+      "lemma": "מָר",
+      "key": "מר",
+      "pos": "title",
+      "definition": "master, sir (honorific)",
+      "fullDefinition": "Aramaic honorific title for scholars; מר בריה דרבינא 'Mar son of Ravina'",
+      "source": "DJBA",
+      "category": "title",
+      "isAramaic": true
+    }
+  }
+}

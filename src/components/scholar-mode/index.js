@@ -32,7 +32,7 @@ export { default as ChavrutaTab } from './ChavrutaTab';          // CHAVRUTA tab
 export { default as NotebookTab } from './NotebookTab';          // NOTEBOOK tab (NEW - consolidated)
 
 // Talmud-specific tabs
-export { default as TalmudToolsTab } from './TalmudToolsTab';
+export { default as TalmudToolsTab, StatBadge, CollapsibleSection } from './TalmudToolsTab';
 export { default as TzuratHaDafTab } from './TzuratHaDafTab';
 export { default as EntitiesTab } from './EntitiesTab';
 
@@ -47,3 +47,51 @@ export { default as RealiaPanel, findRealia, detectRealiaInText, getRealiaByCate
 
 // PRO SCHOLAR V6 Analysis Panel
 export { default as ProScholarV6Panel } from './ProScholarV6Panel';
+
+// PRO SCHOLAR V15 - Unified Sugya Analysis
+export { default as UnifiedSugyaAnalysis } from './UnifiedSugyaAnalysis';
+export {
+  StudyModeSelector,
+  SugyaHeader,
+  ViewModeTabs,
+  FlowView,
+  TreeView,
+  DiagramView,
+  SummaryView,
+  PatternDetailPanel,
+  NotesPanel
+} from './UnifiedSugyaAnalysis';
+
+// PRO SCHOLAR V31 - Single Source of Truth for Constants
+// Re-export from centralized constants file for backwards compatibility
+export {
+  STUDY_MODES,
+  VIEW_MODES,
+  HEBREW_TYPE_LABELS,
+  TEXT_TYPE_LABELS,
+  STUDY_MODE_KEYS,
+  TYPE_CATEGORIES,
+  STORAGE_KEYS,
+  MASECHTA_HEBREW,
+  CHAZARA_QUESTION_TEMPLATES,
+  ABBR_TYPE_ICONS,
+  CROSS_REF_CATEGORIES,
+  IYUN_ANALYSIS_PATTERNS,
+  IYUN_PROMPTS,
+  parseDafReference,
+  parseReference,
+  stripNikud,
+  stripHtmlTags
+} from '../../constants/talmudStudy';
+
+// PRO SCHOLAR V31 - Shared Hooks
+export {
+  useCopyToClipboard,
+  useStudyNotes,
+  useMasteryLevel,
+  useChazaraProgress,
+  useViewPreferences
+} from '../../hooks/useTalmudStudy';
+
+// AI Tutor Panel (Talmud study prompts)
+export { default as AITutorPanel } from './AITutorPanel';

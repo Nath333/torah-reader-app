@@ -1,6 +1,14 @@
 /**
  * EntitiesTab - Named entity recognition display
  * Supports both Talmud (rabbis focus) and Torah (biblical figures focus) texts
+ *
+ * PRO SCHOLAR V31 STATUS: Exported from index.js but not actively used in ScholarModePanel.
+ * Entity detection features have been consolidated into:
+ *   - RabbiInfoPanel: Rabbi biographical information
+ *   - UnifiedSugyaAnalysis: Sage detection with speaker timeline
+ *   - TalmudToolsTab: Named entity patterns in Talmud text
+ *
+ * This component is still exported for external use if needed.
  */
 import React, { useState, useMemo, useEffect } from 'react';
 import RabbiTooltip from './RabbiTooltip';

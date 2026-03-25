@@ -1,0 +1,401 @@
+/**
+ * AITutorPanel.css - Styles for AI-Enhanced Talmud Study
+ * PRO SCHOLAR V31
+ */
+
+.ai-tutor-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background: var(--panel-bg, #ffffff);
+  border-radius: 12px;
+  border: 1px solid var(--border-color, #e5e7eb);
+}
+
+.ai-tutor-panel.empty {
+  min-height: 200px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Empty State */
+.tutor-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  color: var(--text-muted, #6b7280);
+}
+
+.tutor-empty-state .empty-icon {
+  font-size: 48px;
+}
+
+.tutor-empty-state .empty-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+}
+
+.tutor-empty-state .empty-text {
+  font-size: 14px;
+  max-width: 250px;
+}
+
+/* Header */
+.tutor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-light, #f3f4f6);
+}
+
+.tutor-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tutor-icon {
+  font-size: 24px;
+}
+
+.tutor-label {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+}
+
+.tutor-reference {
+  font-size: 14px;
+  color: var(--text-muted, #6b7280);
+  background: var(--bg-subtle, #f9fafb);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+/* Study Mode Prompts */
+.study-mode-prompts {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.mode-prompts-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.mode-icon {
+  font-size: 18px;
+}
+
+.mode-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-color, #2563eb);
+}
+
+.mode-prompts-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mode-prompt-btn {
+  background: white;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: var(--text-primary, #1f2937);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-prompt-btn:hover:not(:disabled) {
+  background: var(--primary-color, #2563eb);
+  color: white;
+  border-color: var(--primary-color, #2563eb);
+}
+
+.mode-prompt-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Category Tabs */
+.tutor-category-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 0;
+}
+
+.category-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--bg-subtle, #f9fafb);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.category-tab:hover {
+  background: var(--bg-hover, #f3f4f6);
+}
+
+.category-tab.active {
+  background: var(--primary-light, #eff6ff);
+  border-color: var(--primary-color, #2563eb);
+}
+
+.category-tab .tab-icon {
+  font-size: 16px;
+}
+
+.category-tab .tab-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary, #1f2937);
+}
+
+/* Category Card */
+.tutor-category-card {
+  background: var(--bg-subtle, #f9fafb);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.category-icon {
+  font-size: 20px;
+}
+
+.category-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+}
+
+.category-prompts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.prompt-btn {
+  text-align: right;
+  background: white;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: var(--text-primary, #1f2937);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.prompt-btn:hover:not(:disabled) {
+  background: var(--primary-light, #eff6ff);
+  border-color: var(--primary-color, #2563eb);
+}
+
+.prompt-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Custom Question Section */
+.custom-question-section {
+  margin-top: 8px;
+}
+
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  color: var(--text-muted, #6b7280);
+  font-size: 13px;
+}
+
+.section-divider::before,
+.section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-color, #e5e7eb);
+}
+
+.custom-question-form {
+  display: flex;
+  gap: 8px;
+}
+
+.custom-question-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.custom-question-input:focus {
+  border-color: var(--primary-color, #2563eb);
+}
+
+.custom-question-submit {
+  padding: 10px 20px;
+  background: var(--primary-color, #2563eb);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.custom-question-submit:hover:not(:disabled) {
+  background: var(--primary-dark, #1d4ed8);
+}
+
+.custom-question-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Recent Questions */
+.recent-questions {
+  background: var(--bg-subtle, #f9fafb);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.recent-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.recent-icon {
+  font-size: 14px;
+}
+
+.recent-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted, #6b7280);
+}
+
+.recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.recent-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: right;
+  background: white;
+  border: 1px solid var(--border-light, #f3f4f6);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text-secondary, #4b5563);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.recent-item:hover:not(:disabled) {
+  background: var(--bg-hover, #f3f4f6);
+}
+
+.recent-category-icon {
+  font-size: 14px;
+}
+
+.recent-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Loading State */
+.tutor-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  color: var(--text-muted, #6b7280);
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-top-color: var(--primary-color, #2563eb);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* @keyframes spin - defined in animations.css */
+
+.loading-text {
+  font-size: 14px;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .ai-tutor-panel {
+    --panel-bg: #1f2937;
+    --border-color: #374151;
+    --border-light: #374151;
+    --bg-subtle: #111827;
+    --bg-hover: #374151;
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+    --text-muted: #9ca3af;
+    --primary-color: #3b82f6;
+    --primary-light: #1e3a5f;
+    --primary-dark: #2563eb;
+  }
+
+  .study-mode-prompts {
+    background: linear-gradient(135deg, #1e3a5f 0%, #172554 100%);
+  }
+
+  .mode-prompt-btn,
+  .prompt-btn,
+  .recent-item {
+    background: #1f2937;
+  }
+
+  .custom-question-input {
+    background: #1f2937;
+    color: #f9fafb;
+  }
+}

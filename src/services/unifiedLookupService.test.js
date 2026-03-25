@@ -1733,10 +1733,10 @@ describe('unifiedLookupService', () => {
       expect(result.cleanedWord).toBe('תורה');
     });
 
-    test('marks result as V10.3 enriched', async () => {
+    test('marks result as V12 enriched with etymology', async () => {
       const result = await lookupFullyEnrichedV3('שבת');
       expect(result.isFullyEnriched).toBe(true);
-      expect(result.enrichmentLevel).toBe('pro_scholar_v10.3');
+      expect(result.enrichmentLevel).toBe('pro_scholar_v12');
     });
 
     test('includes dialectal analysis when enabled', async () => {

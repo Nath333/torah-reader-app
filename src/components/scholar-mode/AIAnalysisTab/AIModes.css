@@ -1,0 +1,855 @@
+/**
+ * AIModes.css - Styles for AI-Enhanced Study Mode Components
+ * PRO SCHOLAR V32: עיון, בקיאות, חזרה modes
+ */
+
+/* =============================================================================
+   Study Mode Grid - Compact Design (ModeGrid.js)
+   ============================================================================= */
+
+.study-mode-grid-compact {
+  padding: 8px 12px;
+}
+
+.mode-grid-header-compact {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.ai-badge-compact {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
+  border-radius: 12px;
+  font-size: 0.7rem;
+  color: white;
+  font-weight: 600;
+}
+
+.mode-progress-compact {
+  font-size: 0.7rem;
+  color: #10b981;
+  font-weight: 500;
+}
+
+/* Horizontal row of mode buttons */
+.mode-buttons-row {
+  display: flex;
+  gap: 6px;
+}
+
+/* Compact mode button - pill style */
+.study-mode-btn-compact {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: right;
+  min-width: 0;
+}
+
+.study-mode-btn-compact:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--mode-color, #7c3aed);
+}
+
+.study-mode-btn-compact.active {
+  background: linear-gradient(135deg, var(--mode-color, #7c3aed) 0%, color-mix(in srgb, var(--mode-color, #7c3aed), #000 15%) 100%);
+  border-color: transparent;
+  color: white;
+}
+
+.study-mode-btn-compact.done:not(.active) {
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.study-mode-btn-compact:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.study-mode-btn-compact .mode-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.study-mode-btn-compact .mode-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.study-mode-btn-compact .mode-hebrew {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #f3f4f6;
+  white-space: nowrap;
+}
+
+.study-mode-btn-compact.active .mode-hebrew {
+  color: white;
+}
+
+.study-mode-btn-compact .mode-subtitle {
+  font-size: 0.65rem;
+  color: #9ca3af;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.study-mode-btn-compact.active .mode-subtitle {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.study-mode-btn-compact .mode-check {
+  color: #10b981;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.study-mode-btn-compact .mode-key {
+  padding: 2px 5px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  font-size: 0.6rem;
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.study-mode-btn-compact.active .mode-key {
+  background: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Legacy support - old classes */
+.study-mode-grid {
+  padding: 12px;
+}
+
+.mode-grid-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.ai-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(99, 102, 241, 0.1) 100%);
+  border: 1px solid rgba(124, 58, 237, 0.3);
+  border-radius: 20px;
+}
+
+.mode-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* =============================================================================
+   Mode Content Area
+   ============================================================================= */
+
+.mode-content-area {
+  margin-top: 16px;
+}
+
+/* =============================================================================
+   AI Iyun Mode
+   ============================================================================= */
+
+.ai-iyun-mode,
+.ai-bekius-mode,
+.ai-chazara-mode {
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  border: 1px solid rgba(124, 58, 237, 0.2);
+}
+
+.iyun-header,
+.bekius-header,
+.chazara-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header-icon {
+  font-size: 2rem;
+}
+
+.header-text {
+  flex: 1;
+}
+
+.header-title {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #f3f4f6;
+}
+
+.header-subtitle {
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+/* Iyun buttons */
+.iyun-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.iyun-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.iyun-btn:hover:not(:disabled) {
+  background: rgba(124, 58, 237, 0.15);
+  border-color: rgba(124, 58, 237, 0.3);
+}
+
+.iyun-btn.loading {
+  opacity: 0.7;
+}
+
+.iyun-btn.completed {
+  border-color: #10b981;
+}
+
+.iyun-btn .btn-icon {
+  font-size: 1.3rem;
+}
+
+.iyun-btn .btn-labels {
+  flex: 1;
+  text-align: right;
+}
+
+.iyun-btn .btn-label {
+  display: block;
+  font-size: 0.9rem;
+  color: #f3f4f6;
+}
+
+.iyun-btn .btn-sublabel {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.iyun-btn .btn-check {
+  color: #10b981;
+}
+
+.iyun-btn .btn-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(124, 58, 237, 0.3);
+  border-top-color: #7c3aed;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Iyun results */
+.iyun-result {
+  margin-top: 16px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  border: 1px solid rgba(124, 58, 237, 0.2);
+}
+
+.iyun-result .result-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.iyun-result .result-icon {
+  font-size: 1.2rem;
+}
+
+.iyun-result .result-title {
+  font-weight: 600;
+  color: #c4b5fd;
+}
+
+.iyun-result .result-content {
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.iyun-result .result-text p {
+  margin: 0 0 8px 0;
+}
+
+.iyun-result .mermaid-code {
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #a78bfa;
+}
+
+/* =============================================================================
+   AI Bekius Mode
+   ============================================================================= */
+
+.bekius-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.bekius-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+
+.bekius-btn.primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border: none;
+  color: white;
+}
+
+.bekius-btn.primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.bekius-btn.secondary {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #9ca3af;
+}
+
+.bekius-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bekius-btn .btn-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.auto-run-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+.auto-run-toggle input {
+  accent-color: #3b82f6;
+}
+
+/* Bekius result */
+.bekius-result {
+  margin-top: 16px;
+}
+
+.bekius-section {
+  padding: 16px;
+  margin-bottom: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.bekius-section.summary-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%);
+}
+
+.bekius-section .section-icon {
+  font-size: 1.5rem;
+}
+
+.bekius-section .summary-text {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #f3f4f6;
+}
+
+.bekius-section .section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.bekius-section .section-title {
+  font-weight: 600;
+  color: #93c5fd;
+}
+
+.keypoints-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.keypoint-item {
+  display: flex;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.keypoint-item:last-child {
+  border-bottom: none;
+}
+
+.keypoint-bullet {
+  color: #3b82f6;
+  font-weight: bold;
+}
+
+.keypoint-text {
+  flex: 1;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.5;
+}
+
+.full-result-details {
+  margin-top: 12px;
+}
+
+.full-result-details summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+.full-result-details summary:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.full-result-content {
+  padding: 16px;
+  margin-top: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.full-result-content p {
+  margin: 0 0 8px 0;
+}
+
+/* =============================================================================
+   AI Chazara Mode
+   ============================================================================= */
+
+.chazara-header .score-badge {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 20px;
+  color: white;
+  font-weight: 600;
+}
+
+.score-divider {
+  margin: 0 4px;
+  opacity: 0.6;
+}
+
+.chazara-generate {
+  text-align: center;
+  padding: 32px;
+}
+
+.generate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.generate-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+}
+
+.generate-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.generate-hint {
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+/* Question display */
+.chazara-question {
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+}
+
+.question-progress {
+  margin-bottom: 16px;
+}
+
+.progress-bar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  margin-bottom: 8px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #059669);
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+
+.progress-text {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.question-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.difficulty {
+  font-size: 0.9rem;
+}
+
+.question-type {
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.question-text {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #f3f4f6;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: rgba(16, 185, 129, 0.05);
+  border-radius: 10px;
+  border-right: 3px solid #10b981;
+}
+
+.question-number {
+  font-weight: 600;
+  color: #10b981;
+  margin-left: 8px;
+}
+
+.answer-section {
+  margin-bottom: 16px;
+}
+
+.answer-input {
+  width: 100%;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+  resize: vertical;
+  min-height: 80px;
+  direction: rtl;
+}
+
+.answer-input:focus {
+  outline: none;
+  border-color: rgba(16, 185, 129, 0.5);
+}
+
+.answer-input:disabled {
+  opacity: 0.6;
+}
+
+.check-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.check-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.check-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.answer-revealed {
+  margin-top: 16px;
+  padding: 16px;
+  background: rgba(16, 185, 129, 0.05);
+  border-radius: 10px;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.correct-answer {
+  margin-bottom: 12px;
+}
+
+.answer-label {
+  display: block;
+  font-size: 0.8rem;
+  color: #10b981;
+  margin-bottom: 4px;
+}
+
+.answer-text {
+  font-size: 1rem;
+  color: #f3f4f6;
+  line-height: 1.5;
+}
+
+.ai-feedback {
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.feedback-label {
+  display: block;
+  font-size: 0.8rem;
+  color: #a78bfa;
+  margin-bottom: 8px;
+}
+
+.feedback-text {
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.6;
+}
+
+.feedback-text p {
+  margin: 0 0 8px 0;
+}
+
+/* Navigation */
+.question-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-btn {
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: #f3f4f6;
+}
+
+.nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.nav-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.nav-dot {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-dot:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.nav-dot.active {
+  background: #10b981;
+  transform: scale(1.2);
+}
+
+.nav-dot.answered {
+  background: #059669;
+}
+
+/* Completion state */
+.chazara-complete {
+  text-align: center;
+  padding: 32px;
+}
+
+.complete-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.complete-title {
+  display: block;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #f3f4f6;
+  margin-bottom: 8px;
+}
+
+.complete-score {
+  display: block;
+  font-size: 1.1rem;
+  color: #10b981;
+  margin-bottom: 20px;
+}
+
+.restart-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 8px;
+  color: #10b981;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.restart-btn:hover {
+  background: rgba(16, 185, 129, 0.2);
+}
+
+/* =============================================================================
+   Common Empty/Error/Waiting States
+   ============================================================================= */
+
+.iyun-empty,
+.bekius-empty,
+.chazara-empty,
+.iyun-error,
+.bekius-error,
+.chazara-error,
+.bekius-waiting {
+  text-align: center;
+  padding: 32px;
+  color: #9ca3af;
+}
+
+.empty-icon,
+.waiting-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 12px;
+  opacity: 0.6;
+}
+
+.iyun-error,
+.bekius-error,
+.chazara-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 8px;
+  color: #fca5a5;
+}
+
+.error-icon {
+  margin-left: 8px;
+}
+
+/* =============================================================================
+   Animation - @keyframes spin defined in animations.css
+   ============================================================================= */

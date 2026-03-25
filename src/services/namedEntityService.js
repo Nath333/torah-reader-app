@@ -3,6 +3,8 @@
 // Detects: Rabbis, Biblical figures, Places, Concepts, Biblical citations
 // =============================================================================
 
+import { stripAllDiacritics } from '../utils/hebrewUtils';
+
 // =============================================================================
 // ENTITY TYPES
 // =============================================================================
@@ -767,7 +769,13 @@ export const PLACES = {
 // DETECTION PATTERNS
 // =============================================================================
 
-// Rabbi attribution patterns
+// PRO SCHOLAR V30: Strip nikud (vowel points) for better matching
+const stripNikud = (text) => {
+  if (!text) return '';
+  return stripAllDiacritics(text);
+};
+
+// PRO SCHOLAR V30: Enhanced rabbi attribution patterns
 const RABBI_PATTERNS = [
   // אמר רבי X - Rabbi X said
   { pattern: /(?:אמר|א"ר|א״ר)\s*(רב(?:י|ן|א)?|ר׳)\s+(\p{Script=Hebrew}+(?:\s+(?:בן|בר|ב"ר|ב״ר)\s+\p{Script=Hebrew}+)?)/gu, type: 'statement' },
@@ -776,7 +784,22 @@ const RABBI_PATTERNS = [
   // Standalone rabbi mentions
   { pattern: /(רב(?:י|ן|א)?)\s+(\p{Script=Hebrew}+)/gu, type: 'mention' },
   // Abbreviated forms
-  { pattern: /(רשב"י|רשב"ג|ר"י|ר"מ|ר"ע)/gu, type: 'abbreviation' }
+  { pattern: /(רשב"י|רשב"ג|ר"י|ר"מ|ר"ע|רשב״י|רשב״ג|ר״י|ר״מ|ר״ע)/gu, type: 'abbreviation' },
+  // PRO SCHOLAR V30: Additional patterns for Gemara sages
+  // תנו רבנן - Our Rabbis taught
+  { pattern: /תנו\s*רבנן/gu, type: 'baraita', isGroup: true },
+  // תנא - A Tanna taught
+  { pattern: /תנא\s+(\p{Script=Hebrew}+)/gu, type: 'tanna_teaching' },
+  // אמר מר - The Master said
+  { pattern: /אמר\s+מר/gu, type: 'master_statement' },
+  // רב alone (common Babylonian sage)
+  { pattern: /\bרב\b(?!\s*(?:י|ן|א))/gu, type: 'rav_standalone' },
+  // דאמר רב/רבי - As Rav/Rabbi said
+  { pattern: /דאמר\s+(רב(?:י|ן|א)?)\s*(\p{Script=Hebrew}+)?/gu, type: 'citation' },
+  // משמיה דרבי - In the name of Rabbi
+  { pattern: /משמיה\s+ד(?:רב(?:י|ן|א)?|ר׳)\s*(\p{Script=Hebrew}+)?/gu, type: 'transmission' },
+  // איתמר - It was stated (introduces amoraic dispute)
+  { pattern: /איתמר/gu, type: 'amoraic_statement', isGroup: true }
 ];
 
 // Biblical citation patterns
@@ -810,29 +833,36 @@ export function detectEntities(text) {
 }
 
 /**
- * Detect rabbi mentions in text
+ * PRO SCHOLAR V30: Detect rabbi mentions in text with nikud support
  * @param {string} text
  * @returns {Array}
  */
 export function detectRabbis(text) {
+  if (!text || typeof text !== 'string') return [];
+
   const results = [];
   const seen = new Set();
 
-  // Check for known rabbis from database
+  // PRO SCHOLAR V30: Strip nikud for better matching
+  const cleanText = stripNikud(text);
+
+  // Check for known rabbis from database (search in clean text)
   const allRabbis = { ...RABBI_DATABASE.tannaim, ...RABBI_DATABASE.amoraim };
 
   for (const [hebrew, info] of Object.entries(allRabbis)) {
-    const regex = new RegExp(hebrew.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+    const cleanHebrew = stripNikud(hebrew);
+    const regex = new RegExp(cleanHebrew.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
     let match;
 
-    while ((match = regex.exec(text)) !== null) {
-      const key = `${match.index}-${hebrew}`;
+    while ((match = regex.exec(cleanText)) !== null) {
+      const key = `${match.index}-${cleanHebrew}`;
       if (seen.has(key)) continue;
       seen.add(key);
 
       results.push({
         type: ENTITY_TYPES.RABBI,
         hebrew,
+        name: hebrew, // V30: Add name field for compatibility
         english: info.name,
         position: match.index,
         endPosition: match.index + match[0].length,
@@ -844,34 +874,50 @@ export function detectRabbis(text) {
     }
   }
 
-  // Additional pattern-based detection
-  for (const { pattern, type } of RABBI_PATTERNS) {
+  // PRO SCHOLAR V30: Enhanced pattern-based detection on clean text
+  for (const { pattern, type, isGroup } of RABBI_PATTERNS) {
     let match;
-    while ((match = pattern.exec(text)) !== null) {
+    while ((match = pattern.exec(cleanText)) !== null) {
       const fullMatch = match[0];
-      const key = `${match.index}-pattern`;
+      const key = `${match.index}-${type}`;
 
       if (!seen.has(key)) {
         seen.add(key);
 
-        // Try to identify from database
-        const title = match[1];
-        const name = match[2];
-        const fullName = `${title} ${name}`;
+        // Handle group references (תנו רבנן, איתמר, etc.)
+        if (isGroup) {
+          results.push({
+            type: ENTITY_TYPES.RABBI,
+            hebrew: fullMatch,
+            name: fullMatch,
+            english: type === 'baraita' ? 'The Rabbis' : 'Sages',
+            position: match.index,
+            endPosition: match.index + fullMatch.length,
+            period: 'collective',
+            statementType: type,
+            isGroup: true
+          });
+        } else {
+          // Try to identify from database
+          const title = match[1] || '';
+          const name = match[2] || match[1] || fullMatch;
+          const fullName = title && name ? `${title} ${name}` : name;
 
-        // Look up in database
-        const dbEntry = allRabbis[fullName] || allRabbis[name];
+          // Look up in database
+          const dbEntry = allRabbis[fullName] || allRabbis[name] || allRabbis[stripNikud(name)];
 
-        results.push({
-          type: ENTITY_TYPES.RABBI,
-          hebrew: fullMatch,
-          english: dbEntry?.name || name,
-          position: match.index,
-          endPosition: match.index + fullMatch.length,
-          period: dbEntry?.period || 'unknown',
-          generation: dbEntry?.generation,
-          statementType: type
-        });
+          results.push({
+            type: ENTITY_TYPES.RABBI,
+            hebrew: fullMatch,
+            name: fullName || fullMatch,
+            english: dbEntry?.name || name || fullMatch,
+            position: match.index,
+            endPosition: match.index + fullMatch.length,
+            period: dbEntry?.period || 'unknown',
+            generation: dbEntry?.generation,
+            statementType: type
+          });
+        }
       }
     }
     pattern.lastIndex = 0;

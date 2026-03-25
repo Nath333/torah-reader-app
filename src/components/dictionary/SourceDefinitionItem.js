@@ -19,44 +19,60 @@ import { getSourceStyle } from '../../constants/dictionarySources';
 // PRO SCHOLAR V6: Dictionary Tier Display
 // =============================================================================
 
-/** Dictionary source tier configuration - derived from unifiedRootService */
+/** Dictionary source tier configuration - PRO SCHOLAR V13 */
 const DICTIONARY_TIERS = {
+  // Gold tier - Academic lexicons
   jastrow: { tier: 'gold', fullName: "Jastrow's Dictionary (1903)", bonus: 5 },
   bdb: { tier: 'gold', fullName: 'Brown-Driver-Briggs (1906)', bonus: 5 },
-  strongs: { tier: 'silver', fullName: "Strong's Concordance", bonus: 0 },
   cal: { tier: 'gold', fullName: 'Comprehensive Aramaic Lexicon', bonus: 5 },
+  klein: { tier: 'gold', fullName: 'Klein Dictionary', bonus: 5 },
+  halot: { tier: 'gold', fullName: 'HALOT (Hebrew & Aramaic Lexicon)', bonus: 5 },
+  djba: { tier: 'gold', fullName: 'DJBA (Sokoloff)', bonus: 5 },
+  djpa: { tier: 'gold', fullName: 'DJPA (Sokoloff)', bonus: 5 },
+  gesenius: { tier: 'gold', fullName: 'Gesenius Hebrew Lexicon', bonus: 5 },
+  // Silver tier - Reliable references
+  strongs: { tier: 'silver', fullName: "Strong's Concordance", bonus: 0 },
   sefaria: { tier: 'silver', fullName: 'Sefaria Lexicon', bonus: 0 },
-  klein: { tier: 'gold', fullName: 'Klein Dictionary', bonus: 5 }
+  twot: { tier: 'silver', fullName: 'TWOT (Theological Wordbook)', bonus: 0 },
+  openscriptures: { tier: 'silver', fullName: 'Open Scriptures Lexicon', bonus: 0 },
+  // Bronze tier - Curated/supplementary
+  rabbinic: { tier: 'bronze', fullName: 'Curated Rabbinic Vocabulary', bonus: -2 },
+  talmudic: { tier: 'bronze', fullName: 'Talmudic Terms (local)', bonus: -2 },
+  technical: { tier: 'bronze', fullName: 'Technical Terms (local)', bonus: -2 },
+  particles: { tier: 'bronze', fullName: 'Function Words (local)', bonus: -2 },
+  core: { tier: 'bronze', fullName: 'Core Vocabulary (local)', bonus: -2 },
+  local: { tier: 'bronze', fullName: 'Local Dictionary', bonus: -2 },
+  morphological: { tier: 'bronze', fullName: 'Morphological Analysis', bonus: -2 }
 };
 
-/** Tier display styling */
+/** Tier display styling - PRO SCHOLAR V13 */
 const TIER_DISPLAY = {
   gold: {
     icon: '🥇',
-    label: 'Gold Standard',
+    label: 'Academic',
     className: 'tier-gold',
-    color: '#b8860b',
-    bgColor: '#fef3c7',
-    borderColor: '#f59e0b',
-    tooltip: 'Highly authoritative academic source'
+    color: '#059669',
+    bgColor: '#dcfce7',
+    borderColor: '#10b981',
+    tooltip: 'Academic lexicon - peer-reviewed scholarly source'
   },
   silver: {
     icon: '🥈',
-    label: 'Standard',
+    label: 'Reference',
     className: 'tier-silver',
-    color: '#6b7280',
-    bgColor: '#f3f4f6',
-    borderColor: '#d1d5db',
-    tooltip: 'Reliable reference source'
+    color: '#0891b2',
+    bgColor: '#cffafe',
+    borderColor: '#06b6d4',
+    tooltip: 'Scholarly reference work'
   },
   bronze: {
     icon: '🥉',
-    label: 'Supplementary',
+    label: 'Curated',
     className: 'tier-bronze',
-    color: '#b45309',
-    bgColor: '#fef3c7',
-    borderColor: '#d97706',
-    tooltip: 'Supplementary reference'
+    color: '#6366f1',
+    bgColor: '#e0e7ff',
+    borderColor: '#818cf8',
+    tooltip: 'Curated vocabulary list'
   }
 };
 

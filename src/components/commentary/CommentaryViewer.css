@@ -332,9 +332,7 @@
   margin-bottom: 16px;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+/* @keyframes spin - defined in animations.css */
 
 .empty-state .empty-icon {
   font-size: 48px;

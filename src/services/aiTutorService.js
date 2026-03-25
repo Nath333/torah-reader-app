@@ -5,6 +5,74 @@
  */
 
 import { callGroqAPI, getStoredApiKey, AIError, ERROR_TYPES } from './groqApi';
+import { STUDY_MODES as BASE_STUDY_MODES, STUDY_MODE_KEYS } from '../constants/talmudStudy';
+
+// =============================================================================
+// Data Flow Utilities
+// =============================================================================
+
+/**
+ * Unified API call with JSON parsing and error handling
+ * @param {Object} config - Request configuration
+ * @returns {Promise<Object>} Parsed response or fallback
+ */
+const callAIWithParsing = async ({
+  systemPrompt,
+  userPrompt,
+  options = {},
+  fallbackFn = (raw) => ({ raw, error: 'Parse failed' })
+}) => {
+  const messages = [
+    { role: 'system', content: systemPrompt },
+    { role: 'user', content: userPrompt }
+  ];
+
+  const response = await callGroqAPI(messages, {
+    temperature: 0.7,
+    maxTokens: 1024,
+    ...options
+  });
+
+  if (options.jsonResponse) {
+    try {
+      return JSON.parse(response);
+    } catch {
+      return fallbackFn(response);
+    }
+  }
+
+  return response;
+};
+
+/**
+ * Get config with fallback - memoized lookup
+ */
+const configCache = new Map();
+
+const getConfig = (type, key, fallbackKey) => {
+  const cacheKey = `${type}:${key}`;
+  if (configCache.has(cacheKey)) return configCache.get(cacheKey);
+
+  const configs = type === 'level' ? LEVEL_CONFIG :
+                  type === 'persona' ? PERSONA_CONFIG :
+                  STUDY_MODE_CONFIG;
+  const fallback = type === 'level' ? LEVEL_CONFIG[fallbackKey] :
+                   type === 'persona' ? PERSONA_CONFIG[fallbackKey] :
+                   STUDY_MODE_CONFIG[fallbackKey];
+
+  const result = configs[key] || fallback;
+  configCache.set(cacheKey, result);
+  return result;
+};
+
+/**
+ * Compose multiple configs into unified context
+ */
+const composeStudyContext = (level, persona, studyMode) => ({
+  level: getConfig('level', level, DIFFICULTY_LEVELS.INTERMEDIATE),
+  persona: getConfig('persona', persona, TEACHING_PERSONAS.DEFAULT),
+  studyMode: getConfig('studyMode', studyMode, STUDY_MODES.IYUN)
+});
 
 // =============================================================================
 // Common Talmudic Terms (for teaching context)
@@ -185,7 +253,7 @@ export const PERSONA_CONFIG = {
 };
 
 // =============================================================================
-// Conversation Manager
+// Conversation Manager - Immutable state updates for predictable data flow
 // =============================================================================
 class ConversationManager {
   constructor() {
@@ -193,51 +261,130 @@ class ConversationManager {
     this.maxHistory = 20;
   }
 
+  /**
+   * Create a new conversation with initial state
+   */
   create(textRef, level = DIFFICULTY_LEVELS.INTERMEDIATE, persona = TEACHING_PERSONAS.DEFAULT) {
     const id = `conv_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
     const now = new Date().toISOString();
-    this.conversations.set(id, { id, textRef, level, persona, messages: [], createdAt: now, lastActive: now });
+    const conversation = Object.freeze({
+      id,
+      textRef,
+      level,
+      persona,
+      messages: [],
+      createdAt: now,
+      lastActive: now
+    });
+    this.conversations.set(id, conversation);
     return id;
   }
 
-  get(id) { return this.conversations.get(id); }
-
-  addMessage(id, role, content) {
-    const conv = this.conversations.get(id);
-    if (!conv) return null;
-    conv.messages.push({ role, content, timestamp: new Date().toISOString() });
-    if (conv.messages.length > this.maxHistory * 2) {
-      conv.messages = conv.messages.slice(-this.maxHistory * 2);
-    }
-    conv.lastActive = new Date().toISOString();
-    return conv;
+  /**
+   * Get conversation (returns frozen copy)
+   */
+  get(id) {
+    return this.conversations.get(id) || null;
   }
 
-  getMessages(id) { return this.get(id)?.messages || []; }
-  updateLevel(id, level) { const c = this.get(id); if (c) c.level = level; }
-  updatePersona(id, persona) { const c = this.get(id); if (c) c.persona = persona; }
-  clear(id) { this.conversations.delete(id); }
+  /**
+   * Immutable update - returns new conversation state
+   */
+  #update(id, updater) {
+    const conv = this.conversations.get(id);
+    if (!conv) return null;
 
+    const updated = Object.freeze({
+      ...conv,
+      ...updater(conv),
+      lastActive: new Date().toISOString()
+    });
+    this.conversations.set(id, updated);
+    return updated;
+  }
+
+  /**
+   * Add message with automatic history trimming
+   */
+  addMessage(id, role, content) {
+    return this.#update(id, (conv) => {
+      const newMessage = Object.freeze({
+        role,
+        content,
+        timestamp: new Date().toISOString()
+      });
+      const messages = [...conv.messages, newMessage];
+      // Trim if exceeds max
+      return {
+        messages: messages.length > this.maxHistory * 2
+          ? messages.slice(-this.maxHistory * 2)
+          : messages
+      };
+    });
+  }
+
+  /**
+   * Get messages as array (safe copy)
+   */
+  getMessages(id) {
+    return this.get(id)?.messages || [];
+  }
+
+  /**
+   * Update level
+   */
+  updateLevel(id, level) {
+    return this.#update(id, () => ({ level }));
+  }
+
+  /**
+   * Update persona
+   */
+  updatePersona(id, persona) {
+    return this.#update(id, () => ({ persona }));
+  }
+
+  /**
+   * Clear conversation
+   */
+  clear(id) {
+    this.conversations.delete(id);
+  }
+
+  /**
+   * Export conversation data
+   */
   export(id) {
     const conv = this.get(id);
     return conv ? { ...conv, exportedAt: new Date().toISOString() } : null;
+  }
+
+  /**
+   * Get conversation stats for debugging
+   */
+  getStats() {
+    return {
+      activeConversations: this.conversations.size,
+      totalMessages: [...this.conversations.values()].reduce(
+        (sum, c) => sum + c.messages.length, 0
+      )
+    };
   }
 }
 
 const conversationManager = new ConversationManager();
 
 // =============================================================================
-// Study Modes - Yeshiva-style learning approaches
+// Study Modes - Import from single source of truth (DRY)
+// Re-export for backwards compatibility
 // =============================================================================
-export const STUDY_MODES = {
-  BEKIUS: 'bekius',   // Breadth - cover ground, get overview
-  IYUN: 'iyun'        // Depth - deep analysis, thorough understanding
-};
+export const STUDY_MODES = STUDY_MODE_KEYS;
 
+// AI Tutor specific prompts (extend base config with detailed AI prompts)
 export const STUDY_MODE_CONFIG = {
-  [STUDY_MODES.BEKIUS]: {
-    name: 'Bekius', nameHebrew: 'בקיאות', icon: '📖',
-    description: 'Cover ground quickly, build broad knowledge',
+  [STUDY_MODE_KEYS.BEKIUS]: {
+    ...BASE_STUDY_MODES.bekius,
+    name: 'Bekius',
     prompt: `STUDY MODE: BEKIUS (בקיאות) - Breadth Learning
 - Give clear, concise explanations
 - Cover the main points efficiently
@@ -245,9 +392,9 @@ export const STUDY_MODE_CONFIG = {
 - Connect to related passages
 - Keep moving forward, don't get stuck on details`
   },
-  [STUDY_MODES.IYUN]: {
-    name: 'Iyun', nameHebrew: 'עיון', icon: '🔬',
-    description: 'Deep analysis, thorough understanding',
+  [STUDY_MODE_KEYS.IYUN]: {
+    ...BASE_STUDY_MODES.iyun,
+    name: 'Iyun',
     prompt: `STUDY MODE: IYUN (עיון) - Depth Learning
 - Analyze every word and nuance carefully
 - Explore multiple interpretations
@@ -255,24 +402,42 @@ export const STUDY_MODE_CONFIG = {
 - Compare different commentators' approaches
 - Develop chiddushim (novel insights)
 - Don't move on until thoroughly understood`
+  },
+  [STUDY_MODE_KEYS.CHAZARA]: {
+    ...BASE_STUDY_MODES.chazara,
+    name: 'Chazara',
+    prompt: `STUDY MODE: CHAZARA (חזרה) - Review & Testing
+- Test understanding with targeted questions
+- Reinforce key concepts through repetition
+- Identify gaps in knowledge
+- Connect current material to previously learned
+- Build long-term retention with spaced review
+- Challenge with progressively harder questions`
   }
 };
 
 // =============================================================================
-// System Prompt Generation - Enhanced for structured learning
+// System Prompt Generation - Uses composed config for clean data flow
 // =============================================================================
+const systemPromptCache = new Map();
+
 const generateSystemPrompt = (level, persona, textContext = '', studyMode = STUDY_MODES.IYUN) => {
-  const levelConfig = LEVEL_CONFIG[level] || LEVEL_CONFIG[DIFFICULTY_LEVELS.INTERMEDIATE];
-  const personaConfig = PERSONA_CONFIG[persona] || PERSONA_CONFIG[TEACHING_PERSONAS.DEFAULT];
-  const studyModeConfig = STUDY_MODE_CONFIG[studyMode] || STUDY_MODE_CONFIG[STUDY_MODES.IYUN];
+  // Cache key excludes textContext since it's dynamic
+  const cacheKey = `${level}:${persona}:${studyMode}`;
 
-  return `You are an AI Torah study partner (chavruta) in a Kollel/Yeshiva setting.
+  // Get composed config using unified lookup
+  const config = composeStudyContext(level, persona, studyMode);
 
-${personaConfig.prompt}
+  // Build base prompt (cacheable part)
+  let basePrompt = systemPromptCache.get(cacheKey);
+  if (!basePrompt) {
+    basePrompt = `You are an AI Torah study partner (chavruta) in a Kollel/Yeshiva setting.
 
-${levelConfig.prompt}
+${config.persona.prompt}
 
-${studyModeConfig.prompt}
+${config.level.prompt}
+
+${config.studyMode.prompt}
 
 SEPHARDI TRADITION: Default to Sephardi halacha (Mechaber). Reference Ben Ish Chai, Ohr HaChaim, Chida. Use Sephardi pronunciation (Shabbat not Shabbos).
 
@@ -290,15 +455,19 @@ TEACHING APPROACH:
 - Ask "מה קשה?" (what's difficult?) to probe understanding
 - Use "בוא נראה" (let's see) when exploring sources
 - Encourage with "יפה מאוד" (very nice) for good questions
-- After explaining, ask: "האם זה ברור?" (is this clear?)
+- After explaining, ask: "האם זה ברור?" (is this clear?)`;
 
-${textContext ? `CURRENT STUDY CONTEXT:\n${textContext}` : ''}
+    systemPromptCache.set(cacheKey, basePrompt);
+  }
 
-Remember: The goal is real Torah learning, not just information transfer.`;
+  // Append dynamic context
+  return textContext
+    ? `${basePrompt}\n\nCURRENT STUDY CONTEXT:\n${textContext}\n\nRemember: The goal is real Torah learning, not just information transfer.`
+    : `${basePrompt}\n\nRemember: The goal is real Torah learning, not just information transfer.`;
 };
 
 // =============================================================================
-// Public API
+// Public API - Clean data flow with unified utilities
 // =============================================================================
 
 export const startConversation = (textRef, level = DIFFICULTY_LEVELS.INTERMEDIATE, persona = TEACHING_PERSONAS.DEFAULT) =>
@@ -306,103 +475,138 @@ export const startConversation = (textRef, level = DIFFICULTY_LEVELS.INTERMEDIAT
 
 export const getConversation = (id) => conversationManager.get(id);
 
+/**
+ * Ask a question in an existing conversation
+ * Data flow: validate → add message → build context → API call → store response
+ */
 export const askQuestion = async (conversationId, question, textContext = '', studyMode = STUDY_MODES.IYUN) => {
+  // 1. Validate conversation exists
   const conv = conversationManager.get(conversationId);
   if (!conv) throw new AIError('Conversation not found', ERROR_TYPES.INVALID_INPUT);
 
-  conversationManager.addMessage(conversationId, 'user', question);
+  // 2. Add user message (returns updated conversation)
+  const updatedConv = conversationManager.addMessage(conversationId, 'user', question);
 
+  // 3. Build message history for API
+  const systemPrompt = generateSystemPrompt(conv.level, conv.persona, textContext, studyMode);
   const messages = [
-    { role: 'system', content: generateSystemPrompt(conv.level, conv.persona, textContext, studyMode) },
-    ...conv.messages.map(m => ({ role: m.role, content: m.content }))
+    { role: 'system', content: systemPrompt },
+    ...updatedConv.messages.map(({ role, content }) => ({ role, content }))
   ];
 
+  // 4. Call API
   const response = await callGroqAPI(messages, { temperature: 0.7, maxTokens: 2048 });
-  conversationManager.addMessage(conversationId, 'assistant', response);
 
-  return { response, conversationId, messageCount: conv.messages.length };
+  // 5. Store assistant response
+  const finalConv = conversationManager.addMessage(conversationId, 'assistant', response);
+
+  // 6. Return structured result
+  return {
+    response,
+    conversationId,
+    messageCount: finalConv.messages.length,
+    level: finalConv.level,
+    persona: finalConv.persona
+  };
 };
 
+/**
+ * Quick one-off question without conversation history
+ */
 export const quickAsk = async (question, textContext, level = DIFFICULTY_LEVELS.INTERMEDIATE, persona = TEACHING_PERSONAS.DEFAULT, studyMode = STUDY_MODES.IYUN) => {
-  const messages = [
-    { role: 'system', content: generateSystemPrompt(level, persona, textContext, studyMode) },
-    { role: 'user', content: question }
-  ];
-  return await callGroqAPI(messages, { temperature: 0.7, maxTokens: 2048 });
+  return callAIWithParsing({
+    systemPrompt: generateSystemPrompt(level, persona, textContext, studyMode),
+    userPrompt: question,
+    options: { maxTokens: 2048 }
+  });
 };
 
+/**
+ * Generate Socratic questions for deep learning
+ */
 export const generateSocraticQuestions = async (textContent, textRef, level = DIFFICULTY_LEVELS.INTERMEDIATE) => {
-  const prompt = `Based on this Torah text, generate 3-5 Socratic questions.
+  const levelConfig = getConfig('level', level, DIFFICULTY_LEVELS.INTERMEDIATE);
+
+  return callAIWithParsing({
+    systemPrompt: 'Master Torah teacher using Socratic method. Respond with valid JSON.',
+    userPrompt: `Based on this Torah text, generate 3-5 Socratic questions.
 
 TEXT: ${textContent}
 REFERENCE: ${textRef}
-LEVEL: ${LEVEL_CONFIG[level].name}
+LEVEL: ${levelConfig.name}
 
 Questions should: observe → analyze → understand → apply.
 
-JSON: {"questions":[{"question":"","purpose":"","followUp":""}],"keyInsight":""}`;
-
-  const response = await callGroqAPI([
-    { role: 'system', content: 'Master Torah teacher using Socratic method. Respond with valid JSON.' },
-    { role: 'user', content: prompt }
-  ], { temperature: 0.8, maxTokens: 1024, jsonResponse: true });
-
-  try { return JSON.parse(response); }
-  catch { return { questions: [], keyInsight: response, error: 'Parse failed' }; }
+JSON: {"questions":[{"question":"","purpose":"","followUp":""}],"keyInsight":""}`,
+    options: { temperature: 0.8, jsonResponse: true },
+    fallbackFn: (raw) => ({ questions: [], keyInsight: raw, error: 'Parse failed' })
+  });
 };
 
+/**
+ * Explain a concept in context
+ */
 export const explainConcept = async (concept, context, level = DIFFICULTY_LEVELS.INTERMEDIATE, persona = TEACHING_PERSONAS.DEFAULT) => {
-  const prompt = `Explain: "${concept}"\n\nContext: ${context}\n\nProvide: 1) Simple definition 2) Why it matters 3) Example 4) Practical connection`;
-  return await quickAsk(prompt, context, level, persona);
+  return quickAsk(
+    `Explain: "${concept}"\n\nContext: ${context}\n\nProvide: 1) Simple definition 2) Why it matters 3) Example 4) Practical connection`,
+    context,
+    level,
+    persona
+  );
 };
 
-export const changeLevel = (id, level) => { conversationManager.updateLevel(id, level); return conversationManager.get(id); };
-export const changePersona = (id, persona) => { conversationManager.updatePersona(id, persona); return conversationManager.get(id); };
+// State management exports
+export const changeLevel = (id, level) => conversationManager.updateLevel(id, level);
+export const changePersona = (id, persona) => conversationManager.updatePersona(id, persona);
 export const getConversationHistory = (id) => conversationManager.getMessages(id);
 export const exportConversation = (id) => conversationManager.export(id);
 export const clearConversation = (id) => conversationManager.clear(id);
 
 // =============================================================================
-// Quiz Generation
+// Quiz Generation - Using unified data flow utilities
 // =============================================================================
 
+/**
+ * Generate quiz questions for assessment
+ */
 export const generateQuizQuestions = async (textContent, textRef, numQuestions = 5, level = DIFFICULTY_LEVELS.INTERMEDIATE) => {
-  const prompt = `Generate ${numQuestions} quiz questions about this Torah text.
+  const levelConfig = getConfig('level', level, DIFFICULTY_LEVELS.INTERMEDIATE);
+
+  return callAIWithParsing({
+    systemPrompt: 'Torah teacher creating quizzes. Respond with valid JSON only.',
+    userPrompt: `Generate ${numQuestions} quiz questions about this Torah text.
 
 TEXT: ${textContent}
 REFERENCE: ${textRef}
-DIFFICULTY: ${LEVEL_CONFIG[level].name}
+DIFFICULTY: ${levelConfig.name}
 
 Mix question types. 4 options each.
 
-JSON: {"questions":[{"id":1,"type":"multiple_choice","question":"","options":[],"correctIndex":0,"explanation":"","difficulty":"medium"}],"topic":"","estimatedTime":""}`;
-
-  const response = await callGroqAPI([
-    { role: 'system', content: 'Torah teacher creating quizzes. Respond with valid JSON only.' },
-    { role: 'user', content: prompt }
-  ], { temperature: 0.7, maxTokens: 1500, jsonResponse: true });
-
-  try { return JSON.parse(response); }
-  catch { return { questions: [], error: 'Failed to generate quiz' }; }
+JSON: {"questions":[{"id":1,"type":"multiple_choice","question":"","options":[],"correctIndex":0,"explanation":"","difficulty":"medium"}],"topic":"","estimatedTime":""}`,
+    options: { maxTokens: 1500, jsonResponse: true },
+    fallbackFn: () => ({ questions: [], error: 'Failed to generate quiz' })
+  });
 };
 
+/**
+ * Grade a student's response with feedback
+ */
 export const gradeResponse = async (question, studentAnswer, textContext, level = DIFFICULTY_LEVELS.INTERMEDIATE) => {
-  const prompt = `Grade this Torah study response.
+  const levelConfig = getConfig('level', level, DIFFICULTY_LEVELS.INTERMEDIATE);
+
+  return callAIWithParsing({
+    systemPrompt: 'Supportive Torah teacher grading work. Be encouraging. Respond with valid JSON.',
+    userPrompt: `Grade this Torah study response.
 
 QUESTION: ${question}
 ANSWER: ${studentAnswer}
 CONTEXT: ${textContext}
-LEVEL: ${LEVEL_CONFIG[level].name}
+LEVEL: ${levelConfig.name}
 
-JSON: {"score":0,"feedback":"","strengths":[],"improvements":[],"modelAnswer":"","encouragement":""}`;
-
-  const response = await callGroqAPI([
-    { role: 'system', content: 'Supportive Torah teacher grading work. Be encouraging. Respond with valid JSON.' },
-    { role: 'user', content: prompt }
-  ], { temperature: 0.6, maxTokens: 1024, jsonResponse: true });
-
-  try { return JSON.parse(response); }
-  catch { return { score: 50, feedback: response, error: 'Parse failed' }; }
+JSON: {"score":0,"feedback":"","strengths":[],"improvements":[],"modelAnswer":"","encouragement":""}`,
+    options: { temperature: 0.6, jsonResponse: true },
+    fallbackFn: (raw) => ({ score: 50, feedback: raw, error: 'Parse failed' })
+  });
 };
 
 // =============================================================================
@@ -410,15 +614,56 @@ JSON: {"score":0,"feedback":"","strengths":[],"improvements":[],"modelAnswer":""
 // =============================================================================
 export { getStoredApiKey };
 
+/**
+ * Clear all caches (useful for testing or memory management)
+ */
+export const clearCaches = () => {
+  configCache.clear();
+  systemPromptCache.clear();
+};
+
+/**
+ * Get service stats for debugging
+ */
+export const getServiceStats = () => ({
+  ...conversationManager.getStats(),
+  cachedConfigs: configCache.size,
+  cachedPrompts: systemPromptCache.size
+});
+
 // =============================================================================
 // Default Export
 // =============================================================================
 const aiTutorService = {
-  startConversation, getConversation, askQuestion, quickAsk,
-  changeLevel, changePersona, getConversationHistory, exportConversation, clearConversation,
-  generateSocraticQuestions, explainConcept,
-  generateQuizQuestions, gradeResponse,
-  DIFFICULTY_LEVELS, LEVEL_CONFIG, TEACHING_PERSONAS, PERSONA_CONFIG, TALMUDIC_TERMS
+  // Conversation management
+  startConversation,
+  getConversation,
+  askQuestion,
+  quickAsk,
+  changeLevel,
+  changePersona,
+  getConversationHistory,
+  exportConversation,
+  clearConversation,
+
+  // Learning tools
+  generateSocraticQuestions,
+  explainConcept,
+  generateQuizQuestions,
+  gradeResponse,
+
+  // Utilities
+  clearCaches,
+  getServiceStats,
+
+  // Constants
+  DIFFICULTY_LEVELS,
+  LEVEL_CONFIG,
+  TEACHING_PERSONAS,
+  PERSONA_CONFIG,
+  TALMUDIC_TERMS,
+  STUDY_MODES,
+  STUDY_MODE_CONFIG
 };
 
 export default aiTutorService;

@@ -3,6 +3,8 @@
 // Professional-grade thematic vocabulary analysis
 // =============================================================================
 
+import { stripAllDiacritics } from '../utils/hebrewUtils';
+
 /**
  * SEMANTIC DOMAINS - Major categories of meaning in Biblical Hebrew
  * Based on Louw-Nida semantic domain model adapted for Hebrew Bible
@@ -613,7 +615,7 @@ export const VOCABULARY = {
  * Get word with full semantic data
  */
 export const getWordSemantics = (word) => {
-  const cleanWord = word.replace(/[\u0591-\u05C7]/g, ''); // Remove vowels
+  const cleanWord = stripAllDiacritics(word);
   return VOCABULARY[cleanWord] || null;
 };
 
@@ -638,7 +640,7 @@ export const getWordsByDomain = (domainKey) => {
  * Get synonyms for a word
  */
 export const getSynonyms = (word) => {
-  const cleanWord = word.replace(/[\u0591-\u05C7]/g, '');
+  const cleanWord = stripAllDiacritics(word);
   const wordData = VOCABULARY[cleanWord];
 
   if (!wordData || !wordData.synonyms) return [];
@@ -655,7 +657,7 @@ export const getSynonyms = (word) => {
  * Get antonyms for a word
  */
 export const getAntonyms = (word) => {
-  const cleanWord = word.replace(/[\u0591-\u05C7]/g, '');
+  const cleanWord = stripAllDiacritics(word);
   const wordData = VOCABULARY[cleanWord];
 
   if (!wordData || !wordData.antonyms) return [];
@@ -672,7 +674,7 @@ export const getAntonyms = (word) => {
  * Get semantically related words (same domain)
  */
 export const getRelatedWords = (word, limit = 10) => {
-  const cleanWord = word.replace(/[\u0591-\u05C7]/g, '');
+  const cleanWord = stripAllDiacritics(word);
   const wordData = VOCABULARY[cleanWord];
 
   if (!wordData) return [];
@@ -695,7 +697,7 @@ export const analyzePassageSemantics = (hebrewText) => {
   const foundWords = [];
 
   for (const word of words) {
-    const cleanWord = word.replace(/[\u0591-\u05C7]/g, '').replace(/[^\u0590-\u05FF]/g, '');
+    const cleanWord = stripAllDiacritics(word).replace(/[^\u0590-\u05FF]/g, '');
     const wordData = VOCABULARY[cleanWord];
 
     if (wordData) {

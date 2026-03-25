@@ -11,6 +11,7 @@
  */
 
 import { getJastrowAramaicData } from '../services/dictionaryLoader';
+import { stripAllDiacritics } from '../utils/hebrewUtils';
 
 // =============================================================================
 // LAZY-LOADED LEXICON ACCESS
@@ -58,7 +59,7 @@ export const lookupJastrowLocal = (word) => {
   const data = getJastrowAramaicData();
   if (!data) return null;
 
-  const cleaned = word.replace(/[\u0591-\u05C7]/g, '');
+  const cleaned = stripAllDiacritics(word);
   return data[cleaned] || null;
 };
 

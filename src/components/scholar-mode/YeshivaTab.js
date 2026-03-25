@@ -1,12 +1,20 @@
 /**
  * YeshivaTab - Unified Yeshiva-Style Learning Tools
  *
- * Combines all traditional yeshiva learning features:
- * - Study Mode Selector (Iyun/Bekiut/Chazara)
- * - Chavruta AI (study partner)
- * - Kushya Tracker (question tracking)
- * - Source Chain (commentator relationships)
- * - Limmud Log (progress tracking)
+ * @deprecated PRO SCHOLAR V31: This component's features have been consolidated into:
+ *   - NotebookTab: Questions (KushyaTracker), Insights, Progress
+ *   - AIAnalysisTab: AI analysis with study modes
+ *   - ChavrutaTab: Chavruta AI functionality
+ *
+ * This file is kept for reference but is not actively used in ScholarModePanel.
+ * Consider importing from the consolidated components instead.
+ *
+ * Original features:
+ * - Study Mode Selector (Iyun/Bekiut/Chazara) -> AIAnalysisTab
+ * - Chavruta AI (study partner) -> ChavrutaTab
+ * - Kushya Tracker (question tracking) -> NotebookTab/Questions
+ * - Source Chain (commentator relationships) -> CommentaryTab
+ * - Limmud Log (progress tracking) -> NotebookTab/Progress
  */
 
 import React, { useState } from 'react';
@@ -82,7 +90,7 @@ const YeshivaTab = ({
               <div className={`current-mode mode-${currentMode}`}>
                 <span className="mode-name">
                   {currentMode === STUDY_MODES.IYUN && '🔬 עיון - Deep Study'}
-                  {currentMode === STUDY_MODES.BEKIUT && '📖 בקיאות - Broad Coverage'}
+                  {currentMode === STUDY_MODES.BEKIUS && '📖 בקיאות - Broad Coverage'}
                   {currentMode === STUDY_MODES.CHAZARA && '🔄 חזרה - Review Mode'}
                 </span>
               </div>

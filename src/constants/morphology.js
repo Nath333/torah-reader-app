@@ -3,6 +3,9 @@
 // Single source of truth for prefix/suffix handling across the app
 // =============================================================================
 
+// PRO SCHOLAR V12: Centralized Hebrew text utilities (DRY)
+import { stripAllDiacritics } from '../utils/hebrewUtils';
+
 // Import expanded root database with etymology, cognates, and frequency data
 import {
   ROOT_MEANINGS,
@@ -1399,8 +1402,8 @@ export const analyzeWordWithConfidence = (word, options = {}) => {
   const context = options.context || 'mixed';
   const interpretations = [];
 
-  // Clean word (remove nikud for analysis)
-  const cleanWord = word.replace(/[\u0591-\u05C7]/g, '');
+  // Clean word (remove nikud for analysis) - use hebrewUtils (DRY)
+  const cleanWord = stripAllDiacritics(word);
 
   // =========================================================================
   // LAYER 1: Check for abbreviations FIRST
@@ -1688,7 +1691,7 @@ export const analyzeWordWithConfidence = (word, options = {}) => {
 export const getAramaicConfidence = (word) => {
   if (!word) return 0;
 
-  const cleanWord = word.replace(/[\u0591-\u05C7]/g, '');
+  const cleanWord = stripAllDiacritics(word);
   let score = 0;
 
   // Emphatic state ending (א)
@@ -1909,8 +1912,8 @@ export const FUNCTION_WORDS = {
   'לַחוּץ': 'outside',
 
   // === SABBATH TERMS ===
-  'יציאות': 'goings out',
-  'יְצִיאוֹת': 'goings out',
+  // Note: יציאות defined in commentaryUtils.js with fuller definition
+  'יְצִיאוֹת': 'goings out, transfers',
   'השבת': 'Shabbat',
   'הַשַּׁבָּת': 'Shabbat',
   'שבת': 'Shabbat',
@@ -2366,8 +2369,8 @@ export const lookupFunctionWord = (word) => {
   // Try exact match first (with punctuation stripped)
   if (FUNCTION_WORDS[noPunct]) return FUNCTION_WORDS[noPunct];
 
-  // Try without vowels (strip nikud)
-  const stripped = noPunct.replace(/[\u0591-\u05C7]/g, '');
+  // Try without vowels (strip nikud) - use hebrewUtils (DRY)
+  const stripped = stripAllDiacritics(noPunct);
   if (FUNCTION_WORDS[stripped]) return FUNCTION_WORDS[stripped];
 
   // Try original word as fallback
@@ -2480,8 +2483,8 @@ export const HEBREW_BINYANIM = {
 export const detectHebrewBinyan = (word) => {
   if (!word || word.length < 3) return null;
 
-  // Strip nikud for pattern matching
-  const cleanWord = word.replace(/[\u0591-\u05C7]/g, '');
+  // Strip nikud for pattern matching - use hebrewUtils (DRY)
+  const cleanWord = stripAllDiacritics(word);
   const results = [];
 
   // Hitpael detection: הת prefix or internal ת after prefix
@@ -2602,7 +2605,7 @@ export const getBinyanInfo = (binyanName) => {
 export const extractHebrewRoot = (word) => {
   if (!word || word.length < 3) return null;
 
-  const cleanWord = word.replace(/[\u0591-\u05C7]/g, '');
+  const cleanWord = stripAllDiacritics(word);
   const binyanResult = detectHebrewBinyan(word);
 
   if (!binyanResult?.bestMatch) {

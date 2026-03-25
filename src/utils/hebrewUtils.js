@@ -47,6 +47,7 @@ export const stripAllDiacritics = (text) => {
 /**
  * Normalize final letters (sofit → regular form)
  * Converts ם ן ץ ף ך to מ נ צ פ כ
+ * Used for dictionary lookup where entries use medial forms
  * @param {string} word - Hebrew word
  * @returns {string} - Word with normalized finals
  */
@@ -58,6 +59,23 @@ export const normalizeFinals = (word) => {
     .replace(/ץ/g, 'צ')
     .replace(/ף/g, 'פ')
     .replace(/ך/g, 'כ');
+};
+
+/**
+ * Restore final letter form at end of word (regular → sofit)
+ * Converts trailing כ מ נ פ צ to ך ם ן ף ץ
+ * Used after suffix stripping to restore proper Hebrew spelling
+ * @param {string} word - Hebrew word
+ * @returns {string} - Word with final letter restored
+ */
+export const restoreFinals = (word) => {
+  if (!word || typeof word !== 'string' || word.length === 0) return word;
+  const lastChar = word[word.length - 1];
+  const finalForms = { 'כ': 'ך', 'מ': 'ם', 'נ': 'ן', 'פ': 'ף', 'צ': 'ץ' };
+  if (finalForms[lastChar]) {
+    return word.slice(0, -1) + finalForms[lastChar];
+  }
+  return word;
 };
 
 /**
@@ -329,6 +347,7 @@ const hebrewUtils = {
   cleanHebrewWord,
   cleanHebrewWordStrict,
   normalizeFinals,
+  restoreFinals,
   areSimilarWords,
   // PRO SCHOLAR V9: Unified similarity functions
   calculateSimilarity,

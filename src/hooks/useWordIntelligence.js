@@ -6,6 +6,7 @@
 import { useCallback, useMemo, useState, useRef, useEffect } from 'react';
 import useWordLookup from './useWordLookup';
 import { useVocabulary } from './useVocabulary';
+import { stripAllDiacritics } from '../utils/hebrewUtils';
 
 // =============================================================================
 // SAFE SERVICE IMPORTS
@@ -402,7 +403,7 @@ const useWordIntelligence = ({
    * Get SRS card ID for a word
    */
   const getCardId = useCallback((word) => {
-    const cleaned = word?.replace(/[\u0591-\u05C7]/g, '').trim();
+    const cleaned = word ? stripAllDiacritics(word).trim() : '';
     return `vocab-${cleaned}`;
   }, []);
 

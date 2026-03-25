@@ -92,9 +92,15 @@
 }
 
 .tzurat-hadaf.full-page {
-  min-height: 92vh;
+  /* Fill flex parent container */
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  max-height: 100%;
+  margin: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 /* ===== LOADING STATE ===== */
@@ -184,6 +190,7 @@
 
 /* ===== DAF HEADER - Traditional Gemara Header ===== */
 .daf-page-header {
+  flex-shrink: 0; /* Don't shrink header */
   position: relative;
   background: linear-gradient(
     180deg,
@@ -268,8 +275,11 @@
 .daf-three-columns {
   display: grid;
   grid-template-columns: 1fr 1.8fr 1fr;
-  flex: 1;
-  min-height: 500px;
+  grid-template-rows: 1fr; /* Single row that fills available space */
+  flex: 1 1 0; /* Grow and shrink, start at 0 */
+  min-height: 0; /* Important: allows flex to shrink, enabling scroll */
+  height: 0; /* Start at 0, flex will expand */
+  overflow: hidden; /* Children handle their own scrolling */
   position: relative;
   z-index: 5;
 }
@@ -278,7 +288,10 @@
   padding: 1.5rem 2rem;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: hidden; /* Clip content so child can scroll */
+  min-height: 0; /* Critical for grid items to respect height and allow scroll */
+  height: 100%; /* Fill grid cell */
+  max-height: 100%; /* Don't exceed grid cell */
   position: relative;
 }
 
@@ -342,6 +355,7 @@
 
 /* ===== COLUMN HEADERS ===== */
 .daf-col-header {
+  flex-shrink: 0; /* Don't shrink header */
   text-align: center;
   padding: 1rem;
   margin-bottom: 1.25rem;
@@ -389,30 +403,39 @@
 }
 
 .daf-col-content {
+  /* Explicit scroll container with calculated height */
   flex: 1;
+  min-height: 0; /* Critical for flex scroll */
   overflow-y: auto;
+  overflow-x: hidden;
   font-size: 1.05rem;
   line-height: 2;
   padding-right: 0.75rem;
   scroll-behavior: smooth;
+  /* Trackpad/touch scrolling support */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain; /* Prevent scroll chaining to parent */
+  touch-action: pan-y; /* Enable vertical trackpad gestures */
 }
 
-/* Elegant scrollbar */
+/* Visible scrollbar */
 .daf-col-content::-webkit-scrollbar {
-  width: 6px;
+  width: 10px; /* Wider for visibility */
 }
 
 .daf-col-content::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
 }
 
 .daf-col-content::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--gold-light), var(--gold-accent));
-  border-radius: 3px;
+  background: var(--gold-accent, #6b4423);
+  border-radius: 5px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .daf-col-content::-webkit-scrollbar-thumb:hover {
-  background: var(--border-brown);
+  background: var(--border-brown, #5d4e37);
 }
 
 /* ===== GEMARA COLUMN (Center) ===== */
@@ -547,6 +570,7 @@
 
 /* ===== DAF FOOTER ===== */
 .daf-page-footer {
+  flex-shrink: 0; /* Don't shrink footer */
   display: flex;
   justify-content: space-between;
   align-items: center;

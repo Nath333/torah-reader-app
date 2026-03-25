@@ -30,15 +30,16 @@ export const CONTEXT_TYPES = {
 };
 
 // Source preferences by context type
+// PRO SCHOLAR V12: Using FREE public domain sources only (Gesenius replaces HALOT)
 const SOURCE_PREFERENCES = {
-  [CONTEXT_TYPES.TORAH]: ['BDB', 'HALOT', 'Jastrow', 'Klein', 'Sefaria'],
-  [CONTEXT_TYPES.PROPHETS]: ['BDB', 'HALOT', 'Klein', 'Jastrow', 'Sefaria'],
-  [CONTEXT_TYPES.WRITINGS]: ['BDB', 'HALOT', 'Jastrow', 'Klein', 'Sefaria'],
-  [CONTEXT_TYPES.TALMUD]: ['Jastrow', 'Sokoloff', 'CAL', 'Klein', 'Sefaria'],
+  [CONTEXT_TYPES.TORAH]: ['BDB', 'Gesenius', 'Jastrow', 'Klein', 'Sefaria'],
+  [CONTEXT_TYPES.PROPHETS]: ['BDB', 'Gesenius', 'Klein', 'Jastrow', 'Sefaria'],
+  [CONTEXT_TYPES.WRITINGS]: ['BDB', 'Gesenius', 'Jastrow', 'Klein', 'Sefaria'],
+  [CONTEXT_TYPES.TALMUD]: ['Jastrow', 'CAL', 'Klein', 'BDB', 'Sefaria'],
   [CONTEXT_TYPES.MISHNAH]: ['Jastrow', 'Klein', 'BDB', 'Sefaria'],
   [CONTEXT_TYPES.MIDRASH]: ['Jastrow', 'Klein', 'BDB', 'Sefaria'],
   [CONTEXT_TYPES.LITURGY]: ['BDB', 'Jastrow', 'Klein', 'Sefaria'],
-  [CONTEXT_TYPES.POETRY]: ['BDB', 'HALOT', 'Klein', 'Jastrow', 'Sefaria'],
+  [CONTEXT_TYPES.POETRY]: ['BDB', 'Gesenius', 'Klein', 'Jastrow', 'Sefaria'],
   [CONTEXT_TYPES.HALACHA]: ['Jastrow', 'Klein', 'BDB', 'Sefaria'],
   [CONTEXT_TYPES.GENERAL]: ['Sefaria', 'BDB', 'Jastrow', 'Klein'],
 };
@@ -556,7 +557,7 @@ function generateContextTips(contextType, domains) {
       tips.push('Consider technical legal (halachic) meanings');
       break;
     case CONTEXT_TYPES.TORAH:
-      tips.push('Biblical Hebrew definitions from BDB/HALOT are prioritized');
+      tips.push('Biblical Hebrew definitions from BDB/Gesenius are prioritized');
       tips.push('Consider both literal and midrashic interpretations');
       break;
     case CONTEXT_TYPES.POETRY:

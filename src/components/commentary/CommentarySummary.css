@@ -614,6 +614,133 @@
 }
 
 /* =============================================================================
+   Scholarly Fallback - Hebrew Content Display
+   ============================================================================= */
+.mermaid-fallback.scholarly {
+  padding: 16px;
+  direction: rtl;
+}
+
+.mermaid-fallback.scholarly .fallback-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--accent, #6366f1);
+}
+
+.dark-mode .mermaid-fallback.scholarly .fallback-title {
+  color: #e2e8f0;
+}
+
+.mermaid-fallback.scholarly .fallback-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mermaid-fallback.scholarly .fallback-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mermaid-fallback.scholarly .section-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mermaid-fallback.scholarly .concept-tags,
+.mermaid-fallback.scholarly .ruling-tags,
+.mermaid-fallback.scholarly .sage-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mermaid-fallback.scholarly .concept-tag {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  color: #475569;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid #e2e8f0;
+}
+
+.dark-mode .mermaid-fallback.scholarly .concept-tag {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  color: #e2e8f0;
+  border-color: #475569;
+}
+
+.mermaid-fallback.scholarly .ruling-tag {
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+.mermaid-fallback.scholarly .ruling-tag.strict {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.mermaid-fallback.scholarly .ruling-tag.lenient {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  color: #16a34a;
+  border-color: #bbf7d0;
+}
+
+.dark-mode .mermaid-fallback.scholarly .ruling-tag.strict {
+  background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%);
+  color: #fca5a5;
+  border-color: #b91c1c;
+}
+
+.dark-mode .mermaid-fallback.scholarly .ruling-tag.lenient {
+  background: linear-gradient(135deg, #052e16 0%, #166534 100%);
+  color: #86efac;
+  border-color: #22c55e;
+}
+
+.mermaid-fallback.scholarly .sage-tag {
+  background: linear-gradient(135deg, #fdf4ff 0%, #f5d0fe 100%);
+  color: #a21caf;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid #e879f9;
+}
+
+.dark-mode .mermaid-fallback.scholarly .sage-tag {
+  background: linear-gradient(135deg, #4a044e 0%, #701a75 100%);
+  color: #f5d0fe;
+  border-color: #c026d3;
+}
+
+.mermaid-fallback.scholarly .fallback-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px;
+  color: var(--text-secondary, #64748b);
+}
+
+.mermaid-fallback.scholarly .fallback-empty .empty-icon {
+  font-size: 32px;
+  opacity: 0.5;
+}
+
+/* =============================================================================
    Concept Flow - Alternative to Diagram
    ============================================================================= */
 .concept-flow-section {
@@ -1188,9 +1315,7 @@
   margin-bottom: 20px;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+/* @keyframes spin - defined in animations.css */
 
 .loading-text {
   margin: 0 0 6px 0;
@@ -3031,10 +3156,7 @@ a.source-ref:hover {
   animation: spin 1s linear infinite;
 }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
+/* @keyframes spin - defined in animations.css */
 
 .follow-up-hint {
   font-size: 11px;

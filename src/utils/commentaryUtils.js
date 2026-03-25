@@ -336,6 +336,22 @@ const RASHI_VOCABULARY = {
   'קרבן': 'sacrifice',
   'נדבה': 'voluntary offering',
 
+  // === INFINITIVES (BDB often returns wrong homographs) ===
+  'לאסור': 'to prohibit',
+  'להתיר': 'to permit',
+  'לחייב': 'to obligate',
+  'לפטור': 'to exempt',
+  'להביא': 'to bring',
+  'להוציא': 'to take out',
+  'להכניס': 'to bring in',
+  'לעשות': 'to do, to make',
+  'לתת': 'to give',
+  'לקבל': 'to receive',
+  'ללמוד': 'to learn',
+  'ללמד': 'to teach',
+  'לדרוש': 'to expound',
+  'לכתחלה': 'ab initio, ideally',
+
   // === COMMON PRONOUNS/CONJUNCTIONS (Strong's gets these wrong) ===
   'שהן': 'that they (f)',
   'שהם': 'that they (m)',

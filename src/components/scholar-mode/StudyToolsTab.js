@@ -1,9 +1,20 @@
 /**
- * MasteryTab - Progress and Mastery Tracking for Scholar Mode
+ * MasteryTab / StudyToolsTab - Progress and Mastery Tracking for Scholar Mode
  *
- * Tracks understanding levels for verses, chapters, and concepts.
- * Features spaced repetition reminders and motivational feedback.
- * Includes Yeshiva-style learning tools: questions, chiddushim notes, commentary tracking.
+ * @deprecated PRO SCHOLAR V31: This component's features have been consolidated into:
+ *   - NotebookTab: Unified personal study journal with Progress, Questions, Insights, Chazara
+ *   - TalmudToolsTab: Talmud-specific mastery tracking and study modes
+ *   - UnifiedSugyaAnalysis: Study notes and mastery levels via useStudyNotes/useMasteryLevel hooks
+ *
+ * This file is kept for reference but is not actively used in ScholarModePanel.
+ * NotebookTab is the recommended replacement.
+ *
+ * Original features:
+ * - Mastery level tracking -> NotebookTab/Progress
+ * - Spaced repetition reminders -> NotebookTab/Chazara
+ * - Yeshiva tools (questions, notes) -> NotebookTab/Questions, NotebookTab/Insights
+ * - Commentary tracking -> CommentaryTab
+ * - Siyum (completion) tracking -> NotebookTab/Progress
  */
 
 import React, { useState, useMemo, useCallback } from 'react';

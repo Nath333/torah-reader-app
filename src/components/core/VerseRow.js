@@ -118,12 +118,16 @@ const VerseRow = ({
   // Get commentary data for this verse
   // PRO SCHOLAR: For Talmud, Rashi is stored at daf level (all comments for entire daf)
   // For Torah, Rashi is stored at verse level
+  // Also check if rashiData is an object with the right structure
+  const rashiData = commentaryData.rashiData || {};
   const rashiComments = isTalmud
-    ? (commentaryData.rashiData?.[dafKey] || commentaryData.rashiData?.[verseKey] || [])
-    : (commentaryData.rashiData?.[verseKey] || []);
+    ? (rashiData[dafKey] || rashiData[verseKey] || [])
+    : (rashiData[verseKey] || []);
 
   // PRO SCHOLAR: Loading state is a boolean, not an object
-  const rashiLoading = commentaryData.rashiLoading;
+  // Also consider "loading" if rashiData hasn't been populated yet
+  const rashiLoading = commentaryData.rashiLoading ||
+    (showRashi && Object.keys(rashiData).length === 0);
   const tosafotComments = commentaryData.tosafotData?.[`${selectedBook}:${selectedChapter}`] || [];
   const tosafotLoading = commentaryData.tosafotLoading;
   const maharshaComments = commentaryData.maharshaData?.[`${selectedBook}:${selectedChapter}`];
@@ -490,7 +494,11 @@ const VerseRow = ({
                     </div>
                   ))
                 ) : (
-                  <div className="rashi-empty">No Rashi commentary available for this verse</div>
+                  <div className="rashi-empty">
+                    {isTalmud
+                      ? `No Rashi commentary available for ${selectedBook} ${selectedChapter}`
+                      : 'No Rashi commentary available for this verse'}
+                  </div>
                 )}
               </div>
             </div>

@@ -1,0 +1,3654 @@
+{
+  "_meta": {
+    "source": "Proto-Semitic Reconstructions",
+    "extractedAt": "2026-03-23T22:30:00.000Z",
+    "totalWords": 212,
+    "found": 212,
+    "withProtoSemitic": 212,
+    "withCognates": 212,
+    "notFound": 0,
+    "sourceUrl": "https://en.wiktionary.org",
+    "license": "CC-BY-SA 3.0",
+    "attribution": "Proto-Semitic reconstructions based on scholarly consensus (HALOT, Kogan, Militarev, Orel-Stolbova). Licensed under CC-BY-SA.",
+    "note": "Curated Proto-Semitic reconstructions for Biblical Hebrew and Talmudic Aramaic vocabulary",
+    "expandedAt": "2026-03-23T22:19:28.724Z"
+  },
+  "entries": {
+    "אב": {
+      "word": "אב",
+      "protoSemitic": "ʾab-",
+      "cognates": {
+        "akkadian": [
+          "abu"
+        ],
+        "arabic": [
+          "ʾab"
+        ],
+        "aramaic": [
+          "ʾabbā"
+        ],
+        "ethiopic": [
+          "ʾab"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʾab- 'father'. Cognate with Akkadian abu, Arabic ʾab.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "אם": {
+      "word": "אם",
+      "protoSemitic": "ʾimm-",
+      "cognates": {
+        "akkadian": [
+          "ummu"
+        ],
+        "arabic": [
+          "ʾumm"
+        ],
+        "aramaic": [
+          "ʾimmā"
+        ],
+        "ethiopic": [
+          "ʾǝmm"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʾimm- 'mother'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "בן": {
+      "word": "בן",
+      "protoSemitic": "bin-",
+      "cognates": {
+        "akkadian": [
+          "bīnu"
+        ],
+        "arabic": [
+          "ibn"
+        ],
+        "aramaic": [
+          "bar",
+          "bǝrā"
+        ],
+        "phoenician": [
+          "bn"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *bin- 'son'. Related to √bny 'to build'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "בת": {
+      "word": "בת",
+      "protoSemitic": "bint-",
+      "cognates": {
+        "akkadian": [
+          "bintu"
+        ],
+        "arabic": [
+          "bint"
+        ],
+        "aramaic": [
+          "brat",
+          "bartā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *bint- 'daughter'. Feminine of *bin-.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "אח": {
+      "word": "אח",
+      "protoSemitic": "ʾaḫ-",
+      "cognates": {
+        "akkadian": [
+          "aḫu"
+        ],
+        "arabic": [
+          "ʾaḫ"
+        ],
+        "aramaic": [
+          "ʾaḥā"
+        ],
+        "ethiopic": [
+          "ʾǝḫ"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʾaḫ- 'brother'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "אחות": {
+      "word": "אחות",
+      "protoSemitic": "ʾaḫāt-",
+      "cognates": {
+        "akkadian": [
+          "aḫātu"
+        ],
+        "arabic": [
+          "ʾuḫt"
+        ],
+        "aramaic": [
+          "ḥātā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʾaḫāt- 'sister'. Feminine of *ʾaḫ-.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "אדם": {
+      "word": "אדם",
+      "protoSemitic": "ʾadam-",
+      "cognates": {
+        "akkadian": [
+          "adamu"
+        ],
+        "arabic": [
+          "ʾādam"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʾadam- 'man, human'. Related to √ʾdm 'to be red'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "איש": {
+      "word": "איש",
+      "protoSemitic": "ʾīš-",
+      "cognates": {
+        "ugaritic": [
+          "ʾiš"
+        ],
+        "phoenician": [
+          "ʾš"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʾīš- 'man'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "אשה": {
+      "word": "אשה",
+      "protoSemitic": "ʾinṯ-at-",
+      "cognates": {
+        "arabic": [
+          "ʾunṯā"
+        ],
+        "akkadian": [
+          "sinništu"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʾinṯ-at- 'woman'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "מים": {
+      "word": "מים",
+      "protoSemitic": "māy-",
+      "cognates": {
+        "akkadian": [
+          "mû"
+        ],
+        "arabic": [
+          "māʾ"
+        ],
+        "aramaic": [
+          "mayyā"
+        ],
+        "ugaritic": [
+          "my"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *māy- 'water'. Dual form.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שמים": {
+      "word": "שמים",
+      "protoSemitic": "šamāy-",
+      "cognates": {
+        "akkadian": [
+          "šamû"
+        ],
+        "arabic": [
+          "samāʾ"
+        ],
+        "ugaritic": [
+          "šmm"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *šamāy- 'sky, heaven'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "ארץ": {
+      "word": "ארץ",
+      "protoSemitic": "ʾarṣ́-",
+      "cognates": {
+        "akkadian": [
+          "erṣetu"
+        ],
+        "arabic": [
+          "ʾarḍ"
+        ],
+        "ugaritic": [
+          "ʾarṣ"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʾarṣ́- 'earth, land'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "יום": {
+      "word": "יום",
+      "protoSemitic": "yawm-",
+      "cognates": {
+        "akkadian": [
+          "ūmu"
+        ],
+        "arabic": [
+          "yawm"
+        ],
+        "aramaic": [
+          "yōmā"
+        ],
+        "ethiopic": [
+          "yom"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *yawm- 'day'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "לילה": {
+      "word": "לילה",
+      "protoSemitic": "layl-",
+      "cognates": {
+        "akkadian": [
+          "līlītu"
+        ],
+        "arabic": [
+          "layl"
+        ],
+        "aramaic": [
+          "lēlyā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *layl- 'night'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "אש": {
+      "word": "אש",
+      "protoSemitic": "ʾiš-āt-",
+      "cognates": {
+        "akkadian": [
+          "išātu"
+        ],
+        "arabic": [
+          "ʾuṯṯ"
+        ],
+        "ugaritic": [
+          "ʾišt"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʾiš-āt- 'fire'. Feminine.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "רוח": {
+      "word": "רוח",
+      "protoSemitic": "rūḥ-",
+      "cognates": {
+        "akkadian": [
+          "šāru"
+        ],
+        "arabic": [
+          "rūḥ"
+        ],
+        "aramaic": [
+          "rūḥā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *rūḥ- 'wind, breath, spirit'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "לב": {
+      "word": "לב",
+      "protoSemitic": "libb-",
+      "cognates": {
+        "akkadian": [
+          "libbu"
+        ],
+        "arabic": [
+          "lubb"
+        ],
+        "aramaic": [
+          "libbā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *libb- 'heart, mind'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "יד": {
+      "word": "יד",
+      "protoSemitic": "yad-",
+      "cognates": {
+        "akkadian": [
+          "idu"
+        ],
+        "arabic": [
+          "yad"
+        ],
+        "aramaic": [
+          "yǝdā"
+        ],
+        "ugaritic": [
+          "yd"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *yad- 'hand'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "עין": {
+      "word": "עין",
+      "protoSemitic": "ʿayn-",
+      "cognates": {
+        "akkadian": [
+          "īnu"
+        ],
+        "arabic": [
+          "ʿayn"
+        ],
+        "aramaic": [
+          "ʿaynā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʿayn- 'eye; spring'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "פה": {
+      "word": "פה",
+      "protoSemitic": "pūm-",
+      "cognates": {
+        "akkadian": [
+          "pû"
+        ],
+        "arabic": [
+          "fam"
+        ],
+        "aramaic": [
+          "pummā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *pūm- 'mouth'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "ראש": {
+      "word": "ראש",
+      "protoSemitic": "raʾš-",
+      "cognates": {
+        "akkadian": [
+          "rēšu"
+        ],
+        "arabic": [
+          "raʾs"
+        ],
+        "aramaic": [
+          "rēšā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *raʾš- 'head'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "רגל": {
+      "word": "רגל",
+      "protoSemitic": "rigl-",
+      "cognates": {
+        "akkadian": [
+          "šēpu"
+        ],
+        "arabic": [
+          "riǧl"
+        ],
+        "aramaic": [
+          "riglā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *rigl- 'foot, leg'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "אזן": {
+      "word": "אזן",
+      "protoSemitic": "ʾuḏn-",
+      "cognates": {
+        "akkadian": [
+          "uznu"
+        ],
+        "arabic": [
+          "ʾuḏun"
+        ],
+        "aramaic": [
+          "ʾednā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʾuḏn- 'ear'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "אף": {
+      "word": "אף",
+      "protoSemitic": "ʾanp-",
+      "cognates": {
+        "akkadian": [
+          "appu"
+        ],
+        "arabic": [
+          "ʾanf"
+        ],
+        "aramaic": [
+          "ʾanpā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʾanp- 'nose; anger'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "לשון": {
+      "word": "לשון",
+      "protoSemitic": "lišān-",
+      "cognates": {
+        "akkadian": [
+          "lišānu"
+        ],
+        "arabic": [
+          "lisān"
+        ],
+        "aramaic": [
+          "liššānā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *lišān- 'tongue, language'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שן": {
+      "word": "שן",
+      "protoSemitic": "šinn-",
+      "cognates": {
+        "akkadian": [
+          "šinnu"
+        ],
+        "arabic": [
+          "sinn"
+        ],
+        "aramaic": [
+          "šinnā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *šinn- 'tooth'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "כתף": {
+      "word": "כתף",
+      "protoSemitic": "katip-",
+      "cognates": {
+        "akkadian": [
+          "katappu"
+        ],
+        "arabic": [
+          "katif"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *katip- 'shoulder'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "בטן": {
+      "word": "בטן",
+      "protoSemitic": "baṭn-",
+      "cognates": {
+        "akkadian": [
+          "birtu"
+        ],
+        "arabic": [
+          "baṭn"
+        ],
+        "aramaic": [
+          "biṭnā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *baṭn- 'belly, womb'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "דם": {
+      "word": "דם",
+      "protoSemitic": "dam-",
+      "cognates": {
+        "akkadian": [
+          "damu"
+        ],
+        "arabic": [
+          "dam"
+        ],
+        "aramaic": [
+          "dǝmā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *dam- 'blood'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "עצם": {
+      "word": "עצם",
+      "protoSemitic": "ʿaṣm-",
+      "cognates": {
+        "akkadian": [
+          "eṣemtu"
+        ],
+        "arabic": [
+          "ʿaẓm"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʿaṣm- 'bone'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "בשר": {
+      "word": "בשר",
+      "protoSemitic": "baśar-",
+      "cognates": {
+        "akkadian": [
+          "šīru"
+        ],
+        "arabic": [
+          "bašar"
+        ],
+        "aramaic": [
+          "bisrā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *baśar- 'flesh, body'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שם": {
+      "word": "שם",
+      "protoSemitic": "šim-",
+      "cognates": {
+        "akkadian": [
+          "šumu"
+        ],
+        "arabic": [
+          "ism"
+        ],
+        "aramaic": [
+          "šǝmā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *šim- 'name'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "דבר": {
+      "word": "דבר",
+      "protoSemitic": "dabr-",
+      "cognates": {
+        "akkadian": [
+          "dabābu"
+        ],
+        "arabic": [
+          "dabbara"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *dabr- 'word, thing, matter'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "מלך": {
+      "word": "מלך",
+      "protoSemitic": "malk-",
+      "cognates": {
+        "akkadian": [
+          "malku"
+        ],
+        "arabic": [
+          "malik"
+        ],
+        "aramaic": [
+          "malkā"
+        ],
+        "ugaritic": [
+          "mlk"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *malk- 'king'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "עבד": {
+      "word": "עבד",
+      "protoSemitic": "ʿabd-",
+      "cognates": {
+        "akkadian": [
+          "ardu"
+        ],
+        "arabic": [
+          "ʿabd"
+        ],
+        "aramaic": [
+          "ʿabdā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʿabd- 'servant, slave'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "אל": {
+      "word": "אל",
+      "protoSemitic": "ʾil-",
+      "cognates": {
+        "akkadian": [
+          "ilu"
+        ],
+        "arabic": [
+          "ʾilāh"
+        ],
+        "aramaic": [
+          "ʾelāhā"
+        ],
+        "ugaritic": [
+          "ʾil"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʾil- 'god, deity'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "אלהים": {
+      "word": "אלהים",
+      "protoSemitic": "ʾilāh-",
+      "cognates": {
+        "akkadian": [
+          "ilāni"
+        ],
+        "arabic": [
+          "ʾilāh, Allāh"
+        ],
+        "aramaic": [
+          "ʾelāhīn"
+        ]
+      },
+      "etymologyText": "Plural of אלוה, from *ʾilāh- 'god'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "קדש": {
+      "word": "קדש",
+      "protoSemitic": "q-d-š",
+      "cognates": {
+        "akkadian": [
+          "qadāšu"
+        ],
+        "arabic": [
+          "qaddasa"
+        ],
+        "aramaic": [
+          "qaddīš"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √qdš 'to be holy'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "ברך": {
+      "word": "ברך",
+      "protoSemitic": "b-r-k",
+      "cognates": {
+        "akkadian": [
+          "karābu"
+        ],
+        "arabic": [
+          "bāraka"
+        ],
+        "aramaic": [
+          "bǝrak"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √brk 'to bless, kneel'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שלום": {
+      "word": "שלום",
+      "protoSemitic": "šalām-",
+      "cognates": {
+        "akkadian": [
+          "šalāmu"
+        ],
+        "arabic": [
+          "salām"
+        ],
+        "aramaic": [
+          "šǝlāmā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *šalām- 'peace, completeness'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "חיה": {
+      "word": "חיה",
+      "protoSemitic": "ḥ-y-y",
+      "cognates": {
+        "akkadian": [
+          "balāṭu"
+        ],
+        "arabic": [
+          "ḥayy"
+        ],
+        "aramaic": [
+          "ḥayyā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ḥyy 'to live'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "מות": {
+      "word": "מות",
+      "protoSemitic": "mawt-",
+      "cognates": {
+        "akkadian": [
+          "mūtu"
+        ],
+        "arabic": [
+          "mawt"
+        ],
+        "aramaic": [
+          "mōtā"
+        ],
+        "ugaritic": [
+          "mt"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *mawt- 'death'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "אמר": {
+      "word": "אמר",
+      "protoSemitic": "ʾ-m-r",
+      "cognates": {
+        "akkadian": [
+          "amāru"
+        ],
+        "arabic": [
+          "ʾamara"
+        ],
+        "aramaic": [
+          "ʾǝmar"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ʾmr 'to say, speak'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "ידע": {
+      "word": "ידע",
+      "protoSemitic": "y-d-ʿ",
+      "cognates": {
+        "akkadian": [
+          "idû"
+        ],
+        "arabic": [
+          "wadaʿa"
+        ],
+        "aramaic": [
+          "yǝdaʿ"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ydʿ 'to know'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "ראה": {
+      "word": "ראה",
+      "protoSemitic": "r-ʾ-y",
+      "cognates": {
+        "akkadian": [
+          "amāru"
+        ],
+        "arabic": [
+          "raʾā"
+        ],
+        "aramaic": [
+          "ḥǝzā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √rʾy 'to see'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שמע": {
+      "word": "שמע",
+      "protoSemitic": "š-m-ʿ",
+      "cognates": {
+        "akkadian": [
+          "šemû"
+        ],
+        "arabic": [
+          "samiʿa"
+        ],
+        "aramaic": [
+          "šǝmaʿ"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √šmʿ 'to hear'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "הלך": {
+      "word": "הלך",
+      "protoSemitic": "h-l-k",
+      "cognates": {
+        "akkadian": [
+          "alāku"
+        ],
+        "arabic": [
+          "halaka"
+        ],
+        "aramaic": [
+          "hǝlak"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √hlk 'to walk, go'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "בוא": {
+      "word": "בוא",
+      "protoSemitic": "b-w-ʾ",
+      "cognates": {
+        "akkadian": [
+          "erēbu"
+        ],
+        "arabic": [
+          "bāʾa"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √bwʾ 'to come, enter'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "נתן": {
+      "word": "נתן",
+      "protoSemitic": "n-t-n",
+      "cognates": {
+        "akkadian": [
+          "nadānu"
+        ],
+        "arabic": [
+          "naṯara"
+        ],
+        "ugaritic": [
+          "ytn"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ntn 'to give'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "לקח": {
+      "word": "לקח",
+      "protoSemitic": "l-q-ḥ",
+      "cognates": {
+        "akkadian": [
+          "leqû"
+        ],
+        "aramaic": [
+          "nǝsab"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √lqḥ 'to take'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "עשה": {
+      "word": "עשה",
+      "protoSemitic": "ʿ-ś-y",
+      "cognates": {
+        "arabic": [
+          "ʿasā"
+        ],
+        "aramaic": [
+          "ʿǝbad"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ʿśy 'to make, do'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "בית": {
+      "word": "בית",
+      "protoSemitic": "bayt-",
+      "cognates": {
+        "akkadian": [
+          "bītu"
+        ],
+        "arabic": [
+          "bayt"
+        ],
+        "aramaic": [
+          "baytā"
+        ],
+        "ugaritic": [
+          "bt"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *bayt- 'house'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "דרך": {
+      "word": "דרך",
+      "protoSemitic": "dark-",
+      "cognates": {
+        "akkadian": [
+          "darku"
+        ],
+        "arabic": [
+          "daraka"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *dark- 'way, path'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "תורה": {
+      "word": "תורה",
+      "protoSemitic": "h-w-r/y-r-h",
+      "cognates": {
+        "akkadian": [
+          "tēru"
+        ],
+        "arabic": [
+          "tawrāt"
+        ]
+      },
+      "etymologyText": "From √yrh 'to shoot, throw' > 'to instruct'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "משפט": {
+      "word": "משפט",
+      "protoSemitic": "š-p-ṭ",
+      "cognates": {
+        "akkadian": [
+          "šapāṭu"
+        ],
+        "arabic": [
+          "šafaṭa"
+        ]
+      },
+      "etymologyText": "From √špṭ 'to judge'. Noun maqtal.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "צדק": {
+      "word": "צדק",
+      "protoSemitic": "ṣ-d-q",
+      "cognates": {
+        "akkadian": [
+          "kittu"
+        ],
+        "arabic": [
+          "ṣadaqa"
+        ],
+        "aramaic": [
+          "ṣǝdaqtā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ṣdq 'to be righteous'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "טוב": {
+      "word": "טוב",
+      "protoSemitic": "ṭ-y-b",
+      "cognates": {
+        "akkadian": [
+          "ṭābu"
+        ],
+        "arabic": [
+          "ṭāba"
+        ],
+        "aramaic": [
+          "ṭāb"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ṭyb 'to be good'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "רע": {
+      "word": "רע",
+      "protoSemitic": "r-ʿ-ʿ",
+      "cognates": {
+        "akkadian": [
+          "raggu"
+        ],
+        "arabic": [
+          "raʿaʿa"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √rʿʿ 'to be bad'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "גדול": {
+      "word": "גדול",
+      "protoSemitic": "g-d-l",
+      "cognates": {
+        "akkadian": [
+          "rabû"
+        ],
+        "arabic": [
+          "ǧadala"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √gdl 'to be great'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "קטן": {
+      "word": "קטן",
+      "protoSemitic": "q-ṭ-n",
+      "cognates": {
+        "akkadian": [
+          "qaṭānu"
+        ],
+        "arabic": [
+          "qaṭana"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √qṭn 'to be small'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "כהן": {
+      "word": "כהן",
+      "protoSemitic": "k-h-n",
+      "cognates": {
+        "akkadian": [
+          "kānu"
+        ],
+        "arabic": [
+          "kāhin"
+        ],
+        "aramaic": [
+          "kāhnā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √khn. Arabic = 'soothsayer'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "נביא": {
+      "word": "נביא",
+      "protoSemitic": "n-b-ʾ",
+      "cognates": {
+        "akkadian": [
+          "nabû"
+        ],
+        "arabic": [
+          "nabiyy"
+        ]
+      },
+      "etymologyText": "From Akkadian nabû 'to call, announce'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "זהב": {
+      "word": "זהב",
+      "protoSemitic": "ḏahab-",
+      "cognates": {
+        "akkadian": [
+          "ḫurāṣu"
+        ],
+        "arabic": [
+          "ḏahab"
+        ],
+        "aramaic": [
+          "dahabā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ḏahab- 'gold'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "כסף": {
+      "word": "כסף",
+      "protoSemitic": "kasp-",
+      "cognates": {
+        "akkadian": [
+          "kaspu"
+        ],
+        "arabic": [
+          "kasafa"
+        ],
+        "aramaic": [
+          "kaspā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *kasp- 'silver'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "אהב": {
+      "word": "אהב",
+      "protoSemitic": "ʾ-h-b",
+      "cognates": {
+        "akkadian": [
+          "râmu"
+        ],
+        "arabic": [
+          "ʾaḥabba"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ʾhb 'to love'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "ברא": {
+      "word": "ברא",
+      "protoSemitic": "b-r-ʾ",
+      "cognates": {
+        "arabic": [
+          "baraʾa"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √brʾ 'to create'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "עולם": {
+      "word": "עולם",
+      "protoSemitic": "ʿ-l-m",
+      "cognates": {
+        "akkadian": [
+          "ullu"
+        ],
+        "arabic": [
+          "ʿālam"
+        ],
+        "aramaic": [
+          "ʿālmā"
+        ]
+      },
+      "etymologyText": "From √ʿlm 'to be hidden' > 'eternity'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שבת": {
+      "word": "שבת",
+      "protoSemitic": "š-b-t",
+      "cognates": {
+        "akkadian": [
+          "šabātu"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √šbt 'to rest, cease'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "כבד": {
+      "word": "כבד",
+      "protoSemitic": "k-b-d",
+      "cognates": {
+        "akkadian": [
+          "kabātu"
+        ],
+        "arabic": [
+          "kabada"
+        ],
+        "aramaic": [
+          "kǝbad"
+        ]
+      },
+      "etymologyText": "From √kbd 'to be heavy' > 'to honor'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "חכם": {
+      "word": "חכם",
+      "protoSemitic": "ḥ-k-m",
+      "cognates": {
+        "akkadian": [
+          "epēšu"
+        ],
+        "arabic": [
+          "ḥakama"
+        ],
+        "aramaic": [
+          "ḥakkīm"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ḥkm 'to be wise'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "אחד": {
+      "word": "אחד",
+      "protoSemitic": "ʾaḥad-",
+      "cognates": {
+        "akkadian": [
+          "ēdu"
+        ],
+        "arabic": [
+          "ʾaḥad"
+        ],
+        "aramaic": [
+          "ḥad"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʾaḥad- 'one'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שנים": {
+      "word": "שנים",
+      "protoSemitic": "ṯin-ay-",
+      "cognates": {
+        "akkadian": [
+          "šinā"
+        ],
+        "arabic": [
+          "iṯnān"
+        ],
+        "aramaic": [
+          "trēn"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ṯin-ay- 'two'. Dual.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שלש": {
+      "word": "שלש",
+      "protoSemitic": "ṯalāṯ-",
+      "cognates": {
+        "akkadian": [
+          "šalāšu"
+        ],
+        "arabic": [
+          "ṯalāṯa"
+        ],
+        "aramaic": [
+          "tǝlāt"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ṯalāṯ- 'three'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "ארבע": {
+      "word": "ארבע",
+      "protoSemitic": "ʾarbaʿ-",
+      "cognates": {
+        "akkadian": [
+          "erbe"
+        ],
+        "arabic": [
+          "ʾarbaʿa"
+        ],
+        "aramaic": [
+          "ʾarbʿā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʾarbaʿ- 'four'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "חמש": {
+      "word": "חמש",
+      "protoSemitic": "ḫamš-",
+      "cognates": {
+        "akkadian": [
+          "ḫamšu"
+        ],
+        "arabic": [
+          "ḫamsa"
+        ],
+        "aramaic": [
+          "ḥamšā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ḫamš- 'five'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שש": {
+      "word": "שש",
+      "protoSemitic": "šidṯ-",
+      "cognates": {
+        "akkadian": [
+          "šeššu"
+        ],
+        "arabic": [
+          "sitta"
+        ],
+        "aramaic": [
+          "šit"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *šidṯ- 'six'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שבע": {
+      "word": "שבע",
+      "protoSemitic": "šabʿ-",
+      "cognates": {
+        "akkadian": [
+          "sebe"
+        ],
+        "arabic": [
+          "sabʿa"
+        ],
+        "aramaic": [
+          "šaḇʿā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *šabʿ- 'seven'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שמונה": {
+      "word": "שמונה",
+      "protoSemitic": "ṯamāniy-",
+      "cognates": {
+        "akkadian": [
+          "samāne"
+        ],
+        "arabic": [
+          "ṯamāniya"
+        ],
+        "aramaic": [
+          "tǝmānyā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ṯamāniy- 'eight'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "תשע": {
+      "word": "תשע",
+      "protoSemitic": "tišʿ-",
+      "cognates": {
+        "akkadian": [
+          "tiše"
+        ],
+        "arabic": [
+          "tisʿa"
+        ],
+        "aramaic": [
+          "tišʿā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *tišʿ- 'nine'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "עשר": {
+      "word": "עשר",
+      "protoSemitic": "ʿaśr-",
+      "cognates": {
+        "akkadian": [
+          "ešer"
+        ],
+        "arabic": [
+          "ʿašr"
+        ],
+        "aramaic": [
+          "ʿaśrā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʿaśr- 'ten'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "מאה": {
+      "word": "מאה",
+      "protoSemitic": "miʾat-",
+      "cognates": {
+        "akkadian": [
+          "meʾātu"
+        ],
+        "arabic": [
+          "miʾa"
+        ],
+        "aramaic": [
+          "mǝʾā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *miʾat- 'hundred'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "אלף": {
+      "word": "אלף",
+      "protoSemitic": "ʾalp-",
+      "cognates": {
+        "akkadian": [
+          "līmu"
+        ],
+        "arabic": [
+          "ʾalf"
+        ],
+        "aramaic": [
+          "ʾalpā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʾalp- 'thousand'. Also 'ox'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שמש": {
+      "word": "שמש",
+      "protoSemitic": "šamš-",
+      "cognates": {
+        "akkadian": [
+          "šamšu"
+        ],
+        "arabic": [
+          "šams"
+        ],
+        "aramaic": [
+          "šimšā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *šamš- 'sun'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "ירח": {
+      "word": "ירח",
+      "protoSemitic": "yarḫ-",
+      "cognates": {
+        "akkadian": [
+          "arḫu"
+        ],
+        "arabic": [
+          "šahr"
+        ],
+        "ugaritic": [
+          "yrḫ"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *yarḫ- 'moon, month'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "כוכב": {
+      "word": "כוכב",
+      "protoSemitic": "kawkab-",
+      "cognates": {
+        "akkadian": [
+          "kakkabu"
+        ],
+        "arabic": [
+          "kawkab"
+        ],
+        "aramaic": [
+          "kōkbā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *kawkab- 'star'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "ים": {
+      "word": "ים",
+      "protoSemitic": "yamm-",
+      "cognates": {
+        "akkadian": [
+          "tâmtu"
+        ],
+        "arabic": [
+          "yamm"
+        ],
+        "ugaritic": [
+          "ym"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *yamm- 'sea'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "נהר": {
+      "word": "נהר",
+      "protoSemitic": "nahr-",
+      "cognates": {
+        "akkadian": [
+          "nāru"
+        ],
+        "arabic": [
+          "nahr"
+        ],
+        "aramaic": [
+          "nahrā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *nahr- 'river'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "הר": {
+      "word": "הר",
+      "protoSemitic": "harr-",
+      "cognates": {
+        "akkadian": [
+          "šadû"
+        ],
+        "arabic": [
+          "harr"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *harr- 'mountain'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "עץ": {
+      "word": "עץ",
+      "protoSemitic": "ʿiṣ-",
+      "cognates": {
+        "akkadian": [
+          "iṣu"
+        ],
+        "arabic": [
+          "ʿūd"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʿiṣ- 'tree, wood'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "אבן": {
+      "word": "אבן",
+      "protoSemitic": "ʾabn-",
+      "cognates": {
+        "akkadian": [
+          "abnu"
+        ],
+        "arabic": [
+          "ʾibna"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʾabn- 'stone'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "כלב": {
+      "word": "כלב",
+      "protoSemitic": "kalb-",
+      "cognates": {
+        "akkadian": [
+          "kalbu"
+        ],
+        "arabic": [
+          "kalb"
+        ],
+        "aramaic": [
+          "kalbā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *kalb- 'dog'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "סוס": {
+      "word": "סוס",
+      "protoSemitic": "sūs-",
+      "cognates": {
+        "akkadian": [
+          "sisû"
+        ],
+        "arabic": [
+          "sūs"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *sūs- 'horse'. Loanword.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "בקר": {
+      "word": "בקר",
+      "protoSemitic": "baqar-",
+      "cognates": {
+        "akkadian": [
+          "alpu"
+        ],
+        "arabic": [
+          "baqar"
+        ],
+        "aramaic": [
+          "bǝʿīrā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *baqar- 'cattle'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "צאן": {
+      "word": "צאן",
+      "protoSemitic": "ṣ-ʾ-n",
+      "cognates": {
+        "akkadian": [
+          "ṣēnu"
+        ],
+        "arabic": [
+          "ḍaʾn"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ṣʾn 'flock, sheep'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "עוף": {
+      "word": "עוף",
+      "protoSemitic": "ʿ-w-p",
+      "cognates": {
+        "akkadian": [
+          "iṣṣūru"
+        ],
+        "arabic": [
+          "ṭāʾir"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ʿwp 'to fly'. Collective 'birds'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "דג": {
+      "word": "דג",
+      "protoSemitic": "dag-",
+      "cognates": {
+        "akkadian": [
+          "nūnu"
+        ],
+        "arabic": [
+          "samakatun"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *dag- 'fish'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "נחש": {
+      "word": "נחש",
+      "protoSemitic": "naḥaš-",
+      "cognates": {
+        "akkadian": [
+          "nēšu"
+        ],
+        "arabic": [
+          "naḥš"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *naḥaš- 'snake'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "אריה": {
+      "word": "אריה",
+      "protoSemitic": "ʾary-",
+      "cognates": {
+        "akkadian": [
+          "nēšu"
+        ],
+        "arabic": [
+          "ʾasad"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʾary- 'lion'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "לחם": {
+      "word": "לחם",
+      "protoSemitic": "laḥm-",
+      "cognates": {
+        "akkadian": [
+          "akālu"
+        ],
+        "arabic": [
+          "laḥm"
+        ],
+        "aramaic": [
+          "laḥmā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *laḥm- 'bread, food'. Arabic = 'meat'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "יין": {
+      "word": "יין",
+      "protoSemitic": "wayn-",
+      "cognates": {
+        "akkadian": [
+          "īnu"
+        ],
+        "arabic": [
+          "ḫamr"
+        ],
+        "ugaritic": [
+          "yn"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *wayn- 'wine'. Loanword.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שמן": {
+      "word": "שמן",
+      "protoSemitic": "šamn-",
+      "cognates": {
+        "akkadian": [
+          "šamnu"
+        ],
+        "arabic": [
+          "samn"
+        ],
+        "aramaic": [
+          "mišḥā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *šamn- 'oil, fat'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "מלח": {
+      "word": "מלח",
+      "protoSemitic": "milḥ-",
+      "cognates": {
+        "akkadian": [
+          "ṭābtu"
+        ],
+        "arabic": [
+          "milḥ"
+        ],
+        "aramaic": [
+          "milḥā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *milḥ- 'salt'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "אכל": {
+      "word": "אכל",
+      "protoSemitic": "ʾ-k-l",
+      "cognates": {
+        "akkadian": [
+          "akālu"
+        ],
+        "arabic": [
+          "ʾakala"
+        ],
+        "aramaic": [
+          "ʾǝkal"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ʾkl 'to eat'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שתה": {
+      "word": "שתה",
+      "protoSemitic": "š-t-y",
+      "cognates": {
+        "akkadian": [
+          "šatû"
+        ],
+        "arabic": [
+          "šariba"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √šty 'to drink'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "ישן": {
+      "word": "ישן",
+      "protoSemitic": "y-š-n",
+      "cognates": {
+        "akkadian": [
+          "nâlu"
+        ],
+        "arabic": [
+          "wasina"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √yšn 'to sleep'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "קום": {
+      "word": "קום",
+      "protoSemitic": "q-w-m",
+      "cognates": {
+        "akkadian": [
+          "qâmu"
+        ],
+        "arabic": [
+          "qāma"
+        ],
+        "aramaic": [
+          "qām"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √qwm 'to stand, rise'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "ישב": {
+      "word": "ישב",
+      "protoSemitic": "y-ṯ-b",
+      "cognates": {
+        "akkadian": [
+          "wašābu"
+        ],
+        "arabic": [
+          "ǧalasa"
+        ],
+        "aramaic": [
+          "yǝtab"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √yṯb 'to sit, dwell'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שכב": {
+      "word": "שכב",
+      "protoSemitic": "š-k-b",
+      "cognates": {
+        "akkadian": [
+          "šakābu"
+        ],
+        "arabic": [
+          "saǧada"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √škb 'to lie down'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "קרא": {
+      "word": "קרא",
+      "protoSemitic": "q-r-ʾ",
+      "cognates": {
+        "akkadian": [
+          "qarû"
+        ],
+        "arabic": [
+          "qaraʾa"
+        ],
+        "aramaic": [
+          "qǝrā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √qrʾ 'to call, read'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "כתב": {
+      "word": "כתב",
+      "protoSemitic": "k-t-b",
+      "cognates": {
+        "akkadian": [
+          "šaṭāru"
+        ],
+        "arabic": [
+          "kataba"
+        ],
+        "aramaic": [
+          "kǝtab"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ktb 'to write'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שאל": {
+      "word": "שאל",
+      "protoSemitic": "š-ʾ-l",
+      "cognates": {
+        "akkadian": [
+          "šâlu"
+        ],
+        "arabic": [
+          "saʾala"
+        ],
+        "aramaic": [
+          "šǝʾal"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √šʾl 'to ask'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "ענה": {
+      "word": "ענה",
+      "protoSemitic": "ʿ-n-y",
+      "cognates": {
+        "akkadian": [
+          "anû"
+        ],
+        "arabic": [
+          "ʿanā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ʿny 'to answer'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שלח": {
+      "word": "שלח",
+      "protoSemitic": "š-l-ḥ",
+      "cognates": {
+        "akkadian": [
+          "šalāḫu"
+        ],
+        "arabic": [
+          "salḫa"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √šlḥ 'to send'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שוב": {
+      "word": "שוב",
+      "protoSemitic": "ṯ-w-b",
+      "cognates": {
+        "akkadian": [
+          "tāru"
+        ],
+        "arabic": [
+          "ṯāba"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ṯwb 'to return'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "פתח": {
+      "word": "פתח",
+      "protoSemitic": "p-t-ḥ",
+      "cognates": {
+        "akkadian": [
+          "petû"
+        ],
+        "arabic": [
+          "fataḥa"
+        ],
+        "aramaic": [
+          "pǝtaḥ"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ptḥ 'to open'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "סגר": {
+      "word": "סגר",
+      "protoSemitic": "s-g-r",
+      "cognates": {
+        "akkadian": [
+          "sekēru"
+        ],
+        "arabic": [
+          "saǧara"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √sgr 'to close'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "מצא": {
+      "word": "מצא",
+      "protoSemitic": "m-ṣ-ʾ",
+      "cognates": {
+        "akkadian": [
+          "maṣû"
+        ],
+        "arabic": [
+          "waǧada"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √mṣʾ 'to find'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "בקש": {
+      "word": "בקש",
+      "protoSemitic": "b-q-š",
+      "cognates": {
+        "akkadian": [
+          "baqāšu"
+        ],
+        "arabic": [
+          "baḥaṯa"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √bqš 'to seek'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "חשב": {
+      "word": "חשב",
+      "protoSemitic": "ḥ-š-b",
+      "cognates": {
+        "akkadian": [
+          "ḫasābu"
+        ],
+        "arabic": [
+          "ḥasaba"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ḥšb 'to think, reckon'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "זכר": {
+      "word": "זכר",
+      "protoSemitic": "ḏ-k-r",
+      "cognates": {
+        "akkadian": [
+          "zakāru"
+        ],
+        "arabic": [
+          "ḏakara"
+        ],
+        "aramaic": [
+          "dǝkar"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ḏkr 'to remember'. Also 'male'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שכח": {
+      "word": "שכח",
+      "protoSemitic": "š-k-ḥ",
+      "cognates": {
+        "akkadian": [
+          "mašû"
+        ],
+        "arabic": [
+          "nasiya"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √škḥ 'to forget'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "למד": {
+      "word": "למד",
+      "protoSemitic": "l-m-d",
+      "cognates": {
+        "akkadian": [
+          "lamādu"
+        ],
+        "arabic": [
+          "taʿallama"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √lmd 'to learn'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שמר": {
+      "word": "שמר",
+      "protoSemitic": "š-m-r",
+      "cognates": {
+        "akkadian": [
+          "naṣāru"
+        ],
+        "arabic": [
+          "samara"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √šmr 'to guard, keep'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "עזר": {
+      "word": "עזר",
+      "protoSemitic": "ʿ-z-r",
+      "cognates": {
+        "akkadian": [
+          "ezēru"
+        ],
+        "arabic": [
+          "ʿazara"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ʿzr 'to help'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "נפל": {
+      "word": "נפל",
+      "protoSemitic": "n-p-l",
+      "cognates": {
+        "akkadian": [
+          "napālu"
+        ],
+        "arabic": [
+          "nafala"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √npl 'to fall'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "עלה": {
+      "word": "עלה",
+      "protoSemitic": "ʿ-l-y",
+      "cognates": {
+        "akkadian": [
+          "elû"
+        ],
+        "arabic": [
+          "ʿalā"
+        ],
+        "aramaic": [
+          "sǝlaq"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ʿly 'to go up, ascend'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "ירד": {
+      "word": "ירד",
+      "protoSemitic": "y-r-d",
+      "cognates": {
+        "akkadian": [
+          "warādu"
+        ],
+        "arabic": [
+          "warada"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √yrd 'to go down, descend'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שנא": {
+      "word": "שנא",
+      "protoSemitic": "ś-n-ʾ",
+      "cognates": {
+        "akkadian": [
+          "šanāʾu"
+        ],
+        "arabic": [
+          "saniʾa"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √śnʾ 'to hate'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "ירא": {
+      "word": "ירא",
+      "protoSemitic": "y-r-ʾ",
+      "cognates": {
+        "akkadian": [
+          "arâmu"
+        ],
+        "arabic": [
+          "yarʾa"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √yrʾ 'to fear'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "בכה": {
+      "word": "בכה",
+      "protoSemitic": "b-k-y",
+      "cognates": {
+        "akkadian": [
+          "bakû"
+        ],
+        "arabic": [
+          "bakā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √bky 'to weep, cry'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שמח": {
+      "word": "שמח",
+      "protoSemitic": "ś-m-ḥ",
+      "cognates": {
+        "arabic": [
+          "samiḥa"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √śmḥ 'to rejoice'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "בנה": {
+      "word": "בנה",
+      "protoSemitic": "b-n-y",
+      "cognates": {
+        "akkadian": [
+          "banû"
+        ],
+        "arabic": [
+          "banā"
+        ],
+        "aramaic": [
+          "bǝnā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √bny 'to build'. Related to 'son'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "הרג": {
+      "word": "הרג",
+      "protoSemitic": "h-r-g",
+      "cognates": {
+        "akkadian": [
+          "harāqu"
+        ],
+        "arabic": [
+          "haraqa"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √hrg 'to kill'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "מכר": {
+      "word": "מכר",
+      "protoSemitic": "m-k-r",
+      "cognates": {
+        "akkadian": [
+          "makāru"
+        ],
+        "arabic": [
+          "makara"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √mkr 'to sell, trade'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "קנה": {
+      "word": "קנה",
+      "protoSemitic": "q-n-y",
+      "cognates": {
+        "akkadian": [
+          "qanû"
+        ],
+        "arabic": [
+          "iqtanā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √qny 'to acquire, buy'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "חדש": {
+      "word": "חדש",
+      "protoSemitic": "ḥ-d-ṯ",
+      "cognates": {
+        "akkadian": [
+          "eššu"
+        ],
+        "arabic": [
+          "ḥadīṯ"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ḥdṯ 'new'. Also 'month'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "ישר": {
+      "word": "ישר",
+      "protoSemitic": "y-š-r",
+      "cognates": {
+        "akkadian": [
+          "ešēru"
+        ],
+        "arabic": [
+          "yasura"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √yšr 'to be straight'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "רחב": {
+      "word": "רחב",
+      "protoSemitic": "r-ḥ-b",
+      "cognates": {
+        "akkadian": [
+          "rapāšu"
+        ],
+        "arabic": [
+          "raḥuba"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √rḥb 'to be wide'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "קרב": {
+      "word": "קרב",
+      "protoSemitic": "q-r-b",
+      "cognates": {
+        "akkadian": [
+          "qarābu"
+        ],
+        "arabic": [
+          "qaruba"
+        ],
+        "aramaic": [
+          "qǝrab"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √qrb 'to be near, approach'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "רחק": {
+      "word": "רחק",
+      "protoSemitic": "r-ḥ-q",
+      "cognates": {
+        "akkadian": [
+          "ruqqu"
+        ],
+        "arabic": [
+          "raḥuqa"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √rḥq 'to be far'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "עבר": {
+      "word": "עבר",
+      "protoSemitic": "ʿ-b-r",
+      "cognates": {
+        "akkadian": [
+          "ebēru"
+        ],
+        "arabic": [
+          "ʿabara"
+        ],
+        "aramaic": [
+          "ʿǝbar"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ʿbr 'to cross, pass'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "עמד": {
+      "word": "עמד",
+      "protoSemitic": "ʿ-m-d",
+      "cognates": {
+        "akkadian": [
+          "emēdu"
+        ],
+        "arabic": [
+          "ʿamada"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ʿmd 'to stand'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שפט": {
+      "word": "שפט",
+      "protoSemitic": "š-p-ṭ",
+      "cognates": {
+        "akkadian": [
+          "šapāṭu"
+        ],
+        "arabic": [
+          "šafaṭa"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √špṭ 'to judge'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "מלא": {
+      "word": "מלא",
+      "protoSemitic": "m-l-ʾ",
+      "cognates": {
+        "akkadian": [
+          "malû"
+        ],
+        "arabic": [
+          "malaʾa"
+        ],
+        "aramaic": [
+          "mǝlā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √mlʾ 'to fill'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "ריק": {
+      "word": "ריק",
+      "protoSemitic": "r-y-q",
+      "cognates": {
+        "akkadian": [
+          "rīqu"
+        ],
+        "arabic": [
+          "rāqa"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ryq 'to be empty'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "חזק": {
+      "word": "חזק",
+      "protoSemitic": "ḥ-z-q",
+      "cognates": {
+        "akkadian": [
+          "ezēqu"
+        ],
+        "arabic": [
+          "ḥaziqa"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ḥzq 'to be strong'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "חלש": {
+      "word": "חלש",
+      "protoSemitic": "ḥ-l-š",
+      "cognates": {
+        "arabic": [
+          "ḫalaša"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ḥlš 'to be weak'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "קצר": {
+      "word": "קצר",
+      "protoSemitic": "q-ṣ-r",
+      "cognates": {
+        "akkadian": [
+          "kaṣāru"
+        ],
+        "arabic": [
+          "qaṣura"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √qṣr 'to be short'. Also 'to harvest'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "ארך": {
+      "word": "ארך",
+      "protoSemitic": "ʾ-r-k",
+      "cognates": {
+        "akkadian": [
+          "arāku"
+        ],
+        "arabic": [
+          "ʾariqa"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ʾrk 'to be long'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "נקי": {
+      "word": "נקי",
+      "protoSemitic": "n-q-y",
+      "cognates": {
+        "akkadian": [
+          "naqû"
+        ],
+        "arabic": [
+          "naqiya"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √nqy 'to be clean, innocent'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "קשה": {
+      "word": "קשה",
+      "protoSemitic": "q-š-y",
+      "cognates": {
+        "akkadian": [
+          "qašû"
+        ],
+        "arabic": [
+          "qasiya"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √qšy 'to be hard, difficult'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "רך": {
+      "word": "רך",
+      "protoSemitic": "r-k-k",
+      "cognates": {
+        "akkadian": [
+          "rakāku"
+        ],
+        "arabic": [
+          "raqqa"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √rkk 'to be soft, tender'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שנה": {
+      "word": "שנה",
+      "protoSemitic": "šanat-",
+      "cognates": {
+        "akkadian": [
+          "šattu"
+        ],
+        "arabic": [
+          "sana"
+        ],
+        "aramaic": [
+          "šattā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *šanat- 'year'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "עת": {
+      "word": "עת",
+      "protoSemitic": "ʿitt-",
+      "cognates": {
+        "akkadian": [
+          "ittu"
+        ],
+        "arabic": [
+          "waqt"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʿitt- 'time'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "דור": {
+      "word": "דור",
+      "protoSemitic": "dār-",
+      "cognates": {
+        "akkadian": [
+          "dāru"
+        ],
+        "arabic": [
+          "dār"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *dār- 'generation, age'. Also 'dwelling'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "נפש": {
+      "word": "נפש",
+      "protoSemitic": "napš-",
+      "cognates": {
+        "akkadian": [
+          "napištu"
+        ],
+        "arabic": [
+          "nafs"
+        ],
+        "aramaic": [
+          "napšā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *napš- 'soul, self, breath'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "חסד": {
+      "word": "חסד",
+      "protoSemitic": "ḥ-s-d",
+      "cognates": {
+        "akkadian": [
+          "ḫasādu"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ḥsd 'kindness, loyalty'. Hebrew covenant term.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "אמת": {
+      "word": "אמת",
+      "protoSemitic": "ʾ-m-n",
+      "cognates": {
+        "akkadian": [
+          "ammatu"
+        ],
+        "arabic": [
+          "ʾamāna"
+        ]
+      },
+      "etymologyText": "From √ʾmn 'to be firm, faithful'. Related to אמן.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "כבוד": {
+      "word": "כבוד",
+      "protoSemitic": "k-b-d",
+      "cognates": {
+        "akkadian": [
+          "kabtu"
+        ],
+        "arabic": [
+          "kabd"
+        ]
+      },
+      "etymologyText": "From √kbd 'heavy' > 'glory, honor'. Noun form.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "גבר": {
+      "word": "גבר",
+      "protoSemitic": "g-b-r",
+      "cognates": {
+        "akkadian": [
+          "gašru"
+        ],
+        "arabic": [
+          "ǧabara"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √gbr 'to be strong'. Also 'man'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "נער": {
+      "word": "נער",
+      "protoSemitic": "naʿr-",
+      "cognates": {
+        "akkadian": [
+          "naʾāru"
+        ],
+        "arabic": [
+          "naʿara"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *naʿr- 'youth, servant'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "זקן": {
+      "word": "זקן",
+      "protoSemitic": "ḏaqn-",
+      "cognates": {
+        "akkadian": [
+          "ziqnu"
+        ],
+        "arabic": [
+          "ḏaqan"
+        ],
+        "aramaic": [
+          "diqnā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ḏaqn- 'beard; elder'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "גוי": {
+      "word": "גוי",
+      "protoSemitic": "gōy-",
+      "cognates": {
+        "akkadian": [
+          "gû"
+        ],
+        "arabic": [
+          "qawm"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *gōy- 'people, nation'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "עם": {
+      "word": "עם",
+      "protoSemitic": "ʿamm-",
+      "cognates": {
+        "akkadian": [
+          "ummu"
+        ],
+        "arabic": [
+          "ʿamm"
+        ],
+        "aramaic": [
+          "ʿammā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʿamm- 'people'. Also 'paternal uncle'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "שר": {
+      "word": "שר",
+      "protoSemitic": "śarr-",
+      "cognates": {
+        "akkadian": [
+          "šarru"
+        ],
+        "arabic": [
+          "sarī"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *śarr- 'prince, chief'. Akkadian = 'king'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "חיל": {
+      "word": "חיל",
+      "protoSemitic": "ḥayl-",
+      "cognates": {
+        "akkadian": [
+          "ḫayālu"
+        ],
+        "arabic": [
+          "ḥayl"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ḥayl- 'strength, army'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "מלחמה": {
+      "word": "מלחמה",
+      "protoSemitic": "l-ḥ-m",
+      "cognates": {
+        "akkadian": [
+          "tuqmātu"
+        ],
+        "arabic": [
+          "laḥama"
+        ]
+      },
+      "etymologyText": "From √lḥm 'to fight'. Noun maqtala pattern.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "אויב": {
+      "word": "אויב",
+      "protoSemitic": "ʾ-y-b",
+      "cognates": {
+        "akkadian": [
+          "ayyābu"
+        ],
+        "arabic": [
+          "ʿaduww"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ʾyb 'to be hostile'. Participle 'enemy'.",
+      "source": "Wiktionary",
+      "license": "CC-BY-SA"
+    },
+    "אזל": {
+      "word": "אזל",
+      "protoSemitic": "*ʾ-z-l",
+      "cognates": {
+        "akkadian": [
+          "azālu"
+        ],
+        "arabic": [
+          "ʾazala"
+        ],
+        "aramaic": [
+          "ʾǝzal"
+        ],
+        "syriac": [
+          "ʾezal"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ʾzl 'to go, depart'. Common Aramaic verb replacing Hebrew הלך.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "הוה": {
+      "word": "הוה",
+      "protoSemitic": "*h-w-y",
+      "cognates": {
+        "akkadian": [
+          "ewûm"
+        ],
+        "arabic": [
+          "hawā"
+        ],
+        "aramaic": [
+          "hǝwā"
+        ],
+        "ugaritic": [
+          "hwy"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √hwy 'to be, become'. Aramaic cognate of Hebrew היה.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "חד": {
+      "word": "חד",
+      "protoSemitic": "*ḥad-",
+      "cognates": {
+        "akkadian": [
+          "edu"
+        ],
+        "arabic": [
+          "waḥīd"
+        ],
+        "aramaic": [
+          "ḥad"
+        ],
+        "ethiopic": [
+          "ʾaḥadu"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ḥad- 'one'. Aramaic form; Hebrew uses אחד.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "יהב": {
+      "word": "יהב",
+      "protoSemitic": "*y-h-b",
+      "cognates": {
+        "akkadian": [
+          "nadānu"
+        ],
+        "arabic": [
+          "wahaba"
+        ],
+        "aramaic": [
+          "yǝhab"
+        ],
+        "syriac": [
+          "yhab"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √yhb 'to give'. Aramaic verb replacing Hebrew נתן.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "בר": {
+      "word": "בר",
+      "protoSemitic": "*bar-",
+      "cognates": {
+        "akkadian": [
+          "māru"
+        ],
+        "arabic": [
+          "birr"
+        ],
+        "aramaic": [
+          "bar",
+          "bǝrā"
+        ],
+        "syriac": [
+          "brā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *bar- 'son' (Aramaic). Hebrew uses בן from same root family.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "יתב": {
+      "word": "יתב",
+      "protoSemitic": "*y-ṯ-b",
+      "cognates": {
+        "akkadian": [
+          "wašābu"
+        ],
+        "arabic": [
+          "waṯaba"
+        ],
+        "aramaic": [
+          "yǝtab"
+        ],
+        "syriac": [
+          "yteb"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √yṯb 'to sit, dwell'. Aramaic cognate of Hebrew ישב.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "אסר": {
+      "word": "אסר",
+      "protoSemitic": "*ʾ-s-r",
+      "cognates": {
+        "akkadian": [
+          "esēru"
+        ],
+        "arabic": [
+          "ʾasara"
+        ],
+        "aramaic": [
+          "ʾǝsar"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ʾsr 'to bind, forbid'.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "בעא": {
+      "word": "בעא",
+      "protoSemitic": "*b-ʿ-y",
+      "cognates": {
+        "akkadian": [
+          "bâʾu"
+        ],
+        "arabic": [
+          "baġā"
+        ],
+        "aramaic": [
+          "bǝʿā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √bʿy 'to seek, request'. Common Aramaic verb.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "חלמ": {
+      "word": "חלם",
+      "protoSemitic": "*ḥ-l-m",
+      "cognates": {
+        "akkadian": [
+          "ḫalāmu"
+        ],
+        "arabic": [
+          "ḥalama"
+        ],
+        "aramaic": [
+          "ḥǝlam"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ḥlm 'to dream'.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "נפק": {
+      "word": "נפק",
+      "protoSemitic": "*n-p-q",
+      "cognates": {
+        "akkadian": [
+          "napāqu"
+        ],
+        "arabic": [
+          "nafaqa"
+        ],
+        "aramaic": [
+          "nǝpaq"
+        ],
+        "syriac": [
+          "npaq"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √npq 'to go out'. Aramaic cognate of Hebrew יצא.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "עלל": {
+      "word": "עלל",
+      "protoSemitic": "*ʿ-l-l",
+      "cognates": {
+        "akkadian": [
+          "elû"
+        ],
+        "arabic": [
+          "ʿalla"
+        ],
+        "aramaic": [
+          "ʿalal"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ʿll 'to enter'. Aramaic verb for 'enter' (Hebrew בוא).",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "סלק": {
+      "word": "סלק",
+      "protoSemitic": "*s-l-q",
+      "cognates": {
+        "akkadian": [
+          "elû"
+        ],
+        "arabic": [
+          "salaqa"
+        ],
+        "aramaic": [
+          "sǝlaq"
+        ],
+        "syriac": [
+          "sleq"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √slq 'to go up, ascend'. Common Aramaic verb.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "נחת": {
+      "word": "נחת",
+      "protoSemitic": "*n-ḥ-t",
+      "cognates": {
+        "akkadian": [
+          "naḫātu"
+        ],
+        "arabic": [
+          "naḫata"
+        ],
+        "aramaic": [
+          "nǝḥat"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √nḥt 'to descend'. Aramaic cognate of Hebrew ירד.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "חזא": {
+      "word": "חזא",
+      "protoSemitic": "*ḥ-z-y",
+      "cognates": {
+        "akkadian": [
+          "ḫazû"
+        ],
+        "arabic": [
+          "ḥazā"
+        ],
+        "aramaic": [
+          "ḥǝzā"
+        ],
+        "syriac": [
+          "ḥzā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ḥzy 'to see'. Aramaic verb replacing Hebrew ראה.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "שבק": {
+      "word": "שבק",
+      "protoSemitic": "*š-b-q",
+      "cognates": {
+        "akkadian": [
+          "šabāqu"
+        ],
+        "arabic": [
+          "sabaqa"
+        ],
+        "aramaic": [
+          "šǝbaq"
+        ],
+        "syriac": [
+          "šbaq"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √šbq 'to leave, abandon'. Common Talmudic verb.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "קדם": {
+      "word": "קדם",
+      "protoSemitic": "*q-d-m",
+      "cognates": {
+        "akkadian": [
+          "qadāmu"
+        ],
+        "arabic": [
+          "qadama"
+        ],
+        "aramaic": [
+          "qǝdam"
+        ],
+        "ugaritic": [
+          "qdm"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √qdm 'to be in front, precede'.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "בתר": {
+      "word": "בתר",
+      "protoSemitic": "*b-t-r",
+      "cognates": {
+        "akkadian": [
+          "batāru"
+        ],
+        "arabic": [
+          "batara"
+        ],
+        "aramaic": [
+          "bātar"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √btr 'after'. Common Aramaic preposition.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "קבל": {
+      "word": "קבל",
+      "protoSemitic": "*q-b-l",
+      "cognates": {
+        "akkadian": [
+          "qabālu"
+        ],
+        "arabic": [
+          "qabila"
+        ],
+        "aramaic": [
+          "qabbēl"
+        ],
+        "syriac": [
+          "qabbel"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √qbl 'to receive, accept'. Common in Rabbinic texts.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "גמר": {
+      "word": "גמר",
+      "protoSemitic": "*g-m-r",
+      "cognates": {
+        "akkadian": [
+          "gamāru"
+        ],
+        "arabic": [
+          "ǧamara"
+        ],
+        "aramaic": [
+          "gǝmar"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √gmr 'to complete, finish'. Key Talmudic term (גמרא).",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "תנא": {
+      "word": "תנא",
+      "protoSemitic": "*t-n-y",
+      "cognates": {
+        "akkadian": [
+          "šanû"
+        ],
+        "arabic": [
+          "ṯanā"
+        ],
+        "aramaic": [
+          "tǝnā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √tny 'to repeat, teach'. Source of תנא 'Tanna'.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "פשט": {
+      "word": "פשט",
+      "protoSemitic": "*p-š-ṭ",
+      "cognates": {
+        "akkadian": [
+          "pašāṭu"
+        ],
+        "arabic": [
+          "basaṭa"
+        ],
+        "aramaic": [
+          "pǝšaṭ"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √pšṭ 'to spread out, explain'. Source of פשט (plain meaning).",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "דרש": {
+      "word": "דרש",
+      "protoSemitic": "*d-r-š",
+      "cognates": {
+        "akkadian": [
+          "darāšu"
+        ],
+        "arabic": [
+          "darasa"
+        ],
+        "aramaic": [
+          "dǝraš"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √drš 'to seek, inquire'. Source of דרש, מדרש.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "הלכ": {
+      "word": "הלכ",
+      "protoSemitic": "*h-l-k",
+      "cognates": {
+        "akkadian": [
+          "alāku"
+        ],
+        "arabic": [
+          "halaka"
+        ],
+        "ugaritic": [
+          "hlk"
+        ],
+        "phoenician": [
+          "hlk"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √hlk 'to walk, go'. Source of הלכה 'halakha'.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "אגד": {
+      "word": "אגד",
+      "protoSemitic": "*ʾ-g-d",
+      "cognates": {
+        "akkadian": [
+          "egēdu"
+        ],
+        "aramaic": [
+          "ʾaggadtā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ʾgd 'to bind, tell'. Source of אגדה 'aggadah'.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "פרק": {
+      "word": "פרק",
+      "protoSemitic": "*p-r-q",
+      "cognates": {
+        "akkadian": [
+          "parāqu"
+        ],
+        "arabic": [
+          "faraqa"
+        ],
+        "aramaic": [
+          "pǝraq"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √prq 'to divide, separate'. Source of פרק 'chapter'.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "צמח": {
+      "word": "צמח",
+      "protoSemitic": "*ṣ-m-ḥ",
+      "cognates": {
+        "akkadian": [
+          "ṣamāḫu"
+        ],
+        "arabic": [
+          "ṣamaḥa"
+        ],
+        "aramaic": [
+          "ṣǝmaḥ"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ṣmḥ 'to sprout, grow'.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "זרע": {
+      "word": "זרע",
+      "protoSemitic": "*ḏ-r-ʿ",
+      "cognates": {
+        "akkadian": [
+          "zarû"
+        ],
+        "arabic": [
+          "ḏaraʿa"
+        ],
+        "aramaic": [
+          "zǝraʿ"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ḏrʿ 'to sow, seed'. Also 'offspring'.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "נטע": {
+      "word": "נטע",
+      "protoSemitic": "*n-ṭ-ʿ",
+      "cognates": {
+        "akkadian": [
+          "naṭû"
+        ],
+        "arabic": [
+          "naṭaʿa"
+        ],
+        "aramaic": [
+          "nǝṭaʿ"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √nṭʿ 'to plant'.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "מלל": {
+      "word": "מלל",
+      "protoSemitic": "*m-l-l",
+      "cognates": {
+        "akkadian": [
+          "malālu"
+        ],
+        "arabic": [
+          "malla"
+        ],
+        "aramaic": [
+          "mallēl"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √mll 'to speak'. Poetic/Aramaic for דבר.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "צלי": {
+      "word": "צלי",
+      "protoSemitic": "*ṣ-l-y",
+      "cognates": {
+        "akkadian": [
+          "ṣullû"
+        ],
+        "arabic": [
+          "ṣallā"
+        ],
+        "aramaic": [
+          "ṣallī"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ṣly 'to pray'. Source of תפילה through semantic development.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "קלל": {
+      "word": "קלל",
+      "protoSemitic": "*q-l-l",
+      "cognates": {
+        "akkadian": [
+          "qalālu"
+        ],
+        "arabic": [
+          "qalla"
+        ],
+        "aramaic": [
+          "qallīl"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √qll 'to be light; to curse'. Opposite of כבד.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "דין": {
+      "word": "דין",
+      "protoSemitic": "*d-y-n",
+      "cognates": {
+        "akkadian": [
+          "dânu"
+        ],
+        "arabic": [
+          "dāna"
+        ],
+        "aramaic": [
+          "dān"
+        ],
+        "ugaritic": [
+          "dn"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √dyn 'to judge'. Source of דין, דיין.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "חטא": {
+      "word": "חטא",
+      "protoSemitic": "*ḥ-ṭ-ʾ",
+      "cognates": {
+        "akkadian": [
+          "ḫaṭû"
+        ],
+        "arabic": [
+          "ḫaṭiʾa"
+        ],
+        "aramaic": [
+          "ḥǝṭā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ḥṭʾ 'to miss, sin'. Primary Hebrew word for sin.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "סלח": {
+      "word": "סלח",
+      "protoSemitic": "*s-l-ḥ",
+      "cognates": {
+        "akkadian": [
+          "salāḫu"
+        ],
+        "arabic": [
+          "ṣalaḥa"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √slḥ 'to forgive'. Used only of divine forgiveness.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "כפר": {
+      "word": "כפר",
+      "protoSemitic": "*k-p-r",
+      "cognates": {
+        "akkadian": [
+          "kapāru"
+        ],
+        "arabic": [
+          "kafara"
+        ],
+        "aramaic": [
+          "kappēr"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √kpr 'to cover, atone'. Source of כפרה, יום כיפור.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "שלם": {
+      "word": "שלם",
+      "protoSemitic": "*š-l-m",
+      "cognates": {
+        "akkadian": [
+          "šalāmu"
+        ],
+        "arabic": [
+          "salima"
+        ],
+        "aramaic": [
+          "šǝlam"
+        ],
+        "ugaritic": [
+          "šlm"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √šlm 'to be complete, at peace'. Source of שלום, שלם.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "גנב": {
+      "word": "גנב",
+      "protoSemitic": "*g-n-b",
+      "cognates": {
+        "akkadian": [
+          "ganābu"
+        ],
+        "arabic": [
+          "ǧanaba"
+        ],
+        "aramaic": [
+          "gǝnab"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √gnb 'to steal'.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "רצח": {
+      "word": "רצח",
+      "protoSemitic": "*r-ṣ-ḥ",
+      "cognates": {
+        "akkadian": [
+          "raṣāḫu"
+        ],
+        "arabic": [
+          "rasaḥa"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √rṣḥ 'to murder'. Premeditated killing.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "עתה": {
+      "word": "עתה",
+      "protoSemitic": "*ʿatt-",
+      "cognates": {
+        "akkadian": [
+          "itti"
+        ],
+        "arabic": [
+          "waqt"
+        ],
+        "aramaic": [
+          "hāšā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic *ʿatt- 'time, now'.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "תמיד": {
+      "word": "תמיד",
+      "protoSemitic": "*t-m-d",
+      "cognates": {
+        "akkadian": [
+          "temīdu"
+        ],
+        "arabic": [
+          "tamadda"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √tmd 'to be continuous'. Source of תמיד 'always'.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "צפון": {
+      "word": "צפון",
+      "protoSemitic": "*ṣ-p-n",
+      "cognates": {
+        "akkadian": [
+          "ṣapānu"
+        ],
+        "arabic": [
+          "ṣafana"
+        ],
+        "ugaritic": [
+          "ṣpn"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ṣpn 'to hide, north'. Mt. Zaphon was north of Israel.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "נגב": {
+      "word": "נגב",
+      "protoSemitic": "*n-g-b",
+      "cognates": {
+        "akkadian": [
+          "nagābu"
+        ],
+        "arabic": [
+          "naǧaba"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ngb 'to be dry, south'. The Negev is the southern desert.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "מזרח": {
+      "word": "מזרח",
+      "protoSemitic": "*z-r-ḥ",
+      "cognates": {
+        "akkadian": [
+          "zerāḫu"
+        ],
+        "arabic": [
+          "zaraḥa"
+        ],
+        "aramaic": [
+          "mizrāḥā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √zrḥ 'to rise, shine'. East = where sun rises.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    },
+    "מערב": {
+      "word": "מערב",
+      "protoSemitic": "*ʿ-r-b",
+      "cognates": {
+        "akkadian": [
+          "erēbu"
+        ],
+        "arabic": [
+          "ġaraba"
+        ],
+        "aramaic": [
+          "maʿarbā"
+        ]
+      },
+      "etymologyText": "From Proto-Semitic √ʿrb 'to set, enter'. West = where sun sets.",
+      "source": "HALOT/Scholarly",
+      "license": "CC-BY-SA"
+    }
+  }
+}

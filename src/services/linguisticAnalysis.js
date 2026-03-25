@@ -17,6 +17,7 @@
  */
 
 import { createLogger } from '../utils/debug';
+import { stripVowels } from '../utils/hebrewUtils';
 import { ARAMAIC_PARTICLES } from './preClassificationService';
 import { lookupJastrowSync, lookupBDBSync } from './dictionaryLoader';
 
@@ -219,7 +220,7 @@ export const BINYAN_ANALYSIS = {
 export function analyzeBinyan(word, options = {}) {
   // eslint-disable-next-line no-unused-vars
   const { language = 'unknown', context = null } = options; // context reserved for future use
-  const cleaned = word.replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '');
+  const cleaned = stripVowels(word);
 
   const matches = [];
   const binyanList = language === 'aramaic'
@@ -336,7 +337,7 @@ export const DIALECT_MARKERS = {
  * @returns {Object} - { dialect, confidence, markers }
  */
 export function detectAramaicDialect(text) {
-  const cleaned = text.replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '');
+  const cleaned = stripVowels(text);
   const words = cleaned.split(/\s+/);
 
   const scores = {
@@ -445,7 +446,7 @@ export const CITATION_PATTERNS = {
  * @returns {Array} - Array of detected citations
  */
 export function detectCitationPatterns(text) {
-  const cleaned = text.replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '');
+  const cleaned = stripVowels(text);
   const detected = [];
 
   for (const [pattern, info] of Object.entries(CITATION_PATTERNS)) {
@@ -508,7 +509,7 @@ export function expandRootFamily(root, options = {}) {
     return { root, family: [], error: 'Invalid root length' };
   }
 
-  const cleaned = root.replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '');
+  const cleaned = stripVowels(root);
   const family = [];
 
   // Check Jastrow for Talmudic usage
@@ -650,7 +651,7 @@ export const SEMANTIC_FIELDS = {
  * @returns {Object} - { field, confidence, relatedConcepts }
  */
 export function identifySemanticField(word) {
-  const cleaned = word.replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '');
+  const cleaned = stripVowels(word);
   const matches = [];
 
   for (const [fieldId, field] of Object.entries(SEMANTIC_FIELDS)) {
@@ -716,7 +717,7 @@ export function applyContextualBoost(lookupResult, context = {}) {
 
   // Boost if previous word suggests specific grammatical context
   if (previousWord) {
-    const prevCleaned = previousWord.replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '');
+    const prevCleaned = stripVowels(previousWord);
 
     // After "אמר" (said) - likely a statement
     if (prevCleaned === 'אמר' || prevCleaned === 'אמרי') {
@@ -852,7 +853,7 @@ export function analyzeWordV6(word, options = {}) {
     detectDialect = true
   } = options;
 
-  const cleaned = word.replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '');
+  const cleaned = stripVowels(word);
   const result = {
     word,
     cleanedWord: cleaned,
@@ -1206,7 +1207,7 @@ export const LOANWORD_DATABASE = {
  */
 export function detectHistoricalLayer(word, options = {}) {
   const { checkEvolution = true } = options;
-  const cleaned = word.replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '');
+  const cleaned = stripVowels(word);
 
   const result = {
     word: cleaned,
@@ -1532,7 +1533,7 @@ export const GRAMMATICAL_ANOMALIES = {
  * @returns {Object|null} - Anomaly information if found
  */
 export function checkGrammaticalAnomaly(word) {
-  const cleaned = word.replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '');
+  const cleaned = stripVowels(word);
 
   if (GRAMMATICAL_ANOMALIES[cleaned]) {
     return {
@@ -1943,7 +1944,7 @@ export const ROOT_COGNATES = {
  * @returns {Object|null} - Cognate information
  */
 export function getCognates(root) {
-  const cleaned = root.replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '');
+  const cleaned = stripVowels(root);
 
   if (ROOT_COGNATES[cleaned]) {
     return {

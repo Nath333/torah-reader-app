@@ -1,18 +1,16 @@
 /**
- * PRO SCHOLAR V5: Unified Root Extraction Service
+ * PRO SCHOLAR: Unified Root Extraction Service
+ * @module rootExtraction
  *
- * Consolidates the duplicate multi-hypothesis engines into a single,
- * optimized service with:
+ * Multi-hypothesis Hebrew/Aramaic root extraction with dictionary validation.
+ *
+ * Features:
  * - Complete weak verb rules (PE-NUN, PE-YOD, LAMED-HE, etc.)
  * - Trie-based prefix stripping for O(1) lookup
  * - Direct dictionary validation (Jastrow, BDB, Strong's)
- * - Hypothesis caching (500-entry FIFO for 30% faster repeat lookups)
- * - Dictionary tier scoring (gold/silver for confidence bonuses)
+ * - Hypothesis caching (500-entry LRU for faster repeat lookups)
+ * - Dictionary tier scoring for confidence ranking
  * - Context-aware source prioritization
- *
- * This REPLACES both (DEPRECATED):
- * - multiHypothesisService.js
- * - proScholarV4.js extractAllPossibleRoots
  */
 
 import { createLogger } from '../utils/debug';
@@ -32,8 +30,12 @@ import {
 import { ARAMAIC_PARTICLES } from './preClassificationService';
 // PRO SCHOLAR V5: Direct dictionary access - NO CALLBACKS NEEDED!
 import { lookupJastrowSync, lookupBDBSync, lookupStrongsSync } from './dictionaryLoader';
+// PRO SCHOLAR V12: Async lookups for when cache isn't populated yet
+import { lookupJastrowByWord, lookupBDBByWord, lookupStrongsByWord } from './dictionaryLoader';
 // PRO SCHOLAR V5: Unified source metadata (single source of truth)
 import { SOURCE_CONFIG } from '../utils/wordLookupHelpers';
+// PRO SCHOLAR V12: Centralized Hebrew text utilities (single source of truth)
+import { normalizeFinals, stripVowels } from '../utils/hebrewUtils';
 
 const log = createLogger('UnifiedRoot');
 const DEBUG = process.env.NODE_ENV === 'development';
@@ -390,8 +392,8 @@ export function generateHypotheses(word, options = {}) {
 
   if (!word || word.length < 2) return [];
 
-  // Clean word (remove nikud)
-  const cleaned = word.replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '');
+  // Clean word (remove nikud) and normalize final letters for dictionary lookup
+  const cleaned = normalizeFinals(stripVowels(word));
 
   // === PRO SCHOLAR V5: Check ARAMAIC_PARTICLES first (instant lookup) ===
   const particle = ARAMAIC_PARTICLES[cleaned] || ARAMAIC_PARTICLES[word];
@@ -514,6 +516,31 @@ function addRootHypotheses(hypotheses, stem, context) {
       confidence: baseConfidence,
       morphology: { prefixes, suffixes, pattern: 'triliteral' },
       note: `Direct triliteral root`
+    });
+  }
+
+  // 4-letter stem: action noun patterns (קְטִילָה like יציאה from יצא)
+  // Pattern: R1-R2-י-R3 where י is inserted for action nouns
+  if (stem.length === 4) {
+    // Check if 3rd letter is י (common in action nouns like יציאה, בריאה, קריאה)
+    if (stem[2] === 'י') {
+      const root = stem[0] + stem[1] + stem[3];
+      hypotheses.push({
+        id: `${source}-actionnoun-${root}`,
+        root: root,
+        confidence: baseConfidence - 5,
+        morphology: { prefixes, suffixes, pattern: 'action-noun', nounPattern: 'קְטִילָה' },
+        note: 'Action noun pattern (CeCi\'ah)'
+      });
+    }
+    // Also try dropping last letter for segolate nouns
+    const threeLetterRoot = stem.slice(0, 3);
+    hypotheses.push({
+      id: `${source}-segolate-${threeLetterRoot}`,
+      root: threeLetterRoot,
+      confidence: baseConfidence - 15,
+      morphology: { prefixes, suffixes, pattern: 'segolate' },
+      note: 'Possible segolate noun base'
     });
   }
 
@@ -908,6 +935,98 @@ export function validateWithDirectDictionaries(hypotheses, options = {}) {
 }
 
 /**
+ * PRO SCHOLAR V12: Async version of validateWithDirectDictionaries
+ * Uses async lookups to ensure dictionaries are loaded before validation
+ * This fixes the race condition where sync lookups return null if cache isn't populated
+ *
+ * @param {Array} hypotheses - Array from generateHypotheses
+ * @param {Object} options - { skipStrongs: boolean, contextType: string }
+ * @returns {Promise<Array>} - Validated hypotheses with scholarly sources
+ */
+export async function validateWithAsyncDictionaries(hypotheses, options = {}) {
+  const { skipStrongs = false, contextType = 'unknown' } = options;
+  const validated = [];
+
+  for (const hyp of hypotheses) {
+    const { root } = hyp;
+    const sources = [];
+
+    // Check Jastrow (Aramaic/Talmudic - GOLD tier) - ASYNC
+    const jastrowEntry = await lookupJastrowByWord(root);
+    if (jastrowEntry) {
+      const def = jastrowEntry.definition || jastrowEntry.gloss || jastrowEntry.meaning || jastrowEntry.shortDef;
+      if (def) {
+        sources.push({
+          ...DICTIONARY_TIERS.jastrow,
+          definition: def,
+          headword: jastrowEntry.headword || root,
+          entry: jastrowEntry
+        });
+      }
+    }
+
+    // Check BDB (Biblical Hebrew - GOLD tier) - ASYNC
+    const bdbEntry = await lookupBDBByWord(root);
+    if (bdbEntry) {
+      const def = bdbEntry.definition || bdbEntry.gloss || bdbEntry.meaning || bdbEntry.shortDef;
+      if (def) {
+        sources.push({
+          ...DICTIONARY_TIERS.bdb,
+          definition: def,
+          headword: bdbEntry.headword || root,
+          entry: bdbEntry
+        });
+      }
+    }
+
+    // Check Strong's (Biblical Hebrew - SILVER tier) unless skipped for Talmudic context - ASYNC
+    if (!skipStrongs && contextType !== 'talmudic' && contextType !== 'midrashic') {
+      const strongsEntry = await lookupStrongsByWord(root);
+      if (strongsEntry) {
+        const def = strongsEntry.definition || strongsEntry.gloss || strongsEntry.meaning || strongsEntry.shortDef;
+        if (def) {
+          sources.push({
+            ...DICTIONARY_TIERS.strongs,
+            definition: def,
+            strongNumber: strongsEntry.strongNumber || strongsEntry.number,
+            entry: strongsEntry
+          });
+        }
+      }
+    }
+
+    // If any dictionary matched, add to validated results
+    if (sources.length > 0) {
+      // Calculate confidence with tier bonus
+      const bestSource = sources[0];
+      const tierBonus = bestSource.tier === 'gold' ? 5 : 0;
+      const adjustedConfidence = Math.min(100, hyp.confidence + tierBonus);
+
+      validated.push({
+        ...hyp,
+        confidence: adjustedConfidence,
+        dictionaryMatch: true,
+        validated: true,
+        definition: bestSource.definition,
+        source: bestSource.name,
+        sources: sources,
+        sourceCount: sources.length,
+        tier: bestSource.tier
+      });
+    }
+  }
+
+  // Sort by confidence (highest first)
+  validated.sort((a, b) => b.confidence - a.confidence);
+
+  if (DEBUG && validated.length > 0) {
+    log.debug(`[AsyncValidation] ${validated.length} matches from ${hypotheses.length} hypotheses`);
+  }
+
+  return validated;
+}
+
+/**
  * ★ PREFERRED ENTRY POINT ★
  * Extract roots with DIRECT dictionary validation - no callbacks needed!
  *
@@ -956,6 +1075,80 @@ export function extractRootsWithDirectValidation(word, options = {}) {
 
   // Validate with direct dictionary access
   const validated = validateWithDirectDictionaries(hypotheses, {
+    ...options,
+    skipStrongs: contextType === 'talmudic' || contextType === 'midrashic'
+  });
+  _telemetry.validatedMatches += validated.length;
+  _telemetry.dictionaryLookups += hypotheses.length * 3; // Jastrow, BDB, Strong's
+
+  // Count weak verbs detected
+  const weakVerbCount = validated.filter(h => h.weakVerb).length;
+  _telemetry.weakVerbsDetected += weakVerbCount;
+
+  const result = {
+    originalWord: word,
+    hypotheses: hypotheses,
+    allMatches: validated,
+    bestMatch: validated[0] || null,
+    matchCount: validated.length,
+    hypothesisCount: hypotheses.length,
+    directValidation: true
+  };
+
+  recordLookup(performance.now() - startTime, false);
+  return setCache(cacheKey, result);
+}
+
+/**
+ * ★ PRO SCHOLAR V12: ASYNC ENTRY POINT ★
+ * Extract roots with ASYNC dictionary validation - ensures dictionaries are loaded!
+ * Use this when you need guaranteed dictionary lookup (fixes race condition on initial load)
+ *
+ * @param {string} word - Hebrew/Aramaic word
+ * @param {Object} options - { contextType, skipStrongs }
+ * @returns {Promise<Object>} - { hypotheses, bestMatch, allMatches, directValidation: true }
+ */
+export async function extractRootsWithAsyncValidation(word, options = {}) {
+  const startTime = performance.now();
+  const { contextType = 'unknown' } = options;
+
+  // Check cache first (30% faster repeat lookups)
+  const cacheKey = `async:${contextType}:${word}`;
+  const cached = getCached(cacheKey);
+  if (cached) {
+    if (DEBUG) log.debug(`[Cache HIT] ${word}`);
+    recordLookup(performance.now() - startTime, true);
+    return cached;
+  }
+
+  // Generate all possible hypotheses
+  const hypotheses = generateHypotheses(word, options);
+  _telemetry.hypothesesGenerated += hypotheses.length;
+
+  if (hypotheses.length === 0) {
+    recordLookup(performance.now() - startTime, false);
+    return { hypotheses: [], bestMatch: null, allMatches: [], word, directValidation: true };
+  }
+
+  // If it's an Aramaic particle, skip dictionary validation (already has definition)
+  if (hypotheses[0]?.isParticle) {
+    _telemetry.particlesFound++;
+    const result = {
+      originalWord: word,
+      hypotheses: hypotheses,
+      allMatches: hypotheses,
+      bestMatch: hypotheses[0],
+      matchCount: 1,
+      hypothesisCount: 1,
+      isAramaicParticle: true,
+      directValidation: true
+    };
+    recordLookup(performance.now() - startTime, false);
+    return setCache(cacheKey, result);
+  }
+
+  // Validate with ASYNC dictionary access (ensures dictionaries are loaded)
+  const validated = await validateWithAsyncDictionaries(hypotheses, {
     ...options,
     skipStrongs: contextType === 'talmudic' || contextType === 'midrashic'
   });
@@ -1241,7 +1434,7 @@ export function getCognates(root) {
 export function getLoanwordInfo(word) {
   const v6 = getV6();
   if (!v6 || !v6.LOANWORD_DATABASE) return null;
-  const cleaned = word.replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '');
+  const cleaned = stripVowels(word);
   return v6.LOANWORD_DATABASE[cleaned] || null;
 }
 
@@ -1253,7 +1446,7 @@ export function getLoanwordInfo(word) {
 export function getHistoricalEvolution(word) {
   const v6 = getV6();
   if (!v6 || !v6.HISTORICAL_EVOLUTION) return null;
-  const cleaned = word.replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '');
+  const cleaned = stripVowels(word);
   return v6.HISTORICAL_EVOLUTION[cleaned] || null;
 }
 
@@ -1272,6 +1465,132 @@ export function analyzeWordComplete(word, options = {}) {
     return extractRootsEnhanced(word, options);
   }
   return v6.analyzeWordV6Enhanced(word, options);
+}
+
+// =============================================================================
+// PRO SCHOLAR V20: ALTERNATIVE ROOT EXTRACTION FROM SCHOLARLY SOURCES
+// Extracts "compare", "perhaps from", "possibly from" references from BDB/Jastrow
+// =============================================================================
+
+/**
+ * Patterns to extract alternative root suggestions from scholarly definitions
+ * These represent scholarly uncertainty or comparison references
+ */
+const ALTERNATIVE_ROOT_PATTERNS = [
+  { regex: /compare\s+([א-ת]{2,4})/gi, type: 'comparison', confidence: 60 },
+  { regex: /perhaps\s+from\s+([א-ת]{2,4})/gi, type: 'uncertain', confidence: 50 },
+  { regex: /possibly\s+from\s+([א-ת]{2,4})/gi, type: 'uncertain', confidence: 45 },
+  { regex: /cf\.?\s*([א-ת]{2,4})/gi, type: 'comparison', confidence: 55 },
+  { regex: /cognate\s+(?:to|with)?\s*([א-ת]{2,4})/gi, type: 'cognate', confidence: 65 },
+  { regex: /related\s+to\s+([א-ת]{2,4})/gi, type: 'related', confidence: 60 },
+  { regex: /denominative\s+(?:from|of)\s+([א-ת]{2,4})/gi, type: 'denominative', confidence: 70 },
+  { regex: /from\s+root\s+([א-ת]{2,4})/gi, type: 'derivation', confidence: 75 },
+  { regex: /√([א-ת]{2,4})/gi, type: 'root_symbol', confidence: 80 },
+  { regex: /see\s+([א-ת]{2,4})/gi, type: 'cross_reference', confidence: 55 },
+];
+
+/**
+ * Extract alternative root suggestions from scholarly dictionary definitions
+ * @param {Object} dictionaryEntry - Entry from BDB, Jastrow, etc.
+ * @returns {Array} - Array of { root, type, confidence, source, context }
+ */
+export function extractAlternativeRoots(dictionaryEntry) {
+  if (!dictionaryEntry) return [];
+
+  const fullDef = dictionaryEntry.fullDef || dictionaryEntry.definition || '';
+  const alternatives = [];
+  const seenRoots = new Set();
+
+  // Skip if too short
+  if (fullDef.length < 10) return [];
+
+  for (const { regex, type, confidence } of ALTERNATIVE_ROOT_PATTERNS) {
+    regex.lastIndex = 0; // Reset regex state
+    let match;
+    while ((match = regex.exec(fullDef)) !== null) {
+      const root = match[1];
+
+      // Validate: must be 2-4 Hebrew letters, not already seen
+      if (root && root.length >= 2 && root.length <= 4 && !seenRoots.has(root)) {
+        // Skip if it's the main entry word
+        if (root === dictionaryEntry.key || root === dictionaryEntry.lemma) continue;
+
+        seenRoots.add(root);
+
+        // Extract surrounding context (30 chars before and after)
+        const matchIndex = match.index;
+        const contextStart = Math.max(0, matchIndex - 30);
+        const contextEnd = Math.min(fullDef.length, matchIndex + match[0].length + 30);
+        const context = fullDef.slice(contextStart, contextEnd).trim();
+
+        alternatives.push({
+          root,
+          type,
+          confidence,
+          context: `...${context}...`,
+          source: dictionaryEntry.source || 'unknown',
+          pattern: match[0]
+        });
+      }
+    }
+  }
+
+  // Sort by confidence (highest first)
+  return alternatives.sort((a, b) => b.confidence - a.confidence);
+}
+
+/**
+ * Get all alternative roots for a word from multiple dictionaries
+ * @param {string} word - Hebrew word to look up
+ * @returns {Object} - { primaryRoot, alternatives: [...], hasMultiple: boolean }
+ */
+export function getAllAlternativeRoots(word) {
+  const result = {
+    word,
+    primaryRoot: null,
+    alternatives: [],
+    hasMultiple: false,
+    scholarlyNote: null
+  };
+
+  // Get entries from all dictionaries
+  const bdbEntry = lookupBDBSync(word);
+  const jastrowEntry = lookupJastrowSync(word);
+
+  // Extract primary root
+  if (bdbEntry?.root) result.primaryRoot = bdbEntry.root;
+  else if (jastrowEntry?.root) result.primaryRoot = jastrowEntry.root;
+
+  // Extract alternatives from both
+  const bdbAlts = bdbEntry ? extractAlternativeRoots({ ...bdbEntry, source: 'BDB' }) : [];
+  const jastrowAlts = jastrowEntry ? extractAlternativeRoots({ ...jastrowEntry, source: 'Jastrow' }) : [];
+
+  // Merge and deduplicate
+  const seenRoots = new Set();
+  if (result.primaryRoot) seenRoots.add(result.primaryRoot);
+
+  for (const alt of [...bdbAlts, ...jastrowAlts]) {
+    if (!seenRoots.has(alt.root)) {
+      seenRoots.add(alt.root);
+      result.alternatives.push(alt);
+    }
+  }
+
+  result.hasMultiple = result.alternatives.length > 0;
+
+  // Generate scholarly note if multiple roots
+  if (result.hasMultiple) {
+    const types = [...new Set(result.alternatives.map(a => a.type))];
+    if (types.includes('uncertain')) {
+      result.scholarlyNote = 'Etymology uncertain - multiple possible roots';
+    } else if (types.includes('comparison')) {
+      result.scholarlyNote = 'Scholars compare to related roots';
+    } else {
+      result.scholarlyNote = 'Alternative derivations proposed';
+    }
+  }
+
+  return result;
 }
 
 // =============================================================================
@@ -1300,9 +1619,13 @@ export const extractAllPossibleRoots = (word, options = {}) => {
 export { ARAMAIC_PARTICLES };
 
 const UnifiedRootService = {
-  VERSION: '6.2.0', // PRO SCHOLAR V6.2 with expanded databases
+  VERSION: '6.3.0', // PRO SCHOLAR V20 with alternative root extraction
 
-  // ★★★ PRO SCHOLAR V6.2: Complete scholarly analysis (NEWEST!)
+  // ★★★★ PRO SCHOLAR V20: Alternative root extraction (NEWEST!)
+  extractAlternativeRoots,
+  getAllAlternativeRoots,
+
+  // ★★★ PRO SCHOLAR V6.2: Complete scholarly analysis
   analyzeWordComplete,
   getHistoricalLayer,
   getHistoricalEvolution,
@@ -1321,6 +1644,10 @@ const UnifiedRootService = {
   // ★ PREFERRED: Direct dictionary validation (no callbacks!)
   extractRootsWithDirectValidation,
   validateWithDirectDictionaries,
+
+  // ★ PRO SCHOLAR V12: Async validation (fixes race condition on initial load)
+  extractRootsWithAsyncValidation,
+  validateWithAsyncDictionaries,
 
   // Standard extraction (with optional callback)
   extractRoots,

@@ -42,6 +42,7 @@
 
 import { ARAMAIC_PARTICLES, BIBLICAL_PARTICLES } from './preClassificationService';
 import { lookupJastrowSync, lookupBDBSync, lookupStrongsSync } from './dictionaryLoader';
+import { stripVowels } from '../utils/hebrewUtils';
 
 export const ENGINE_VERSION = '7.0.0';
 
@@ -157,7 +158,7 @@ export const GematriaCalculator = {
    * Standard gematria (mispar hechrachi)
    */
   standard(word) {
-    const cleaned = word.replace(/[\u05B0-\u05BD\u05BF-\u05C7\s]/g, '');
+    const cleaned = stripVowels(word).replace(/\s/g, '');
     let total = 0;
     for (const char of cleaned) {
       total += GEMATRIA_VALUES[char] || 0;
@@ -169,7 +170,7 @@ export const GematriaCalculator = {
    * Mispar Katan (small value) - each letter mod 9
    */
   katan(word) {
-    const cleaned = word.replace(/[\u05B0-\u05BD\u05BF-\u05C7\s]/g, '');
+    const cleaned = stripVowels(word).replace(/\s/g, '');
     let total = 0;
     for (const char of cleaned) {
       const val = GEMATRIA_VALUES[char] || 0;
@@ -183,7 +184,7 @@ export const GematriaCalculator = {
    */
   gadol(word) {
     const finalValues = { 'ך': 500, 'ם': 600, 'ן': 700, 'ף': 800, 'ץ': 900 };
-    const cleaned = word.replace(/[\u05B0-\u05BD\u05BF-\u05C7\s]/g, '');
+    const cleaned = stripVowels(word).replace(/\s/g, '');
     let total = 0;
     for (const char of cleaned) {
       total += finalValues[char] || GEMATRIA_VALUES[char] || 0;
@@ -200,7 +201,7 @@ export const GematriaCalculator = {
       'ח': 'ס', 'ט': 'נ', 'י': 'מ', 'כ': 'ל', 'ל': 'כ', 'מ': 'י', 'נ': 'ט',
       'ס': 'ח', 'ע': 'ז', 'פ': 'ו', 'צ': 'ה', 'ק': 'ד', 'ר': 'ג', 'ש': 'ב', 'ת': 'א'
     };
-    const cleaned = word.replace(/[\u05B0-\u05BD\u05BF-\u05C7\s]/g, '');
+    const cleaned = stripVowels(word).replace(/\s/g, '');
     let transformed = '';
     for (const char of cleaned) {
       transformed += atbashMap[char] || char;
@@ -314,7 +315,7 @@ export const WordEvolutionTracker = {
    * Get evolution data for a word
    */
   getEvolution(word) {
-    const cleaned = word.replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '');
+    const cleaned = stripVowels(word);
 
     // Check Hebrew evolution
     const hebrewEvolution = WORD_EVOLUTION_DB[cleaned];
@@ -435,7 +436,7 @@ export const DifficultyScorer = {
    */
   score(word, options = {}) {
     const { textType = 'unknown', morphology = null, isVerb = false } = options;
-    const cleaned = word.replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '');
+    const cleaned = stripVowels(word);
 
     let score = 5.0; // Base score
 
@@ -547,7 +548,7 @@ export const ParallelTextFinder = {
    * Find parallel texts for a phrase
    */
   findParallels(phrase) {
-    const cleaned = phrase.replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '');
+    const cleaned = stripVowels(phrase);
     const results = [];
 
     // Check exact matches
@@ -643,7 +644,7 @@ export function analyzeWord(word, options = {}) {
     return { ...cached, fromCache: true };
   }
 
-  const cleaned = word.replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '');
+  const cleaned = stripVowels(word);
 
   // Initialize result
   const result = {
@@ -758,7 +759,7 @@ export function analyzeWords(words, options = {}) {
  * Quick lookup (minimal analysis for performance)
  */
 export function quickLookup(word, textType = 'unknown') {
-  const cleaned = word.replace(/[\u05B0-\u05BD\u05BF-\u05C7]/g, '');
+  const cleaned = stripVowels(word);
 
   // Check particles
   const particle = ARAMAIC_PARTICLES[cleaned] || BIBLICAL_PARTICLES[cleaned];

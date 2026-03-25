@@ -63,15 +63,22 @@
   padding: 0.75rem;
 }
 
-/* Loading State */
+/* Loading State - PRO SCHOLAR V12: Enhanced with progress bar */
 .glossary-loading {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 1rem;
+  gap: 0.75rem;
+  padding: 1.25rem;
   color: var(--text-muted, #64748b);
   font-size: 0.85rem;
+}
+
+.loading-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .loading-spinner {
@@ -79,9 +86,41 @@
   animation: spin 1s linear infinite;
 }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+/* @keyframes spin - defined in animations.css */
+
+/* PRO SCHOLAR V12: Progress bar */
+.loading-progress-bar {
+  width: 100%;
+  max-width: 250px;
+  height: 6px;
+  background: var(--bg-muted, #e2e8f0);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.loading-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary, #6366f1) 0%, var(--accent-cyan, #06b6d4) 100%);
+  border-radius: 3px;
+  transition: width 150ms ease;
+}
+
+/* PRO SCHOLAR V12: Cancel/show partial results button */
+.loading-cancel-btn {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--primary, #6366f1);
+  background: var(--bg-elevated, #fff);
+  border: 1px solid var(--primary-light, #c7d2fe);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.loading-cancel-btn:hover {
+  background: var(--primary-light, #e0e7ff);
+  border-color: var(--primary, #6366f1);
 }
 
 /* Error & Empty States */
@@ -112,13 +151,16 @@
 
 .glossary-item {
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  padding: 0.5rem 0.6rem;
+  align-items: baseline;
+  flex-wrap: nowrap;
+  gap: 0.4rem;
+  padding: 0.4rem 0.6rem;
   background: var(--card-bg, #fff);
   border-radius: var(--radius-sm, 6px);
   border: 1px solid var(--border-light, #f1f5f9);
+  overflow: hidden;
+  max-width: 100%;
+  min-height: 1.8rem;
 }
 
 .glossary-item:hover {
@@ -127,9 +169,11 @@
 
 .glossary-word {
   font-family: var(--font-hebrew, 'SBL Hebrew', 'David Libre', serif);
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary, #1e293b);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .glossary-expansion {
@@ -140,26 +184,32 @@
 
 .glossary-arrow {
   color: var(--text-muted, #94a3b8);
-  font-size: 0.8rem;
-  margin: 0 0.15rem;
+  font-size: 0.75rem;
+  flex-shrink: 0;
 }
 
 .glossary-definition {
   flex: 1;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--text-primary, #334155);
-  min-width: 100px;
+  min-width: 60px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .glossary-source {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
-  padding: 0.15rem 0.4rem;
+  letter-spacing: 0.02em;
+  padding: 0.1rem 0.35rem;
   border-radius: 3px;
   background: var(--bg-subtle, #f1f5f9);
   color: var(--text-muted, #64748b);
+  flex-shrink: 0;
+  white-space: nowrap;
+  margin-left: auto;
 }
 
 /* Source-specific colors */
@@ -276,6 +326,37 @@
 
 .glossary-hint .hint-local {
   color: var(--accent-indigo, #6366f1);
+}
+
+.glossary-hint .hint-proto {
+  color: var(--accent-violet, #8b5cf6);
+  font-style: italic;
+}
+
+/* =============================================================================
+   PRO SCHOLAR V11: Source Tier Badge Styling
+   ============================================================================= */
+
+/* Gold tier sources (BDB, Jastrow, HALOT) */
+.glossary-source.tier-gold {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.2) 0%, rgba(245, 158, 11, 0.12) 100%);
+  color: #b45309;
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  font-weight: 600;
+}
+
+/* Silver tier sources (CAL, DJBA, Sefaria) */
+.glossary-source.tier-silver {
+  background: linear-gradient(135deg, rgba(156, 163, 175, 0.15) 0%, rgba(107, 114, 128, 0.1) 100%);
+  color: #4b5563;
+  border: 1px solid rgba(156, 163, 175, 0.4);
+}
+
+/* Bronze tier sources (Klein, Wiktionary) */
+.glossary-source.tier-bronze {
+  background: linear-gradient(135deg, rgba(180, 83, 9, 0.12) 0%, rgba(217, 119, 6, 0.08) 100%);
+  color: #92400e;
+  border: 1px solid rgba(180, 83, 9, 0.3);
 }
 
 /* Animation */
@@ -397,6 +478,25 @@
   color: var(--text-muted, #64748b);
 }
 
+/* PRO SCHOLAR V11: Dark mode tier badges */
+.dark-mode .glossary-source.tier-gold {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.25) 0%, rgba(245, 158, 11, 0.18) 100%);
+  color: #fbbf24;
+  border-color: rgba(251, 191, 36, 0.5);
+}
+
+.dark-mode .glossary-source.tier-silver {
+  background: linear-gradient(135deg, rgba(156, 163, 175, 0.2) 0%, rgba(107, 114, 128, 0.15) 100%);
+  color: #d1d5db;
+  border-color: rgba(156, 163, 175, 0.5);
+}
+
+.dark-mode .glossary-source.tier-bronze {
+  background: linear-gradient(135deg, rgba(180, 83, 9, 0.2) 0%, rgba(217, 119, 6, 0.15) 100%);
+  color: #fbbf24;
+  border-color: rgba(180, 83, 9, 0.4);
+}
+
 /* =============================================================================
    Mobile Responsive Styles
    ============================================================================= */
@@ -506,13 +606,92 @@
 }
 
 /* =============================================================================
-   Not Found Words - Morphological Hints
+   PRO SCHOLAR: Proto-Semitic Reconstruction Styling
+   ============================================================================= */
+
+/* Proto-Semitic badge */
+.glossary-proto-semitic {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.4rem;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 4px;
+  font-size: 0.7rem;
+  cursor: help;
+  transition: all 150ms ease;
+}
+
+.glossary-proto-semitic:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(168, 85, 247, 0.2) 100%);
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+.glossary-proto-semitic .proto-label {
+  font-weight: 700;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent-violet, #8b5cf6);
+  opacity: 0.8;
+}
+
+.glossary-proto-semitic .proto-form {
+  font-family: 'Times New Roman', 'Noto Serif', serif;
+  font-style: italic;
+  font-weight: 500;
+  color: var(--accent-purple, #a855f7);
+  letter-spacing: 0.02em;
+}
+
+/* Items with Proto-Semitic have subtle accent */
+.glossary-item.has-etymology {
+  border-right: 3px solid rgba(139, 92, 246, 0.4);
+}
+
+/* Footer hint for Proto-Semitic */
+.glossary-hint .hint-proto {
+  color: var(--accent-violet, #8b5cf6);
+  font-weight: 500;
+}
+
+/* Dark mode Proto-Semitic */
+.dark-mode .glossary-proto-semitic {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(168, 85, 247, 0.15) 100%);
+  border-color: rgba(139, 92, 246, 0.4);
+}
+
+.dark-mode .glossary-proto-semitic:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.35) 0%, rgba(168, 85, 247, 0.25) 100%);
+  border-color: rgba(139, 92, 246, 0.6);
+}
+
+.dark-mode .glossary-proto-semitic .proto-label {
+  color: #a78bfa;
+}
+
+.dark-mode .glossary-proto-semitic .proto-form {
+  color: #c4b5fd;
+}
+
+.dark-mode .glossary-item.has-etymology {
+  border-right-color: rgba(167, 139, 250, 0.5);
+}
+
+.dark-mode .glossary-hint .hint-proto {
+  color: #a78bfa;
+}
+
+/* =============================================================================
+   Not Found Words - PRO SCHOLAR V12: Enhanced Morphological Hints
    ============================================================================= */
 
 .glossary-item.not-found {
-  opacity: 0.75;
+  opacity: 0.85;
   background: var(--bg-warning-subtle, #fefce8);
   border-left: 3px solid var(--color-warning, #eab308);
+  flex-wrap: wrap;
 }
 
 .glossary-word.not-found-word {
@@ -520,20 +699,70 @@
   color: var(--text-muted, #64748b);
 }
 
-.glossary-hint-text {
+/* PRO SCHOLAR V12: Enhanced not-found content layout */
+.glossary-not-found-content {
+  flex: 1;
+  min-width: 150px;
+}
+
+.morphology-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
   font-size: 0.8rem;
+}
+
+.morph-prefix,
+.morph-root,
+.morph-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.morph-label {
+  font-weight: 600;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: var(--text-muted, #64748b);
+  letter-spacing: 0.02em;
+}
+
+.morph-prefix {
+  color: var(--accent-violet, #8b5cf6);
+}
+
+.morph-root {
+  color: var(--accent-emerald, #059669);
+}
+
+.morph-hint {
   color: var(--text-secondary, #475569);
 }
 
-.glossary-hint-text .hint-label {
-  font-weight: 500;
-  color: var(--text-muted, #64748b);
-  margin-right: 0.25rem;
+/* Not-found suggestions */
+.not-found-suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
-.glossary-hint-text .hint-unknown {
+.not-found-suggestions .hint-unknown {
   font-style: italic;
   color: var(--text-muted, #94a3b8);
+  font-size: 0.85rem;
+}
+
+.suggestion-tips {
+  font-size: 0.7rem;
+  color: var(--text-muted, #94a3b8);
+}
+
+.suggestion-tips .tip {
+  background: var(--bg-subtle, #f1f5f9);
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  display: inline-block;
 }
 
 .glossary-source.not-found-badge {
@@ -541,10 +770,33 @@
   color: var(--color-warning-dark, #92400e);
   padding: 0.15rem 0.4rem;
   border-radius: 4px;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
+  flex-shrink: 0;
 }
 
 /* Dark mode support for not-found words */
+.dark-mode .glossary-item.not-found {
+  background: var(--bg-warning-subtle-dark, #422006);
+  border-left-color: var(--color-warning-dark, #ca8a04);
+}
+
+.dark-mode .morph-prefix {
+  color: #a78bfa;
+}
+
+.dark-mode .morph-root {
+  color: #34d399;
+}
+
+.dark-mode .suggestion-tips .tip {
+  background: var(--bg-elevated, #334155);
+}
+
+.dark-mode .glossary-source.not-found-badge {
+  background: var(--bg-warning-dark, #713f12);
+  color: var(--color-warning-light, #fde68a);
+}
+
 @media (prefers-color-scheme: dark) {
   .glossary-item.not-found {
     background: var(--bg-warning-subtle-dark, #422006);
@@ -555,4 +807,220 @@
     background: var(--bg-warning-dark, #713f12);
     color: var(--color-warning-light, #fde68a);
   }
+}
+
+/* =============================================================================
+   PRO SCHOLAR V12: Academic Data Display (Aramaic, Dialects, CAL, Multi-source)
+   ============================================================================= */
+
+/* Aramaic indicator badge */
+.glossary-aramaic-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 0.1rem 0.3rem;
+  margin-left: 0.25rem;
+  background: linear-gradient(135deg, rgba(251, 146, 60, 0.15) 0%, rgba(234, 88, 12, 0.1) 100%);
+  color: #c2410c;
+  border: 1px solid rgba(251, 146, 60, 0.3);
+  border-radius: 3px;
+}
+
+/* CAL transliteration display */
+.glossary-cal {
+  font-family: var(--font-mono, 'Consolas', monospace);
+  font-size: 0.7rem;
+  color: var(--text-muted, #64748b);
+  margin-left: 0.35rem;
+  opacity: 0.85;
+}
+
+/* Dialects display */
+.glossary-dialects {
+  font-size: 0.7rem;
+  color: var(--text-secondary, #475569);
+  font-style: italic;
+  margin-left: 0.35rem;
+}
+
+/* Multiple sources indicator */
+.glossary-multi-source {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: 600;
+  min-width: 1.25rem;
+  height: 1rem;
+  padding: 0 0.25rem;
+  margin-left: 0.25rem;
+  background: rgba(99, 102, 241, 0.12);
+  color: #4f46e5;
+  border-radius: 10px;
+  cursor: help;
+}
+
+/* Aramaic word styling */
+.glossary-item.aramaic {
+  border-left: 2px solid rgba(251, 146, 60, 0.4);
+  padding-left: 0.5rem;
+}
+
+/* Scholarly-enriched word styling */
+.glossary-item.has-scholarly .glossary-word {
+  color: var(--color-academic, #1d4ed8);
+}
+
+/* Dark mode styles for V12 features */
+.dark-mode .glossary-aramaic-badge {
+  background: linear-gradient(135deg, rgba(251, 146, 60, 0.2) 0%, rgba(234, 88, 12, 0.15) 100%);
+  color: #fb923c;
+  border-color: rgba(251, 146, 60, 0.4);
+}
+
+.dark-mode .glossary-cal {
+  color: var(--text-muted, #94a3b8);
+}
+
+.dark-mode .glossary-dialects {
+  color: var(--text-secondary, #cbd5e1);
+}
+
+.dark-mode .glossary-multi-source {
+  background: rgba(99, 102, 241, 0.2);
+  color: #a5b4fc;
+}
+
+.dark-mode .glossary-item.aramaic {
+  border-left-color: rgba(251, 146, 60, 0.5);
+}
+
+.dark-mode .glossary-item.has-scholarly .glossary-word {
+  color: var(--color-academic-dark, #60a5fa);
+}
+
+/* =============================================================================
+   PRO SCHOLAR V13: Compound Talmudic Phrases
+   Multi-word expressions shown as units with special styling
+   ============================================================================= */
+
+.glossary-item.compound-phrase {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(109, 40, 217, 0.05) 100%);
+  border-left: 3px solid var(--color-phrase, #8b5cf6);
+  padding-left: 0.65rem;
+}
+
+.glossary-item.compound-phrase .glossary-word {
+  font-weight: 600;
+  color: var(--color-phrase, #7c3aed);
+  font-size: 1rem;
+}
+
+.glossary-phrase-badge {
+  font-size: 0.85rem;
+  margin-left: 0.25rem;
+  opacity: 0.9;
+}
+
+.glossary-item.compound-phrase .glossary-definition {
+  font-weight: 500;
+  color: var(--text-primary, #1e293b);
+}
+
+.glossary-item.compound-phrase .glossary-source {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(109, 40, 217, 0.1) 100%);
+  color: var(--color-phrase, #7c3aed);
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+/* Dark mode for compound phrases */
+.dark-mode .glossary-item.compound-phrase {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(109, 40, 217, 0.1) 100%);
+  border-left-color: rgba(139, 92, 246, 0.6);
+}
+
+.dark-mode .glossary-item.compound-phrase .glossary-word {
+  color: var(--color-phrase-dark, #a78bfa);
+}
+
+.dark-mode .glossary-item.compound-phrase .glossary-source {
+  background: rgba(139, 92, 246, 0.2);
+  color: #c4b5fd;
+}
+
+/* =============================================================================
+   PRO SCHOLAR V13: Match Type Badges
+   Show how word was found (prefix stripping, plural→singular, etc.)
+   ============================================================================= */
+
+.glossary-match-type {
+  font-size: 0.65rem;
+  color: var(--text-muted, #64748b);
+  background: var(--bg-muted, #e2e8f0);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-weight: 400;
+  white-space: nowrap;
+  direction: ltr;
+  margin-left: 0.3rem;
+}
+
+/* Prefix stripping badge */
+.glossary-match-type.prefix {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(37, 99, 235, 0.08) 100%);
+  color: var(--color-prefix, #2563eb);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+/* Plural to singular transformation */
+.glossary-match-type.singular {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.12) 0%, rgba(22, 163, 74, 0.08) 100%);
+  color: var(--color-singular, #16a34a);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+/* Final letter restoration */
+.glossary-match-type.final {
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.12) 0%, rgba(234, 88, 12, 0.08) 100%);
+  color: var(--color-final, #ea580c);
+  border: 1px solid rgba(249, 115, 22, 0.25);
+}
+
+/* Morphological transformation */
+.glossary-match-type.morphological {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.12) 0%, rgba(109, 40, 217, 0.08) 100%);
+  color: var(--color-morph, #7c3aed);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+}
+
+/* Dark mode match type badges */
+.dark-mode .glossary-match-type {
+  background: rgba(51, 65, 85, 0.5);
+  color: var(--text-muted, #94a3b8);
+}
+
+.dark-mode .glossary-match-type.prefix {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  border-color: rgba(59, 130, 246, 0.35);
+}
+
+.dark-mode .glossary-match-type.singular {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+.dark-mode .glossary-match-type.final {
+  background: rgba(249, 115, 22, 0.2);
+  color: #fb923c;
+  border-color: rgba(249, 115, 22, 0.35);
+}
+
+.dark-mode .glossary-match-type.morphological {
+  background: rgba(139, 92, 246, 0.2);
+  color: #a78bfa;
+  border-color: rgba(139, 92, 246, 0.35);
 }

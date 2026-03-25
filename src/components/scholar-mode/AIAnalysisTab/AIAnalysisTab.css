@@ -1452,7 +1452,7 @@
   animation: spin 0.8s linear infinite;
 }
 
-@keyframes spin { 100% { transform: rotate(360deg); } }
+/* @keyframes spin - defined in animations.css */
 
 /* Run All Core Modes Button */
 .btn-run-all {
@@ -7365,9 +7365,7 @@
   animation: spin 0.8s linear infinite;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+/* @keyframes spin - defined in animations.css */
 
 /* Sources Indicator */
 .followup-sources {
@@ -8715,6 +8713,53 @@
   font-size: 14px;
 }
 
+/* =============================================================================
+   Compact AI Header
+   ============================================================================= */
+
+.ai-header-compact {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  background: linear-gradient(145deg, rgba(30, 27, 40, 0.6), rgba(25, 22, 35, 0.4));
+  border-radius: 10px;
+  border: 1px solid rgba(139, 92, 246, 0.15);
+}
+
+/* NOTE: .text-type-badge styles moved to ScholarModePanel.css (DRY) */
+
+.provider-badge-compact {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(99, 102, 241, 0.1));
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  border-radius: 14px;
+  color: #a78bfa;
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.provider-badge-compact:hover {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.25), rgba(99, 102, 241, 0.15));
+  border-color: rgba(124, 58, 237, 0.4);
+}
+
+.provider-badge-compact .provider-gear {
+  opacity: 0.6;
+  font-size: 0.65rem;
+  margin-left: 2px;
+}
+
+.provider-badge-compact:hover .provider-gear {
+  opacity: 1;
+}
+
 /* Enhanced verse count badge */
 .verse-count-badge {
   display: inline-flex;
@@ -8906,9 +8951,7 @@
   animation: spin 1s linear infinite;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+/* @keyframes spin - defined in animations.css */
 
 .loading-message {
   font-size: 15px;
@@ -9442,34 +9485,43 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  gap: 16px;
   padding: 10px 16px;
   background: linear-gradient(135deg, var(--gold-a08) 0%, var(--gold-a05) 100%);
   border: 1px solid var(--gold-a15);
   border-radius: 10px;
   margin-bottom: 12px;
+  flex-wrap: wrap;
 }
 
 .stat-item {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 5px;
   font-size: 13px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .stat-icon {
   font-size: 14px;
   opacity: 0.8;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
 }
 
 .stat-value {
   font-weight: 600;
   color: var(--gold-light);
+  line-height: 1.2;
 }
 
 .stat-label {
   color: var(--text-muted);
   font-size: 11px;
+  line-height: 1.2;
 }
 
 /* =============================================================================

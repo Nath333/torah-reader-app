@@ -101,9 +101,7 @@
   border-width: 2px;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+/* @keyframes spin - defined in animations.css */
 
 .versions-content {
   flex: 1;

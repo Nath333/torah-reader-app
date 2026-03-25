@@ -2,12 +2,17 @@
 
 .traditional-page-view {
   background: var(--bg-primary, #f8fafc);
-  min-height: calc(100vh - 200px);
+  height: calc(100vh - 100px); /* Fixed height to enable child scrolling */
+  max-height: calc(100vh - 100px);
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Children handle their own scrolling */
 }
 
 /* Header */
 .tpv-header {
+  flex-shrink: 0; /* Don't shrink header */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -131,11 +136,16 @@
 
 /* Content Area */
 .tpv-content {
+  flex: 1;
+  min-height: 0; /* Critical for flex child to respect height constraint */
+  height: 0; /* Force flex to calculate proper height */
   margin-bottom: 1rem;
+  overflow: hidden; /* TzuratHaDaf handles its own scrolling */
 }
 
 /* Legend */
 .tpv-legend {
+  flex-shrink: 0; /* Don't shrink legend */
   background: var(--bg-secondary, #fff);
   border-radius: 12px;
   padding: 1rem 1.5rem;

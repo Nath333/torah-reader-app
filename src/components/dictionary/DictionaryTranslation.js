@@ -13,6 +13,7 @@
 import React, { useMemo, useState } from 'react';
 import { splitIntoWords, cleanHebrewWord } from '../../services/hebrewDictionary';
 import { lookupWordSync } from '../../services/unifiedLookupService';
+import { stripAllDiacritics } from '../../utils/hebrewUtils';
 import { getSourceInfo, RELIABILITY_TIERS, isAcademicSource } from '../../constants/dictionarySources';
 import { CRITICAL_WORDS, TALMUD_DAF_RANGE, HEBREW_GEMATRIA } from '../../constants';
 import { cleanDefinition } from '../../utils/definitionCleaner';
@@ -194,7 +195,7 @@ const getAllDictionaryResults = (word) => {
   const isTalmudicPageRef = (w) => {
     if (!w) return false;
     // Strip only nikud/vowels, keeping punctuation for daf detection
-    const noNikud = w.replace(/[\u0591-\u05C7]/g, '');
+    const noNikud = stripAllDiacritics(w);
     // Pattern: Optional opening paren + 1-3 Hebrew letters + : or . + optional closing paren
     // e.g., "צו:" = 96b, "צו." = 96a, "(צו:)" = 96b, "צו:)" = 96b
     const dafPattern = /^[([]*[א-ת]{1,3}[:.][\])]*$/;

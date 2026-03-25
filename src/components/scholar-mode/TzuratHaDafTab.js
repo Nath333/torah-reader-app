@@ -18,6 +18,7 @@ import { analyzeCommentary, ANALYSIS_MODES, hasApiKey } from '../../services/gro
 import { lookupBDBByWord } from '../../data/bdbComplete';
 import { lookupJastrowLocal } from '../../data/jastrowAramaic';
 import { useVocabulary } from '../../hooks';
+import { stripCantillation, stripVowels } from '../../utils/hebrewUtils';
 
 // =============================================================================
 // Talmudic Discourse Pattern Detection (Local - No API)
@@ -665,13 +666,9 @@ const StudyPanel = React.memo(({ text, reference, rashiText, tosafotText, isOpen
 const cleanHebrewWord = (word) => {
   if (!word) return '';
 
-  return word
-    // Remove HTML tags
-    .replace(/<[^>]*>/g, '')
-    // Remove cantillation marks (U+0591-U+05AF)
-    .replace(/[\u0591-\u05AF]/g, '')
-    // Remove nikud/vowel points (U+05B0-U+05BD, U+05BF, U+05C1-U+05C2, U+05C4-U+05C5, U+05C7)
-    .replace(/[\u05B0-\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7]/g, '')
+  // Remove HTML tags first, then use hebrewUtils for diacritics
+  const noHtml = word.replace(/<[^>]*>/g, '');
+  return stripVowels(stripCantillation(noHtml))
     // Remove common punctuation
     .replace(/[.,;:!?׃׀־–—\-()[\]{}״"'`]/g, '')
     // Remove maqaf (Hebrew hyphen)

@@ -250,11 +250,7 @@
   margin-bottom: 12px;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
+/* @keyframes spin - defined in animations.css */
 
 .smart-search-empty {
   padding: 32px;

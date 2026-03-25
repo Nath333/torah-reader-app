@@ -1,6 +1,6 @@
 /**
  * Dictionary and Lexicon Source Configuration
- * PRO SCHOLAR V7: Scholarly Source Classification System
+ * PRO SCHOLAR: Scholarly Source Classification System
  *
  * CLEAR DISTINCTION:
  * - LEXICON: Published academic dictionaries (Jastrow, BDB, CAL, Strong's)
@@ -12,6 +12,13 @@
  * - reliability tier with confidence weighting
  * - display info for scholarly attribution
  */
+
+// =============================================================================
+// PRO SCHOLAR VERSION - Single source of truth for version tracking
+// =============================================================================
+
+export const PRO_SCHOLAR_VERSION = '12.0';
+export const PRO_SCHOLAR_CODENAME = 'Unified Lookup';
 
 // =============================================================================
 // SOURCE TYPES - Clear categorization
@@ -418,6 +425,7 @@ export const DICTIONARY_SOURCES = {
     shortName: 'Rabbinic',
     type: SOURCE_TYPES.CURATED,
     reliability: 'curated',
+    tier: 3, // Bronze tier - explicit to avoid inconsistent display
     color: '#6366f1',
     specialization: 'Common Talmudic & Rashi terms',
     description: 'Curated list of frequent rabbinic vocabulary',
@@ -431,6 +439,7 @@ export const DICTIONARY_SOURCES = {
     shortName: 'Technical',
     type: SOURCE_TYPES.CURATED,
     reliability: 'curated',
+    tier: 3, // Bronze tier
     color: '#8b5cf6',
     specialization: 'Legal & technical terminology',
     description: 'כרת, חטאת, סקילה, פטור, חייב, etc.',
@@ -444,6 +453,7 @@ export const DICTIONARY_SOURCES = {
     shortName: 'Particles',
     type: SOURCE_TYPES.CURATED,
     reliability: 'curated',
+    tier: 3, // Bronze tier
     color: '#64748b',
     specialization: 'Function words & particles',
     description: 'על, אל, מן, כי, אשר, etc.',
@@ -457,6 +467,7 @@ export const DICTIONARY_SOURCES = {
     shortName: 'Verbs',
     type: SOURCE_TYPES.CURATED,
     reliability: 'curated',
+    tier: 3, // Bronze tier
     color: '#f59e0b',
     specialization: 'Frequent verb conjugations',
     description: 'היה, אמר, עשה, etc.',
@@ -523,12 +534,24 @@ export const DICTIONARY_SOURCES = {
 
   wiktionary: {
     name: 'Wiktionary',
-    fullName: 'Wiktionary (English)',
+    fullName: 'Wiktionary (English Edition)',
+    shortName: 'Wiki',
+    author: 'Wikimedia Foundation',
     year: 2024,
     type: SOURCE_TYPES.API,
     reliability: 'reference',
     color: '#3b82f6',
-    specialization: 'Community-edited definitions'
+    borderColor: '#2563eb',
+    bgColor: 'rgba(59, 130, 246, 0.08)',
+    icon: '📖',
+    badgeIcon: '📖',
+    specialization: 'Community-edited definitions',
+    language: ['Hebrew', 'Aramaic', 'Modern Hebrew'],
+    description: 'Free multilingual dictionary with Hebrew entries',
+    isOptional: true,
+    isCommunitySource: true,
+    citationFormat: 'Wiktionary, s.v. "{headword}", accessed {date}',
+    url: 'https://en.wiktionary.org/'
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -541,6 +564,7 @@ export const DICTIONARY_SOURCES = {
     fullName: 'Common Rabbinic Vocabulary (local)',
     type: SOURCE_TYPES.CURATED,
     reliability: 'curated',
+    tier: 3, // Bronze tier
     color: '#6366f1',
     isLocal: true,
     _deprecated: 'Use rabbinic-vocab instead'
