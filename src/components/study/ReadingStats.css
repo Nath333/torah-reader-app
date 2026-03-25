@@ -81,16 +81,21 @@
   font-weight: 500;
   color: var(--text-muted);
   text-transform: lowercase;
+  line-height: 1.2;
+  display: inline-flex;
+  align-items: center;
 }
 
 /* Progress Chip */
 .progress-chip {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 2px 6px;
+  justify-content: center;
+  gap: 5px;
+  padding: 3px 8px;
   background: var(--bg-subtle);
   border-radius: 10px;
+  flex-shrink: 0;
 }
 
 .mini-progress {

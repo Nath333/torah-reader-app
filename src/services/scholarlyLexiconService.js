@@ -8,7 +8,7 @@
 import { createManagedCache } from './cacheOrchestrator';
 import { cleanHtml } from '../utils/sanitize';
 import { fetchWithFallback } from '../utils/http';
-import { cleanHebrewWord, normalizeFinals } from '../utils/hebrewUtils';
+import { cleanHebrewWord, normalizeFinals, stripVowels } from '../utils/hebrewUtils';
 import { analyzeWord as analyzeGrammar, extractRoot as extractGrammarRoot } from './grammarAnalysisService';
 import { createLogger } from '../utils/debug';
 // Import halachic overrides for context-specific translations
@@ -135,7 +135,7 @@ const extractJastrowCrossRef = (definition) => {
     const match = definition.match(pattern);
     if (match && match[1]) {
       // Strip vowel points (nikud) to get plain consonants
-      return match[1].replace(/[\u05B0-\u05C7]/g, '');
+      return stripVowels(match[1]);
     }
   }
   return null;
