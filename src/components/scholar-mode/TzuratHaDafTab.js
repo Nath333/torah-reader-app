@@ -18,7 +18,7 @@ import { analyzeCommentary, ANALYSIS_MODES, hasApiKey } from '../../services/gro
 import { lookupBDBByWord } from '../../data/bdbComplete';
 import { lookupJastrowLocal } from '../../data/jastrowAramaic';
 import { useVocabulary } from '../../hooks';
-import { stripCantillation, stripVowels } from '../../utils/hebrewUtils';
+import { stripCantillation, stripVowels, removeMaqaf, hasHebrewLetters } from '../../utils/hebrewUtils';
 
 // =============================================================================
 // Talmudic Discourse Pattern Detection (Local - No API)
@@ -668,21 +668,11 @@ const cleanHebrewWord = (word) => {
 
   // Remove HTML tags first, then use hebrewUtils for diacritics
   const noHtml = word.replace(/<[^>]*>/g, '');
-  return stripVowels(stripCantillation(noHtml))
+  return removeMaqaf(stripVowels(stripCantillation(noHtml)))
     // Remove common punctuation
     .replace(/[.,;:!?׃׀־–—\-()[\]{}״"'`]/g, '')
-    // Remove maqaf (Hebrew hyphen)
-    .replace(/\u05BE/g, '')
     // Trim whitespace
     .trim();
-};
-
-/**
- * Check if a string contains actual Hebrew letters (not just marks)
- */
-const hasHebrewLetters = (str) => {
-  // Hebrew letters range: U+05D0-U+05EA (א-ת)
-  return /[\u05D0-\u05EA]/.test(str);
 };
 
 // Parse daf number for navigation (e.g., "2a" -> { num: 2, side: 'a' })

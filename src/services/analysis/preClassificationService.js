@@ -5,7 +5,7 @@
 // =============================================================================
 
 import { createLogger } from '../../utils/debug';
-import { stripVowels } from '../../utils/hebrewUtils';
+import { stripVowels, stripDiacriticsAndMaqaf, stripAllDiacritics } from '../../utils/hebrewUtils';
 // PRO SCHOLAR V5: Frequency analysis (single source of truth)
 import {
   getWordFrequency as _getWordFrequency,
@@ -43,9 +43,7 @@ const normalizeAbbreviation = (word) => {
  */
 const normalizeHebrewWord = (word) => {
   if (!word) return '';
-  return word
-    .normalize('NFC')
-    .replace(/[\u0591-\u05C7\u05BE]/g, '')  // Remove all diacritics and maqaf
+  return stripDiacriticsAndMaqaf(word.normalize('NFC'))
     .replace(/[\u200B-\u200D\uFEFF]/g, '')  // Remove zero-width characters
     .trim();
 };
@@ -1729,8 +1727,7 @@ export const preClassify = (word, context = {}) => {
   const normalized = word.normalize('NFC');
   // PRO SCHOLAR V8: Use pre-cleaned word from caller for dictionary lookups
   // but keep original word for daf reference detection
-  const cleanedLocal = normalized
-    .replace(/[\u0591-\u05C7\u05BE]/g, '')  // Remove diacritics and maqaf
+  const cleanedLocal = stripDiacriticsAndMaqaf(normalized)
     .replace(/\u200D/g, '');  // Remove zero-width joiner
   // Use caller's cleaned version for dictionary matching if available
   const cleaned = context.cleaned || cleanedLocal;
@@ -1764,7 +1761,7 @@ export const preClassify = (word, context = {}) => {
   const dafMatch = localNoBrackets.match(dafDetectionPattern);
 
   // Also try the original word with brackets/diacritics stripped
-  const originalNoBrackets = word.replace(/[()[\]\u0591-\u05C7]/g, '');
+  const originalNoBrackets = stripAllDiacritics(word).replace(/[()[\]]/g, '');
   const originalDafMatch = originalNoBrackets.match(dafDetectionPattern);
 
   const actualDafMatch = dafMatch || originalDafMatch;

@@ -21,7 +21,7 @@
  */
 
 import { getRelatedTexts, getCrossReferences, getTalmudDaf } from '../sefariaApi';
-import { stripAllDiacritics } from '../../utils/hebrewUtils';
+import { stripAllDiacritics, normalizeFinals } from '../../utils/hebrewUtils';
 import {
   RABBINIC_NETWORK,
   RELATIONSHIP_TYPES,
@@ -39,15 +39,8 @@ import { getWordRelationships, SEMANTIC_FIELDS } from './wordRelationshipService
 // PRO SCHOLAR UTILITIES - Enhanced helper functions
 // =============================================================================
 
-/**
- * Strip Hebrew nikud (vowel marks) from text for consistent matching
- * @param {string} text - Text with potential nikud
- * @returns {string} Text without nikud
- */
-export const stripNikud = (text) => {
-  if (!text) return '';
-  return stripAllDiacritics(text);
-};
+// DRY: stripNikud consolidated → use stripAllDiacritics from hebrewUtils.js directly
+export const stripNikud = stripAllDiacritics;
 
 /**
  * PRO SCHOLAR - Normalize Hebrew text for pattern matching
@@ -57,13 +50,7 @@ export const stripNikud = (text) => {
  */
 export const normalizeHebrew = (text) => {
   if (!text) return '';
-  return stripNikud(text)
-    // Normalize final letters to base forms for matching
-    .replace(/ך/g, 'כ')  // final kaf
-    .replace(/ם/g, 'מ')  // final mem
-    .replace(/ן/g, 'נ')  // final nun
-    .replace(/ף/g, 'פ')  // final pe
-    .replace(/ץ/g, 'צ')  // final tsadi
+  return normalizeFinals(stripNikud(text))
     // Normalize Hebrew punctuation
     .replace(/[׳']/g, '')  // geresh (used in abbreviations like א׳, ר׳)
     .replace(/[״"]/g, '')  // gershayim (double quotes)

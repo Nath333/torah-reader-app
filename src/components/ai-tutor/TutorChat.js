@@ -43,21 +43,21 @@ import { markdownToSafeHtml, safeStorage, containsXssPayload } from '../../utils
 // Helper to detect if text contains Hebrew characters
 const containsHebrew = (text) => /[\u0590-\u05FF]/.test(text);
 
-// Safe markdown formatting for messages - uses sanitized HTML
+// Memoized markdown formatting — caches rendered lines to avoid re-parsing on every render
+const _formatCache = new Map();
+const MAX_FORMAT_CACHE = 200;
+
 const formatMessage = (text) => {
   if (!text) return null;
 
-  // Check for XSS payloads before processing
+  if (_formatCache.has(text)) return _formatCache.get(text);
+
   if (containsXssPayload(text)) {
     console.warn('[TutorChat] Potential XSS detected in message, sanitizing...');
   }
 
-  // Split by newlines and process each line
-  return text.split('\n').map((line, lineIdx) => {
-    // Check if line is primarily Hebrew for RTL
+  const result = text.split('\n').map((line, lineIdx) => {
     const isHebrewLine = containsHebrew(line) && line.match(/[\u0590-\u05FF]/g)?.length > line.length * 0.3;
-
-    // Convert markdown to safe HTML
     const safeHtml = markdownToSafeHtml(line);
 
     return (
@@ -69,6 +69,10 @@ const formatMessage = (text) => {
       />
     );
   });
+
+  if (_formatCache.size >= MAX_FORMAT_CACHE) _formatCache.clear();
+  _formatCache.set(text, result);
+  return result;
 };
 
 const TutorChat = ({

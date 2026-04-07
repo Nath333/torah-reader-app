@@ -17,16 +17,23 @@ import HalachicChain from './HalachicChain';
 import { isMishnaText, isGemaraText } from './HalachicChain/utils';
 import './SugyaTab.css';
 
+const HALACHIC_CHAIN_OPTIONS = {
+  includeMishnah: true,
+  includeGemara: true,
+  includeRishonim: true,
+  includePsak: true,
+  fetchCrossReferences: true
+};
+
 const SugyaTab = ({ text, reference, textType, onError }) => {
   const [focusedOpinion, setFocusedOpinion] = useState(null);
-  
+
   // Detect what type of content we have
   const contentType = detectContentType(text);
-  
+
   // Handle opinion focus
   const handleOpinionFocus = useCallback((opinion) => {
     setFocusedOpinion(opinion);
-    console.log('Focused opinion:', opinion);
   }, []);
 
   // Get current book from reference
@@ -48,13 +55,7 @@ const SugyaTab = ({ text, reference, textType, onError }) => {
           text={text}
           reference={reference}
           currentBook={currentBook}
-          options={{
-            includeMishnah: true,
-            includeGemara: true,
-            includeRishonim: true,
-            includePsak: true,
-            fetchCrossReferences: true
-          }}
+          options={HALACHIC_CHAIN_OPTIONS}
           onOpinionFocus={handleOpinionFocus}
           onError={onError}
         />

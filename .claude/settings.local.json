@@ -172,7 +172,20 @@
       "Bash(basename:*)",
       "Bash(for f in public/data/root_meanings.json public/data/semantic_fields.json public/data/rabbi_biographies.json public/data/realia.json)",
       "Bash(for:*)",
-      "Bash(dir /R \"c:\\\\Users\\\\natha\\\\Desktop\\\\App_N\\\\torah-reader-app\\\\src\\\\services\")"
+      "Bash(dir /R \"c:\\\\Users\\\\natha\\\\Desktop\\\\App_N\\\\torah-reader-app\\\\src\\\\services\")",
+      "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npx react-scripts build)",
+      "Bash(npx react-scripts:*)",
+      "Bash(DISABLE_ESLINT_PLUGIN=true npx react-scripts build)",
+      "Read(//tmp/**)",
+      "Bash(CI=true npx react-scripts build)",
+      "Bash(do echo:*)",
+      "Read(//c/Users/natha/Desktop/App_N/torah-reader-app/**)",
+      "Bash(__NEW_LINE_3d62cc33fa1193bf__ echo:*)",
+      "Bash(rm -f BinyanConjugationPanel.js BinyanConjugationPanel.css CognateLanguagesPanel.js CognateLanguagesPanel.css HistoricalLayerPanel.js HistoricalLayerPanel.css ProScholarPanel.js ProScholarPanel.css RootFamilyTree.js RootFamilyTree.css RootMeaningPanel.js RootMeaningPanel.css SourceComparison.js SourceComparison.css SourceComparisonView.js SourceComparisonView.css TextAttestationsPanel.js TextAttestationsPanel.css V6AnalysisBadge.js V6AnalysisBadge.css V6TelemetryDashboard.js V6TelemetryDashboard.css)",
+      "Bash(rm -f MorphologyBreakdown.js MorphologyBreakdown.css ConjugationTable.js ConjugationTable.css VerbConjugationDisplay.js WeakVerbIndicator.js WeakVerbIndicator.css InterlinearText.js InterlinearText.css EtymologyChain.js EtymologyChain.css)"
+    ],
+    "additionalDirectories": [
+      "\\tmp"
     ]
   }
 }

@@ -1861,29 +1861,19 @@ export async function initializePreload() {
       const status = getCacheStatus();
       log.debug(`[Preload] Core dictionaries loaded: BDB=${status.bdb}, Jastrow=${status.jastrow}, Strongs=${status.strongs}`);
 
-      // PRIORITY 2: Preload additional lexicons (lazy-loaded from JSON)
-      // These are smaller and needed for scholar mode lookups
-      preloadLexicons().then(() => {
-        log.debug('[Preload] Additional lexicons loaded');
-      }).catch(() => {
-        log.debug('[Preload] Additional lexicons preload skipped');
-      });
-
-      // PRIORITY 2.5:  - Preload academic sources (DJBA, DJPA, HALOT, etc.)
-      // These are Tier 1 academic sources essential for scholarly Aramaic lookups
-      preloadAcademicSources().then(() => {
-        log.debug('[Preload] Academic sources loaded (DJBA, DJPA, HALOT, etc.)');
-      }).catch(() => {
-        log.debug('[Preload] Academic sources preload skipped');
-      });
-
-      // PRIORITY 2.6:  - Preload major etymology databases
-      // These contain ~40,000+ combined etymology entries from scholarly sources
-      preloadEtymologyDatabases().then(() => {
-        log.debug('[Preload] Etymology databases loaded (Sefaria, BDB, Jastrow, Wiktionary)');
-      }).catch(() => {
-        log.debug('[Preload] Etymology databases preload skipped');
-      });
+      // PRIORITY 2: Preload additional lexicons, academic sources, and etymology databases
+      // Await all secondary preloads before marking complete to avoid incomplete lookups
+      await Promise.allSettled([
+        preloadLexicons().then(() => {
+          log.debug('[Preload] Additional lexicons loaded');
+        }),
+        preloadAcademicSources().then(() => {
+          log.debug('[Preload] Academic sources loaded (DJBA, DJPA, HALOT, etc.)');
+        }),
+        preloadEtymologyDatabases().then(() => {
+          log.debug('[Preload] Etymology databases loaded (Sefaria, BDB, Jastrow, Wiktionary)');
+        })
+      ]);
 
       // PRIORITY 3: Preload common words into translation cache (if cache is cold)
       if (shouldPreload()) {

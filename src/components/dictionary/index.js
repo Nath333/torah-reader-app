@@ -1,19 +1,14 @@
 // Dictionary components - word lookup and translation display
 export { default as AnnotatedTranslation } from './AnnotatedTranslation';
-export { default as ConjugationTable } from './ConjugationTable';
 export { default as DictionaryTranslation } from './DictionaryTranslation';
-export { default as EtymologyChain } from './EtymologyChain';
 export { default as GlossedText } from './GlossedText';
-export { default as InterlinearText } from './InterlinearText';
-export { default as MorphologyBreakdown } from './MorphologyBreakdown';
 export { default as SourceDefinitionItem } from './SourceDefinitionItem';
-export { default as VerbConjugationDisplay } from './VerbConjugationDisplay';
 export { default as WordDefinitionCard } from './WordDefinitionCard';
 export { default as WordGlossary } from './WordGlossary';
 export { default as WordIntelligenceCard } from './WordIntelligenceCard';
 export { default as FamilyTree } from './FamilyTree';
 
-// PRO SCHOLAR v3 Features
+// v3 Features
 export {
   QuickReviewButtons,
   LearningInsightsPanel,
@@ -21,8 +16,8 @@ export {
   CrossRefsMini
 } from './ProScholarFeatures';
 
-// PRO SCHOLAR V6.1 Panel - Advanced linguistic analysis
-export { default as ProScholarPanel } from './ProScholarPanel';
+// Panels - Advanced linguistic analysis (panels/ subdirectory)
+export { default as ProScholarPanel } from './panels/ProScholarPanel';
 export {
   SemanticFieldBadge,
   RootFamilyPanel,
@@ -31,23 +26,22 @@ export {
   SourceTierBadge,
   TelemetryMini,
   HypothesisRankingPanel,
-  // V6.1: New scholarly components
   HistoricalLayerBadge,
   GrammaticalAnomalyBadge,
   CognatePanel
-} from './ProScholarPanel';
-
-// PRO SCHOLAR V6 - Weak Verb Indicator
-export { default as WeakVerbIndicator } from './WeakVerbIndicator';
-export {
-  PatternBadge,
-  PatternDetailCard,
-  TransformationDiagram,
-  WEAK_VERB_PATTERNS
-} from './WeakVerbIndicator';
-
-// PRO SCHOLAR V6 - Source Comparison View
-export { default as SourceComparisonView } from './SourceComparisonView';
+} from './panels/ProScholarPanel';
+export { default as RootFamilyTree } from './panels/RootFamilyTree';
+export { default as BinyanConjugationPanel } from './panels/BinyanConjugationPanel';
+export { default as V6AnalysisBadge } from './panels/V6AnalysisBadge';
+export { default as V6TelemetryDashboard } from './panels/V6TelemetryDashboard';
+export { default as HistoricalLayerPanel } from './panels/HistoricalLayerPanel';
+export { default as CognateLanguagesPanel } from './panels/CognateLanguagesPanel';
+export { default as TextAttestationsPanel } from './panels/TextAttestationsPanel';
+export { default as RootMeaningPanel } from './panels/RootMeaningPanel';
+export { default as RelatedRootsPanel } from './panels/RelatedRootsPanel';
+export { default as CrossReferencesPanel } from './panels/CrossReferencesPanel';
+export { default as SourceComparison } from './panels/SourceComparison';
+export { default as SourceComparisonView } from './panels/SourceComparisonView';
 export {
   SourceTab,
   SourceHeader,
@@ -56,24 +50,18 @@ export {
   ComparisonGrid,
   DICTIONARY_SOURCES,
   SOURCE_ORDER
-} from './SourceComparisonView';
+} from './panels/SourceComparisonView';
 
-// PRO SCHOLAR V6 - Root Family Visualization
-export { default as RootFamilyTree } from './RootFamilyTree';
-
-// PRO SCHOLAR V6 - Binyan Conjugation Panel
-export { default as BinyanConjugationPanel } from './BinyanConjugationPanel';
-
-// PRO SCHOLAR V6 - Analysis Badge & Telemetry
-export { default as V6AnalysisBadge } from './V6AnalysisBadge';
-export { default as V6TelemetryDashboard } from './V6TelemetryDashboard';
-
-// PRO SCHOLAR V6 - Historical Layers & Cognates
-export { default as HistoricalLayerPanel } from './HistoricalLayerPanel';
-export { default as CognateLanguagesPanel } from './CognateLanguagesPanel';
-
-// PRO SCHOLAR V20 - Text Attestations (where word appears in texts)
-export { default as TextAttestationsPanel } from './TextAttestationsPanel';
-
-// PRO SCHOLAR V20 - Root Meaning Panel (shoresh translation)
-export { default as RootMeaningPanel } from './RootMeaningPanel';
+// Morphology - text analysis components (morphology/ subdirectory)
+export { default as MorphologyBreakdown } from './morphology/MorphologyBreakdown';
+export { default as ConjugationTable } from './morphology/ConjugationTable';
+export { default as VerbConjugationDisplay } from './morphology/VerbConjugationDisplay';
+export { default as EtymologyChain } from './morphology/EtymologyChain';
+export { default as InterlinearText } from './morphology/InterlinearText';
+export { default as WeakVerbIndicator } from './morphology/WeakVerbIndicator';
+export {
+  PatternBadge,
+  PatternDetailCard,
+  TransformationDiagram,
+  WEAK_VERB_PATTERNS
+} from './morphology/WeakVerbIndicator';

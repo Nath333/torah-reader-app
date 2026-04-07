@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import './FocusMode.css';
 import ClickableText from '../core/ClickableText';
 import { COMMENTATORS, ERAS } from '../../constants/commentatorRegistry';
+import { GEMATRIA_VALUES, calculateGematria } from '../../utils/hebrewUtils';
 
 // Theme options - including Jewish scholarly themes
 const THEMES = {
@@ -39,19 +40,7 @@ const MEFORSHIM = Object.fromEntries(
     })
 );
 
-// Gematria calculation
-const GEMATRIA_VALUES = {
-  'א': 1, 'ב': 2, 'ג': 3, 'ד': 4, 'ה': 5, 'ו': 6, 'ז': 7, 'ח': 8, 'ט': 9,
-  'י': 10, 'כ': 20, 'ך': 20, 'ל': 30, 'מ': 40, 'ם': 40, 'נ': 50, 'ן': 50,
-  'ס': 60, 'ע': 70, 'פ': 80, 'ף': 80, 'צ': 90, 'ץ': 90, 'ק': 100, 'ר': 200,
-  'ש': 300, 'ת': 400
-};
-
-// Calculate gematria for a word or phrase
-const calculateGematria = (text) => {
-  if (!text) return 0;
-  return text.split('').reduce((sum, char) => sum + (GEMATRIA_VALUES[char] || 0), 0);
-};
+// DRY: GEMATRIA_VALUES & calculateGematria imported from utils/hebrewUtils.js
 
 // Get gematria for each word
 const getWordGematria = (text) => {

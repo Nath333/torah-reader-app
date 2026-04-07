@@ -22,10 +22,10 @@ export { default as RashiFrenchTranslation } from './commentary/RashiFrenchTrans
 // Dictionary & Glossing Components
 export { default as AnnotatedTranslation, AnnotatedTranslationInline } from './dictionary/AnnotatedTranslation';
 export { default as WordGlossary } from './dictionary/WordGlossary';
-export { default as InterlinearText } from './dictionary/InterlinearText';
+export { default as InterlinearText } from './dictionary/morphology/InterlinearText';
 export { default as GlossedText } from './dictionary/GlossedText';
 export { default as DictionaryTranslation } from './dictionary/DictionaryTranslation';
-export { default as MorphologyBreakdown } from './dictionary/MorphologyBreakdown';
+export { default as MorphologyBreakdown } from './dictionary/morphology/MorphologyBreakdown';
 
 // Study & Progress Components
 export { default as StudyDashboard } from './study/StudyDashboard';

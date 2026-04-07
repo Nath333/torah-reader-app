@@ -52,7 +52,7 @@ import { HEBREW_PREFIXES_ORDERED } from '../constants/morphology';
 import { pickBestDefinition } from '../utils/definitionCleaner';
 // Grammar and morphological analysis
 import { tryHebrewVerbAnalysis } from './grammarAnalysisService';
-import { extractRootsWithDirectValidation, extractRootsWithAsyncValidation, getRootFamily } from './rootExtraction';
+import { extractRootsWithAsyncValidation, getRootFamily } from './rootExtraction';
 import { analyzeWordMorphology } from './morphologicalAnalysisService';
 // Semantic field integration
 import {
@@ -156,13 +156,19 @@ let preloadedCount = 0;
 // Includes 3/4-letter prefix combos that the local copy was missing
 const HEBREW_PREFIXES = HEBREW_PREFIXES_ORDERED;
 
+// Cache for variant generation — avoids recomputing for each dictionary lookup
+const _variantCache = new Map();
+const MAX_VARIANT_CACHE = 500;
+
 /**
  * PRO SCHOLAR V13: Generate all morphological variants for dictionary lookup
  * Handles: diacritics, finals, plurals, prefixes
+ * Results are cached per word to avoid redundant computation across lookups.
  * @param {string} word - Hebrew/Aramaic word
  * @returns {Array<{form: string, type: string}>} Variants with type info
  */
 const generateLookupVariants = (word) => {
+  if (_variantCache.has(word)) return _variantCache.get(word);
   const variants = [];
   const stripped = stripAllDiacritics(word);
   const normalized = normalizeFinals(stripped);
@@ -214,6 +220,9 @@ const generateLookupVariants = (word) => {
     }
   }
 
+  // Cache the result (with size cap)
+  if (_variantCache.size >= MAX_VARIANT_CACHE) _variantCache.clear();
+  _variantCache.set(word, variants);
   return variants;
 };
 
@@ -379,219 +388,82 @@ export const calculateConfidence = (result) => {
   return { score, level, breakdown, description };
 };
 
-/**
- * Lookup in BDB dictionary
- * PRO SCHOLAR V13: Enhanced with morphological variants
- */
-const lookupBDB = (word, dicts) => {
-  const bdb = dicts.bdb?.byWord || dicts.bdb;
-  if (!bdb) return null;
-
-  // PRO SCHOLAR V13: Use unified variant generator (handles prefixes, plurals, etc.)
-  const variants = generateLookupVariants(word);
-
-  for (const { form, type } of variants) {
-    const entry = bdb[form];
-    if (entry) {
-      return {
-        name: 'BDB',
-        definition: entry.definition || entry.gloss || entry.english,
-        fullDefinition: entry.fullDefinition,
-        headword: entry.headword || form,
-        source: 'BDB (1906)',
-        strongNumber: entry.strongNumber,
-        _matchedForm: type !== 'exact' ? form : undefined,
-        _matchType: type
-      };
-    }
-  }
-  return null;
-};
-
-/**
- * Lookup in Jastrow dictionary
- * PRO SCHOLAR V13: Enhanced with full morphological variants (plural→singular, prefixes, etc.)
- */
-const lookupJastrowLocal = (word, dicts) => {
-  const jastrow = dicts.jastrow;
-  if (!jastrow) return null;
-
-  // PRO SCHOLAR V13: Use unified variant generator (handles prefixes, plurals, etc.)
-  const variants = generateLookupVariants(word);
-
-  for (const { form, type } of variants) {
-    const entry = jastrow[form];
-    if (entry) {
-      return {
-        name: 'Jastrow',
-        definition: entry.definition || entry.english,
-        fullDefinition: entry.fullDefinition,
-        headword: entry.headword || form,
-        source: 'Jastrow (1903)',
-        isAramaic: entry.isAramaic || entry.language === 'Aramaic',
-        _matchedForm: type !== 'exact' ? form : undefined,
-        _matchType: type
-      };
-    }
-  }
-  return null;
-};
-
-/**
- * Lookup in Strong's dictionary
- * PRO SCHOLAR V13: Enhanced with prefix stripping
- */
-const lookupStrongs = (word, dicts) => {
-  const strongs = dicts.strongs?.byWord || dicts.strongs;
-  if (!strongs) return null;
-
-  const variants = generateLookupVariants(word);
-
-  for (const { form, type } of variants) {
-    const entry = strongs[form];
-    if (entry) {
-      return {
-        name: "Strong's",
-        definition: entry.definition || entry.kjv_def || entry.strongs_def,
-        headword: entry.headword || form,
-        source: "Strong's Concordance",
-        strongNumber: entry.strongNumber || entry.H,
-        _matchedForm: type !== 'exact' ? form : undefined,
-        _matchType: type
-      };
-    }
-  }
-  return null;
-};
-
-/**
- * Lookup in CAL Aramaic dictionary (local subset)
- * PRO SCHOLAR V13: Enhanced with prefix stripping
- */
-const lookupCALLocal = (word, dicts) => {
-  const cal = dicts.calAramaic;
-  if (!cal) return null;
-
-  const variants = generateLookupVariants(word);
-  for (const { form, type } of variants) {
-    const entry = cal[form];
-    if (entry) {
-      return {
-        name: 'CAL',
-        definition: entry.definition || entry.english,
-        headword: entry.headword || form,
-        source: 'CAL (Comprehensive Aramaic Lexicon)',
-        isAramaic: true,
-        language: 'Aramaic',
-        _matchedForm: type !== 'exact' ? form : undefined,
-        _matchType: type
-      };
-    }
-  }
-  return null;
-};
-
-/**
- * Lookup in Jastrow Aramaic subset (Talmudic/Rabbinic Aramaic vocabulary)
- * PRO SCHOLAR V13: Enhanced with prefix stripping
- */
-const lookupJastrowAramaic = (word, dicts) => {
-  const jastrowAram = dicts.jastrowAramaic;
-  if (!jastrowAram) return null;
-
-  const variants = generateLookupVariants(word);
-
-  for (const { form, type } of variants) {
-    const entry = jastrowAram[form];
-    if (entry) {
-      return {
-        name: 'Jastrow (Aramaic)',
-        definition: entry.definition || entry.english,
-        fullDefinition: entry.fullDefinition,
-        headword: entry.headword || form,
-        source: 'Jastrow (1903) - Aramaic',
-        isAramaic: true,
-        language: 'Aramaic',
-        dialect: entry.dialect || 'Babylonian',
-        _matchedForm: type !== 'exact' ? form : undefined,
-        _matchType: type
-      };
-    }
-  }
-  return null;
-};
-
 // =============================================================================
-// PRO SCHOLAR V15: ACADEMIC LEXICON LOOKUPS (Streamlined - FREE sources only)
+// DICTIONARY LOOKUP FACTORY - DRY pattern for all dictionary lookups
 // =============================================================================
-
-/**
- * Lookup in Gesenius - Classical Hebrew grammar reference (Tier 1)
- * Wilhelm Gesenius - Foundational Hebrew grammar
- * PRO SCHOLAR V13: Enhanced with prefix stripping
- */
-const lookupGesenius = (word, dicts) => {
-  const gesenius = dicts.gesenius;
-  if (!gesenius) return null;
-
-  const variants = generateLookupVariants(word);
-  for (const { form, type } of variants) {
-    const entry = gesenius[form];
-    if (entry && form !== '_meta') {
-      return {
-        name: 'Gesenius',
-        definition: entry.definition || entry.english,
-        fullDefinition: entry.fullDefinition,
-        headword: entry.lemma || entry.headword || form,
-        source: 'Gesenius (1910)',
-        grammar: entry.grammar_note || entry.grammar,
-        forms: entry.forms,
-        pattern: entry.pattern,
-        usage: entry.usage,
-        language: 'Hebrew',
-        pos: entry.pos,
-        tier: { level: 1, name: 'Academic' },
-        _matchedForm: type !== 'exact' ? form : undefined,
-        _matchType: type
-      };
+const createDictLookup = ({ name, source, getDef, getDict, entryFilter = () => true, enrich = () => ({}) }) => {
+  const fn = (word, dicts) => {
+    const dict = getDict(dicts);
+    if (!dict) return null;
+    const variants = generateLookupVariants(word);
+    for (const { form, type } of variants) {
+      const entry = dict[form];
+      if (entry && entryFilter(entry, form)) {
+        return {
+          name, source, definition: getDef(entry),
+          headword: entry.headword || entry.lemma || form,
+          ...enrich(entry),
+          _matchedForm: type !== 'exact' ? form : undefined,
+          _matchType: type
+        };
+      }
     }
-  }
-  return null;
+    return null;
+  };
+  Object.defineProperty(fn, 'name', { value: `lookup${name.replace(/[^a-zA-Z]/g, '')}` });
+  return fn;
 };
 
-/**
- * Lookup in Klein - Etymology-focused Hebrew lexicon (Tier 2)
- * Ernest Klein - Comprehensive Etymological Dictionary of the Hebrew Language
- * PRO SCHOLAR V16: Etymology-rich entries with cognates
- */
-const lookupKlein = (word, dicts) => {
-  const klein = dicts.klein;
-  if (!klein) return null;
+const lookupBDB = createDictLookup({
+  name: 'BDB', source: 'BDB (1906)',
+  getDict: (d) => d.bdb?.byWord || d.bdb,
+  getDef: (e) => e.definition || e.gloss || e.english,
+  enrich: (e) => ({ fullDefinition: e.fullDefinition, strongNumber: e.strongNumber })
+});
 
-  const variants = generateLookupVariants(word);
-  for (const { form, type } of variants) {
-    const entry = klein[form];
-    if (entry && form !== '_meta') {
-      return {
-        name: 'Klein',
-        definition: entry.definition || entry.gloss,
-        fullDefinition: entry.fullDefinition,
-        headword: entry.lemma || entry.headword || form,
-        source: 'Klein (1987)',
-        etymology: entry.etymology,
-        cognates: entry.cognates,
-        protoSemitic: entry.protoSemitic,
-        semanticField: entry.semanticField,
-        language: 'Hebrew',
-        pos: entry.pos,
-        tier: { level: 2, name: 'Scholarly' },
-        _matchedForm: type !== 'exact' ? form : undefined,
-        _matchType: type
-      };
-    }
-  }
-  return null;
-};
+const lookupJastrowLocal = createDictLookup({
+  name: 'Jastrow', source: 'Jastrow (1903)',
+  getDict: (d) => d.jastrow,
+  getDef: (e) => e.definition || e.english,
+  enrich: (e) => ({ fullDefinition: e.fullDefinition, isAramaic: e.isAramaic || e.language === 'Aramaic' })
+});
+
+const lookupStrongs = createDictLookup({
+  name: "Strong's", source: "Strong's Concordance",
+  getDict: (d) => d.strongs?.byWord || d.strongs,
+  getDef: (e) => e.definition || e.kjv_def || e.strongs_def,
+  enrich: (e) => ({ strongNumber: e.strongNumber || e.H })
+});
+
+const lookupCALLocal = createDictLookup({
+  name: 'CAL', source: 'CAL (Comprehensive Aramaic Lexicon)',
+  getDict: (d) => d.calAramaic,
+  getDef: (e) => e.definition || e.english,
+  enrich: () => ({ isAramaic: true, language: 'Aramaic' })
+});
+
+const lookupJastrowAramaic = createDictLookup({
+  name: 'Jastrow (Aramaic)', source: 'Jastrow (1903) - Aramaic',
+  getDict: (d) => d.jastrowAramaic,
+  getDef: (e) => e.definition || e.english,
+  enrich: (e) => ({ fullDefinition: e.fullDefinition, isAramaic: true, language: 'Aramaic', dialect: e.dialect || 'Babylonian' })
+});
+
+const lookupGesenius = createDictLookup({
+  name: 'Gesenius', source: 'Gesenius (1910)',
+  getDict: (d) => d.gesenius,
+  getDef: (e) => e.definition || e.english,
+  entryFilter: (_e, form) => form !== '_meta',
+  enrich: (e) => ({ fullDefinition: e.fullDefinition, grammar: e.grammar_note || e.grammar, forms: e.forms, pattern: e.pattern, usage: e.usage, language: 'Hebrew', pos: e.pos })
+});
+
+const lookupKlein = createDictLookup({
+  name: 'Klein', source: 'Klein (1987)',
+  getDict: (d) => d.klein,
+  getDef: (e) => e.definition || e.gloss,
+  entryFilter: (_e, form) => form !== '_meta',
+  enrich: (e) => ({ fullDefinition: e.fullDefinition, etymology: e.etymology, cognates: e.cognates, protoSemitic: e.protoSemitic, semanticField: e.semanticField, language: 'Hebrew', pos: e.pos })
+});
 
 // =============================================================================
 // ROOT FAMILY EXPANSION
@@ -1301,13 +1173,13 @@ export const quickLookup = (word, options = {}) => {
       sources: [{
         name: academicEntry.source,
         definition: academicEntry.fullDefinition || academicEntry.definition,
-        tier: { level: 1, name: 'Academic (HALOT/DJBA)' },
+        tier: 1,
         citation: academicEntry.citation
       }],
       language: academicEntry.isAramaic ? 'Aramaic' : 'Hebrew',
       offline: true,
       isAcademic: true,
-      tier: { level: 1, name: 'Academic Critical' }
+      tier: 1
     };
     lookupCache.set(cacheKey, academicResult);
     return academicResult;
@@ -1328,7 +1200,7 @@ export const quickLookup = (word, options = {}) => {
       sources: [{
         name: isBiblicalName(cleaned) ? 'Biblical Names' : 'Critical Words',
         definition: criticalTranslation,
-        tier: { level: 4, name: 'Fallback' }
+        tier: 4
       }],
       language: 'Hebrew',
       offline: true,

@@ -27,7 +27,7 @@ import TextualCriticism from '../analysis/TextualCriticism';
 import { getMasoreticNotes, KETIV_QERE_TYPE_LABELS } from '../../services/masoreticService';
 import { analyzePhrase, GRAMMAR_CONSTANTS } from '../../services/grammarAnalysisService';
 // PRO SCHOLAR: Morphology breakdown with pattern analysis
-import MorphologyBreakdown from '../dictionary/MorphologyBreakdown';
+import MorphologyBreakdown from '../dictionary/morphology/MorphologyBreakdown';
 import { getRootInfo } from '../../data/rootDatabase';
 import { extractAramaicRoot } from '../../constants/morphology';
 // PRO SCHOLAR V6: Advanced linguistic components

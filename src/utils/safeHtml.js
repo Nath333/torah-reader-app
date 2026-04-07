@@ -87,8 +87,9 @@ export const markdownToSafeHtml = (text) => {
   html = html.replace(/__([^_]+)__/g, '<strong>$1</strong>');
   
   // Italic: *text* or _text_ (but not ** which is already processed)
-  html = html.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
-  html = html.replace(/(?<!_)_([^_]+)_(?!_)/g, '<em>$1</em>');
+  // Avoid lookbehind syntax for older browser compatibility
+  html = html.replace(/([^*]|^)\*([^*]+)\*([^*]|$)/g, '$1<em>$2</em>$3');
+  html = html.replace(/([^_]|^)_([^_]+)_([^_]|$)/g, '$1<em>$2</em>$3');
   
   // Line breaks
   html = html.replace(/\n/g, '<br/>');

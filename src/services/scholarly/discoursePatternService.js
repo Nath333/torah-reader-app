@@ -5,7 +5,7 @@
 // =============================================================================
 
 // PRO SCHOLAR V12: Use centralized Hebrew utilities (DRY - single source of truth)
-import { stripAllDiacritics } from '../../utils/hebrewUtils';
+import { stripAllDiacritics, stripAllDiacritics as stripNikudLocal } from '../../utils/hebrewUtils';
 
 /**
  * Talmudic Discourse Pattern Types
@@ -914,10 +914,7 @@ export const TALMUDIC_PATTERNS = {
  * @param {string} text - Text with potential nikud
  * @returns {string} Text without nikud
  */
-// PRO SCHOLAR V12: stripNikudLocal now delegates to centralized stripAllDiacritics
-function stripNikudLocal(text) {
-  return stripAllDiacritics(text) || '';
-}
+// DRY: stripNikudLocal imported as alias from hebrewUtils.js
 
 /**
  * Detect structural markers in Hebrew text (simplified API)

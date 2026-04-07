@@ -6,7 +6,7 @@ import { getSourceCredibility, getCredibilityBadge } from '../../services/source
 import ClickableText from '../core/ClickableText';
 import CommentarySummary from './CommentarySummary';
 import WordGlossary from '../dictionary/WordGlossary';
-import InterlinearText from '../dictionary/InterlinearText';
+import InterlinearText from '../dictionary/morphology/InterlinearText';
 import './CommentaryBlock.css';
 
 // PRO SCHOLAR V6: Lazy-loaded rabbi biographical info panel

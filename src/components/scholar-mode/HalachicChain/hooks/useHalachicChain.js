@@ -1,15 +1,8 @@
 /**
  * useHalachicChain Hook
- * 
- * Manages the halachic decision chain state with smart caching.
- * Uses SWR (stale-while-revalidate) pattern for optimal performance.
- * 
- * Features:
- * - Caches chain results by reference
- * - Auto-refreshes in background when needed
- * - Handles layer visibility toggles
- * - Manages opinion selection/focus
- * - Calculates majority automatically
+ *
+ * Manages the 7-layer halachic decision chain state with smart caching.
+ * משנה → גמרא → ראשונים → טור/בית יוסף → שולחן ערוך → אחרונים → פוסקים
  */
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
@@ -18,23 +11,24 @@ import { calculateMajority } from '../utils/majorityCalculator';
 import { HALACHIC_LAYERS, DEFAULT_CHAIN_OPTIONS } from '../types';
 import { getCache, setCache, generateCacheKey } from '../utils/chainCache';
 
-/**
- * Hook for managing halachic chain state
- * 
- * @param {string} text - The text being analyzed
- * @param {string} reference - Sefaria reference (e.g., "Berakhot.2a")
- * @param {Object} options - Configuration options
- * @returns {Object} Chain state and control functions
- */
+// Canonical layer order for the שושלת הוראה
+const LAYER_ORDER = [
+  HALACHIC_LAYERS.MISHNAH,
+  HALACHIC_LAYERS.GEMARA,
+  HALACHIC_LAYERS.RISHONIM,
+  HALACHIC_LAYERS.TUR,
+  HALACHIC_LAYERS.PSAK,
+  HALACHIC_LAYERS.ACHARONIM,
+  HALACHIC_LAYERS.POSKIM
+];
+
 export const useHalachicChain = (text, reference, options = {}) => {
-  // Merge with defaults
   const config = useMemo(() => ({
     ...DEFAULT_CHAIN_OPTIONS,
     ...options
   }), [options]);
 
-  // Generate stable cache key
-  const cacheKey = useMemo(() => 
+  const cacheKey = useMemo(() =>
     generateCacheKey(reference, config),
     [reference, config]
   );
@@ -44,75 +38,50 @@ export const useHalachicChain = (text, reference, options = {}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isBackgroundRefreshing, setIsBackgroundRefreshing] = useState(false);
   const [error, setError] = useState(null);
-  const [visibleLayers, setVisibleLayers] = useState([
-    HALACHIC_LAYERS.MISHNAH,
-    HALACHIC_LAYERS.GEMARA,
-    HALACHIC_LAYERS.RISHONIM,
-    HALACHIC_LAYERS.PSAK
-  ]);
+  const [visibleLayers, setVisibleLayers] = useState([...LAYER_ORDER]);
   const [focusedOpinion, setFocusedOpinion] = useState(null);
-  const [educationalMode, setEducationalMode] = useState(true); // Default to educational
+  const [educationalMode, setEducationalMode] = useState(true);
 
-  // Refs for preventing stale closures
   const abortControllerRef = useRef(null);
   const isMountedRef = useRef(true);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       isMountedRef.current = false;
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
+      if (abortControllerRef.current) abortControllerRef.current.abort();
     };
   }, []);
 
-  /**
-   * Build the halachic chain
-   * Uses cache-first strategy with background refresh
-   */
   const buildChain = useCallback(async (forceRefresh = false) => {
     if (!text || !reference) return;
 
-    // Check cache first
     let cached = null;
     if (!forceRefresh) {
       cached = getCache(cacheKey);
       if (cached && isMountedRef.current) {
         setChain(cached);
-        // Trigger background refresh
         setIsBackgroundRefreshing(true);
       }
     }
 
-    // Cancel any existing request
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
+    if (abortControllerRef.current) abortControllerRef.current.abort();
     abortControllerRef.current = new AbortController();
 
-    if (!cached || forceRefresh) {
-      setIsLoading(true);
-    }
+    if (!cached || forceRefresh) setIsLoading(true);
     setError(null);
 
     try {
       const chainData = await buildHalachicChain(
-        text,
-        reference,
-        config,
-        abortControllerRef.current.signal
+        text, reference, config, abortControllerRef.current.signal
       );
 
       if (isMountedRef.current) {
-        // Calculate majority if we have Rishonim layer
+        // Calculate majority from Rishonim
         if (chainData.layers[HALACHIC_LAYERS.RISHONIM]?.decisions) {
-          const majority = calculateMajority(
+          chainData.majority = calculateMajority(
             chainData.layers[HALACHIC_LAYERS.RISHONIM].decisions
           );
-          chainData.majority = majority;
         }
-
         setChain(chainData);
         setCache(cacheKey, chainData);
         setError(null);
@@ -130,131 +99,94 @@ export const useHalachicChain = (text, reference, options = {}) => {
     }
   }, [text, reference, cacheKey, config]);
 
-  // Initial load
-  useEffect(() => {
-    buildChain();
-  }, [buildChain]);
+  useEffect(() => { buildChain(); }, [buildChain]);
 
-  /**
-   * Toggle layer visibility
-   */
   const toggleLayer = useCallback((layerId) => {
     setVisibleLayers(prev => {
       const isVisible = prev.includes(layerId);
       if (isVisible) {
-        // Don't allow hiding all layers
         if (prev.length === 1) return prev;
         return prev.filter(id => id !== layerId);
-      } else {
-        // Maintain order
-        const newLayers = [...prev, layerId];
-        const order = [HALACHIC_LAYERS.MISHNAH, HALACHIC_LAYERS.GEMARA, HALACHIC_LAYERS.RISHONIM, HALACHIC_LAYERS.PSAK];
-        return newLayers.sort((a, b) => order.indexOf(a) - order.indexOf(b));
       }
+      const newLayers = [...prev, layerId];
+      return newLayers.sort((a, b) => LAYER_ORDER.indexOf(a) - LAYER_ORDER.indexOf(b));
     });
   }, []);
 
-  /**
-   * Show all layers
-   */
   const showAllLayers = useCallback(() => {
-    setVisibleLayers([
-      HALACHIC_LAYERS.MISHNAH,
-      HALACHIC_LAYERS.GEMARA,
-      HALACHIC_LAYERS.RISHONIM,
-      HALACHIC_LAYERS.PSAK
-    ]);
+    setVisibleLayers([...LAYER_ORDER]);
   }, []);
 
-  /**
-   * Hide all but one layer
-   */
   const focusLayer = useCallback((layerId) => {
     setVisibleLayers([layerId]);
   }, []);
 
-  /**
-   * Select/focus on an opinion
-   */
   const selectOpinion = useCallback((opinion) => {
-    setFocusedOpinion(prev => 
+    setFocusedOpinion(prev =>
       prev?.authority === opinion?.authority ? null : opinion
     );
   }, []);
 
-  /**
-   * Toggle educational vs practical mode
-   */
   const toggleEducationalMode = useCallback(() => {
     setEducationalMode(prev => !prev);
   }, []);
 
-  /**
-   * Refresh chain data
-   */
-  const refresh = useCallback(() => {
-    return buildChain(true);
-  }, [buildChain]);
+  const refresh = useCallback(() => buildChain(true), [buildChain]);
 
-  /**
-   * Get summary statistics
-   */
   const stats = useMemo(() => {
     if (!chain) return null;
-
-    const mishnahOpinions = chain.layers[HALACHIC_LAYERS.MISHNAH]?.opinions?.length || 0;
-    const gemaraQuestions = chain.layers[HALACHIC_LAYERS.GEMARA]?.analysis?.length || 0;
-    const rishonimCount = chain.layers[HALACHIC_LAYERS.RISHONIM]?.decisions?.length || 0;
-    const hasPsak = !!chain.layers[HALACHIC_LAYERS.PSAK]?.psak;
-
     return {
-      totalOpinions: mishnahOpinions,
-      totalQuestions: gemaraQuestions,
-      rishonimCount,
-      hasPsak,
+      totalOpinions: chain.layers[HALACHIC_LAYERS.MISHNAH]?.opinions?.length || 0,
+      totalQuestions: chain.layers[HALACHIC_LAYERS.GEMARA]?.analysis?.length || 0,
+      rishonimCount: chain.layers[HALACHIC_LAYERS.RISHONIM]?.decisions?.length || 0,
+      hasTur: !!chain.layers[HALACHIC_LAYERS.TUR]?.turAnalysis,
+      acharonimCount: chain.layers[HALACHIC_LAYERS.ACHARONIM]?.decisions?.length || 0,
+      poskimCount: chain.layers[HALACHIC_LAYERS.POSKIM]?.decisions?.length || 0,
+      hasPsak: !!chain.layers[HALACHIC_LAYERS.PSAK]?.psak,
+      traditionsAgree: chain.layers[HALACHIC_LAYERS.PSAK]?.psak?.traditionsAgree ?? true,
       majorityRuling: chain.majority?.ruling || null
     };
   }, [chain]);
 
-  /**
-   * Get filtered visible chain data
-   */
   const visibleChain = useMemo(() => {
     if (!chain) return null;
-    
     return {
       ...chain,
       layers: Object.fromEntries(
-        Object.entries(chain.layers).filter(([key]) => 
-          visibleLayers.includes(key)
-        )
+        Object.entries(chain.layers).filter(([key]) => visibleLayers.includes(key))
       )
     };
   }, [chain, visibleLayers]);
 
+  // Expose klalei pesika and opinion flows from the full chain
+  const klaleiPesika = useMemo(() => chain?.klaleiPesika || null, [chain]);
+  const opinionFlows = useMemo(() => chain?.opinionFlows || [], [chain]);
+
+  // Get flow for the currently focused opinion
+  const focusedFlow = useMemo(() => {
+    if (!focusedOpinion || !opinionFlows.length) return null;
+    return opinionFlows.find(f => f.originAuthority === focusedOpinion.authority) || null;
+  }, [focusedOpinion, opinionFlows]);
+
   return {
-    // Data
     chain: visibleChain,
     fullChain: chain,
     stats,
-    
-    // State
+    klaleiPesika,
+    opinionFlows,
+    focusedFlow,
     isLoading,
     isBackgroundRefreshing,
     error,
     visibleLayers,
     focusedOpinion,
     educationalMode,
-    
-    // Actions
     toggleLayer,
     showAllLayers,
     focusLayer,
     selectOpinion,
     toggleEducationalMode,
     refresh,
-    
-    // Helpers
     isLayerVisible: (layerId) => visibleLayers.includes(layerId)
   };
 };

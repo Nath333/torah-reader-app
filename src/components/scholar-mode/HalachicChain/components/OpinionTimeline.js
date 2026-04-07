@@ -1,14 +1,8 @@
 /**
  * OpinionTimeline Component
- * 
- * Vertical timeline showing the progression of halachic opinions
- * through history: Tannaim → Amoraim → Rishonim → Achronim
- * 
- * Features:
- * - Color-coded by authority type
- * - Expandable opinion cards
- * - Visual connection lines
- * - Status indicators (accepted/rejected/minority)
+ *
+ * Full 7-layer vertical timeline showing the שושלת הוראה:
+ * משנה → גמרא → ראשונים → טור/בית יוסף → שולחן ערוך (+רמא) → אחרונים → פוסקים
  */
 
 import React, { useState } from 'react';
@@ -16,11 +10,12 @@ import PropTypes from 'prop-types';
 import { HALACHIC_LAYERS, AUTHORITY_COLORS, AUTHORITY_TYPES } from '../types';
 import './OpinionTimeline.css';
 
-const OpinionTimeline = ({ 
-  chain, 
-  focusedOpinion, 
-  onOpinionClick, 
-  educationalMode = true 
+const OpinionTimeline = ({
+  chain,
+  focusedOpinion,
+  onOpinionClick,
+  educationalMode = true,
+  klaleiPesika = null
 }) => {
   const [expandedOpinions, setExpandedOpinions] = useState(new Set());
 
@@ -28,20 +23,14 @@ const OpinionTimeline = ({
     return <div className="opinion-timeline-empty">No halachic chain data</div>;
   }
 
-  const toggleExpand = (authority) => {
+  const toggleExpand = (key) => {
     setExpandedOpinions(prev => {
       const newSet = new Set(prev);
-      if (newSet.has(authority)) {
-        newSet.delete(authority);
-      } else {
-        newSet.add(authority);
-      }
+      if (newSet.has(key)) newSet.delete(key);
+      else newSet.add(key);
       return newSet;
     });
   };
-
-  // Collect all authorities by type
-  const authoritiesByType = collectAuthoritiesByType(chain);
 
   return (
     <div className="opinion-timeline">
@@ -49,18 +38,30 @@ const OpinionTimeline = ({
         <h3 className="timeline-title">Opinion Timeline</h3>
         <div className="timeline-legend">
           <LegendItem color={AUTHORITY_COLORS[AUTHORITY_TYPES.TANNA]} label="Tannaim" />
-          <LegendItem color={AUTHORITY_COLORS[AUTHORITY_TYPES.AMORA]} label="Amoraim" />
           <LegendItem color={AUTHORITY_COLORS[AUTHORITY_TYPES.RISHON]} label="Rishonim" />
-          <LegendItem color={AUTHORITY_COLORS[AUTHORITY_TYPES.ACHRON]} label="Achronim" />
+          <LegendItem color={AUTHORITY_COLORS[AUTHORITY_TYPES.MECHABER]} label="Tur" />
+          <LegendItem color={AUTHORITY_COLORS[AUTHORITY_TYPES.ACHRON]} label="Acharonim" />
+          <LegendItem color={AUTHORITY_COLORS[AUTHORITY_TYPES.POSEK]} label="Poskim" />
         </div>
       </div>
 
+      {/* Educational: Klalei Pesika inline notes */}
+      {educationalMode && klaleiPesika?.applicableRules?.length > 0 && (
+        <div className="klalei-pesika-inline">
+          {klaleiPesika.applicableRules.slice(0, 3).map((rule, i) => (
+            <div key={i} className={`kp-inline-note kp-layer-${rule.layer}`}>
+              <span className="kp-inline-rule">{rule.rule}</span>
+              <span className="kp-inline-english">{rule.english}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="timeline-content">
-        {/* Mishnah Layer - Tannaim */}
+        {/* Layer 1: Mishnah */}
         {chain.layers[HALACHIC_LAYERS.MISHNAH]?.opinions?.length > 0 && (
           <TimelineSection
-            title="Mishnah"
-            hebrewTitle="משנה"
+            title="Mishnah" hebrewTitle="משנה"
             layer={chain.layers[HALACHIC_LAYERS.MISHNAH]}
             type={AUTHORITY_TYPES.TANNA}
             expandedOpinions={expandedOpinions}
@@ -71,11 +72,10 @@ const OpinionTimeline = ({
           />
         )}
 
-        {/* Gemara Layer - Analysis */}
+        {/* Layer 2: Gemara */}
         {chain.layers[HALACHIC_LAYERS.GEMARA]?.analysis?.length > 0 && (
           <TimelineSection
-            title="Gemara Analysis"
-            hebrewTitle="גמרא"
+            title="Gemara Analysis" hebrewTitle="גמרא"
             layer={chain.layers[HALACHIC_LAYERS.GEMARA]}
             type="analysis"
             expandedOpinions={expandedOpinions}
@@ -86,11 +86,10 @@ const OpinionTimeline = ({
           />
         )}
 
-        {/* Rishonim Layer */}
+        {/* Layer 3: Rishonim */}
         {chain.layers[HALACHIC_LAYERS.RISHONIM]?.decisions?.length > 0 && (
           <TimelineSection
-            title="Rishonim"
-            hebrewTitle="ראשונים"
+            title="Rishonim" hebrewTitle="ראשונים"
             layer={chain.layers[HALACHIC_LAYERS.RISHONIM]}
             type={AUTHORITY_TYPES.RISHON}
             expandedOpinions={expandedOpinions}
@@ -101,11 +100,45 @@ const OpinionTimeline = ({
           />
         )}
 
-        {/* Psak Layer */}
+        {/* Layer 4: Tur / Beit Yosef */}
+        {chain.layers[HALACHIC_LAYERS.TUR]?.turAnalysis && (
+          <TurBeitYosefSection
+            turAnalysis={chain.layers[HALACHIC_LAYERS.TUR].turAnalysis}
+            isExpanded={expandedOpinions.has('tur-section')}
+            onToggle={() => toggleExpand('tur-section')}
+          />
+        )}
+
+        {/* Layer 5: Psak — Shulchan Aruch / Rema with tradition comparison */}
         {chain.layers[HALACHIC_LAYERS.PSAK]?.psak && (
-          <PsakCard 
-            psak={chain.layers[HALACHIC_LAYERS.PSAK].psak}
+          <PsakCard psak={chain.layers[HALACHIC_LAYERS.PSAK].psak} />
+        )}
+
+        {/* Layer 6: Acharonim */}
+        {chain.layers[HALACHIC_LAYERS.ACHARONIM]?.decisions?.length > 0 && (
+          <TimelineSection
+            title="Acharonim" hebrewTitle="אחרונים"
+            layer={chain.layers[HALACHIC_LAYERS.ACHARONIM]}
             type={AUTHORITY_TYPES.ACHRON}
+            expandedOpinions={expandedOpinions}
+            onToggleExpand={toggleExpand}
+            focusedOpinion={focusedOpinion}
+            onOpinionClick={onOpinionClick}
+            educationalMode={educationalMode}
+          />
+        )}
+
+        {/* Layer 7: Modern Poskim */}
+        {chain.layers[HALACHIC_LAYERS.POSKIM]?.decisions?.length > 0 && (
+          <TimelineSection
+            title="Modern Poskim" hebrewTitle="פוסקים"
+            layer={chain.layers[HALACHIC_LAYERS.POSKIM]}
+            type={AUTHORITY_TYPES.POSEK}
+            expandedOpinions={expandedOpinions}
+            onToggleExpand={toggleExpand}
+            focusedOpinion={focusedOpinion}
+            onOpinionClick={onOpinionClick}
+            educationalMode={educationalMode}
           />
         )}
       </div>
@@ -113,9 +146,10 @@ const OpinionTimeline = ({
   );
 };
 
-/**
- * Legend item component
- */
+// ═══════════════════════════════════════════════════════════
+// Shared components
+// ═══════════════════════════════════════════════════════════
+
 const LegendItem = ({ color, label }) => (
   <div className="legend-item">
     <span className="legend-dot" style={{ backgroundColor: color }} />
@@ -123,21 +157,60 @@ const LegendItem = ({ color, label }) => (
   </div>
 );
 
-/**
- * Timeline section component
- */
-const TimelineSection = ({ 
-  title, 
-  hebrewTitle, 
-  layer, 
-  type,
-  expandedOpinions,
-  onToggleExpand,
-  focusedOpinion,
-  onOpinionClick,
-  educationalMode
+const TimelineSection = ({
+  title, hebrewTitle, layer, type,
+  expandedOpinions, onToggleExpand,
+  focusedOpinion, onOpinionClick, educationalMode
 }) => {
-  const color = type === 'analysis' ? '#6b7280' : AUTHORITY_COLORS[type];
+  const color = type === 'analysis' ? '#6b7280' : (AUTHORITY_COLORS[type] || '#6b7280');
+
+  const renderCards = () => {
+    if (type === 'analysis') {
+      return layer.analysis.map((analysis, i) => (
+        <AnalysisCard key={i} analysis={analysis} index={i} />
+      ));
+    }
+    if (type === AUTHORITY_TYPES.RISHON) {
+      return layer.decisions.map((d, i) => (
+        <RishonCard key={i} decision={d}
+          isExpanded={expandedOpinions.has(d.authority)}
+          onToggle={() => onToggleExpand(d.authority)}
+          isFocused={focusedOpinion?.authority === d.authority}
+          onClick={() => onOpinionClick?.(d)}
+        />
+      ));
+    }
+    if (type === AUTHORITY_TYPES.ACHRON) {
+      return layer.decisions?.map((d, i) => (
+        <AcharonCard key={i} decision={d}
+          isExpanded={expandedOpinions.has(d.authority)}
+          onToggle={() => onToggleExpand(d.authority)}
+          isFocused={focusedOpinion?.authority === d.authority}
+          onClick={() => onOpinionClick?.(d)}
+        />
+      ));
+    }
+    if (type === AUTHORITY_TYPES.POSEK) {
+      return layer.decisions?.map((d, i) => (
+        <PosekCard key={i} decision={d}
+          isExpanded={expandedOpinions.has(d.authority)}
+          onToggle={() => onToggleExpand(d.authority)}
+          isFocused={focusedOpinion?.authority === d.authority}
+          onClick={() => onOpinionClick?.(d)}
+        />
+      ));
+    }
+    // Default: Mishnah opinions
+    return layer.opinions?.map((op, i) => (
+      <OpinionCard key={i} opinion={op}
+        isExpanded={expandedOpinions.has(op.authority)}
+        onToggle={() => onToggleExpand(op.authority)}
+        isFocused={focusedOpinion?.authority === op.authority}
+        onClick={() => onOpinionClick?.(op)}
+        showStatus={educationalMode}
+      />
+    ));
+  };
 
   return (
     <div className="timeline-section" style={{ '--section-color': color }}>
@@ -148,76 +221,31 @@ const TimelineSection = ({
           <span className="english">{title}</span>
         </div>
       </div>
-
       <div className="section-content">
-        {type === 'analysis' ? (
-          // Gemara analysis cards
-          layer.analysis.map((analysis, index) => (
-            <AnalysisCard 
-              key={index}
-              analysis={analysis}
-              index={index}
-            />
-          ))
-        ) : type === AUTHORITY_TYPES.RISHON ? (
-          // Rishonim decision cards
-          layer.decisions.map((decision, index) => (
-            <RishonCard
-              key={index}
-              decision={decision}
-              isExpanded={expandedOpinions.has(decision.authority)}
-              onToggle={() => onToggleExpand(decision.authority)}
-              isFocused={focusedOpinion?.authority === decision.authority}
-              onClick={() => onOpinionClick?.(decision)}
-            />
-          ))
-        ) : (
-          // Mishnah opinion cards
-          layer.opinions?.map((opinion, index) => (
-            <OpinionCard
-              key={index}
-              opinion={opinion}
-              isExpanded={expandedOpinions.has(opinion.authority)}
-              onToggle={() => onToggleExpand(opinion.authority)}
-              isFocused={focusedOpinion?.authority === opinion.authority}
-              onClick={() => onOpinionClick?.(opinion)}
-              showStatus={educationalMode}
-            />
-          ))
-        )}
+        {renderCards()}
       </div>
     </div>
   );
 };
 
-/**
- * Opinion card for Tannaim
- */
+// ═══════════════════════════════════════════════════════════
+// Layer 1: Mishnah — Opinion cards
+// ═══════════════════════════════════════════════════════════
+
 const OpinionCard = ({ opinion, isExpanded, onToggle, isFocused, onClick, showStatus }) => {
   const status = getOpinionStatus(opinion);
-  
   return (
-    <div 
-      className={`opinion-card ${isFocused ? 'focused' : ''} status-${status}`}
-      onClick={onClick}
-    >
+    <div className={`opinion-card ${isFocused ? 'focused' : ''} status-${status}`} onClick={onClick}>
       <div className="opinion-header">
         <div className="opinion-authority">
           <span className="authority-hebrew">{opinion.authority}</span>
           <StatusBadge status={status} show={showStatus} />
         </div>
-        <button 
-          className="expand-btn"
-          onClick={(e) => { e.stopPropagation(); onToggle(); }}
-        >
-          {isExpanded ? '−' : '+'}
+        <button className="expand-btn" onClick={(e) => { e.stopPropagation(); onToggle(); }}>
+          {isExpanded ? '\u2212' : '+'}
         </button>
       </div>
-
-      <div className="opinion-ruling">
-        {opinion.ruling}
-      </div>
-
+      <div className="opinion-ruling">{opinion.ruling}</div>
       {isExpanded && (
         <div className="opinion-details">
           {opinion.reasoning && (
@@ -244,28 +272,44 @@ const OpinionCard = ({ opinion, isExpanded, onToggle, isFocused, onClick, showSt
   );
 };
 
-/**
- * Rishon card component
- */
+// ═══════════════════════════════════════════════════════════
+// Layer 2: Gemara — Analysis cards
+// ═══════════════════════════════════════════════════════════
+
+const AnalysisCard = ({ analysis, index }) => (
+  <div className="analysis-card">
+    <div className="analysis-number">{index + 1}</div>
+    <div className="analysis-content">
+      {analysis.question && (
+        <div className="analysis-question">
+          <span className="label">Q:</span>{analysis.question}
+        </div>
+      )}
+      {analysis.resolutions?.length > 0 && (
+        <div className="analysis-resolution">
+          <span className="label">A:</span>{analysis.resolutions[0]}
+        </div>
+      )}
+    </div>
+  </div>
+);
+
+// ═══════════════════════════════════════════════════════════
+// Layer 3: Rishonim — Decision cards
+// ═══════════════════════════════════════════════════════════
+
 const RishonCard = ({ decision, isExpanded, onToggle, isFocused, onClick }) => (
-  <div 
-    className={`rishon-card ${isFocused ? 'focused' : ''}`}
-    onClick={onClick}
-  >
+  <div className={`rishon-card ${isFocused ? 'focused' : ''}`} onClick={onClick}>
     <div className="rishon-header">
       <div className="rishon-authority">
         <span className="hebrew">{decision.hebrewName}</span>
         <span className="english">{decision.authority}</span>
       </div>
       <div className="rishon-ruling">{decision.ruling}</div>
-      <button 
-        className="expand-btn"
-        onClick={(e) => { e.stopPropagation(); onToggle(); }}
-      >
-        {isExpanded ? '−' : '+'}
+      <button className="expand-btn" onClick={(e) => { e.stopPropagation(); onToggle(); }}>
+        {isExpanded ? '\u2212' : '+'}
       </button>
     </div>
-
     {isExpanded && (
       <div className="rishon-details">
         <div className="detail-row">
@@ -287,135 +331,320 @@ const RishonCard = ({ decision, isExpanded, onToggle, isFocused, onClick }) => (
   </div>
 );
 
-/**
- * Analysis card for Gemara
- */
-const AnalysisCard = ({ analysis, index }) => (
-  <div className="analysis-card">
-    <div className="analysis-number">{index + 1}</div>
-    <div className="analysis-content">
-      {analysis.question && (
-        <div className="analysis-question">
-          <span className="label">Q:</span>
-          {analysis.question}
-        </div>
-      )}
-      {analysis.resolutions?.length > 0 && (
-        <div className="analysis-resolution">
-          <span className="label">A:</span>
-          {analysis.resolutions[0]}
-        </div>
-      )}
-    </div>
-  </div>
-);
+// ═══════════════════════════════════════════════════════════
+// Layer 4: Tur / Beit Yosef — Bridge section
+// ═══════════════════════════════════════════════════════════
 
-/**
- * Psak card for final ruling
- */
-const PsakCard = ({ psak, type }) => {
-  const color = AUTHORITY_COLORS[type];
-  
+const TurBeitYosefSection = ({ turAnalysis, isExpanded, onToggle }) => {
+  const color = AUTHORITY_COLORS[AUTHORITY_TYPES.MECHABER];
+
   return (
-    <div className="psak-card" style={{ '--psak-color': color }}>
-      <div className="psak-header">
-        <span className="psak-title">Final Psak</span>
-        <span className="psak-source">{psak.source}</span>
-      </div>
-      
-      <div className="psak-ruling">
-        {psak.ruling}
-      </div>
-
-      <div className="psak-details">
-        <div className="majority-indicator">
-          <span className="majority-label">Majority:</span>
-          <span className="majority-count">
-            {psak.majorityCount?.for || 0} / {psak.majorityCount?.for + psak.majorityCount?.against || 0}
-          </span>
+    <div className="timeline-section tur-section" style={{ '--section-color': color }}>
+      <div className="section-header">
+        <div className="section-line" style={{ backgroundColor: color }} />
+        <div className="section-title">
+          <span className="hebrew">טור / בית יוסף</span>
+          <span className="english">Tur / Beit Yosef</span>
         </div>
-        
-        {psak.minorityOpinion && (
-          <div className="minority-opinion">
-            <span className="minority-label">Minority view:</span>
-            <span className="minority-value">{psak.minorityOpinion}</span>
-          </div>
-        )}
-
-        {psak.location && (
-          <div className="psak-location">
-            {psak.hebrewLocation} {psak.location}
-          </div>
-        )}
       </div>
 
-      {psak.isDisputed && (
-        <div className="disputed-badge">
-          Valid Machloket
+      <div className="section-content">
+        <div className="tur-card">
+          {/* Tur Organization */}
+          <div className="tur-header" onClick={onToggle}>
+            <div className="tur-title-row">
+              <span className="tur-icon">T</span>
+              <div className="tur-title-text">
+                <span className="tur-label-hebrew">טור</span>
+                <span className="tur-label-english">
+                  {turAnalysis.saSectionHebrew} ({turAnalysis.saSection})
+                </span>
+              </div>
+            </div>
+            <button className="expand-btn" onClick={(e) => { e.stopPropagation(); onToggle(); }}>
+              {isExpanded ? '\u2212' : '+'}
+            </button>
+          </div>
+
+          {turAnalysis.turOrganization && (
+            <div className="tur-organization">
+              {turAnalysis.turOrganization}
+            </div>
+          )}
+
+          {/* Rishonim as cited by Tur */}
+          {turAnalysis.turSummary?.length > 0 && (
+            <div className="tur-rishonim-summary">
+              <span className="summary-label">Rishonim cited by Tur:</span>
+              <div className="tur-cited-list">
+                {turAnalysis.turSummary.map((r, i) => (
+                  <span key={i} className="tur-cited-rishon">
+                    {r.hebrewName}: <em>{r.position}</em>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Beit Yosef Analysis */}
+          {isExpanded && turAnalysis.beitYosefAnalysis && (
+            <div className="beit-yosef-section">
+              <div className="by-header">
+                <span className="by-icon">BY</span>
+                <span className="by-label">Beit Yosef Analysis</span>
+              </div>
+              <div className="by-analysis">
+                {turAnalysis.beitYosefAnalysis}
+              </div>
+              {turAnalysis.beitYosefRef && (
+                <div className="by-ref source-ref">{turAnalysis.beitYosefRef}</div>
+              )}
+            </div>
+          )}
+
+          {isExpanded && turAnalysis.turRef && (
+            <div className="tur-ref-row">
+              <span className="detail-label">Tur ref:</span>
+              <span className="source-ref">{turAnalysis.turRef}</span>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
 
-/**
- * Status badge component
- */
+// ═══════════════════════════════════════════════════════════
+// Layer 5: Psak — Structured Mechaber/Rema Comparison
+// ═══════════════════════════════════════════════════════════
+
+const PsakCard = ({ psak }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div className="timeline-section psak-section" style={{ '--section-color': '#eab308' }}>
+      <div className="section-header">
+        <div className="section-line" style={{ backgroundColor: '#eab308' }} />
+        <div className="section-title">
+          <span className="hebrew">שולחן ערוך</span>
+          <span className="english">Shulchan Aruch</span>
+        </div>
+      </div>
+
+      <div className="section-content">
+        <div className="psak-card-v2">
+          {/* Header */}
+          <div className="psak-v2-header" onClick={() => setExpanded(!expanded)}>
+            <span className="psak-v2-title">
+              {psak.traditionsAgree ? 'Unified Ruling' : 'Tradition Comparison'}
+            </span>
+            {psak.isDisputed && <span className="disputed-badge-v2">Machloket</span>}
+            <button className="expand-btn" onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}>
+              {expanded ? '\u2212' : '+'}
+            </button>
+          </div>
+
+          {/* Two-column tradition comparison */}
+          <div className={`tradition-comparison ${psak.traditionsAgree ? 'agreed' : 'divergent'}`}>
+            {/* Mechaber (Sephardic) column */}
+            <div className="tradition-column mechaber-column">
+              <div className="tradition-header sephardic">
+                <span className="tradition-title">Mechaber</span>
+                <span className="tradition-subtitle">Sephardic</span>
+              </div>
+              <div className="tradition-ruling">
+                {psak.mechaber?.ruling || psak.ruling || 'see text'}
+              </div>
+              {psak.mechaber?.text && expanded && (
+                <div className="tradition-text">{psak.mechaber.text}</div>
+              )}
+              {psak.mechaber?.supportedBy?.length > 0 && (
+                <div className="tradition-supporters">
+                  <span className="supporters-label">Supported by:</span>
+                  {psak.mechaber.supportedBy.map((s, i) => (
+                    <span key={i} className="supporter-chip">{s}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Divider */}
+            <div className="tradition-divider">
+              <div className="divider-line" />
+              <span className="divider-label">
+                {psak.traditionsAgree ? '=' : 'vs'}
+              </span>
+              <div className="divider-line" />
+            </div>
+
+            {/* Rema (Ashkenazi) column */}
+            <div className="tradition-column rema-column">
+              <div className="tradition-header ashkenazi">
+                <span className="tradition-title">
+                  {psak.rema ? 'Rema' : 'Rema'}
+                </span>
+                <span className="tradition-subtitle">Ashkenazi</span>
+              </div>
+              <div className="tradition-ruling">
+                {psak.rema?.ruling || psak.mechaber?.ruling || psak.ruling || 'agrees'}
+              </div>
+              {psak.rema?.text && expanded && (
+                <div className="tradition-text">{psak.rema.text}</div>
+              )}
+              {psak.rema?.supportedBy?.length > 0 && (
+                <div className="tradition-supporters">
+                  <span className="supporters-label">Supported by:</span>
+                  {psak.rema.supportedBy.map((s, i) => (
+                    <span key={i} className="supporter-chip">{s}</span>
+                  ))}
+                </div>
+              )}
+              {!psak.rema && (
+                <div className="tradition-note">No Rema gloss — follows Mechaber</div>
+              )}
+            </div>
+          </div>
+
+          {/* Minority Positions */}
+          {expanded && psak.minorityPositions?.length > 0 && (
+            <div className="minority-positions">
+              <span className="minority-title">Minority Positions:</span>
+              {psak.minorityPositions.map((pos, i) => (
+                <div key={i} className="minority-position-row">
+                  <span className="minority-ruling-text">{pos.ruling}</span>
+                  <span className="minority-authorities">
+                    {pos.authorities?.map(a => a.hebrewName || a.name).join(', ')}
+                  </span>
+                  {pos.isSignificant && (
+                    <span className="significant-badge">Significant minority</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Halacha Lemaaseh */}
+          {psak.halachaLemaaseh && (
+            <div className="halacha-lemaaseh">
+              <span className="lemaaseh-label">Halacha Lemaaseh:</span>
+              <span className="lemaaseh-text">{psak.halachaLemaaseh}</span>
+            </div>
+          )}
+
+          {/* SA Location */}
+          {psak.location && expanded && (
+            <div className="psak-v2-location">
+              {psak.hebrewLocation} &mdash; {psak.location}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════
+// Layer 6: Acharonim — with tradition badges
+// ═══════════════════════════════════════════════════════════
+
+const AcharonCard = ({ decision, isExpanded, onToggle, isFocused, onClick }) => (
+  <div className={`rishon-card acharon-card ${isFocused ? 'focused' : ''}`} onClick={onClick}>
+    <div className="rishon-header">
+      <div className="rishon-authority">
+        <span className="hebrew">{decision.hebrewName}</span>
+        <span className="english">{decision.authority}</span>
+        {decision.tradition && decision.tradition !== 'both' && (
+          <span className={`tradition-badge tradition-${decision.tradition}`}>
+            {decision.tradition === 'ashkenazi' ? 'Ashkenaz' : 'Sephard'}
+          </span>
+        )}
+      </div>
+      <div className="rishon-ruling">{decision.ruling}</div>
+      <button className="expand-btn" onClick={(e) => { e.stopPropagation(); onToggle(); }}>
+        {isExpanded ? '\u2212' : '+'}
+      </button>
+    </div>
+    {decision.saSection && (
+      <div className="acharon-section-tag">{decision.saSection}</div>
+    )}
+    {isExpanded && (
+      <div className="rishon-details">
+        <div className="detail-row">
+          <span className="detail-label">Commentary:</span>
+          <span className="detail-value">{decision.reasoning}</span>
+        </div>
+        {decision.sourceRef && (
+          <div className="detail-row">
+            <span className="detail-label">Source:</span>
+            <span className="detail-value source-ref">{decision.sourceRef}</span>
+          </div>
+        )}
+      </div>
+    )}
+  </div>
+);
+
+// ═══════════════════════════════════════════════════════════
+// Layer 7: Modern Poskim — with era and tradition badges
+// ═══════════════════════════════════════════════════════════
+
+const PosekCard = ({ decision, isExpanded, onToggle, isFocused, onClick }) => (
+  <div className={`rishon-card posek-card ${isFocused ? 'focused' : ''}`} onClick={onClick}>
+    <div className="rishon-header">
+      <div className="rishon-authority">
+        <span className="hebrew">{decision.hebrewName}</span>
+        <span className="english">{decision.authority}</span>
+        <div className="posek-badges">
+          {decision.tradition && decision.tradition !== 'both' && (
+            <span className={`tradition-badge tradition-${decision.tradition}`}>
+              {decision.tradition === 'ashkenazi' ? 'Ashkenaz' : 'Sephard'}
+            </span>
+          )}
+          {decision.era && (
+            <span className={`era-badge era-${decision.era}`}>
+              {decision.era === 'contemporary' ? 'Contemporary' : 'Modern'}
+            </span>
+          )}
+        </div>
+      </div>
+      <div className="rishon-ruling posek-ruling">{decision.ruling}</div>
+      <button className="expand-btn" onClick={(e) => { e.stopPropagation(); onToggle(); }}>
+        {isExpanded ? '\u2212' : '+'}
+      </button>
+    </div>
+    {isExpanded && (
+      <div className="rishon-details">
+        <div className="detail-row">
+          <span className="detail-label">Ruling:</span>
+          <span className="detail-value">{decision.reasoning}</span>
+        </div>
+        {decision.sourceRef && (
+          <div className="detail-row">
+            <span className="detail-label">Source:</span>
+            <span className="detail-value source-ref">{decision.sourceRef}</span>
+          </div>
+        )}
+      </div>
+    )}
+  </div>
+);
+
+// ═══════════════════════════════════════════════════════════
+// Helpers
+// ═══════════════════════════════════════════════════════════
+
 const StatusBadge = ({ status, show }) => {
   if (!show) return null;
-  
   const badges = {
     accepted: { text: 'Accepted', class: 'accepted' },
     rejected: { text: 'Rejected', class: 'rejected' },
     minority: { text: 'Minority', class: 'minority' },
     unknown: { text: 'Unknown', class: 'unknown' }
   };
-  
   const badge = badges[status] || badges.unknown;
-  
-  return (
-    <span className={`status-badge ${badge.class}`}>
-      {badge.text}
-    </span>
-  );
+  return <span className={`status-badge ${badge.class}`}>{badge.text}</span>;
 };
 
-/**
- * Collect authorities by type from chain
- */
-const collectAuthoritiesByType = (chain) => {
-  const byType = {};
-  
-  Object.values(chain.layers).forEach(layer => {
-    if (layer.opinions) {
-      layer.opinions.forEach(op => {
-        if (!byType[op.authorityType]) {
-          byType[op.authorityType] = [];
-        }
-        if (!byType[op.authorityType].includes(op.authority)) {
-          byType[op.authorityType].push(op.authority);
-        }
-      });
-    }
-    
-    if (layer.decisions) {
-      layer.decisions.forEach(dec => {
-        if (!byType[dec.type]) {
-          byType[dec.type] = [];
-        }
-        if (!byType[dec.type].includes(dec.authority)) {
-          byType[dec.type].push(dec.authority);
-        }
-      });
-    }
-  });
-  
-  return byType;
-};
-
-/**
- * Get status of an opinion
- */
 const getOpinionStatus = (opinion) => {
   if (opinion.isAccepted) return 'accepted';
   if (opinion.rejectedBy?.length > 0) return 'rejected';

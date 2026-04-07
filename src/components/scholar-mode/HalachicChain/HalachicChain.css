@@ -296,6 +296,211 @@
   }
 }
 
+/* ═══ Opinion Flow View ═══ */
+.flow-view {
+  padding: 16px;
+  max-height: 65vh;
+  overflow-y: auto;
+}
+
+.flow-view-empty {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted, #6b7280);
+}
+
+.flow-view-header {
+  margin-bottom: 16px;
+}
+
+.flow-view-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+  margin: 0 0 4px 0;
+}
+
+.flow-view-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted, #6b7280);
+  margin: 0;
+}
+
+/* Klalei Pesika Panel */
+.klalei-pesika-panel {
+  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+.kp-header {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #065f46;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.kp-note {
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.6);
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.kp-note:last-child { margin-bottom: 0; }
+
+.kp-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #064e3b;
+}
+
+.kp-text {
+  font-size: 0.8rem;
+  color: #047857;
+  line-height: 1.4;
+}
+
+.kp-rule_application { border-left: 3px solid #22c55e; }
+.kp-methodology { border-left: 3px solid #a855f7; }
+.kp-tradition_split { border-left: 3px solid #f97316; }
+.kp-unified { border-left: 3px solid #22c55e; }
+.kp-chain_summary { border-left: 3px solid #3b82f6; }
+
+/* Flow Cards */
+.flow-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.flow-card {
+  background: var(--bg-elevated, #f9fafb);
+  border-radius: 10px;
+  padding: 14px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.flow-card:hover {
+  border-color: var(--border-color, #e5e7eb);
+}
+
+.flow-card.focused {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.flow-card.final-accepted { border-left: 4px solid #22c55e; }
+.flow-card.final-partial { border-left: 4px solid #f59e0b; }
+.flow-card.final-rejected { border-left: 4px solid #ef4444; }
+.flow-card.final-minority { border-left: 4px solid #f59e0b; }
+
+.flow-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.flow-origin {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary, #111827);
+}
+
+.flow-ruling {
+  font-size: 0.85rem;
+  padding: 3px 10px;
+  background: #f3e8ff;
+  color: #7c3aed;
+  border-radius: 10px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.flow-final-badge {
+  font-size: 0.7rem;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-weight: 600;
+  margin-left: auto;
+}
+
+.flow-final-badge.final-accepted { background: #dcfce7; color: #166534; }
+.flow-final-badge.final-partial { background: #fef3c7; color: #92400e; }
+.flow-final-badge.final-rejected { background: #fee2e2; color: #991b1b; }
+.flow-final-badge.final-minority { background: #fef3c7; color: #92400e; }
+.flow-final-badge.final-pending { background: #f3f4f6; color: #4b5563; }
+.flow-final-badge.final-unknown { background: #f3f4f6; color: #4b5563; }
+
+/* Flow Journey */
+.flow-journey {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.flow-node {
+  flex: 1;
+  min-width: 90px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.8);
+  border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.flow-node-layer {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.flow-node-status {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status-originated .flow-node-status { color: #22c55e; }
+.status-survived .flow-node-status { color: #22c55e; }
+.status-challenged .flow-node-status { color: #f59e0b; }
+.status-adopted .flow-node-status { color: #3b82f6; }
+.status-cited .flow-node-status { color: #06b6d4; }
+.status-codified .flow-node-status { color: #059669; }
+.status-partial .flow-node-status { color: #f59e0b; }
+.status-supported .flow-node-status { color: #22c55e; }
+.status-rejected .flow-node-status { color: #ef4444; }
+.status-minority .flow-node-status { color: #f59e0b; }
+.status-neutral .flow-node-status { color: #9ca3af; }
+
+.flow-node-supporters {
+  font-size: 0.7rem;
+  color: #6b7280;
+}
+
+.flow-node-reasoning {
+  font-size: 0.7rem;
+  color: #4b5563;
+  line-height: 1.3;
+  margin-top: 2px;
+  padding-top: 3px;
+  border-top: 1px solid #e5e7eb;
+}
+
 /* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
   .halachic-chain {

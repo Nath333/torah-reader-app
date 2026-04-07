@@ -42,7 +42,7 @@
 
 import { ARAMAIC_PARTICLES, BIBLICAL_PARTICLES } from './preClassificationService';
 import { lookupJastrowSync, lookupBDBSync, lookupStrongsSync } from './dictionaryLoader';
-import { stripVowels } from '../utils/hebrewUtils';
+import { stripVowels, GEMATRIA_VALUES } from '../utils/hebrewUtils';
 
 export const ENGINE_VERSION = '7.0.0';
 
@@ -125,15 +125,7 @@ const _cache = new CacheManager(1000, 300000);
 // Calculate numerical values and find related words
 // =============================================================================
 
-/**
- * Standard Hebrew letter values
- */
-const GEMATRIA_VALUES = {
-  'א': 1, 'ב': 2, 'ג': 3, 'ד': 4, 'ה': 5, 'ו': 6, 'ז': 7, 'ח': 8, 'ט': 9,
-  'י': 10, 'כ': 20, 'ך': 20, 'ל': 30, 'מ': 40, 'ם': 40, 'נ': 50, 'ן': 50,
-  'ס': 60, 'ע': 70, 'פ': 80, 'ף': 80, 'צ': 90, 'ץ': 90, 'ק': 100, 'ר': 200,
-  'ש': 300, 'ת': 400
-};
+// DRY: GEMATRIA_VALUES imported from utils/hebrewUtils.js (single source of truth)
 
 /**
  * Famous gematria equivalences for quick lookup

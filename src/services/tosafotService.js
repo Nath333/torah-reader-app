@@ -1,11 +1,2 @@
-// Tosafot Service - Re-exports from consolidated commentary factory
-// Maintains backwards compatibility with existing imports
-
-export {
-  isTosafotAvailable,
-  getTosafotOnTalmud,
-  getTosafotForDaf,
-  clearTosafotCache,
-  getTractatesWithTosafot,
-  tosafotService as default
-} from './commentaryServiceFactory';
+// Re-export from consolidated subdirectory (single source of truth)
+export * from './commentary/tosafotService';

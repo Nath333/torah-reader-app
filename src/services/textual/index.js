@@ -1,7 +1,7 @@
 // Textual Analysis Services
 export { default as cantillationService } from './cantillationService';
 export { default as masoreticService } from './masoreticService';
-export { default as manuscriptVariantsService } from './manuscriptVariantsService';
+// manuscriptVariantsService has named exports only (no default)
 export { default as talmudicAbbreviationsService } from './talmudicAbbreviationsService';
 
 // Masoretic

@@ -1,12 +1,31 @@
 /**
  * Hebrew Text Utilities
- * Functions for manipulating Hebrew text display options
- * Based on Unicode ranges for Hebrew diacritics
+ * Single source of truth for Hebrew text manipulation.
+ * Based on Unicode ranges for Hebrew diacritics.
+ *
+ * Unicode ranges:
+ *   Cantillation marks (taamei hamikra / trope): U+0591–U+05AF
+ *   Vowels (nikud): U+05B0–U+05BD, U+05BF, U+05C1–U+05C2, U+05C4–U+05C5, U+05C7
+ *   Maqaf (Hebrew hyphen): U+05BE
+ *   Hebrew letters (consonants): U+05D0–U+05EA
  */
 
-// Unicode ranges for Hebrew marks
-// Cantillation marks (taamei hamikra / trope): U+0591 to U+05AF
-// Vowels (nikud): U+05B0 to U+05BD, U+05BF, U+05C1-U+05C2, U+05C4-U+05C5, U+05C7
+// Pre-compiled regexes (avoid re-creation per call)
+const RE_CANTILLATION = /[\u0591-\u05AF]/g;
+const RE_VOWELS = /[\u05B0-\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7]/g;
+const RE_ALL_DIACRITICS = /[\u0591-\u05C7]/g;
+const RE_DIACRITICS_AND_MAQAF = /[\u0591-\u05C7\u05BE]/g;
+const RE_MAQAF = /\u05BE/g;
+const RE_NON_HEBREW = /[^\u05D0-\u05EA]/g;
+const RE_NON_HEBREW_KEEP_ABBREV = /[^\u05D0-\u05EA\u05F3\u05F4'"]/g;
+const RE_HAS_HEBREW = /[\u05D0-\u05EA]/;
+const RE_HAS_VOWELS = /[\u05B0-\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7]/;
+const RE_HAS_CANTILLATION = /[\u0591-\u05AF]/;
+
+// Final-letter mappings
+const FINAL_TO_MEDIAL = { 'ם': 'מ', 'ן': 'נ', 'ץ': 'צ', 'ף': 'פ', 'ך': 'כ' };
+const MEDIAL_TO_FINAL = { 'כ': 'ך', 'מ': 'ם', 'נ': 'ן', 'פ': 'ף', 'צ': 'ץ' };
+const RE_FINALS = /[םןץףך]/g;
 
 /**
  * Remove cantillation marks (טעמי המקרא) from Hebrew text
@@ -16,8 +35,7 @@
  */
 export const stripCantillation = (text) => {
   if (!text || typeof text !== 'string') return text;
-  // Remove cantillation marks (U+0591 to U+05AF)
-  return text.replace(/[\u0591-\u05AF]/g, '');
+  return text.replace(RE_CANTILLATION, '');
 };
 
 /**
@@ -28,8 +46,7 @@ export const stripCantillation = (text) => {
  */
 export const stripVowels = (text) => {
   if (!text || typeof text !== 'string') return text;
-  // Remove vowels/nikud (U+05B0-U+05BD, U+05BF, U+05C1-U+05C2, U+05C4-U+05C5, U+05C7)
-  return text.replace(/[\u05B0-\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7]/g, '');
+  return text.replace(RE_VOWELS, '');
 };
 
 /**
@@ -40,8 +57,7 @@ export const stripVowels = (text) => {
  */
 export const stripAllDiacritics = (text) => {
   if (!text || typeof text !== 'string') return text;
-  // Remove all Hebrew diacritics (U+0591 to U+05C7)
-  return text.replace(/[\u0591-\u05C7]/g, '');
+  return text.replace(RE_ALL_DIACRITICS, '');
 };
 
 /**
@@ -53,12 +69,7 @@ export const stripAllDiacritics = (text) => {
  */
 export const normalizeFinals = (word) => {
   if (!word || typeof word !== 'string') return word;
-  return word
-    .replace(/ם/g, 'מ')
-    .replace(/ן/g, 'נ')
-    .replace(/ץ/g, 'צ')
-    .replace(/ף/g, 'פ')
-    .replace(/ך/g, 'כ');
+  return word.replace(RE_FINALS, ch => FINAL_TO_MEDIAL[ch]);
 };
 
 /**
@@ -71,9 +82,8 @@ export const normalizeFinals = (word) => {
 export const restoreFinals = (word) => {
   if (!word || typeof word !== 'string' || word.length === 0) return word;
   const lastChar = word[word.length - 1];
-  const finalForms = { 'כ': 'ך', 'מ': 'ם', 'נ': 'ן', 'פ': 'ף', 'צ': 'ץ' };
-  if (finalForms[lastChar]) {
-    return word.slice(0, -1) + finalForms[lastChar];
+  if (MEDIAL_TO_FINAL[lastChar]) {
+    return word.slice(0, -1) + MEDIAL_TO_FINAL[lastChar];
   }
   return word;
 };
@@ -158,10 +168,8 @@ export const isValidHeadwordMatch = (headword, query, threshold = SIMILARITY_THR
  */
 export const cleanHebrewWord = (word) => {
   if (!word || typeof word !== 'string') return '';
-  return word
-    .replace(/[\u0591-\u05C7]/g, '') // Remove cantillation and vowels
-    // Keep Hebrew letters + gershayim (״ U+05F4, ' U+0027, " U+0022, ׳ U+05F3)
-    .replace(/[^\u05D0-\u05EA\u05F3\u05F4'"]/g, '');
+  return stripAllDiacritics(word)
+    .replace(RE_NON_HEBREW_KEEP_ABBREV, '');
 };
 
 /**
@@ -172,9 +180,39 @@ export const cleanHebrewWord = (word) => {
  */
 export const cleanHebrewWordStrict = (word) => {
   if (!word || typeof word !== 'string') return '';
-  return word
-    .replace(/[\u0591-\u05C7]/g, '') // Remove cantillation and vowels
-    .replace(/[^\u05D0-\u05EA]/g, ''); // Keep ONLY Hebrew letters
+  return stripAllDiacritics(word)
+    .replace(RE_NON_HEBREW, '');
+};
+
+/**
+ * Remove diacritics AND maqaf (Hebrew hyphen U+05BE)
+ * Useful for normalization where maqaf-joined words should merge
+ * @param {string} text - Hebrew text
+ * @returns {string} - Text without diacritics or maqaf
+ */
+export const stripDiacriticsAndMaqaf = (text) => {
+  if (!text || typeof text !== 'string') return text;
+  return text.replace(RE_DIACRITICS_AND_MAQAF, '');
+};
+
+/**
+ * Remove maqaf (Hebrew hyphen U+05BE) only
+ * @param {string} text - Hebrew text
+ * @returns {string} - Text without maqaf
+ */
+export const removeMaqaf = (text) => {
+  if (!text || typeof text !== 'string') return text;
+  return text.replace(RE_MAQAF, '');
+};
+
+/**
+ * Check if string contains Hebrew letters (consonants U+05D0-U+05EA)
+ * @param {string} text
+ * @returns {boolean}
+ */
+export const hasHebrewLetters = (text) => {
+  if (!text) return false;
+  return RE_HAS_HEBREW.test(text);
 };
 
 // Alias used by some services
@@ -213,7 +251,7 @@ export const processHebrewText = (text, options = {}) => {
  */
 export const hasVowels = (text) => {
   if (!text) return false;
-  return /[\u05B0-\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7]/.test(text);
+  return RE_HAS_VOWELS.test(text);
 };
 
 /**
@@ -223,7 +261,7 @@ export const hasVowels = (text) => {
  */
 export const hasCantillation = (text) => {
   if (!text) return false;
-  return /[\u0591-\u05AF]/.test(text);
+  return RE_HAS_CANTILLATION.test(text);
 };
 
 /**
@@ -263,8 +301,7 @@ export const countWords = (text) => {
  */
 export const countLetters = (text) => {
   if (!text || typeof text !== 'string') return 0;
-  // Keep only Hebrew consonants (U+05D0 to U+05EA)
-  const consonants = text.replace(/[^\u05D0-\u05EA]/g, '');
+  const consonants = text.replace(RE_NON_HEBREW, '');
   return consonants.length;
 };
 
@@ -343,11 +380,14 @@ const hebrewUtils = {
   stripCantillation,
   stripVowels,
   stripAllDiacritics,
+  stripDiacriticsAndMaqaf,
+  removeMaqaf,
   stripNiqqud,
   cleanHebrewWord,
   cleanHebrewWordStrict,
   normalizeFinals,
   restoreFinals,
+  hasHebrewLetters,
   areSimilarWords,
   // PRO SCHOLAR V9: Unified similarity functions
   calculateSimilarity,
@@ -362,7 +402,26 @@ const hebrewUtils = {
   countLetters,
   countUniqueWords,
   getVerseStats,
-  getChapterStats
+  getChapterStats,
+  // Gematria
+  GEMATRIA_VALUES,
+  calculateGematria
+};
+
+// =============================================================================
+// GEMATRIA - Standard Hebrew letter values (Single Source of Truth)
+// =============================================================================
+
+export const GEMATRIA_VALUES = {
+  'א': 1, 'ב': 2, 'ג': 3, 'ד': 4, 'ה': 5, 'ו': 6, 'ז': 7, 'ח': 8, 'ט': 9,
+  'י': 10, 'כ': 20, 'ך': 20, 'ל': 30, 'מ': 40, 'ם': 40, 'נ': 50, 'ן': 50,
+  'ס': 60, 'ע': 70, 'פ': 80, 'ף': 80, 'צ': 90, 'ץ': 90, 'ק': 100, 'ר': 200,
+  'ש': 300, 'ת': 400
+};
+
+export const calculateGematria = (text) => {
+  if (!text) return 0;
+  return text.split('').reduce((sum, char) => sum + (GEMATRIA_VALUES[char] || 0), 0);
 };
 
 export default hebrewUtils;

@@ -34,20 +34,14 @@ import {
 // PRO SCHOLAR V3: Context-aware confidence scoring (available for future use)
 // import { computeConfidence, getSourceTier, getContextFromReference } from '../../services/preClassificationService';
 import SourceDefinitionItem from './SourceDefinitionItem';
-import VerbConjugationDisplay from './VerbConjugationDisplay';
-// PRO SCHOLAR V6: Advanced linguistic analysis panel
-import ProScholarPanel from './ProScholarPanel';
-// PRO SCHOLAR V6: Root family tree visualization
-import RootFamilyTree from './RootFamilyTree';
-// PRO SCHOLAR V6: Historical layer and cognate panels
-import HistoricalLayerPanel from './HistoricalLayerPanel';
-import CognateLanguagesPanel from './CognateLanguagesPanel';
-// PRO SCHOLAR V20: Text attestations panel
-import TextAttestationsPanel from './TextAttestationsPanel';
-// PRO SCHOLAR V20: Root meaning panel
-import RootMeaningPanel from './RootMeaningPanel';
-// PRO SCHOLAR V6: Analysis badge for header
-import V6AnalysisBadge from './V6AnalysisBadge';
+import VerbConjugationDisplay from './morphology/VerbConjugationDisplay';
+import ProScholarPanel from './panels/ProScholarPanel';
+import RootFamilyTree from './panels/RootFamilyTree';
+import HistoricalLayerPanel from './panels/HistoricalLayerPanel';
+import CognateLanguagesPanel from './panels/CognateLanguagesPanel';
+import TextAttestationsPanel from './panels/TextAttestationsPanel';
+import RootMeaningPanel from './panels/RootMeaningPanel';
+import V6AnalysisBadge from './panels/V6AnalysisBadge';
 // PRO SCHOLAR V5: Loading skeleton for better UX
 import LoadingSkeleton from '../shared/LoadingSkeleton';
 

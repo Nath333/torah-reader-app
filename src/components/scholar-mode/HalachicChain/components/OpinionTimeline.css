@@ -1,7 +1,7 @@
 /**
  * OpinionTimeline Styles
- * 
- * Clean, professional styling for the halachic opinion timeline
+ *
+ * Complete 7-layer שושלת הוראה timeline styling
  */
 
 .opinion-timeline {
@@ -19,7 +19,7 @@
   font-style: italic;
 }
 
-/* Header */
+/* ═══ Header ═══ */
 .timeline-header {
   display: flex;
   justify-content: space-between;
@@ -27,6 +27,8 @@
   margin-bottom: 24px;
   padding-bottom: 16px;
   border-bottom: 2px solid var(--border-color, #e5e7eb);
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .timeline-title {
@@ -38,7 +40,7 @@
 
 .timeline-legend {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
@@ -46,28 +48,24 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   color: var(--text-secondary, #4b5563);
 }
 
 .legend-dot {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
 }
 
-.legend-label {
-  white-space: nowrap;
-}
-
-/* Timeline Content */
+/* ═══ Timeline Content ═══ */
 .timeline-content {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
-/* Section */
+/* ═══ Section ═══ */
 .timeline-section {
   position: relative;
 }
@@ -98,7 +96,7 @@
 }
 
 .section-title .english {
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   color: var(--text-muted, #6b7280);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -113,7 +111,55 @@
   margin-left: 1px;
 }
 
-/* Opinion Card */
+/* ═══ Shared: Expand button, detail rows ═══ */
+.expand-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color, #e5e7eb);
+  background: var(--bg-card, #ffffff);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: var(--text-secondary, #4b5563);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.expand-btn:hover {
+  background: var(--bg-hover, #f3f4f6);
+  border-color: var(--primary-color, #3b82f6);
+}
+
+.detail-row {
+  display: flex;
+  gap: 8px;
+}
+
+.detail-label {
+  font-weight: 500;
+  color: var(--text-muted, #6b7280);
+  white-space: nowrap;
+  font-size: 0.85rem;
+}
+
+.detail-value {
+  color: var(--text-secondary, #4b5563);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.source-ref {
+  font-family: monospace;
+  font-size: 0.8rem;
+  background: #f3f4f6;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* ═══ Layer 1: Mishnah — Opinion Card ═══ */
 .opinion-card {
   background: var(--bg-elevated, #f9fafb);
   border-radius: 8px;
@@ -133,18 +179,9 @@
   background: var(--bg-focus, #eff6ff);
 }
 
-.opinion-card.status-accepted {
-  border-left: 4px solid #22c55e;
-}
-
-.opinion-card.status-rejected {
-  border-left: 4px solid #ef4444;
-  opacity: 0.7;
-}
-
-.opinion-card.status-minority {
-  border-left: 4px solid #f59e0b;
-}
+.opinion-card.status-accepted { border-left: 4px solid #22c55e; }
+.opinion-card.status-rejected { border-left: 4px solid #ef4444; opacity: 0.7; }
+.opinion-card.status-minority { border-left: 4px solid #f59e0b; }
 
 .opinion-header {
   display: flex;
@@ -171,27 +208,6 @@
   line-height: 1.5;
 }
 
-.expand-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  border: 1px solid var(--border-color, #e5e7eb);
-  background: var(--bg-card, #ffffff);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  color: var(--text-secondary, #4b5563);
-  transition: all 0.2s ease;
-}
-
-.expand-btn:hover {
-  background: var(--bg-hover, #f3f4f6);
-  border-color: var(--primary-color, #3b82f6);
-}
-
-/* Opinion Details */
 .opinion-details {
   margin-top: 12px;
   padding-top: 12px;
@@ -199,24 +215,6 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
-
-.detail-row {
-  display: flex;
-  gap: 8px;
-}
-
-.detail-label {
-  font-weight: 500;
-  color: var(--text-muted, #6b7280);
-  white-space: nowrap;
-  font-size: 0.875rem;
-}
-
-.detail-value {
-  color: var(--text-secondary, #4b5563);
-  font-size: 0.875rem;
-  line-height: 1.4;
 }
 
 /* Status Badge */
@@ -229,99 +227,12 @@
   letter-spacing: 0.3px;
 }
 
-.status-badge.accepted {
-  background: #dcfce7;
-  color: #166534;
-}
+.status-badge.accepted { background: #dcfce7; color: #166534; }
+.status-badge.rejected { background: #fee2e2; color: #991b1b; }
+.status-badge.minority  { background: #fef3c7; color: #92400e; }
+.status-badge.unknown   { background: #f3f4f6; color: #4b5563; }
 
-.status-badge.rejected {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.status-badge.minority {
-  background: #fef3c7;
-  color: #92400e;
-}
-
-.status-badge.unknown {
-  background: #f3f4f6;
-  color: #4b5563;
-}
-
-/* Rishon Card */
-.rishon-card {
-  background: var(--bg-elevated, #f9fafb);
-  border-radius: 8px;
-  padding: 16px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: 2px solid transparent;
-}
-
-.rishon-card:hover {
-  background: var(--bg-hover, #f3f4f6);
-  border-color: var(--border-color, #e5e7eb);
-}
-
-.rishon-card.focused {
-  border-color: #a855f7;
-  background: #faf5ff;
-}
-
-.rishon-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.rishon-authority {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.rishon-authority .hebrew {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-primary, #111827);
-}
-
-.rishon-authority .english {
-  font-size: 0.8rem;
-  color: var(--text-muted, #6b7280);
-}
-
-.rishon-ruling {
-  padding: 4px 12px;
-  background: #f3e8ff;
-  color: #7c3aed;
-  border-radius: 12px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  text-transform: capitalize;
-}
-
-.rishon-details {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border-color, #e5e7eb);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.source-ref {
-  font-family: monospace;
-  font-size: 0.8rem;
-  background: #f3f4f6;
-  padding: 2px 6px;
-  border-radius: 4px;
-}
-
-/* Analysis Card */
+/* ═══ Layer 2: Gemara — Analysis Card ═══ */
 .analysis-card {
   display: flex;
   gap: 12px;
@@ -365,119 +276,560 @@
   color: var(--text-muted, #6b7280);
 }
 
-.analysis-question {
-  color: var(--text-primary, #111827);
+.analysis-question { color: var(--text-primary, #111827); }
+.analysis-resolution { color: var(--text-secondary, #4b5563); }
+
+/* ═══ Layer 3: Rishonim — Rishon Card ═══ */
+.rishon-card {
+  background: var(--bg-elevated, #f9fafb);
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
 }
 
-.analysis-resolution {
-  color: var(--text-secondary, #4b5563);
+.rishon-card:hover {
+  background: var(--bg-hover, #f3f4f6);
+  border-color: var(--border-color, #e5e7eb);
 }
 
-/* Psak Card */
-.psak-card {
-  background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
-  border-radius: 12px;
-  padding: 20px;
-  border: 2px solid #eab308;
-  position: relative;
+.rishon-card.focused {
+  border-color: #a855f7;
+  background: #faf5ff;
 }
 
-.psak-header {
+.rishon-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.psak-title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #854d0e;
+.rishon-authority {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.psak-source {
-  font-size: 0.875rem;
-  color: #a16207;
-  font-weight: 500;
-}
-
-.psak-ruling {
-  font-size: 1.25rem;
+.rishon-authority .hebrew {
+  font-size: 1.05rem;
   font-weight: 600;
-  color: #713f12;
-  margin-bottom: 16px;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.6);
-  border-radius: 8px;
+  color: var(--text-primary, #111827);
 }
 
-.psak-details {
+.rishon-authority .english {
+  font-size: 0.8rem;
+  color: var(--text-muted, #6b7280);
+}
+
+.rishon-ruling {
+  padding: 4px 12px;
+  background: #f3e8ff;
+  color: #7c3aed;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.rishon-details {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color, #e5e7eb);
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.majority-indicator {
+/* ═══ Layer 4: Tur / Beit Yosef ═══ */
+.tur-card {
+  background: linear-gradient(135deg, #ecfeff 0%, #cffafe 100%);
+  border-radius: 10px;
+  padding: 16px;
+  border: 2px solid #06b6d4;
+}
+
+.tur-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+
+.tur-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tur-icon {
+  width: 32px;
+  height: 32px;
+  background: #06b6d4;
+  color: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.tur-label-hebrew {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #0e7490;
+}
+
+.tur-label-english {
+  font-size: 0.8rem;
+  color: #155e75;
+}
+
+.tur-title-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tur-organization {
+  font-size: 0.9rem;
+  color: #164e63;
+  line-height: 1.5;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.6);
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.tur-rishonim-summary {
+  margin-bottom: 12px;
+}
+
+.summary-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #0e7490;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.tur-cited-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tur-cited-rishon {
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  background: rgba(255,255,255,0.7);
+  border-radius: 6px;
+  color: #155e75;
+}
+
+.tur-cited-rishon em {
+  font-weight: 600;
+  color: #0e7490;
+}
+
+.beit-yosef-section {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #a5f3fc;
+}
+
+.by-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.by-icon {
+  width: 28px;
+  height: 28px;
+  background: #0891b2;
+  color: white;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.7rem;
+}
+
+.by-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #0e7490;
+}
+
+.by-analysis {
+  font-size: 0.85rem;
+  color: #164e63;
+  line-height: 1.6;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 6px;
+}
+
+.by-ref {
+  margin-top: 6px;
+  display: inline-block;
+}
+
+.tur-ref-row {
+  margin-top: 8px;
   display: flex;
   gap: 8px;
   align-items: center;
 }
 
-.majority-label {
-  font-weight: 500;
+/* ═══ Layer 5: Psak v2 — Mechaber/Rema Comparison ═══ */
+.psak-card-v2 {
+  background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
+  border-radius: 10px;
+  padding: 16px;
+  border: 2px solid #eab308;
+}
+
+.psak-v2-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 14px;
+}
+
+.psak-v2-title {
+  font-size: 1rem;
+  font-weight: 700;
   color: #854d0e;
 }
 
-.majority-count {
-  background: #eab308;
+.disputed-badge-v2 {
+  background: #f97316;
   color: white;
-  padding: 2px 10px;
+  font-size: 0.7rem;
+  padding: 3px 10px;
   border-radius: 12px;
   font-weight: 600;
-  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
-.minority-opinion {
+/* Tradition comparison two-column layout */
+.tradition-comparison {
+  display: flex;
+  gap: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #fde68a;
+}
+
+.tradition-comparison.agreed {
+  border-color: #bbf7d0;
+}
+
+.tradition-column {
+  flex: 1;
+  padding: 14px;
+  min-width: 0;
+}
+
+.mechaber-column {
+  background: rgba(252, 231, 243, 0.4);
+}
+
+.rema-column {
+  background: rgba(219, 234, 254, 0.4);
+}
+
+.tradition-header {
   display: flex;
   gap: 8px;
+  align-items: baseline;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid rgba(0,0,0,0.08);
+}
+
+.tradition-header.sephardic { border-color: #f9a8d4; }
+.tradition-header.ashkenazi { border-color: #93c5fd; }
+
+.tradition-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.tradition-subtitle {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6b7280;
+}
+
+.tradition-ruling {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #374151;
+  text-transform: capitalize;
+  margin-bottom: 8px;
+}
+
+.tradition-text {
+  font-size: 0.8rem;
+  color: #4b5563;
+  line-height: 1.5;
+  margin-bottom: 8px;
+  padding: 8px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 6px;
+}
+
+.tradition-supporters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
   align-items: center;
-  font-size: 0.875rem;
+  margin-top: 6px;
 }
 
-.minority-label {
-  color: #a16207;
+.supporters-label {
+  font-size: 0.7rem;
+  color: #6b7280;
+  font-weight: 600;
 }
 
-.minority-value {
-  color: #713f12;
+.supporter-chip {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  background: rgba(255,255,255,0.7);
+  border-radius: 8px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.tradition-note {
+  font-size: 0.8rem;
+  color: #9ca3af;
   font-style: italic;
 }
 
-.psak-location {
+/* Tradition divider */
+.tradition-divider {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  background: rgba(0,0,0,0.03);
+}
+
+.divider-line {
+  width: 1px;
+  flex: 1;
+  background: #d1d5db;
+}
+
+.divider-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #9ca3af;
+  padding: 6px 2px;
+}
+
+/* Minority positions */
+.minority-positions {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #fde68a;
+}
+
+.minority-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #92400e;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.minority-position-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 0.8rem;
+  padding: 4px 0;
+}
+
+.minority-ruling-text {
+  font-weight: 500;
+  color: #78350f;
+  text-transform: capitalize;
+}
+
+.minority-authorities {
+  color: #92400e;
+}
+
+.significant-badge {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  background: #fed7aa;
+  color: #9a3412;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* Halacha Lemaaseh */
+.halacha-lemaaseh {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.6);
+  border-radius: 8px;
+  border-left: 4px solid #22c55e;
+}
+
+.lemaaseh-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #166534;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.lemaaseh-text {
+  font-size: 0.85rem;
+  color: #15803d;
+  line-height: 1.5;
+}
+
+.psak-v2-location {
   margin-top: 8px;
   font-size: 0.8rem;
   color: #a16207;
   font-family: monospace;
-  padding: 6px 10px;
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 4px;
 }
 
-.disputed-badge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: #f97316;
-  color: white;
+/* ═══ Layer 6: Acharon Card ═══ */
+.acharon-card.focused {
+  border-color: #eab308;
+  background: #fefce8;
+}
+
+.acharon-card .rishon-ruling {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.acharon-section-tag {
+  display: inline-block;
+  margin-top: 8px;
   font-size: 0.7rem;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: #a16207;
+  background: #fef9c3;
+  padding: 2px 10px;
+  border-radius: 8px;
+  font-weight: 500;
 }
 
-/* Dark Mode Support */
+/* ═══ Layer 7: Posek Card ═══ */
+.posek-card.focused {
+  border-color: #059669;
+  background: #ecfdf5;
+}
+
+.posek-card .rishon-ruling,
+.posek-ruling {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.posek-badges {
+  display: flex;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.era-badge {
+  font-size: 0.6rem;
+  padding: 1px 7px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.era-modern {
+  background: #e0f2fe;
+  color: #075985;
+}
+
+.era-contemporary {
+  background: #dcfce7;
+  color: #166534;
+}
+
+/* ═══ Tradition Badges (shared) ═══ */
+.tradition-badge {
+  font-size: 0.6rem;
+  padding: 1px 7px;
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.tradition-ashkenazi {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.tradition-sephardic {
+  background: #fce7f3;
+  color: #9d174d;
+}
+
+/* ═══ Klalei Pesika Inline Notes ═══ */
+.klalei-pesika-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 12px;
+  background: linear-gradient(135deg, #fefce8 0%, #ecfdf5 100%);
+  border-radius: 10px;
+  border: 1px solid #d1fae5;
+}
+
+.kp-inline-note {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.6);
+}
+
+.kp-inline-rule {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #065f46;
+}
+
+.kp-inline-english {
+  font-size: 0.8rem;
+  color: #047857;
+}
+
+.kp-layer-mishnah { border-left: 3px solid #22c55e; }
+.kp-layer-rishonim { border-left: 3px solid #a855f7; }
+.kp-layer-psak { border-left: 3px solid #eab308; }
+
+/* ═══ Dark Mode ═══ */
 @media (prefers-color-scheme: dark) {
   .opinion-timeline {
     background: var(--bg-card-dark, #1f2937);
@@ -531,22 +883,58 @@
     color: var(--text-secondary-dark, #d1d5db);
   }
 
-  .psak-card {
-    background: linear-gradient(135deg, #451a03 0%, #713f12 100%);
+  /* Dark: Tur */
+  .tur-card {
+    background: linear-gradient(135deg, #083344 0%, #164e63 100%);
+    border-color: #0891b2;
+  }
+
+  .tur-label-hebrew { color: #67e8f9; }
+  .tur-label-english { color: #a5f3fc; }
+  .tur-organization { color: #cffafe; background: rgba(0,0,0,0.3); }
+  .tur-cited-rishon { background: rgba(0,0,0,0.3); color: #a5f3fc; }
+  .tur-cited-rishon em { color: #67e8f9; }
+  .summary-label { color: #67e8f9; }
+  .by-label { color: #67e8f9; }
+  .by-analysis { color: #cffafe; background: rgba(0,0,0,0.2); }
+  .tur-icon { background: #0e7490; }
+  .by-icon { background: #155e75; }
+
+  /* Dark: Psak v2 */
+  .psak-card-v2 {
+    background: linear-gradient(135deg, #451a03 0%, #78350f 100%);
     border-color: #ca8a04;
   }
 
-  .psak-title,
-  .psak-source,
-  .majority-label,
-  .minority-label,
-  .minority-value,
-  .psak-location {
-    color: #fde68a;
-  }
+  .psak-v2-title { color: #fde68a; }
+  .tradition-title { color: #f9fafb; }
+  .tradition-subtitle { color: #9ca3af; }
+  .tradition-ruling { color: #fde68a; }
+  .tradition-text { color: #d1d5db; background: rgba(0,0,0,0.2); }
+  .tradition-note { color: #6b7280; }
+  .mechaber-column { background: rgba(157, 23, 77, 0.15); }
+  .rema-column { background: rgba(30, 64, 175, 0.15); }
+  .supporter-chip { background: rgba(0,0,0,0.3); color: #d1d5db; }
+  .minority-title { color: #fde68a; }
+  .minority-ruling-text { color: #fef3c7; }
+  .minority-authorities { color: #fde68a; }
+  .lemaaseh-label { color: #86efac; }
+  .lemaaseh-text { color: #bbf7d0; }
+  .halacha-lemaaseh { background: rgba(0,0,0,0.3); border-color: #22c55e; }
+  .psak-v2-location { color: #fde68a; }
 
-  .psak-ruling {
-    color: #fef3c7;
-    background: rgba(0, 0, 0, 0.3);
-  }
+  /* Dark: Acharon */
+  .acharon-card.focused { border-color: #ca8a04; background: #451a03; }
+  .acharon-section-tag { background: #451a03; color: #fde68a; }
+
+  /* Dark: Posek */
+  .posek-card.focused { border-color: #059669; background: #064e3b; }
+  .posek-card .rishon-ruling,
+  .posek-ruling { background: #064e3b; color: #6ee7b7; }
+  .era-modern { background: #0c4a6e; color: #7dd3fc; }
+  .era-contemporary { background: #064e3b; color: #86efac; }
+
+  /* Dark: Tradition badges */
+  .tradition-ashkenazi { background: #1e3a5f; color: #93c5fd; }
+  .tradition-sephardic { background: #4a1942; color: #f9a8d4; }
 }

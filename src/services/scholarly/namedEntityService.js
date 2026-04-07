@@ -3,7 +3,7 @@
 // Detects: Rabbis, Biblical figures, Places, Concepts, Biblical citations
 // =============================================================================
 
-import { stripAllDiacritics } from '../../utils/hebrewUtils';
+import { stripAllDiacritics as stripNikud } from '../../utils/hebrewUtils';
 
 // =============================================================================
 // ENTITY TYPES
@@ -769,11 +769,7 @@ export const PLACES = {
 // DETECTION PATTERNS
 // =============================================================================
 
-// PRO SCHOLAR V30: Strip nikud (vowel points) for better matching
-const stripNikud = (text) => {
-  if (!text) return '';
-  return stripAllDiacritics(text);
-};
+// DRY: stripNikud imported as alias from hebrewUtils.js
 
 // PRO SCHOLAR V30: Enhanced rabbi attribution patterns
 const RABBI_PATTERNS = [

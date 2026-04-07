@@ -279,18 +279,23 @@ const ScholarModePanel = ({
 
   const isTalmud = detectedTextType === 'talmud';
 
-  // Format multi-verse text with verse references for better AI context
-  const formattedMultiVerseText = useMemo(() => {
-    if (!effectiveIsMultiVerse || effectiveSelectedVerses.length === 0) {
-      return text;
-    }
-
-    // Sort verses by book, chapter, and verse number (supports multi-page)
-    const sortedVerses = [...effectiveSelectedVerses].sort((a, b) => {
+  // Shared sorted verses for all multi-verse aggregations (sort once, reuse everywhere)
+  const sortedSelectedVerses = useMemo(() => {
+    if (!effectiveSelectedVerses.length) return [];
+    return [...effectiveSelectedVerses].sort((a, b) => {
       if (a.book !== b.book) return a.book.localeCompare(b.book);
       if (a.chapter !== b.chapter) return a.chapter - b.chapter;
       return a.verse - b.verse;
     });
+  }, [effectiveSelectedVerses]);
+
+  // Format multi-verse text with verse references for better AI context
+  const formattedMultiVerseText = useMemo(() => {
+    if (!effectiveIsMultiVerse || sortedSelectedVerses.length === 0) {
+      return text;
+    }
+
+    const sortedVerses = sortedSelectedVerses;
 
     // Group by book/chapter for better context
     let lastBook = null;
@@ -308,7 +313,7 @@ const ScholarModePanel = ({
       }
       return `${prefix}[${v.chapter}:${v.verse}] ${v.hebrewText}`;
     }).join('\n');
-  }, [effectiveIsMultiVerse, effectiveSelectedVerses, text]);
+  }, [effectiveIsMultiVerse, sortedSelectedVerses, text]);
 
   // Generate proper multi-verse reference string (e.g., "Genesis.1:1-5" or "Genesis.1:1,3,5")
   const multiVerseReference = useMemo(() => {
@@ -356,16 +361,10 @@ const ScholarModePanel = ({
   // Aggregate Rashi commentary for multi-verse mode (supports multi-page)
   const aggregatedRashiText = useMemo(() => {
     if (!effectiveIsMultiVerse) return rashiText;
-    if (!rashiDataMap || effectiveSelectedVerses.length === 0) return rashiText;
+    if (!rashiDataMap || sortedSelectedVerses.length === 0) return rashiText;
 
     const parts = [];
-    const sortedVerses = [...effectiveSelectedVerses].sort((a, b) => {
-      if (a.book !== b.book) return a.book.localeCompare(b.book);
-      if (a.chapter !== b.chapter) return a.chapter - b.chapter;
-      return a.verse - b.verse;
-    });
-
-    sortedVerses.forEach(v => {
+    sortedSelectedVerses.forEach(v => {
       const key = `${v.book}:${v.chapter}:${v.verse}`;
       const rashiComments = rashiDataMap[key];
       if (rashiComments) {
@@ -382,23 +381,17 @@ const ScholarModePanel = ({
     });
 
     return parts.length > 0 ? parts.join('\n\n') : rashiText;
-  }, [effectiveIsMultiVerse, effectiveSelectedVerses, rashiDataMap, rashiText]);
+  }, [effectiveIsMultiVerse, sortedSelectedVerses, rashiDataMap, rashiText]);
 
   // Aggregate Onkelos for multi-verse mode (note: Onkelos map is per-chapter, keyed by verse number)
   const aggregatedOnkelosText = useMemo(() => {
     if (!effectiveIsMultiVerse) return onkelosText;
-    if (!onkelosDataMap || effectiveSelectedVerses.length === 0) return onkelosText;
+    if (!onkelosDataMap || sortedSelectedVerses.length === 0) return onkelosText;
 
     const parts = [];
-    const sortedVerses = [...effectiveSelectedVerses].sort((a, b) => {
-      if (a.book !== b.book) return a.book.localeCompare(b.book);
-      if (a.chapter !== b.chapter) return a.chapter - b.chapter;
-      return a.verse - b.verse;
-    });
-
     // Note: Onkelos data is currently loaded per-chapter, so multi-chapter selection
     // will only have Onkelos for the currently displayed chapter
-    sortedVerses.forEach(v => {
+    sortedSelectedVerses.forEach(v => {
       const onkelos = onkelosDataMap[v.verse];
       if (onkelos?.targetText) {
         parts.push(`[${v.book} ${v.chapter}:${v.verse}] ${onkelos.targetText}`);
@@ -406,21 +399,15 @@ const ScholarModePanel = ({
     });
 
     return parts.length > 0 ? parts.join('\n') : onkelosText;
-  }, [effectiveIsMultiVerse, effectiveSelectedVerses, onkelosDataMap, onkelosText]);
+  }, [effectiveIsMultiVerse, sortedSelectedVerses, onkelosDataMap, onkelosText]);
 
   // Aggregate Ramban for multi-verse mode (supports multi-page)
   const aggregatedRambanText = useMemo(() => {
     if (!effectiveIsMultiVerse) return rambanText;
-    if (!rambanDataMap || effectiveSelectedVerses.length === 0) return rambanText;
+    if (!rambanDataMap || sortedSelectedVerses.length === 0) return rambanText;
 
     const parts = [];
-    const sortedVerses = [...effectiveSelectedVerses].sort((a, b) => {
-      if (a.book !== b.book) return a.book.localeCompare(b.book);
-      if (a.chapter !== b.chapter) return a.chapter - b.chapter;
-      return a.verse - b.verse;
-    });
-
-    sortedVerses.forEach(v => {
+    sortedSelectedVerses.forEach(v => {
       const key = `${v.book}:${v.chapter}:${v.verse}`;
       const rambanComments = rambanDataMap[key];
       if (rambanComments) {
@@ -437,7 +424,7 @@ const ScholarModePanel = ({
     });
 
     return parts.length > 0 ? parts.join('\n\n') : rambanText;
-  }, [effectiveIsMultiVerse, effectiveSelectedVerses, rambanDataMap, rambanText]);
+  }, [effectiveIsMultiVerse, sortedSelectedVerses, rambanDataMap, rambanText]);
 
   // Default tab is always 'learn' now
   const [activeTab, setActiveTab] = useState('learn');
@@ -447,9 +434,8 @@ const ScholarModePanel = ({
 
   // Handler for word clicks in TzuratHaDafTab
   const handleTzuratWordLookup = useCallback((word) => {
-    // Use timestamp to force re-lookup even for same word
-    setWordForLookup(`${word}|${Date.now()}`);
-    setActiveTab('words'); // Switch to Words tab
+    setWordForLookup(word);
+    setActiveTab('words');
   }, []);
   const [scholarlyData, setScholarlyData] = useState(null);
   const [loading, setLoading] = useState(false);

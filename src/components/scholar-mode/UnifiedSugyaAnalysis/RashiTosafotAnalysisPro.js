@@ -21,6 +21,7 @@
 import React, { memo, useState, useEffect, useMemo, useCallback } from 'react';
 import { getRashiOnTalmud, getTosafotOnTalmud, isTosafotAvailable } from '../../../services/sefariaApi';
 import { stripAllDiacritics as stripNikud } from '../../../utils/hebrewUtils';
+import { parseReference } from '../../../constants/talmudStudy';
 import './RashiTosafotAnalysisPro.css';
 
 // =============================================================================
@@ -41,24 +42,7 @@ const VIEW_MODES = {
   deep: { label: 'מעמיק', title: 'ניתוח מעמיק - טאבים והשוואה' }
 };
 
-// Parse reference to extract tractate and daf
-const parseReference = (reference) => {
-  if (!reference) return { tractate: null, daf: null };
-
-  // Handle formats: "Shabbat.2a", "Shabbat 2a", "Shabbat:2a"
-  const match = reference.match(/^([A-Za-z]+)[.\s:]?(\d+[ab]?)$/i);
-  if (match) {
-    return { tractate: match[1], daf: match[2] };
-  }
-
-  // Try splitting by common delimiters
-  const parts = reference.split(/[.\s:]/);
-  if (parts.length >= 2) {
-    return { tractate: parts[0], daf: parts[1] };
-  }
-
-  return { tractate: null, daf: null };
-};
+// DRY: parseReference imported from constants/talmudStudy.js (single source of truth)
 
 // Extract dibbur (opening words) from comment
 const extractDibbur = (comment) => {

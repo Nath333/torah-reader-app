@@ -266,7 +266,8 @@ export const calculateConsensus = (sources) => {
   const notes = [];
 
   if (tier1Sources.length > 0) {
-    notes.push(`${tier1Sources.length} academic lexicon${tier1Sources.length > 1 ? 's' : ''} (${tier1Sources.map(s => s.name).join(', ')})`);
+    const names = tier1Sources.filter(s => s.name).map(s => s.name).join(', ');
+    notes.push(`${tier1Sources.length} academic lexicon${tier1Sources.length > 1 ? 's' : ''}${names ? ` (${names})` : ''}`);
   }
 
   if (primaryGroup.length > 1) {

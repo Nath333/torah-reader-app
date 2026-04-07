@@ -2441,107 +2441,7 @@ const AbbreviationsPanel = memo(({ text, abbreviations: passedAbbreviations }) =
 
 AbbreviationsPanel.displayName = 'AbbreviationsPanel';
 
-// =============================================================================
-// PRO SCHOLAR V26: CHAZARA QUESTIONS PANEL
-// Self-test questions based on sugya content
-// =============================================================================
-
-const ChazaraQuestionsPanel = memo(({ hasMishna, hasGemara, rabbis, qaFlow }) => {
-  const [revealedAnswers, setRevealedAnswers] = useState(new Set());
-
-  // Generate questions based on content
-  const questions = useMemo(() => {
-    const result = [];
-
-    if (hasMishna) {
-      result.push({
-        id: 'mishna-1',
-        question: CHAZARA_QUESTION_TEMPLATES.mishna[0],
-        hint: 'התבונן במשנה וחפש את הדין העיקרי',
-        category: 'mishna'
-      });
-    }
-
-    if (hasGemara && qaFlow?.flow?.length > 0) {
-      result.push({
-        id: 'gemara-1',
-        question: CHAZARA_QUESTION_TEMPLATES.gemara[0],
-        hint: 'חפש את מילות השאלה: מאי, מנלן, מהו',
-        category: 'gemara'
-      });
-
-      if (qaFlow.summary?.resolved > 0) {
-        result.push({
-          id: 'gemara-2',
-          question: CHAZARA_QUESTION_TEMPLATES.gemara[2],
-          hint: 'חפש: לא קשיא, הכי קאמר, תירוץ',
-          category: 'gemara'
-        });
-      }
-    }
-
-    if (rabbis && rabbis.length > 0) {
-      result.push({
-        id: 'sages-1',
-        question: `מי הם ${Math.min(rabbis.length, 3)} החכמים המוזכרים בסוגיא?`,
-        hint: `יש ${rabbis.length} חכמים בסוגיא`,
-        category: 'sages',
-        answer: rabbis.slice(0, 3).map(r => r.name || r.match).join(', ')
-      });
-    }
-
-    return result;
-  }, [hasMishna, hasGemara, qaFlow, rabbis]);
-
-  const toggleAnswer = useCallback((id) => {
-    setRevealedAnswers(prev => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  }, []);
-
-  if (questions.length === 0) return null;
-
-  return (
-    <div className="usa-chazara-panel" dir="rtl">
-      <div className="chazara-header">
-        <span className="chazara-icon">🔄</span>
-        <span className="chazara-title">בחן את עצמך</span>
-        <span className="chazara-count">{questions.length} שאלות</span>
-      </div>
-
-      <div className="chazara-questions">
-        {questions.map((q, i) => (
-          <div key={q.id} className={`chazara-question cat-${q.category}`}>
-            <div className="q-number">{i + 1}</div>
-            <div className="q-content">
-              <div className="q-text">{q.question}</div>
-              <button
-                className="q-hint-btn"
-                onClick={() => toggleAnswer(q.id)}
-                type="button"
-              >
-                {revealedAnswers.has(q.id) ? '🙈 הסתר' : '💡 רמז'}
-              </button>
-              {revealedAnswers.has(q.id) && (
-                <div className="q-hint">
-                  {q.answer || q.hint}
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="chazara-tip">
-        💡 נסה לענות בעצמך לפני שתלחץ על הרמז!
-      </div>
-    </div>
-  );
-});
-
-ChazaraQuestionsPanel.displayName = 'ChazaraQuestionsPanel';
+// NOTE: ChazaraQuestionsPanel (V26) REMOVED — replaced by ChazaraPanel (V30)
 
 // =============================================================================
 // PRO SCHOLAR V30: CONSOLIDATED BEKIUS SUMMARY
@@ -3116,11 +3016,10 @@ const UnifiedSugyaAnalysis = ({
       )}
 
       {studyMode === 'chazara' && (
-        <ChazaraQuestionsPanel
-          hasMishna={hasMishna}
-          hasGemara={hasGemara}
-          rabbis={analysis.rabbis}
-          qaFlow={analysis.qaFlow}
+        <ChazaraPanel
+          patterns={analysis.patterns}
+          text={text}
+          sugyaKey={reference}
         />
       )}
 
@@ -3239,13 +3138,6 @@ export {
   // RESERVED (lazy-loaded for future integration)
   // ===========================================
   RabbiInfoPanel,  // Sage biographical tooltips - use with RabbisDetailPanel
-
-  // ===========================================
-  // DEPRECATED (kept for backward compatibility)
-  // Use the consolidated versions above instead
-  // ===========================================
-  // NOTE: GemaraResolutionTracker REMOVED (V31) - Use GemaraDialecticPanel instead
-  ChazaraQuestionsPanel,    // DEPRECATED: Use ChazaraPanel instead
 
   // ===========================================
   // CONSTANTS
