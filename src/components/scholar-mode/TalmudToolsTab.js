@@ -40,6 +40,7 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect, lazy, Suspense } from 'react';
 import PropTypes from 'prop-types';
 import { findAbbreviations } from '../../services/talmudicAbbreviationsService';
+import { sanitizeHtmlContent } from '../../utils/safeHtml';
 
 // =============================================================================
 // SHARED CONSTANTS & HOOKS (Single Source of Truth - PRO SCHOLAR V31)
@@ -3034,7 +3035,7 @@ const ProScholarSummary = React.memo(function ProScholarSummary({ text, referenc
                     .filter(seg => seg.daf === marker.daf)
                     .map((seg, i) => (
                       <div key={i} className="segment-row">
-                        <span className="segment-hebrew" dangerouslySetInnerHTML={{ __html: seg.hebrew }} />
+                        <span className="segment-hebrew" dangerouslySetInnerHTML={{ __html: sanitizeHtmlContent(seg.hebrew) }} />
                         {seg.english && (
                           <span className="segment-english">{seg.english}</span>
                         )}

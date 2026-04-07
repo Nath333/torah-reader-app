@@ -154,13 +154,33 @@ export const createStages = (lookups) => {
       root: result.root,
       binyan: result.binyan?.name
     });
-    ctx.complete({
+
+    // Look up the identified root in academic dictionaries for scholarly enrichment
+    // (mirrors Stage 6's approach for Aramaic roots)
+    if (result.root) {
+      const rootLookup = lookupLocalDictionaries?.(result.root, ctx.contextMode);
+      const rootSources = rootLookup?.allSources || rootLookup?.sources || [];
+      if (rootSources.length) {
+        for (const src of rootSources) {
+          ctx.addSource({
+            name: (src.name || '').replace(' (Local)', ''),
+            fullName: `Root "${result.root}" from ${src.source || src.name}`,
+            definition: src.definition,
+            isRootSource: true,
+            tier: src.tier?.level || src.tier || 3
+          });
+        }
+      }
+    }
+
+    ctx.setMetadata({
       fullEnglish: result.fullTranslation,
       root: result.root,
       binyan: result.binyan,
       morphologyInfo: result,
       _hebrewVerbAnalysis: true
     });
+    // Don't complete - continue to gather academic dictionary sources
   });
 
   // =========================================================================

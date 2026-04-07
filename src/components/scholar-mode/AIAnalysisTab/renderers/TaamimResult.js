@@ -10,7 +10,7 @@ const typeColors = {
 };
 
 export const TaamimResult = memo(({ data }) => {
-  const { summary, verseStructure, cantillationAnalysis, interpretiveInsights, rareMarks, deeperMeaning } = data;
+  const { summary, verseStructure, cantillationAnalysis, interpretiveInsights, rareMarks, deeperMeaning } = data || {};
 
   return (
     <div className="taamim-result">

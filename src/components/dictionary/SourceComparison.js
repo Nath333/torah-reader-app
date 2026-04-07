@@ -393,7 +393,7 @@ const SourceComparison = memo(function SourceComparison({
         <div className="tier-legend">
           <span className="legend-item">🥇 Academic Standard</span>
           <span className="legend-item">🥈 Reliable Reference</span>
-          <span className="legend-item">🥉 Supplementary</span>
+          <span className="legend-item">🥉 Curated</span>
           <span className="legend-item">📜 Hapax (rare word)</span>
         </div>
 
@@ -436,7 +436,7 @@ const SourceComparison = memo(function SourceComparison({
         {/* Bronze Tier Sources */}
         {bronzeSources.length > 0 && (
           <div className="tier-section tier-bronze-section">
-            <h4 className="tier-heading">🥉 Supplementary Sources</h4>
+            <h4 className="tier-heading">🥉 Curated Sources</h4>
             <div className="sources-grid">
               {bronzeSources.map((src, idx) => (
                 <SourceCard

@@ -1,0 +1,1181 @@
+// =============================================================================
+// Named Entity Recognition Service for Jewish Texts
+// Detects: Rabbis, Biblical figures, Places, Concepts, Biblical citations
+// =============================================================================
+
+import { stripAllDiacritics } from '../../utils/hebrewUtils';
+
+// =============================================================================
+// ENTITY TYPES
+// =============================================================================
+
+export const ENTITY_TYPES = {
+  RABBI: 'rabbi',
+  BIBLICAL_FIGURE: 'biblical_figure',
+  PLACE: 'place',
+  CONCEPT: 'concept',
+  BIBLICAL_CITATION: 'biblical_citation',
+  TALMUDIC_CITATION: 'talmudic_citation'
+};
+
+// =============================================================================
+// RABBI DATABASE
+// Organized by period: Tannaim, Amoraim, Savoraim, Geonim
+// =============================================================================
+
+export const RABBI_DATABASE = {
+  // TANNAIM (Mishnaic Period, ~10 CE - 220 CE)
+  tannaim: {
+    // First Generation - Zugot (10-80 CE)
+    'הלל': {
+      name: 'Hillel',
+      generation: 1,
+      period: 'tanna',
+      note: 'Hillel the Elder',
+      fullName: 'Hillel HaZaken',
+      origin: 'Babylonia',
+      academy: 'Jerusalem',
+      teachers: ['Shemaya', 'Avtalyon'],
+      methodology: 'lenient',
+      famousRulings: ['Prozbul', 'Hillel\'s 7 hermeneutical rules'],
+      disputesWith: ['שמאי']
+    },
+    'שמאי': {
+      name: 'Shammai',
+      generation: 1,
+      period: 'tanna',
+      fullName: 'Shammai HaZaken',
+      teachers: ['Shemaya', 'Avtalyon'],
+      methodology: 'strict',
+      disputesWith: ['הלל']
+    },
+    'בית הלל': { name: 'Beit Hillel', generation: 1, period: 'tanna', note: 'School of Hillel', isSchool: true },
+    'בית שמאי': { name: 'Beit Shammai', generation: 1, period: 'tanna', note: 'School of Shammai', isSchool: true },
+    'רבן גמליאל הזקן': {
+      name: 'Rabban Gamliel the Elder',
+      generation: 1,
+      period: 'tanna',
+      teachers: ['הלל'],
+      note: 'Grandson of Hillel'
+    },
+    'רבן יוחנן בן זכאי': {
+      name: 'Rabban Yochanan ben Zakkai',
+      generation: 1,
+      period: 'tanna',
+      teachers: ['הלל'],
+      academy: 'Yavneh',
+      note: 'Saved Torah after Temple destruction',
+      students: ['רבי אליעזר', 'רבי יהושע']
+    },
+
+    // Second Generation (80-120 CE)
+    'רבן גמליאל': {
+      name: 'Rabban Gamliel',
+      generation: 2,
+      period: 'tanna',
+      note: 'of Yavneh (Gamliel II)',
+      academy: 'Yavneh',
+      teachers: ['רבן יוחנן בן זכאי']
+    },
+    'רבי אליעזר': {
+      name: 'Rabbi Eliezer',
+      generation: 2,
+      period: 'tanna',
+      note: 'ben Hyrcanus - HaGadol',
+      teachers: ['רבן יוחנן בן זכאי'],
+      methodology: 'strict, preserves tradition exactly',
+      students: ['רבי עקיבא'],
+      famousRulings: ['Tanur shel Akhnai']
+    },
+    'רבי יהושע': {
+      name: 'Rabbi Yehoshua',
+      generation: 2,
+      period: 'tanna',
+      note: 'ben Chananya',
+      teachers: ['רבן יוחנן בן זכאי'],
+      disputesWith: ['רבי אליעזר'],
+      students: ['רבי עקיבא']
+    },
+    'רבי עקיבא': {
+      name: 'Rabbi Akiva',
+      generation: 2,
+      period: 'tanna',
+      fullName: 'Rabbi Akiva ben Yosef',
+      teachers: ['רבי אליעזר', 'רבי יהושע', 'נחום איש גמזו'],
+      methodology: 'derives laws from every letter',
+      students: ['רבי מאיר', 'רבי יהודה', 'רבי יוסי', 'רבי שמעון', 'רבי אלעזר בן שמוע'],
+      note: 'Greatest Tanna, systematized Torah',
+      famousRulings: ['13 hermeneutical rules']
+    },
+    'רבי ישמעאל': {
+      name: 'Rabbi Yishmael',
+      generation: 2,
+      period: 'tanna',
+      fullName: 'Rabbi Yishmael ben Elisha',
+      methodology: 'Torah speaks in human language',
+      famousRulings: ['13 hermeneutical rules'],
+      disputesWith: ['רבי עקיבא']
+    },
+    'רבי טרפון': {
+      name: 'Rabbi Tarfon',
+      generation: 2,
+      period: 'tanna',
+      teachers: ['saw Temple service'],
+      academy: 'Lod'
+    },
+
+    // Third Generation (120-140 CE) - Students of Rabbi Akiva
+    'רבי מאיר': {
+      name: 'Rabbi Meir',
+      generation: 3,
+      period: 'tanna',
+      teachers: ['רבי עקיבא', 'רבי ישמעאל', 'אלישע בן אבויה'],
+      methodology: 'sharp mind, anonymous Mishnah follows his view',
+      note: 'Baal HaNes, scribe',
+      spouse: 'Beruriah'
+    },
+    'רבי יהודה': {
+      name: 'Rabbi Yehuda',
+      generation: 3,
+      period: 'tanna',
+      note: 'bar Ilai',
+      teachers: ['רבי עקיבא'],
+      methodology: 'stam Sifra follows his view'
+    },
+    'רבי יוסי': {
+      name: 'Rabbi Yosi',
+      generation: 3,
+      period: 'tanna',
+      note: 'ben Chalafta',
+      teachers: ['רבי עקיבא'],
+      methodology: 'halacha follows him in disputes with Rabbi Meir and Rabbi Yehuda'
+    },
+    'רבי שמעון': {
+      name: 'Rabbi Shimon',
+      generation: 3,
+      period: 'tanna',
+      fullName: 'Rabbi Shimon bar Yochai',
+      teachers: ['רבי עקיבא'],
+      methodology: 'seeks reasons for Torah laws',
+      note: 'bar Yochai, Attributed author of Zohar'
+    },
+    'רשב"י': {
+      name: 'Rabbi Shimon bar Yochai',
+      generation: 3,
+      period: 'tanna',
+      abbrev: true,
+      aliasOf: 'רבי שמעון'
+    },
+    'רבי נחמיה': { name: 'Rabbi Nechemiah', generation: 3, period: 'tanna' },
+    'רבי אלעזר בן שמוע': {
+      name: 'Rabbi Elazar ben Shamua',
+      generation: 3,
+      period: 'tanna',
+      teachers: ['רבי עקיבא']
+    },
+
+    // Fourth Generation (140-165 CE)
+    'רבי': {
+      name: 'Rabbi Yehuda HaNasi',
+      generation: 4,
+      period: 'tanna',
+      fullName: 'Rabbi Yehuda HaNasi',
+      teachers: ['רבי שמעון', 'רבי מאיר', 'רבי יהודה'],
+      famousRulings: ['Compiled the Mishnah'],
+      note: 'Compiler of Mishnah, also called Rebbi or Rabbeinu HaKadosh'
+    },
+    'רבי יהודה הנשיא': { name: 'Rabbi Yehuda HaNasi', generation: 4, period: 'tanna', aliasOf: 'רבי' },
+    'רבינו הקדוש': { name: 'Rabbeinu HaKadosh', generation: 4, period: 'tanna', aliasOf: 'רבי' },
+
+    // Fifth Generation (165-200 CE) - Transitional
+    'רבי חייא': {
+      name: 'Rabbi Chiya',
+      generation: 5,
+      period: 'tanna',
+      fullName: 'Rabbi Chiya Rabbah',
+      teachers: ['רבי'],
+      students: ['רב'],
+      note: 'Compiled Tosefta/Baraitot'
+    },
+    'בר קפרא': {
+      name: 'Bar Kappara',
+      generation: 5,
+      period: 'tanna',
+      teachers: ['רבי']
+    }
+  },
+
+  // AMORAIM (Talmudic Period, 220 CE - 500 CE)
+  amoraim: {
+    // First Generation Babylonian (220-250 CE)
+    'רב': {
+      name: 'Rav',
+      generation: 1,
+      period: 'amora',
+      location: 'Babylonia',
+      note: 'Abba Arikha',
+      fullName: 'Abba Arikha (Rav)',
+      teachers: ['רבי חייא', 'רבי'],
+      academy: 'Sura',
+      students: ['רב הונא', 'רב יהודה'],
+      disputesWith: ['שמואל'],
+      methodology: 'halacha follows Rav in ritual matters (איסורי)',
+      famousRulings: ['Founded Sura academy']
+    },
+    'שמואל': {
+      name: 'Shmuel',
+      generation: 1,
+      period: 'amora',
+      location: 'Babylonia',
+      fullName: 'Shmuel Yarchina\'ah',
+      academy: 'Nehardea',
+      disputesWith: ['רב'],
+      methodology: 'halacha follows Shmuel in monetary matters (ממונות)',
+      famousRulings: ['Dina deMalchuta Dina']
+    },
+
+    // First Generation Israel (220-250 CE)
+    'רבי יוחנן': {
+      name: 'Rabbi Yochanan',
+      generation: 1,
+      period: 'amora',
+      location: 'Israel',
+      fullName: 'Rabbi Yochanan bar Nafcha',
+      academy: 'Tiberias',
+      teachers: ['רבי', 'רבי חייא'],
+      students: ['רבי אמי', 'רבי אסי', 'רבי אבהו'],
+      chavruta: 'ריש לקיש',
+      note: 'Primary compiler of Yerushalmi'
+    },
+    'ריש לקיש': {
+      name: 'Reish Lakish',
+      generation: 1,
+      period: 'amora',
+      location: 'Israel',
+      fullName: 'Rabbi Shimon ben Lakish',
+      chavruta: 'רבי יוחנן',
+      note: 'Brother-in-law of R. Yochanan'
+    },
+    'רבי שמעון בן לקיש': { name: 'Rabbi Shimon ben Lakish', generation: 1, period: 'amora', aliasOf: 'ריש לקיש' },
+
+    // Second Generation (250-290 CE)
+    'רב הונא': {
+      name: 'Rav Huna',
+      generation: 2,
+      period: 'amora',
+      location: 'Babylonia',
+      teachers: ['רב'],
+      academy: 'Sura',
+      students: ['רבה', 'רב חסדא']
+    },
+    'רב יהודה': {
+      name: 'Rav Yehuda',
+      generation: 2,
+      period: 'amora',
+      location: 'Babylonia',
+      fullName: 'Rav Yehuda bar Yechezkel',
+      teachers: ['רב', 'שמואל'],
+      academy: 'Pumbedita',
+      students: ['רבה', 'רב יוסף']
+    },
+    'רב נחמן': {
+      name: 'Rav Nachman',
+      generation: 2,
+      period: 'amora',
+      location: 'Babylonia',
+      fullName: 'Rav Nachman bar Yaakov',
+      teachers: ['שמואל'],
+      methodology: 'expert in monetary law'
+    },
+    'רב ששת': {
+      name: 'Rav Sheshet',
+      generation: 2,
+      period: 'amora',
+      location: 'Babylonia',
+      note: 'Was blind, sharp memory',
+      disputesWith: ['רב נחמן']
+    },
+    'רב חסדא': {
+      name: 'Rav Chisda',
+      generation: 2,
+      period: 'amora',
+      location: 'Babylonia',
+      teachers: ['רב', 'רב הונא'],
+      academy: 'Sura',
+      students: ['רבא']
+    },
+
+    // Third Generation (290-320 CE)
+    'רבה': {
+      name: 'Rabbah',
+      generation: 3,
+      period: 'amora',
+      location: 'Babylonia',
+      fullName: 'Rabbah bar Nachmani',
+      teachers: ['רב הונא', 'רב יהודה'],
+      academy: 'Pumbedita',
+      students: ['אביי'],
+      methodology: 'עוקר הרים - uproots mountains (sharp analysis)',
+      chavruta: 'רב יוסף'
+    },
+    'רב יוסף': {
+      name: 'Rav Yosef',
+      generation: 3,
+      period: 'amora',
+      location: 'Babylonia',
+      fullName: 'Rav Yosef bar Chiya',
+      teachers: ['רב יהודה'],
+      academy: 'Pumbedita',
+      students: ['אביי', 'רבא'],
+      methodology: 'סיני - vast knowledge of traditions',
+      chavruta: 'רבה'
+    },
+    'רב נחמן בר יצחק': { name: 'Rav Nachman bar Yitzchak', generation: 3, period: 'amora' },
+
+    // Fourth Generation (320-350 CE) - Most cited pair
+    'אביי': {
+      name: 'Abaye',
+      generation: 4,
+      period: 'amora',
+      location: 'Babylonia',
+      fullName: 'Abaye Nachmani',
+      teachers: ['רבה', 'רב יוסף'],
+      academy: 'Pumbedita',
+      chavruta: 'רבא',
+      disputesWith: ['רבא'],
+      methodology: 'halacha follows Rava except יע"ל קג"ם',
+      note: 'Raised by uncle Rabbah, orphan'
+    },
+    'רבא': {
+      name: 'Rava',
+      generation: 4,
+      period: 'amora',
+      location: 'Babylonia',
+      fullName: 'Rava bar Yosef bar Chama',
+      teachers: ['רב נחמן', 'רב יוסף', 'רב חסדא'],
+      academy: 'Machoza',
+      chavruta: 'אביי',
+      disputesWith: ['אביי'],
+      methodology: 'halacha follows Rava except יע"ל קג"ם',
+      students: ['רב פפא', 'רב הונא בריה דרב יהושע']
+    },
+
+    // Fifth Generation (350-375 CE)
+    'רב פפא': {
+      name: 'Rav Pappa',
+      generation: 5,
+      period: 'amora',
+      location: 'Babylonia',
+      teachers: ['רבא', 'אביי'],
+      academy: 'Naresh',
+      note: 'Wealthy brewer'
+    },
+    'רב הונא בריה דרב יהושע': {
+      name: 'Rav Huna brei deRav Yehoshua',
+      generation: 5,
+      period: 'amora',
+      teachers: ['רבא'],
+      chavruta: 'רב פפא'
+    },
+
+    // Sixth Generation (375-425 CE)
+    'רב אשי': {
+      name: 'Rav Ashi',
+      generation: 6,
+      period: 'amora',
+      location: 'Babylonia',
+      note: 'Primary compiler of Talmud Bavli',
+      academy: 'Sura (rebuilt)',
+      chavruta: 'רבינא',
+      famousRulings: ['Compiled Talmud Bavli over 60 years']
+    },
+    'רבינא': {
+      name: 'Ravina',
+      generation: 6,
+      period: 'amora',
+      location: 'Babylonia',
+      fullName: 'Ravina bar Huna',
+      chavruta: 'רב אשי',
+      note: 'Co-compiler of Bavli'
+    },
+
+    // Seventh Generation (425-475 CE)
+    'מר בר רב אשי': {
+      name: 'Mar bar Rav Ashi',
+      generation: 7,
+      period: 'amora',
+      teachers: ['רב אשי'],
+      note: 'Son of Rav Ashi'
+    }
+  }
+};
+
+// =============================================================================
+// RABBI RELATIONSHIPS
+// =============================================================================
+
+export const RABBI_RELATIONSHIPS = {
+  // Teacher-Student chains
+  chains: {
+    'HillelToRebbi': ['הלל', 'רבן גמליאל הזקן', 'רבן יוחנן בן זכאי', 'רבי אליעזר', 'רבי עקיבא', 'רבי יהודה', 'רבי'],
+    'AkivaStudents': ['רבי עקיבא', ['רבי מאיר', 'רבי יהודה', 'רבי יוסי', 'רבי שמעון', 'רבי אלעזר בן שמוע']],
+    'BabylonianChain': ['רבי', 'רב', 'רב הונא', 'רבה', 'אביי', 'רב פפא', 'רב אשי']
+  },
+
+  // Famous Chavrutot (study partners)
+  chavrutot: [
+    { pair: ['הלל', 'שמאי'], note: 'Founded opposing schools' },
+    { pair: ['רבי עקיבא', 'רבי ישמעאל'], note: 'Two methodologies of interpretation' },
+    { pair: ['רבי יוחנן', 'ריש לקיש'], note: 'Most famous chavruta' },
+    { pair: ['רבה', 'רב יוסף'], note: 'עוקר הרים vs סיני' },
+    { pair: ['אביי', 'רבא'], note: 'Most cited dispute pair' },
+    { pair: ['רב אשי', 'רבינא'], note: 'Compiled the Bavli' }
+  ],
+
+  // Famous disputes
+  famousDisputes: [
+    { disputants: ['בית הלל', 'בית שמאי'], count: 316, halachaFollows: 'בית הלל' },
+    { disputants: ['רבי עקיבא', 'רבי ישמעאל'], topic: 'Hermeneutical methodology' },
+    { disputants: ['רב', 'שמואל'], halachaFollows: { איסורי: 'רב', ממונות: 'שמואל' } },
+    { disputants: ['אביי', 'רבא'], halachaFollows: 'רבא', exceptions: 'יע"ל קג"ם' }
+  ]
+};
+
+/**
+ * Get teacher-student relationship info for a rabbi
+ * @param {string} rabbiName - Hebrew name
+ * @returns {Object|null}
+ */
+export function getRabbiRelationships(rabbiName) {
+  const allRabbis = { ...RABBI_DATABASE.tannaim, ...RABBI_DATABASE.amoraim };
+  const rabbi = allRabbis[rabbiName];
+
+  if (!rabbi) return null;
+
+  const relationships = {
+    teachers: [],
+    students: [],
+    chavruta: null,
+    disputesWith: []
+  };
+
+  // Get teachers
+  if (rabbi.teachers) {
+    relationships.teachers = rabbi.teachers.map(t => {
+      const teacherInfo = allRabbis[t];
+      return {
+        hebrew: t,
+        english: teacherInfo?.name || t,
+        generation: teacherInfo?.generation
+      };
+    });
+  }
+
+  // Find students (search all rabbis for those who list this rabbi as teacher)
+  for (const [hebrew, info] of Object.entries(allRabbis)) {
+    if (info.teachers?.includes(rabbiName)) {
+      relationships.students.push({
+        hebrew,
+        english: info.name,
+        generation: info.generation
+      });
+    }
+  }
+
+  // Get chavruta
+  if (rabbi.chavruta) {
+    const chavrutaInfo = allRabbis[rabbi.chavruta];
+    relationships.chavruta = {
+      hebrew: rabbi.chavruta,
+      english: chavrutaInfo?.name || rabbi.chavruta
+    };
+  }
+
+  // Get dispute partners
+  if (rabbi.disputesWith) {
+    relationships.disputesWith = rabbi.disputesWith.map(d => {
+      const disputeInfo = allRabbis[d];
+      return {
+        hebrew: d,
+        english: disputeInfo?.name || d
+      };
+    });
+  }
+
+  return relationships;
+}
+
+/**
+ * Get the transmission chain from a rabbi back to earliest teacher
+ * @param {string} rabbiName - Hebrew name
+ * @returns {Array}
+ */
+export function getTeacherChain(rabbiName) {
+  const allRabbis = { ...RABBI_DATABASE.tannaim, ...RABBI_DATABASE.amoraim };
+  const chain = [];
+  let current = rabbiName;
+  const visited = new Set();
+
+  while (current && !visited.has(current)) {
+    visited.add(current);
+    const rabbi = allRabbis[current];
+
+    if (rabbi) {
+      chain.push({
+        hebrew: current,
+        english: rabbi.name,
+        generation: rabbi.generation,
+        period: rabbi.period
+      });
+
+      // Follow first teacher
+      current = rabbi.teachers?.[0] || null;
+    } else {
+      break;
+    }
+  }
+
+  return chain.reverse(); // Earliest first
+}
+
+// =============================================================================
+// BIBLICAL FIGURES DATABASE
+// =============================================================================
+
+export const BIBLICAL_FIGURES = {
+  // Patriarchs and Matriarchs
+  'אברהם': { name: 'Abraham', category: 'patriarch' },
+  'אברם': { name: 'Abram', category: 'patriarch' },
+  'יצחק': { name: 'Isaac', category: 'patriarch' },
+  'יעקב': { name: 'Jacob', category: 'patriarch' },
+  'ישראל': { name: 'Israel (Jacob)', category: 'patriarch' },
+  'שרה': { name: 'Sarah', category: 'matriarch' },
+  'שרי': { name: 'Sarai', category: 'matriarch' },
+  'רבקה': { name: 'Rebecca', category: 'matriarch' },
+  'רחל': { name: 'Rachel', category: 'matriarch' },
+  'לאה': { name: 'Leah', category: 'matriarch' },
+  'בלהה': { name: 'Bilhah', category: 'matriarch' },
+  'זלפה': { name: 'Zilpah', category: 'matriarch' },
+
+  // The 12 Tribes / Sons of Jacob
+  'ראובן': { name: 'Reuben', category: 'tribe' },
+  'שמעון': { name: 'Simeon', category: 'tribe' },
+  'לוי': { name: 'Levi', category: 'tribe' },
+  'יהודה': { name: 'Judah', category: 'tribe' },
+  'יששכר': { name: 'Issachar', category: 'tribe' },
+  'זבולון': { name: 'Zebulun', category: 'tribe' },
+  'דן': { name: 'Dan', category: 'tribe' },
+  'נפתלי': { name: 'Naphtali', category: 'tribe' },
+  'גד': { name: 'Gad', category: 'tribe' },
+  'אשר': { name: 'Asher', category: 'tribe' },
+  'יוסף': { name: 'Joseph', category: 'tribe' },
+  'בנימין': { name: 'Benjamin', category: 'tribe' },
+  'מנשה': { name: 'Manasseh', category: 'tribe' },
+  'אפרים': { name: 'Ephraim', category: 'tribe' },
+
+  // Moses and Family
+  'משה': { name: 'Moses', category: 'prophet' },
+  'משה רבינו': { name: 'Moses our Teacher', category: 'prophet' },
+  'אהרן': { name: 'Aaron', category: 'priest' },
+  'מרים': { name: 'Miriam', category: 'prophet' },
+  'יתרו': { name: 'Jethro', category: 'leader' },
+  'ציפורה': { name: 'Zipporah', category: 'matriarch' },
+  'קרח': { name: 'Korach', category: 'figure' },
+  'פנחס': { name: 'Phinehas', category: 'priest' },
+  'אלעזר': { name: 'Eleazar', category: 'priest' },
+  'יהושע': { name: 'Joshua', category: 'leader' },
+  'כלב': { name: 'Caleb', category: 'leader' },
+  'בלעם': { name: 'Balaam', category: 'prophet' },
+  'בלק': { name: 'Balak', category: 'king' },
+
+  // Genesis Figures
+  'אדם': { name: 'Adam', category: 'primordial' },
+  'חוה': { name: 'Eve', category: 'primordial' },
+  'קין': { name: 'Cain', category: 'primordial' },
+  'הבל': { name: 'Abel', category: 'primordial' },
+  'שת': { name: 'Seth', category: 'primordial' },
+  'חנוך': { name: 'Enoch', category: 'primordial' },
+  'מתושלח': { name: 'Methuselah', category: 'primordial' },
+  'למך': { name: 'Lemech', category: 'primordial' },
+  'נח': { name: 'Noah', category: 'primordial' },
+  'שם': { name: 'Shem', category: 'primordial' },
+  'חם': { name: 'Ham', category: 'primordial' },
+  'יפת': { name: 'Japheth', category: 'primordial' },
+  'נמרוד': { name: 'Nimrod', category: 'king' },
+  'תרח': { name: 'Terah', category: 'figure' },
+  'לוט': { name: 'Lot', category: 'figure' },
+  'מלכיצדק': { name: 'Melchizedek', category: 'priest' },
+  'הגר': { name: 'Hagar', category: 'figure' },
+  'ישמעאל': { name: 'Ishmael', category: 'figure' },
+  'עשו': { name: 'Esau', category: 'figure' },
+  'לבן': { name: 'Laban', category: 'figure' },
+  'דינה': { name: 'Dinah', category: 'figure' },
+  'תמר': { name: 'Tamar', category: 'figure' },
+  'פוטיפר': { name: 'Potiphar', category: 'figure' },
+  'פרעה': { name: 'Pharaoh', category: 'king' },
+  'אסנת': { name: 'Asenath', category: 'figure' },
+
+  // Judges
+  'עתניאל': { name: 'Othniel', category: 'judge' },
+  'אהוד': { name: 'Ehud', category: 'judge' },
+  'דבורה': { name: 'Deborah', category: 'judge' },
+  'גדעון': { name: 'Gideon', category: 'judge' },
+  'יפתח': { name: 'Jephthah', category: 'judge' },
+  'שמשון': { name: 'Samson', category: 'judge' },
+
+  // Kings
+  'דוד': { name: 'David', category: 'king' },
+  'דוד המלך': { name: 'King David', category: 'king' },
+  'שלמה': { name: 'Solomon', category: 'king' },
+  'שלמה המלך': { name: 'King Solomon', category: 'king' },
+  'שאול': { name: 'Saul', category: 'king' },
+  'רחבעם': { name: 'Rehoboam', category: 'king' },
+  'ירבעם': { name: 'Jeroboam', category: 'king' },
+  'אחאב': { name: 'Ahab', category: 'king' },
+  'יהושפט': { name: 'Jehoshaphat', category: 'king' },
+  'חזקיהו': { name: 'Hezekiah', category: 'king' },
+  'יאשיהו': { name: 'Josiah', category: 'king' },
+
+  // Prophets
+  'שמואל': { name: 'Samuel', category: 'prophet' },
+  'שמואל הנביא': { name: 'Samuel the Prophet', category: 'prophet' },
+  'אליהו': { name: 'Elijah', category: 'prophet' },
+  'אליהו הנביא': { name: 'Elijah the Prophet', category: 'prophet' },
+  'אלישע': { name: 'Elisha', category: 'prophet' },
+  'ישעיהו': { name: 'Isaiah', category: 'prophet' },
+  'ירמיהו': { name: 'Jeremiah', category: 'prophet' },
+  'יחזקאל': { name: 'Ezekiel', category: 'prophet' },
+  'הושע': { name: 'Hosea', category: 'prophet' },
+  'יואל': { name: 'Joel', category: 'prophet' },
+  'עמוס': { name: 'Amos', category: 'prophet' },
+  'עובדיה': { name: 'Obadiah', category: 'prophet' },
+  'יונה': { name: 'Jonah', category: 'prophet' },
+  'מיכה': { name: 'Micah', category: 'prophet' },
+  'נחום': { name: 'Nahum', category: 'prophet' },
+  'חבקוק': { name: 'Habakkuk', category: 'prophet' },
+  'צפניה': { name: 'Zephaniah', category: 'prophet' },
+  'חגי': { name: 'Haggai', category: 'prophet' },
+  'זכריה': { name: 'Zechariah', category: 'prophet' },
+  'מלאכי': { name: 'Malachi', category: 'prophet' },
+  'נתן': { name: 'Nathan', category: 'prophet' },
+
+  // Writings Figures
+  'איוב': { name: 'Job', category: 'figure' },
+  'רות': { name: 'Ruth', category: 'figure' },
+  'בועז': { name: 'Boaz', category: 'figure' },
+  'אסתר': { name: 'Esther', category: 'figure' },
+  'מרדכי': { name: 'Mordecai', category: 'figure' },
+  'המן': { name: 'Haman', category: 'figure' },
+  'עזרא': { name: 'Ezra', category: 'leader' },
+  'נחמיה': { name: 'Nehemiah', category: 'leader' },
+  'דניאל': { name: 'Daniel', category: 'prophet' }
+};
+
+// =============================================================================
+// PLACES DATABASE
+// =============================================================================
+
+export const PLACES = {
+  // Holy Places
+  'ירושלים': { name: 'Jerusalem', type: 'city', significance: 'holy' },
+  'ציון': { name: 'Zion', type: 'place', significance: 'holy' },
+  'בית המקדש': { name: 'Temple', type: 'building', significance: 'holy' },
+  'מקדש': { name: 'Temple', type: 'building', significance: 'holy' },
+  'הר המוריה': { name: 'Mount Moriah', type: 'mountain', significance: 'holy' },
+  'הר סיני': { name: 'Mount Sinai', type: 'mountain', significance: 'holy' },
+  'סיני': { name: 'Sinai', type: 'mountain', significance: 'holy' },
+  'חורב': { name: 'Horeb', type: 'mountain', significance: 'holy' },
+
+  // Genesis Locations
+  'גן עדן': { name: 'Garden of Eden', type: 'place', significance: 'biblical' },
+  'עדן': { name: 'Eden', type: 'place', significance: 'biblical' },
+  'אור כשדים': { name: 'Ur of the Chaldees', type: 'city', significance: 'biblical' },
+  'חרן': { name: 'Haran', type: 'city', significance: 'biblical' },
+  'כנען': { name: 'Canaan', type: 'region', significance: 'biblical' },
+  'ארץ כנען': { name: 'Land of Canaan', type: 'region', significance: 'biblical' },
+  'שכם': { name: 'Shechem', type: 'city', significance: 'biblical' },
+  'בית אל': { name: 'Bethel', type: 'city', significance: 'biblical' },
+  'חברון': { name: 'Hebron', type: 'city', significance: 'biblical' },
+  'ממרא': { name: 'Mamre', type: 'place', significance: 'biblical' },
+  'סדום': { name: 'Sodom', type: 'city', significance: 'biblical' },
+  'עמורה': { name: 'Gomorrah', type: 'city', significance: 'biblical' },
+  'באר שבע': { name: 'Beersheba', type: 'city', significance: 'biblical' },
+  'גרר': { name: 'Gerar', type: 'city', significance: 'biblical' },
+  'פדן ארם': { name: 'Paddan-aram', type: 'region', significance: 'biblical' },
+  'גלעד': { name: 'Gilead', type: 'region', significance: 'biblical' },
+  'גשן': { name: 'Goshen', type: 'region', significance: 'biblical' },
+  'מכפלה': { name: 'Machpelah', type: 'place', significance: 'burial' },
+
+  // Countries
+  'מצרים': { name: 'Egypt', type: 'country', significance: 'biblical' },
+  'ארץ ישראל': { name: 'Land of Israel', type: 'country', significance: 'holy' },
+  'בבל': { name: 'Babylonia', type: 'region', significance: 'historical' },
+  'אשור': { name: 'Assyria', type: 'country', significance: 'historical' },
+  'פרס': { name: 'Persia', type: 'country', significance: 'historical' },
+  'מדי': { name: 'Media', type: 'country', significance: 'historical' },
+  'מואב': { name: 'Moab', type: 'country', significance: 'biblical' },
+  'אדום': { name: 'Edom', type: 'country', significance: 'biblical' },
+  'עמון': { name: 'Ammon', type: 'country', significance: 'biblical' },
+  'פלשת': { name: 'Philistia', type: 'country', significance: 'biblical' },
+  'מדין': { name: 'Midian', type: 'region', significance: 'biblical' },
+
+  // Exodus/Wilderness Locations
+  'ים סוף': { name: 'Red Sea', type: 'water', significance: 'biblical' },
+  'מדבר סיני': { name: 'Wilderness of Sinai', type: 'desert', significance: 'biblical' },
+  'קדש': { name: 'Kadesh', type: 'place', significance: 'biblical' },
+  'קדש ברנע': { name: 'Kadesh Barnea', type: 'place', significance: 'biblical' },
+  'מרה': { name: 'Marah', type: 'place', significance: 'biblical' },
+  'אלים': { name: 'Elim', type: 'place', significance: 'biblical' },
+  'רפידים': { name: 'Rephidim', type: 'place', significance: 'biblical' },
+
+  // Conquest/Settlement Locations
+  'יריחו': { name: 'Jericho', type: 'city', significance: 'biblical' },
+  'עי': { name: 'Ai', type: 'city', significance: 'biblical' },
+  'הר נבו': { name: 'Mount Nebo', type: 'mountain', significance: 'biblical' },
+  'ירדן': { name: 'Jordan', type: 'river', significance: 'biblical' },
+  'הירדן': { name: 'The Jordan', type: 'river', significance: 'biblical' },
+  'בשן': { name: 'Bashan', type: 'region', significance: 'biblical' },
+  'חשבון': { name: 'Heshbon', type: 'city', significance: 'biblical' },
+
+  // Later Biblical Locations
+  'שילה': { name: 'Shiloh', type: 'city', significance: 'holy' },
+  'בית לחם': { name: 'Bethlehem', type: 'city', significance: 'biblical' },
+  'שומרון': { name: 'Samaria', type: 'city', significance: 'biblical' },
+  'הר הכרמל': { name: 'Mount Carmel', type: 'mountain', significance: 'biblical' },
+  'הר תבור': { name: 'Mount Tabor', type: 'mountain', significance: 'biblical' },
+
+  // Rivers and Waters
+  'פרת': { name: 'Euphrates', type: 'river', significance: 'biblical' },
+  'נהר פרת': { name: 'Euphrates River', type: 'river', significance: 'biblical' },
+  'חדקל': { name: 'Tigris', type: 'river', significance: 'biblical' },
+  'נילוס': { name: 'Nile', type: 'river', significance: 'biblical' },
+  'יאור': { name: 'Nile (River)', type: 'river', significance: 'biblical' },
+  'ים המלח': { name: 'Dead Sea', type: 'water', significance: 'biblical' },
+  'ים כנרת': { name: 'Sea of Galilee', type: 'water', significance: 'biblical' },
+  'הים הגדול': { name: 'Mediterranean Sea', type: 'water', significance: 'biblical' },
+
+  // Talmudic Academies
+  'פומבדיתא': { name: 'Pumbedita', type: 'academy', significance: 'talmudic' },
+  'סורא': { name: 'Sura', type: 'academy', significance: 'talmudic' },
+  'נהרדעא': { name: 'Nehardea', type: 'academy', significance: 'talmudic' },
+  'יבנה': { name: 'Yavneh', type: 'academy', significance: 'mishnaic' },
+  'טבריה': { name: 'Tiberias', type: 'city', significance: 'talmudic' },
+  'צפורי': { name: 'Tzippori', type: 'city', significance: 'talmudic' },
+  'לוד': { name: 'Lod/Lydda', type: 'city', significance: 'talmudic' },
+  'קיסרי': { name: 'Caesarea', type: 'city', significance: 'talmudic' }
+};
+
+// =============================================================================
+// DETECTION PATTERNS
+// =============================================================================
+
+// PRO SCHOLAR V30: Strip nikud (vowel points) for better matching
+const stripNikud = (text) => {
+  if (!text) return '';
+  return stripAllDiacritics(text);
+};
+
+// PRO SCHOLAR V30: Enhanced rabbi attribution patterns
+const RABBI_PATTERNS = [
+  // אמר רבי X - Rabbi X said
+  { pattern: /(?:אמר|א"ר|א״ר)\s*(רב(?:י|ן|א)?|ר׳)\s+(\p{Script=Hebrew}+(?:\s+(?:בן|בר|ב"ר|ב״ר)\s+\p{Script=Hebrew}+)?)/gu, type: 'statement' },
+  // רבי X אמר - Rabbi X says
+  { pattern: /(רב(?:י|ן|א)?|ר׳)\s+(\p{Script=Hebrew}+(?:\s+(?:בן|בר)\s+\p{Script=Hebrew}+)?)\s+(?:אמר|אומר)/gu, type: 'statement' },
+  // Standalone rabbi mentions
+  { pattern: /(רב(?:י|ן|א)?)\s+(\p{Script=Hebrew}+)/gu, type: 'mention' },
+  // Abbreviated forms
+  { pattern: /(רשב"י|רשב"ג|ר"י|ר"מ|ר"ע|רשב״י|רשב״ג|ר״י|ר״מ|ר״ע)/gu, type: 'abbreviation' },
+  // PRO SCHOLAR V30: Additional patterns for Gemara sages
+  // תנו רבנן - Our Rabbis taught
+  { pattern: /תנו\s*רבנן/gu, type: 'baraita', isGroup: true },
+  // תנא - A Tanna taught
+  { pattern: /תנא\s+(\p{Script=Hebrew}+)/gu, type: 'tanna_teaching' },
+  // אמר מר - The Master said
+  { pattern: /אמר\s+מר/gu, type: 'master_statement' },
+  // רב alone (common Babylonian sage)
+  { pattern: /\bרב\b(?!\s*(?:י|ן|א))/gu, type: 'rav_standalone' },
+  // דאמר רב/רבי - As Rav/Rabbi said
+  { pattern: /דאמר\s+(רב(?:י|ן|א)?)\s*(\p{Script=Hebrew}+)?/gu, type: 'citation' },
+  // משמיה דרבי - In the name of Rabbi
+  { pattern: /משמיה\s+ד(?:רב(?:י|ן|א)?|ר׳)\s*(\p{Script=Hebrew}+)?/gu, type: 'transmission' },
+  // איתמר - It was stated (introduces amoraic dispute)
+  { pattern: /איתמר/gu, type: 'amoraic_statement', isGroup: true }
+];
+
+// Biblical citation patterns
+const BIBLICAL_CITATION_PATTERNS = [
+  // שנאמר "..." - As it says...
+  { pattern: /(?:שנאמר|שנא׳|דכתיב|דכתי׳|כדכתיב|ככתוב)\s*[:"״]?([^"״\n]+)["״]?/gu, type: 'citation' },
+  // מנין? שנאמר - From where? As it says...
+  { pattern: /מנ(?:ין|לן)\s*[?؟]?\s*(?:שנאמר|דכתיב)\s*[:"״]?([^"״\n]+)["״]?/gu, type: 'source_proof' }
+];
+
+// =============================================================================
+// DETECTION FUNCTIONS
+// =============================================================================
+
+/**
+ * Detect all named entities in text
+ * @param {string} text - Hebrew/Aramaic text
+ * @returns {Object} Detected entities by type
+ */
+export function detectEntities(text) {
+  if (!text || typeof text !== 'string') {
+    return { rabbis: [], biblicalFigures: [], places: [], citations: [] };
+  }
+
+  return {
+    rabbis: detectRabbis(text),
+    biblicalFigures: detectBiblicalFigures(text),
+    places: detectPlaces(text),
+    citations: detectBiblicalCitations(text)
+  };
+}
+
+/**
+ * PRO SCHOLAR V30: Detect rabbi mentions in text with nikud support
+ * @param {string} text
+ * @returns {Array}
+ */
+export function detectRabbis(text) {
+  if (!text || typeof text !== 'string') return [];
+
+  const results = [];
+  const seen = new Set();
+
+  // PRO SCHOLAR V30: Strip nikud for better matching
+  const cleanText = stripNikud(text);
+
+  // Check for known rabbis from database (search in clean text)
+  const allRabbis = { ...RABBI_DATABASE.tannaim, ...RABBI_DATABASE.amoraim };
+
+  for (const [hebrew, info] of Object.entries(allRabbis)) {
+    const cleanHebrew = stripNikud(hebrew);
+    const regex = new RegExp(cleanHebrew.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+    let match;
+
+    while ((match = regex.exec(cleanText)) !== null) {
+      const key = `${match.index}-${cleanHebrew}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+
+      results.push({
+        type: ENTITY_TYPES.RABBI,
+        hebrew,
+        name: hebrew, // V30: Add name field for compatibility
+        english: info.name,
+        position: match.index,
+        endPosition: match.index + match[0].length,
+        period: info.period,
+        generation: info.generation,
+        location: info.location,
+        note: info.note
+      });
+    }
+  }
+
+  // PRO SCHOLAR V30: Enhanced pattern-based detection on clean text
+  for (const { pattern, type, isGroup } of RABBI_PATTERNS) {
+    let match;
+    while ((match = pattern.exec(cleanText)) !== null) {
+      const fullMatch = match[0];
+      const key = `${match.index}-${type}`;
+
+      if (!seen.has(key)) {
+        seen.add(key);
+
+        // Handle group references (תנו רבנן, איתמר, etc.)
+        if (isGroup) {
+          results.push({
+            type: ENTITY_TYPES.RABBI,
+            hebrew: fullMatch,
+            name: fullMatch,
+            english: type === 'baraita' ? 'The Rabbis' : 'Sages',
+            position: match.index,
+            endPosition: match.index + fullMatch.length,
+            period: 'collective',
+            statementType: type,
+            isGroup: true
+          });
+        } else {
+          // Try to identify from database
+          const title = match[1] || '';
+          const name = match[2] || match[1] || fullMatch;
+          const fullName = title && name ? `${title} ${name}` : name;
+
+          // Look up in database
+          const dbEntry = allRabbis[fullName] || allRabbis[name] || allRabbis[stripNikud(name)];
+
+          results.push({
+            type: ENTITY_TYPES.RABBI,
+            hebrew: fullMatch,
+            name: fullName || fullMatch,
+            english: dbEntry?.name || name || fullMatch,
+            position: match.index,
+            endPosition: match.index + fullMatch.length,
+            period: dbEntry?.period || 'unknown',
+            generation: dbEntry?.generation,
+            statementType: type
+          });
+        }
+      }
+    }
+    pattern.lastIndex = 0;
+  }
+
+  return results.sort((a, b) => a.position - b.position);
+}
+
+/**
+ * Detect biblical figure mentions
+ * @param {string} text
+ * @returns {Array}
+ */
+export function detectBiblicalFigures(text) {
+  const results = [];
+  const seen = new Set();
+
+  for (const [hebrew, info] of Object.entries(BIBLICAL_FIGURES)) {
+    const regex = new RegExp(hebrew.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+    let match;
+
+    while ((match = regex.exec(text)) !== null) {
+      const key = `${match.index}-${hebrew}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+
+      results.push({
+        type: ENTITY_TYPES.BIBLICAL_FIGURE,
+        hebrew,
+        english: info.name,
+        category: info.category,
+        position: match.index,
+        endPosition: match.index + match[0].length
+      });
+    }
+  }
+
+  return results.sort((a, b) => a.position - b.position);
+}
+
+/**
+ * Detect place mentions
+ * @param {string} text
+ * @returns {Array}
+ */
+export function detectPlaces(text) {
+  const results = [];
+  const seen = new Set();
+
+  for (const [hebrew, info] of Object.entries(PLACES)) {
+    const regex = new RegExp(hebrew.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+    let match;
+
+    while ((match = regex.exec(text)) !== null) {
+      const key = `${match.index}-${hebrew}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+
+      results.push({
+        type: ENTITY_TYPES.PLACE,
+        hebrew,
+        english: info.name,
+        placeType: info.type,
+        significance: info.significance,
+        position: match.index,
+        endPosition: match.index + match[0].length
+      });
+    }
+  }
+
+  return results.sort((a, b) => a.position - b.position);
+}
+
+/**
+ * Detect biblical citations
+ * @param {string} text
+ * @returns {Array}
+ */
+export function detectBiblicalCitations(text) {
+  const results = [];
+
+  for (const { pattern, type } of BIBLICAL_CITATION_PATTERNS) {
+    let match;
+    while ((match = pattern.exec(text)) !== null) {
+      const citedText = match[1]?.trim();
+      if (!citedText || citedText.length < 3) continue;
+
+      results.push({
+        type: ENTITY_TYPES.BIBLICAL_CITATION,
+        fullMatch: match[0],
+        citedText: citedText,
+        citationType: type,
+        position: match.index,
+        endPosition: match.index + match[0].length
+      });
+    }
+    pattern.lastIndex = 0;
+  }
+
+  return results.sort((a, b) => a.position - b.position);
+}
+
+/**
+ * Get entity statistics for a text
+ * @param {string} text
+ * @returns {Object}
+ */
+export function getEntityStatistics(text) {
+  const entities = detectEntities(text);
+
+  // Count unique rabbis
+  const uniqueRabbis = new Set(entities.rabbis.map(r => r.english || r.hebrew));
+  const uniquePlaces = new Set(entities.places.map(p => p.english || p.hebrew));
+  const uniqueFigures = new Set(entities.biblicalFigures.map(f => f.english || f.hebrew));
+
+  // Group rabbis by period
+  const rabbisByPeriod = {};
+  for (const rabbi of entities.rabbis) {
+    const period = rabbi.period || 'unknown';
+    if (!rabbisByPeriod[period]) rabbisByPeriod[period] = new Set();
+    rabbisByPeriod[period].add(rabbi.english || rabbi.hebrew);
+  }
+
+  return {
+    totalEntities: entities.rabbis.length + entities.biblicalFigures.length + entities.places.length + entities.citations.length,
+    rabbis: {
+      total: entities.rabbis.length,
+      unique: uniqueRabbis.size,
+      byPeriod: Object.fromEntries(
+        Object.entries(rabbisByPeriod).map(([k, v]) => [k, v.size])
+      )
+    },
+    biblicalFigures: {
+      total: entities.biblicalFigures.length,
+      unique: uniqueFigures.size
+    },
+    places: {
+      total: entities.places.length,
+      unique: uniquePlaces.size
+    },
+    citations: {
+      total: entities.citations.length
+    }
+  };
+}
+
+/**
+ * Get highlighted text with entity markers
+ * @param {string} text
+ * @param {Object} options
+ * @returns {string} HTML with entity spans
+ */
+export function getHighlightedEntities(text, options = {}) {
+  const { includeRabbis = true, includeFigures = true, includePlaces = true, includeCitations = true } = options;
+
+  const entities = detectEntities(text);
+  const allEntities = [];
+
+  if (includeRabbis) allEntities.push(...entities.rabbis);
+  if (includeFigures) allEntities.push(...entities.biblicalFigures);
+  if (includePlaces) allEntities.push(...entities.places);
+  if (includeCitations) allEntities.push(...entities.citations);
+
+  if (allEntities.length === 0) return text;
+
+  // Sort by position descending to insert from end
+  allEntities.sort((a, b) => b.position - a.position);
+
+  let result = text;
+  for (const entity of allEntities) {
+    const before = result.slice(0, entity.position);
+    const match = result.slice(entity.position, entity.endPosition);
+    const after = result.slice(entity.endPosition);
+
+    const cssClass = `entity-${entity.type}`;
+    const title = entity.english || entity.hebrew;
+
+    result = `${before}<span class="${cssClass}" data-type="${entity.type}" title="${title}">${match}</span>${after}`;
+  }
+
+  return result;
+}
+
+// =============================================================================
+// LOOKUP FUNCTIONS
+// =============================================================================
+
+/**
+ * Look up rabbi information by name
+ * @param {string} name - Hebrew or English name
+ * @returns {Object|null}
+ */
+export function lookupRabbi(name) {
+  const allRabbis = { ...RABBI_DATABASE.tannaim, ...RABBI_DATABASE.amoraim };
+
+  // Direct lookup
+  if (allRabbis[name]) {
+    return { hebrew: name, ...allRabbis[name] };
+  }
+
+  // Reverse lookup by English name
+  for (const [hebrew, info] of Object.entries(allRabbis)) {
+    if (info.name.toLowerCase() === name.toLowerCase()) {
+      return { hebrew, ...info };
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Get all rabbis of a specific period/generation
+ * @param {string} period - 'tanna' or 'amora'
+ * @param {number} generation - Generation number
+ * @returns {Array}
+ */
+export function getRabbisByGeneration(period, generation = null) {
+  const source = period === 'tanna' ? RABBI_DATABASE.tannaim : RABBI_DATABASE.amoraim;
+
+  const results = [];
+  for (const [hebrew, info] of Object.entries(source)) {
+    if (generation === null || info.generation === generation) {
+      results.push({ hebrew, ...info });
+    }
+  }
+
+  return results.sort((a, b) => (a.generation || 0) - (b.generation || 0));
+}
+
+// =============================================================================
+// DEFAULT EXPORT
+// =============================================================================
+
+const namedEntityService = {
+  ENTITY_TYPES,
+  RABBI_DATABASE,
+  RABBI_RELATIONSHIPS,
+  BIBLICAL_FIGURES,
+  PLACES,
+
+  // Detection
+  detectEntities,
+  detectRabbis,
+  detectBiblicalFigures,
+  detectPlaces,
+  detectBiblicalCitations,
+
+  // Analysis
+  getEntityStatistics,
+  getHighlightedEntities,
+
+  // Lookup
+  lookupRabbi,
+  getRabbisByGeneration,
+
+  // Relationships
+  getRabbiRelationships,
+  getTeacherChain
+};
+
+export default namedEntityService;

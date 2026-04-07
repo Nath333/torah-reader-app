@@ -16,7 +16,7 @@ export const DeepStudyResult = memo(({ data }) => {
     keyPoints,
     novelInsight,
     connections
-  } = data;
+  } = data || {};
 
   return (
     <div className="deep-study-result">

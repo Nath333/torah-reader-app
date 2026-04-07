@@ -5,7 +5,7 @@
 import React, { memo } from 'react';
 
 export const ShoreshResult = memo(({ data }) => {
-  const { summary, rootAnalysis, thematicInsights, studyNote } = data;
+  const { summary, rootAnalysis, thematicInsights, studyNote } = data || {};
 
   return (
     <div className="shoresh-result">

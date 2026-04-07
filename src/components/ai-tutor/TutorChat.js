@@ -38,38 +38,34 @@ import {
 import LevelSelector from './LevelSelector';
 import PersonaSelector from './PersonaSelector';
 import './TutorChat.css';
+import { markdownToSafeHtml, safeStorage, containsXssPayload } from '../../utils/safeHtml';
 
 // Helper to detect if text contains Hebrew characters
 const containsHebrew = (text) => /[\u0590-\u05FF]/.test(text);
 
-// Simple markdown-like formatting for messages
+// Safe markdown formatting for messages - uses sanitized HTML
 const formatMessage = (text) => {
   if (!text) return null;
+
+  // Check for XSS payloads before processing
+  if (containsXssPayload(text)) {
+    console.warn('[TutorChat] Potential XSS detected in message, sanitizing...');
+  }
 
   // Split by newlines and process each line
   return text.split('\n').map((line, lineIdx) => {
     // Check if line is primarily Hebrew for RTL
     const isHebrewLine = containsHebrew(line) && line.match(/[\u0590-\u05FF]/g)?.length > line.length * 0.3;
 
-    // Process inline formatting: **bold**, *italic*, _italic_
-    let remaining = line;
-
-    // Bold **text**
-    remaining = remaining.replace(/\*\*(.+?)\*\*/g, (_, match) => {
-      return `<strong>${match}</strong>`;
-    });
-
-    // Italic *text* or _text_
-    remaining = remaining.replace(/(?<!\*)\*([^*]+)\*(?!\*)|_([^_]+)_/g, (_, m1, m2) => {
-      return `<em>${m1 || m2}</em>`;
-    });
+    // Convert markdown to safe HTML
+    const safeHtml = markdownToSafeHtml(line);
 
     return (
       <p
         key={lineIdx}
         className={isHebrewLine ? 'hebrew-line' : ''}
         dir={isHebrewLine ? 'rtl' : 'ltr'}
-        dangerouslySetInnerHTML={{ __html: remaining || '&nbsp;' }}
+        dangerouslySetInnerHTML={{ __html: safeHtml || '&nbsp;' }}
       />
     );
   });
@@ -467,9 +463,14 @@ Keep it concise and practical. Use both Hebrew and English.`;
 
   // Save a chiddush (insight) from a message
   const handleSaveChiddush = useCallback((messageContent, messageIndex) => {
+    // Sanitize content before storing
+    const sanitizedContent = typeof messageContent === 'string' 
+      ? messageContent.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+      : String(messageContent);
+      
     const chiddush = {
       id: Date.now(),
-      content: messageContent,
+      content: sanitizedContent,
       textRef,
       timestamp: new Date().toISOString(),
       studyMode,
@@ -478,10 +479,10 @@ Keep it concise and practical. Use both Hebrew and English.`;
     };
     setSavedChiddushim(prev => [...prev, chiddush]);
 
-    // Store in localStorage for persistence
-    const stored = JSON.parse(localStorage.getItem('torah-chiddushim') || '[]');
+    // Store in localStorage for persistence using safe storage
+    const stored = safeStorage.getItem('torah-chiddushim', []);
     stored.push(chiddush);
-    localStorage.setItem('torah-chiddushim', JSON.stringify(stored));
+    safeStorage.setItem('torah-chiddushim', stored);
 
     // Show confirmation
     setMessages(prev => [...prev, {
@@ -490,6 +491,14 @@ Keep it concise and practical. Use both Hebrew and English.`;
       timestamp: new Date().toISOString()
     }]);
   }, [textRef, studyMode, level, persona]);
+
+  // Load saved chiddushim on mount
+  useEffect(() => {
+    const stored = safeStorage.getItem('torah-chiddushim', []);
+    if (Array.isArray(stored)) {
+      setSavedChiddushim(stored);
+    }
+  }, []);
 
   return (
     <div className="tutor-chat">

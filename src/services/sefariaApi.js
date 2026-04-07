@@ -1983,4 +1983,15 @@ const sefariaApi = {
   toSefariaRef
 };
 
+/**
+ * Generic Sefaria API request wrapper for direct endpoint access
+ * @param {string} endpoint - API path (e.g., '/api/links/Genesis.1')
+ * @param {Object} options - Fetch options (signal, timeout, etc.)
+ * @returns {Promise<Object>} API response data
+ */
+export const sefariaApiRequest = async (endpoint, options = {}) => {
+  const url = endpoint.startsWith('http') ? endpoint : `${BASE_URL}${endpoint.replace(/^\/api/, '')}`;
+  return fetchWithFallback(url, { timeout: 15000, ...options });
+};
+
 export default sefariaApi;

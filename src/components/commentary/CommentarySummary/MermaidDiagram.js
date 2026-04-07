@@ -7,6 +7,7 @@
  */
 
 import React, { useState, useEffect, useRef, useMemo, memo } from 'react';
+import { sanitizeSvgContent, sanitizeMermaidChart } from '../../../utils/safeHtml';
 
 const DIAGRAM_TIMEOUT = 5000; // 5 second timeout
 
@@ -130,11 +131,11 @@ function MermaidDiagram({ chart, id, explanation }) {
 
         if (isCancelled) return;
 
-        // Clean the chart syntax
-        let cleanChart = chart
-          .replace(/\\n/g, '\n')
-          .replace(/\\"/g, '"')
-          .trim();
+        // Clean and sanitize the chart syntax
+        let cleanChart = sanitizeMermaidChart(chart);
+        if (!cleanChart) {
+          throw new Error('Invalid chart syntax');
+        }
 
         // Ensure it starts with a valid graph declaration
         if (!cleanChart.match(/^(graph|flowchart|sequenceDiagram|classDiagram|mindmap)/i)) {
@@ -148,7 +149,9 @@ function MermaidDiagram({ chart, id, explanation }) {
 
         if (!isCancelled) {
           clearTimeout(timeoutId);
-          setSvg(renderedSvg);
+          // Sanitize SVG before storing to prevent XSS
+          const sanitizedSvg = sanitizeSvgContent(renderedSvg);
+          setSvg(sanitizedSvg);
         }
       } catch (err) {
         if (!isCancelled) {

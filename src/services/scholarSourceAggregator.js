@@ -4,7 +4,7 @@
 // =============================================================================
 
 import { createLogger } from '../utils/debug';
-import { areSimilarWords, normalizeFinals } from '../utils/hebrewUtils';
+import { isValidHeadwordMatch } from '../utils/hebrewUtils';
 // PRO SCHOLAR V10.3: Cache removed - caching delegated to unifiedLookupService
 
 const log = createLogger('SourceAggregator');
@@ -358,10 +358,10 @@ export const parallelSourceLookup = async (word, lookupFunctions, options = {}) 
       ]);
 
       if (result?.english || result?.definition) {
-        // Validate headword match if enabled
+        // Validate headword match using LCS-based, prefix-aware algorithm
         if (validateHeadword) {
           const headword = result.headword || result.matchedForm || word;
-          if (!areSimilarWords(headword, word) && !areSimilarWords(headword, normalizeFinals(word))) {
+          if (!isValidHeadwordMatch(headword, word)) {
             if (DEBUG) {
               log.debug(`[Parallel] Headword mismatch for ${sourceName}: "${headword}" vs "${word}"`);
             }
@@ -430,7 +430,7 @@ export const aggregateLocalSources = (word, lookupFunctions, options = {}) => {
         // Validate headword match if enabled
         if (validateHeadword) {
           const headword = result.headword || result.matchedForm || word;
-          if (!areSimilarWords(headword, word) && !areSimilarWords(headword, normalizeFinals(word))) {
+          if (!isValidHeadwordMatch(headword, word)) {
             if (DEBUG) {
               log.debug(`[Aggregate] Headword mismatch for ${sourceName}: "${headword}" vs "${word}"`);
             }

@@ -36,7 +36,8 @@ import {
   COMMON_HEBREW_WORDS,
   COMMON_ARAMAIC_WORDS,
   // PRO SCHOLAR V13: Preload synchronization
-  waitForPreload
+  waitForPreload,
+  isCoreDictionariesLoaded
 } from './dictionaryLoader';
 import { lookupAramaicWord as lookupCalAramaic } from './calDictionaryService';
 import { lookupWordSefaria } from './scholarlyLexiconService';
@@ -47,6 +48,7 @@ import { getCognates as getCuratedCognates, getCognatesAsync } from './comparati
 // PRO SCHOLAR V12: Etymology enrichment with ALL scholarly databases (78,000+ entries)
 import { getComprehensiveEtymology } from './etymologyEnrichmentService';
 import { normalizeFinals, stripAllDiacritics, restoreFinals } from '../utils/hebrewUtils';
+import { HEBREW_PREFIXES_ORDERED } from '../constants/morphology';
 import { pickBestDefinition } from '../utils/definitionCleaner';
 // Grammar and morphological analysis
 import { tryHebrewVerbAnalysis } from './grammarAnalysisService';
@@ -150,11 +152,9 @@ let preloadedCount = 0;
 // DICTIONARY LOOKUP FUNCTIONS
 // =============================================================================
 
-/**
- * PRO SCHOLAR V13: Common Hebrew prefixes that should be stripped for lookup
- * Order matters: longer prefixes first to avoid partial matches
- */
-const HEBREW_PREFIXES = ['וה', 'וב', 'וכ', 'ול', 'ומ', 'וש', 'הב', 'הכ', 'הל', 'המ', 'מה', 'שה', 'ב', 'כ', 'ל', 'מ', 'ה', 'ו', 'ש'];
+// Use canonical HEBREW_PREFIXES_ORDERED from morphology.js (DRY - single source of truth)
+// Includes 3/4-letter prefix combos that the local copy was missing
+const HEBREW_PREFIXES = HEBREW_PREFIXES_ORDERED;
 
 /**
  * PRO SCHOLAR V13: Generate all morphological variants for dictionary lookup
@@ -1248,6 +1248,9 @@ export const quickLookup = (word, options = {}) => {
     return { ...cached, fromCache: true };
   }
 
+  // Track whether dictionaries are loaded — results may be incomplete if not
+  const dictReady = isCoreDictionariesLoaded();
+
   // Run pipeline synchronously
   const runPipeline = getPipeline();
   const result = runPipeline(word, options);
@@ -1257,12 +1260,20 @@ export const quickLookup = (word, options = {}) => {
     if (DEBUG) {
       log.debug(`[quickLookup] Pipeline returned null for: ${word}`);
     }
-    return createEmptyResult(word, cleaned);
+    const empty = createEmptyResult(word, cleaned);
+    empty.dictionariesLoaded = dictReady;
+    return empty;
   }
 
+  // Tag result with dictionary loading state
+  result.dictionariesLoaded = dictReady;
+
   // Cache and return if we found something
+  // Only cache if dictionaries were loaded (avoid caching incomplete results)
   if (result.english || (result.sources && result.sources.length > 0)) {
-    lookupCache.set(cacheKey, result);
+    if (dictReady) {
+      lookupCache.set(cacheKey, result);
+    }
     return result;
   }
 

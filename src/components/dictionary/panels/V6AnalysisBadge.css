@@ -1,0 +1,191 @@
+/**
+ * V6AnalysisBadge.css - Compact V6 Analysis Indicator Styles
+ */
+
+/* =============================================================================
+   BASE BADGE
+   ============================================================================= */
+
+.v6-analysis-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--badge-bg, #f3f4f6);
+  border: 1px solid var(--badge-color, #9ca3af);
+  border-radius: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  cursor: default;
+  transition: all 0.2s ease;
+}
+
+.v6-analysis-badge.clickable {
+  cursor: pointer;
+}
+
+.v6-analysis-badge.clickable:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.v6-analysis-badge.no-analysis,
+.v6-analysis-badge.no-data {
+  opacity: 0.5;
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+/* =============================================================================
+   SIZE VARIANTS
+   ============================================================================= */
+
+.v6-analysis-badge.size-small {
+  padding: 2px 6px;
+  gap: 4px;
+  font-size: 0.7rem;
+  border-radius: 6px;
+}
+
+.v6-analysis-badge.size-medium {
+  padding: 4px 10px;
+  gap: 6px;
+  font-size: 0.75rem;
+}
+
+.v6-analysis-badge.size-large {
+  padding: 6px 14px;
+  gap: 8px;
+  font-size: 0.85rem;
+  border-radius: 10px;
+}
+
+/* =============================================================================
+   CONFIDENCE LEVELS
+   ============================================================================= */
+
+.v6-analysis-badge.level-high {
+  --badge-color: #16a34a;
+  --badge-bg: #dcfce7;
+}
+
+.v6-analysis-badge.level-medium {
+  --badge-color: #ca8a04;
+  --badge-bg: #fef9c3;
+}
+
+.v6-analysis-badge.level-low {
+  --badge-color: #dc2626;
+  --badge-bg: #fee2e2;
+}
+
+/* =============================================================================
+   BADGE ELEMENTS
+   ============================================================================= */
+
+.badge-label {
+  font-weight: 700;
+  font-size: 0.65em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--badge-color, #6b7280);
+  background: rgba(0, 0, 0, 0.08);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.badge-confidence {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-weight: 600;
+  color: var(--badge-color, #6b7280);
+}
+
+.confidence-icon {
+  font-size: 0.9em;
+}
+
+.confidence-value {
+  font-size: 0.95em;
+}
+
+.badge-root {
+  font-size: 1.1em;
+  font-weight: 600;
+  font-family: 'David Libre', 'SBL Hebrew', serif;
+  color: var(--text-primary, #1f2937);
+  padding: 0 4px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 4px;
+}
+
+.badge-weak {
+  font-size: 0.9em;
+}
+
+.badge-binyan {
+  font-size: 0.85em;
+  font-family: 'David Libre', 'SBL Hebrew', serif;
+  color: var(--text-secondary, #6b7280);
+  padding: 1px 4px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+
+.badge-hypotheses {
+  font-size: 0.7em;
+  font-weight: 600;
+  color: var(--text-tertiary, #9ca3af);
+  background: rgba(0, 0, 0, 0.08);
+  padding: 1px 4px;
+  border-radius: 8px;
+}
+
+.badge-status {
+  font-weight: 500;
+  color: #9ca3af;
+}
+
+/* =============================================================================
+   DARK MODE
+   ============================================================================= */
+
+@media (prefers-color-scheme: dark) {
+  .v6-analysis-badge {
+    background: color-mix(in srgb, var(--badge-bg) 30%, #1f2937);
+  }
+
+  .v6-analysis-badge.no-analysis,
+  .v6-analysis-badge.no-data {
+    background: #374151;
+    border-color: #4b5563;
+  }
+
+  .badge-label {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .badge-root {
+    color: #f3f4f6;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .badge-hypotheses {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* =============================================================================
+   RESPONSIVE
+   ============================================================================= */
+
+@media (max-width: 400px) {
+  .v6-analysis-badge.size-large {
+    padding: 4px 10px;
+    font-size: 0.8rem;
+  }
+
+  .badge-binyan {
+    display: none;
+  }
+}

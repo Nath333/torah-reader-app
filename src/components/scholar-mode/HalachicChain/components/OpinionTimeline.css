@@ -1,0 +1,552 @@
+/**
+ * OpinionTimeline Styles
+ * 
+ * Clean, professional styling for the halachic opinion timeline
+ */
+
+.opinion-timeline {
+  background: var(--bg-card, #ffffff);
+  border-radius: 12px;
+  padding: 20px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.opinion-timeline-empty {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted, #6b7280);
+  font-style: italic;
+}
+
+/* Header */
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--border-color, #e5e7eb);
+}
+
+.timeline-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+  margin: 0;
+}
+
+.timeline-legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  color: var(--text-secondary, #4b5563);
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legend-label {
+  white-space: nowrap;
+}
+
+/* Timeline Content */
+.timeline-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Section */
+.timeline-section {
+  position: relative;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.section-line {
+  width: 4px;
+  height: 24px;
+  border-radius: 2px;
+}
+
+.section-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.section-title .hebrew {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--section-color);
+}
+
+.section-title .english {
+  font-size: 0.875rem;
+  color: var(--text-muted, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.section-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-left: 16px;
+  border-left: 2px solid var(--border-color, #e5e7eb);
+  margin-left: 1px;
+}
+
+/* Opinion Card */
+.opinion-card {
+  background: var(--bg-elevated, #f9fafb);
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.opinion-card:hover {
+  background: var(--bg-hover, #f3f4f6);
+  border-color: var(--border-color, #e5e7eb);
+}
+
+.opinion-card.focused {
+  border-color: var(--primary-color, #3b82f6);
+  background: var(--bg-focus, #eff6ff);
+}
+
+.opinion-card.status-accepted {
+  border-left: 4px solid #22c55e;
+}
+
+.opinion-card.status-rejected {
+  border-left: 4px solid #ef4444;
+  opacity: 0.7;
+}
+
+.opinion-card.status-minority {
+  border-left: 4px solid #f59e0b;
+}
+
+.opinion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.opinion-authority {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.authority-hebrew {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+}
+
+.opinion-ruling {
+  color: var(--text-secondary, #4b5563);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.expand-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color, #e5e7eb);
+  background: var(--bg-card, #ffffff);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: var(--text-secondary, #4b5563);
+  transition: all 0.2s ease;
+}
+
+.expand-btn:hover {
+  background: var(--bg-hover, #f3f4f6);
+  border-color: var(--primary-color, #3b82f6);
+}
+
+/* Opinion Details */
+.opinion-details {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color, #e5e7eb);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-row {
+  display: flex;
+  gap: 8px;
+}
+
+.detail-label {
+  font-weight: 500;
+  color: var(--text-muted, #6b7280);
+  white-space: nowrap;
+  font-size: 0.875rem;
+}
+
+.detail-value {
+  color: var(--text-secondary, #4b5563);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+/* Status Badge */
+.status-badge {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.status-badge.accepted {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-badge.rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-badge.minority {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge.unknown {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+/* Rishon Card */
+.rishon-card {
+  background: var(--bg-elevated, #f9fafb);
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.rishon-card:hover {
+  background: var(--bg-hover, #f3f4f6);
+  border-color: var(--border-color, #e5e7eb);
+}
+
+.rishon-card.focused {
+  border-color: #a855f7;
+  background: #faf5ff;
+}
+
+.rishon-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rishon-authority {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rishon-authority .hebrew {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+}
+
+.rishon-authority .english {
+  font-size: 0.8rem;
+  color: var(--text-muted, #6b7280);
+}
+
+.rishon-ruling {
+  padding: 4px 12px;
+  background: #f3e8ff;
+  color: #7c3aed;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.rishon-details {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color, #e5e7eb);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.source-ref {
+  font-family: monospace;
+  font-size: 0.8rem;
+  background: #f3f4f6;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Analysis Card */
+.analysis-card {
+  display: flex;
+  gap: 12px;
+  background: var(--bg-elevated, #f9fafb);
+  border-radius: 8px;
+  padding: 16px;
+  border-left: 3px solid #6b7280;
+}
+
+.analysis-number {
+  width: 28px;
+  height: 28px;
+  background: #6b7280;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.analysis-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.analysis-question,
+.analysis-resolution {
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.analysis-question .label,
+.analysis-resolution .label {
+  font-weight: 600;
+  margin-right: 8px;
+  color: var(--text-muted, #6b7280);
+}
+
+.analysis-question {
+  color: var(--text-primary, #111827);
+}
+
+.analysis-resolution {
+  color: var(--text-secondary, #4b5563);
+}
+
+/* Psak Card */
+.psak-card {
+  background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
+  border-radius: 12px;
+  padding: 20px;
+  border: 2px solid #eab308;
+  position: relative;
+}
+
+.psak-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.psak-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #854d0e;
+}
+
+.psak-source {
+  font-size: 0.875rem;
+  color: #a16207;
+  font-weight: 500;
+}
+
+.psak-ruling {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #713f12;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 8px;
+}
+
+.psak-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.majority-indicator {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.majority-label {
+  font-weight: 500;
+  color: #854d0e;
+}
+
+.majority-count {
+  background: #eab308;
+  color: white;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.minority-opinion {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+.minority-label {
+  color: #a16207;
+}
+
+.minority-value {
+  color: #713f12;
+  font-style: italic;
+}
+
+.psak-location {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: #a16207;
+  font-family: monospace;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+}
+
+.disputed-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #f97316;
+  color: white;
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .opinion-timeline {
+    background: var(--bg-card-dark, #1f2937);
+  }
+
+  .timeline-title {
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .legend-label {
+    color: var(--text-secondary-dark, #9ca3af);
+  }
+
+  .section-title .english {
+    color: var(--text-muted-dark, #6b7280);
+  }
+
+  .opinion-card,
+  .rishon-card,
+  .analysis-card {
+    background: var(--bg-elevated-dark, #374151);
+  }
+
+  .opinion-card:hover,
+  .rishon-card:hover {
+    background: var(--bg-hover-dark, #4b5563);
+  }
+
+  .authority-hebrew,
+  .rishon-authority .hebrew {
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .opinion-ruling,
+  .detail-value {
+    color: var(--text-secondary-dark, #d1d5db);
+  }
+
+  .detail-label {
+    color: var(--text-muted-dark, #9ca3af);
+  }
+
+  .expand-btn {
+    background: var(--bg-card-dark, #1f2937);
+    border-color: var(--border-color-dark, #4b5563);
+    color: var(--text-secondary-dark, #d1d5db);
+  }
+
+  .source-ref {
+    background: var(--bg-hover-dark, #4b5563);
+    color: var(--text-secondary-dark, #d1d5db);
+  }
+
+  .psak-card {
+    background: linear-gradient(135deg, #451a03 0%, #713f12 100%);
+    border-color: #ca8a04;
+  }
+
+  .psak-title,
+  .psak-source,
+  .majority-label,
+  .minority-label,
+  .minority-value,
+  .psak-location {
+    color: #fde68a;
+  }
+
+  .psak-ruling {
+    color: #fef3c7;
+    background: rgba(0, 0, 0, 0.3);
+  }
+}

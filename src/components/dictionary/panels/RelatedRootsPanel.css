@@ -1,0 +1,477 @@
+/**
+ * RelatedRootsPanel.css - PRO SCHOLAR V13 Related Roots Styling
+ */
+
+/* =============================================================================
+   BASE PANEL
+   ============================================================================= */
+
+.related-roots-panel {
+  margin-top: 12px;
+  border: 1px solid var(--border-light, #e5e7eb);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--surface, #fff);
+}
+
+.related-roots-panel.dark {
+  background: linear-gradient(135deg, #451a03 0%, #78350f 100%);
+  border-color: #92400e;
+}
+
+/* =============================================================================
+   HEADER (Summary)
+   ============================================================================= */
+
+.rrp-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  cursor: pointer;
+  user-select: none;
+  font-weight: 600;
+  color: #92400e;
+  list-style: none;
+}
+
+.rrp-header::-webkit-details-marker {
+  display: none;
+}
+
+.related-roots-panel.dark .rrp-header {
+  color: #fcd34d;
+}
+
+.rrp-header:hover {
+  background: rgba(251, 191, 36, 0.2);
+}
+
+.rrp-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.rrp-title {
+  font-size: 0.9rem;
+}
+
+.rrp-hebrew {
+  font-family: 'SBL Hebrew', 'David Libre', serif;
+  font-size: 0.85rem;
+  opacity: 0.8;
+  margin-left: auto;
+  direction: rtl;
+}
+
+.rrp-count {
+  background: rgba(251, 191, 36, 0.3);
+  color: #78350f;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.related-roots-panel.dark .rrp-count {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fcd34d;
+}
+
+/* =============================================================================
+   CONTENT
+   ============================================================================= */
+
+.rrp-content {
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.related-roots-panel.dark .rrp-content {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* =============================================================================
+   SECTIONS
+   ============================================================================= */
+
+.rrp-section {
+  margin-bottom: 16px;
+}
+
+.rrp-section:last-of-type {
+  margin-bottom: 0;
+}
+
+.rrp-section-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #78350f;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px dashed rgba(120, 53, 15, 0.2);
+}
+
+.related-roots-panel.dark .rrp-section-header {
+  color: #fbbf24;
+  border-color: rgba(251, 191, 36, 0.2);
+}
+
+.rrp-section-icon {
+  font-size: 1rem;
+}
+
+.rrp-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* =============================================================================
+   RELATED ROOT ITEM
+   ============================================================================= */
+
+.related-root-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: white;
+  border: 1px solid var(--relation-color, #e5e7eb);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 0.85rem;
+}
+
+.related-root-item:hover {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  border-color: var(--relation-color, #3b82f6);
+}
+
+.related-roots-panel.dark .related-root-item {
+  background: rgba(0, 0, 0, 0.3);
+  border-color: var(--relation-color, #4b5563);
+}
+
+.rri-relation-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 2px 6px;
+  background: var(--relation-color, #6b7280);
+  border-radius: 4px;
+  color: white;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.rri-icon {
+  font-size: 0.8rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+.rri-label {
+  font-family: 'SBL Hebrew', 'David Libre', serif;
+  direction: rtl;
+}
+
+.rri-root {
+  font-family: 'SBL Hebrew', 'David Libre', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2937;
+  direction: rtl;
+}
+
+.related-roots-panel.dark .rri-root {
+  color: #f9fafb;
+}
+
+.rri-meaning {
+  font-size: 0.8rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.related-roots-panel.dark .rri-meaning {
+  color: #9ca3af;
+}
+
+.rri-note {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =============================================================================
+   CONNECTIONS (Synonym/Antonym chains)
+   ============================================================================= */
+
+.rrp-connection {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: white;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.related-roots-panel.dark .rrp-connection {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.rrp-source-word {
+  font-family: 'SBL Hebrew', 'David Libre', serif;
+  font-weight: 600;
+  color: #374151;
+}
+
+.related-roots-panel.dark .rrp-source-word {
+  color: #e5e7eb;
+}
+
+.rrp-arrow {
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+.rrp-synonym,
+.rrp-antonym {
+  font-family: 'SBL Hebrew', 'David Libre', serif;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.rrp-synonym {
+  background: rgba(34, 197, 94, 0.15);
+  color: #166534;
+}
+
+.rrp-synonym:hover {
+  background: rgba(34, 197, 94, 0.3);
+}
+
+.rrp-antonym {
+  background: rgba(239, 68, 68, 0.15);
+  color: #991b1b;
+}
+
+.rrp-antonym:hover {
+  background: rgba(239, 68, 68, 0.3);
+}
+
+.related-roots-panel.dark .rrp-synonym {
+  background: rgba(34, 197, 94, 0.2);
+  color: #86efac;
+}
+
+.related-roots-panel.dark .rrp-antonym {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
+
+/* =============================================================================
+   FOOTER
+   ============================================================================= */
+
+.rrp-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(120, 53, 15, 0.2);
+  font-size: 0.75rem;
+  color: #78350f;
+  font-style: italic;
+}
+
+.related-roots-panel.dark .rrp-footer {
+  border-color: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+}
+
+.rrp-note-icon {
+  font-size: 0.9rem;
+}
+
+/* =============================================================================
+   COMPACT MODE
+   ============================================================================= */
+
+.related-roots-panel.compact .rrp-header {
+  padding: 8px 12px;
+}
+
+.related-roots-panel.compact .rrp-content {
+  padding: 8px 12px;
+}
+
+.related-roots-panel.compact .related-root-item {
+  padding: 4px 8px;
+  font-size: 0.8rem;
+}
+
+.related-roots-panel.compact .rri-note {
+  display: none;
+}
+
+/* =============================================================================
+   RESPONSIVE
+   ============================================================================= */
+
+@media (max-width: 480px) {
+  .rrp-hebrew {
+    display: none;
+  }
+
+  .rri-meaning {
+    display: none;
+  }
+
+  .rri-note {
+    display: none;
+  }
+}
+
+/* =============================================================================
+   PRO SCHOLAR V17: PARALLEL ROOTS SECTION
+   Shows roots with similar meanings side-by-side
+   ============================================================================= */
+
+.rrp-parallel {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(147, 51, 234, 0.08));
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.related-roots-panel.dark .rrp-parallel {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(147, 51, 234, 0.15));
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.rrp-section-count {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-left: auto;
+}
+
+.rrp-parallel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rrp-parallel-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: white;
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.related-roots-panel.dark .rrp-parallel-item {
+  background: rgba(31, 41, 55, 0.6);
+  border-color: rgba(59, 130, 246, 0.25);
+}
+
+.rrp-parallel-item:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 1px 4px rgba(59, 130, 246, 0.15);
+}
+
+.rrp-parallel-item.synonym .rrp-parallel-rel {
+  color: #22c55e;
+}
+
+.rrp-parallel-item.antonym .rrp-parallel-rel {
+  color: #ef4444;
+}
+
+.rrp-parallel-rel {
+  font-size: 1.1rem;
+  font-weight: bold;
+  min-width: 20px;
+  text-align: center;
+}
+
+.rrp-parallel-word {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #3b82f6;
+  font-family: 'SBL Hebrew', 'David Libre', serif;
+}
+
+.related-roots-panel.dark .rrp-parallel-word {
+  color: #60a5fa;
+}
+
+.rrp-parallel-def {
+  flex: 1;
+  font-size: 0.8rem;
+  color: var(--text-secondary, #6b7280);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.related-roots-panel.dark .rrp-parallel-def {
+  color: var(--text-secondary-dark, #9ca3af);
+}
+
+.rrp-show-more {
+  background: transparent;
+  border: 1px dashed rgba(59, 130, 246, 0.4);
+  border-radius: 6px;
+  padding: 6px 12px;
+  color: #3b82f6;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.rrp-show-more:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+}
+
+/* Compact mode for parallel roots */
+.related-roots-panel.compact .rrp-parallel {
+  padding: 8px;
+}
+
+.related-roots-panel.compact .rrp-parallel-item {
+  padding: 6px 8px;
+}
+
+.related-roots-panel.compact .rrp-parallel-def {
+  display: none;
+}

@@ -80,7 +80,14 @@ const TabButton = React.memo(({
       data-tab-id={id}
     >
       <span className="tab-icon" aria-hidden="true">{icon}</span>
-      <span className="tab-label">{label}</span>
+      {label && label.includes(' ') ? (
+        <span className="tab-label-bilingual">
+          <span className="tab-label-hebrew">{label.split(' ')[0]}</span>
+          <span className="tab-label-english">{label.split(' ').slice(1).join(' ')}</span>
+        </span>
+      ) : (
+        <span className="tab-label">{label}</span>
+      )}
       {badge > 0 && (
         <span
           className={`tab-badge ${badge > 9 ? 'two-digit' : ''}`}

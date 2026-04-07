@@ -1,0 +1,529 @@
+/**
+ * V6TelemetryDashboard.css - Performance Dashboard Styles
+ */
+
+/* =============================================================================
+   BASE PANEL
+   ============================================================================= */
+
+.v6-telemetry-dashboard {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-radius: 14px;
+  padding: 20px;
+  font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+  color: #e2e8f0;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.v6-telemetry-dashboard.compact {
+  padding: 14px;
+}
+
+/* =============================================================================
+   HEADER
+   ============================================================================= */
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-icon {
+  font-size: 1.3rem;
+}
+
+.header-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.version-badge {
+  font-size: 0.7rem;
+  background: rgba(59, 130, 246, 0.3);
+  color: #93c5fd;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.status-indicator {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.status-indicator.active {
+  color: #4ade80;
+}
+
+/* =============================================================================
+   STATS GRID
+   ============================================================================= */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 14px;
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+.stat-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.stat-icon {
+  font-size: 0.9rem;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--stat-color, #e2e8f0);
+  margin-bottom: 4px;
+}
+
+.stat-desc {
+  font-size: 0.65rem;
+  color: #64748b;
+}
+
+/* =============================================================================
+   PERFORMANCE SECTION
+   ============================================================================= */
+
+.performance-section {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #94a3b8;
+  margin-bottom: 14px;
+  font-weight: 600;
+}
+
+/* Progress Bar */
+.progress-container {
+  margin-bottom: 16px;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.progress-label {
+  font-size: 0.75rem;
+  color: #cbd5e1;
+}
+
+.progress-value {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.progress-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* Metrics Row */
+.metric-row {
+  display: flex;
+  gap: 16px;
+}
+
+.metric {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.metric-label {
+  display: block;
+  font-size: 0.65rem;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+
+.metric-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+/* =============================================================================
+   DICTIONARY SECTION
+   ============================================================================= */
+
+.dictionary-section {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.dictionary-stats {
+  display: flex;
+  gap: 10px;
+}
+
+.dict-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.dict-name {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+
+.dict-count {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+/* =============================================================================
+   ACTIONS
+   ============================================================================= */
+
+.actions-section {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.action-btn.action-default {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.action-btn.action-default:hover {
+  background: rgba(59, 130, 246, 0.3);
+}
+
+.action-btn.action-warning {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fcd34d;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.action-btn.action-warning:hover {
+  background: rgba(245, 158, 11, 0.3);
+}
+
+.action-btn.action-danger {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.action-btn.action-danger:hover {
+  background: rgba(239, 68, 68, 0.3);
+}
+
+.action-icon {
+  font-size: 0.9rem;
+}
+
+.action-label {
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* =============================================================================
+   FOOTER
+   ============================================================================= */
+
+.dashboard-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.65rem;
+  color: #64748b;
+}
+
+/* =============================================================================
+   COMPACT MODE
+   ============================================================================= */
+
+.v6-telemetry-dashboard.compact .stats-grid {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.v6-telemetry-dashboard.compact .stat-value {
+  font-size: 1.3rem;
+}
+
+.v6-telemetry-dashboard.compact .metric-row {
+  flex-wrap: wrap;
+}
+
+.v6-telemetry-dashboard.compact .metric {
+  flex: 1 1 calc(50% - 8px);
+}
+
+/* =============================================================================
+   GLOBAL CACHE ORCHESTRATOR SECTION (V6.2)
+   ============================================================================= */
+
+.global-cache-section {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.section-header-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 14px;
+}
+
+.section-header-btn .section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.section-icon {
+  font-size: 1rem;
+}
+
+.chevron {
+  color: #94a3b8;
+  font-size: 0.75rem;
+  transition: transform 0.2s ease;
+}
+
+.global-stats-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.global-stat {
+  flex: 1;
+  min-width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  background: rgba(139, 92, 246, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.global-stat .stat-label {
+  font-size: 0.65rem;
+  color: #a78bfa;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.global-stat .stat-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #c4b5fd;
+}
+
+/* Cache Details Table */
+.cache-details {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cache-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.7rem;
+  margin-bottom: 12px;
+}
+
+.cache-table th {
+  text-align: left;
+  padding: 8px 6px;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cache-table td {
+  padding: 8px 6px;
+  color: #e2e8f0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cache-table tr:last-child td {
+  border-bottom: none;
+}
+
+.cache-table .cache-name {
+  color: #a78bfa;
+  font-weight: 500;
+}
+
+.cache-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.cache-action-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  background: rgba(139, 92, 246, 0.15);
+  color: #c4b5fd;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.cache-action-btn:hover {
+  background: rgba(139, 92, 246, 0.25);
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+/* =============================================================================
+   RESPONSIVE
+   ============================================================================= */
+
+@media (max-width: 640px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .metric-row {
+    flex-wrap: wrap;
+  }
+
+  .metric {
+    flex: 1 1 100%;
+  }
+
+  .dictionary-stats {
+    flex-wrap: wrap;
+  }
+
+  .dict-stat {
+    flex: 1 1 calc(50% - 5px);
+  }
+
+  .actions-section {
+    flex-wrap: wrap;
+  }
+
+  .action-btn {
+    flex: 1 1 calc(50% - 5px);
+  }
+
+  .dashboard-footer {
+    flex-direction: column;
+    gap: 4px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 400px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

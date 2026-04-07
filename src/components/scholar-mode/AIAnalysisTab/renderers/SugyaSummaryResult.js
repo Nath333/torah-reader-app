@@ -5,7 +5,7 @@
 import React, { memo } from 'react';
 
 export const SugyaSummaryResult = memo(({ data }) => {
-  const { title, oneLineSummary, background, structure, keyQuestion, mainPositions, resolution, bottomLine, keyTerms } = data;
+  const { title, oneLineSummary, background, structure, keyQuestion, mainPositions, resolution, bottomLine, keyTerms } = data || {};
 
   return (
     <div className="sugya-summary-result">

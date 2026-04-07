@@ -1540,12 +1540,20 @@ export async function waitForPreload() {
 
   // Preload in progress - wait for it
   if (preloadPromise) {
-    await preloadPromise;
-    return preloadComplete;
+    try {
+      await preloadPromise;
+    } catch {
+      // Preload failed — fall through to retry below
+    }
+    if (preloadComplete) return true;
   }
 
-  // Preload hasn't started - start it now and wait
-  await initializePreload();
+  // Preload hasn't started or previous attempt failed - start/retry
+  try {
+    await initializePreload();
+  } catch {
+    // Initialization failed — return current state
+  }
   return preloadComplete;
 }
 

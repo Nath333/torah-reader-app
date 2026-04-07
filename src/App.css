@@ -19,6 +19,8 @@
 @import './styles/enhancements.css';
 /* Import responsive fixes for dynamic UI (console open, screen resize) */
 @import './styles/responsive-fixes.css';
+/* Import Scholar Mode text visibility fixes (dark mode contrast improvements) */
+@import './components/scholar-mode/ScholarModeTextFixes.css';
 
 /* -----------------------------------------------------------------------------
    Root & Global Performance Settings

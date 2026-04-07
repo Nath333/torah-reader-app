@@ -19,26 +19,26 @@ const SERVICES = {
   // Priority 1: Core dictionaries (essential for word lookup)
   jastrow: {
     priority: 1,
-    loader: () => import('./dictionaryLoader').then(m => m.preloadJastrow?.() || Promise.resolve()),
+    loader: () => import('./dictionaries/dictionaryLoader').then(m => m.preloadJastrow?.() || Promise.resolve()),
     critical: true
   },
   bdb: {
     priority: 1,
-    loader: () => import('./dictionaryLoader').then(m => m.preloadBDB?.() || Promise.resolve()),
+    loader: () => import('./dictionaries/dictionaryLoader').then(m => m.preloadBDB?.() || Promise.resolve()),
     critical: true
   },
 
   // Priority 2: Commentary services
   rashiService: {
     priority: 2,
-    loader: () => import('./rashiService').then(m => m.initializeCache?.() || Promise.resolve()),
+    loader: () => import('./commentary/rashiService').then(m => m.initializeCache?.() || Promise.resolve()),
     critical: false
   },
 
   // Priority 3: Enhanced lookup services
   scholarlyLexicon: {
     priority: 3,
-    loader: () => import('./scholarlyLexiconService').then(m => m.initialize?.() || Promise.resolve()),
+    loader: () => import('./dictionaries/scholarlyLexiconService').then(m => m.initialize?.() || Promise.resolve()),
     critical: false
   },
 

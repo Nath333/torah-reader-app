@@ -537,7 +537,7 @@ const TierLegend = ({ compact = true }) => {
         <div className="tier-item bronze">
           <span className="tier-icon">🥉</span>
           <span className="tier-label">Bronze</span>
-          <span className="tier-desc">Supplementary (computed/inferred)</span>
+          <span className="tier-desc">Curated vocabulary (local lists)</span>
         </div>
       </div>
       <div className="tier-legend-match-types">
@@ -617,7 +617,7 @@ const SourceBadge = ({
     specialization || info?.specialization || null,
     citations ? `Standard citation: ${citations}` : null,
     '',
-    `Tier: ${tierLevel === 1 ? '🥇 Gold (Academic)' : tierLevel === 2 ? '🥈 Silver (Reference)' : '🥉 Bronze (Supplementary)'}`,
+    `Tier: ${tierLevel === 1 ? '🥇 Academic' : tierLevel === 2 ? '🥈 Reference' : '🥉 Curated'}`,
     `Level: ${tierLabel}`,
     matchInfo ? `Match: ${matchInfo.title}` : null,
     confidence ? `Confidence: ${confidence}%` : null,
@@ -979,8 +979,8 @@ const DictionaryTranslation = ({ text, className = '' }) => {
       {/* PRO SCHOLAR V7: Enhanced scholarly footer */}
       <div className="scholar-footer">
         <div className="scholar-tip">
-          <strong>📊 Source Tiers:</strong> 🥇 Gold = Academic standard (Jastrow 1903, BDB 1906, CAL) •
-          🥈 Silver = Reliable reference • 🥉 Bronze = Supplementary
+          <strong>📊 Source Tiers:</strong> 🥇 Academic (Jastrow, BDB, CAL) •
+          🥈 Reference (Strong's, Klein) • 🥉 Curated (local vocabulary)
         </div>
         <div className="scholar-tip-secondary">
           <strong>Match Types:</strong> ✓ = Exact match • P = Prefix stripped • R = Root lookup • ~ = Approximate

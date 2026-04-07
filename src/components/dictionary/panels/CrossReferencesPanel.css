@@ -1,0 +1,276 @@
+/**
+ * CrossReferencesPanel.css - PRO SCHOLAR V14
+ * Styling for cross-reference display
+ */
+
+/* =============================================================================
+   BASE PANEL
+   ============================================================================= */
+
+.cross-references-panel {
+  margin-top: 12px;
+  border: 1px solid var(--border-light, #e5e7eb);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--surface, #fff);
+}
+
+/* =============================================================================
+   HEADER
+   ============================================================================= */
+
+.crp-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(59, 130, 246, 0.05);
+  border-bottom: 1px solid var(--border-light, #e5e7eb);
+}
+
+.crp-icon {
+  font-size: 1.1rem;
+}
+
+.crp-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #1e40af;
+}
+
+.crp-hebrew {
+  font-family: 'SBL Hebrew', 'David Libre', serif;
+  font-size: 0.85rem;
+  color: #3b82f6;
+  margin-left: auto;
+}
+
+.crp-count {
+  background: rgba(59, 130, 246, 0.2);
+  color: #1e40af;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* =============================================================================
+   CONTENT
+   ============================================================================= */
+
+.crp-content {
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* =============================================================================
+   GROUPS
+   ============================================================================= */
+
+.crp-group {
+  margin-bottom: 12px;
+}
+
+.crp-group:last-child {
+  margin-bottom: 0;
+}
+
+.crp-group-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px dashed rgba(59, 130, 246, 0.2);
+}
+
+.crp-group-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.crp-group-icon {
+  font-size: 0.9rem;
+}
+
+.crp-group-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* =============================================================================
+   CROSS-REFERENCE ITEM
+   ============================================================================= */
+
+.cross-ref-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: white;
+  border: 1px solid var(--ref-color, #e5e7eb);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 0.85rem;
+}
+
+.cross-ref-item:hover {
+  box-shadow: 0 1px 4px rgba(59, 130, 246, 0.15);
+  border-color: var(--ref-color, #3b82f6);
+}
+
+.cri-type-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 2px 6px;
+  background: var(--ref-color, #6b7280);
+  border-radius: 4px;
+  color: white;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.cri-icon {
+  font-size: 0.75rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+.cri-label {
+  font-family: 'SBL Hebrew', 'David Libre', serif;
+  direction: rtl;
+}
+
+.cri-word {
+  font-family: 'SBL Hebrew', 'David Libre', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2937;
+  direction: rtl;
+}
+
+.cri-source {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.65rem;
+  color: #9ca3af;
+  padding: 1px 4px;
+  background: rgba(156, 163, 175, 0.15);
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+/* =============================================================================
+   FOOTER
+   ============================================================================= */
+
+.crp-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: rgba(59, 130, 246, 0.05);
+  border-top: 1px dashed rgba(59, 130, 246, 0.2);
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.crp-note-text {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.crp-note-icon {
+  font-size: 0.85rem;
+}
+
+/* =============================================================================
+   COMPACT MODE
+   ============================================================================= */
+
+.cross-references-panel.compact .crp-header {
+  padding: 8px 12px;
+}
+
+.cross-references-panel.compact .crp-content {
+  padding: 8px 12px;
+}
+
+.cross-references-panel.compact .cross-ref-item {
+  padding: 4px 8px;
+  font-size: 0.8rem;
+}
+
+.cross-references-panel.compact .cri-source {
+  display: none;
+}
+
+/* =============================================================================
+   DARK MODE
+   ============================================================================= */
+
+.cross-references-panel.dark {
+  background: linear-gradient(135deg, #1e3a5f 0%, #1e40af 100%);
+  border-color: #3b82f6;
+}
+
+.cross-references-panel.dark .crp-header {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.cross-references-panel.dark .crp-title {
+  color: #93c5fd;
+}
+
+.cross-references-panel.dark .crp-content {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.cross-references-panel.dark .crp-group-header {
+  color: #e5e7eb;
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.cross-references-panel.dark .crp-group-label {
+  color: #d1d5db;
+}
+
+.cross-references-panel.dark .cross-ref-item {
+  background: rgba(0, 0, 0, 0.3);
+  border-color: var(--ref-color, #4b5563);
+}
+
+.cross-references-panel.dark .cri-word {
+  color: #f9fafb;
+}
+
+.cross-references-panel.dark .crp-note-text {
+  color: #9ca3af;
+}
+
+/* =============================================================================
+   RESPONSIVE
+   ============================================================================= */
+
+@media (max-width: 480px) {
+  .crp-hebrew {
+    display: none;
+  }
+
+  .cri-source {
+    display: none;
+  }
+}

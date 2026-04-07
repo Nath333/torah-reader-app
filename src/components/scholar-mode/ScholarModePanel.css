@@ -256,12 +256,13 @@
 }
 
 .glossed-ref {
-  font-size: 0.7rem;
-  color: var(--text-muted);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
   font-family: var(--font-hebrew);
   padding: 2px 8px;
   background: var(--bg-elevated);
   border-radius: 8px;
+  font-weight: 500;
 }
 
 /* Quick Layer Toggle Buttons */
@@ -322,14 +323,14 @@
 }
 
 .glossed-hint {
-  font-size: 0.6rem;
-  color: var(--text-muted);
+  font-size: 0.7rem;
+  color: var(--text-secondary);
   font-style: italic;
   margin-left: auto;
   padding: 2px 8px;
   background: var(--bg-elevated);
   border-radius: 10px;
-  opacity: 0.7;
+  opacity: 0.85;
 }
 
 /* Text Layer Selector Dropdown */
@@ -471,8 +472,8 @@
 }
 
 .glossed-empty-state .empty-message {
-  font-size: 0.8rem;
-  color: var(--text-muted);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
   max-width: 200px;
 }
 
@@ -561,7 +562,7 @@
 
 .dark-mode .glossed-ref {
   background: var(--bg-elevated-dark, #1e293b);
-  color: var(--text-muted-dark, #94a3b8);
+  color: var(--text-secondary-dark, #94a3b8);
 }
 
 .dark-mode .glossed-hint {
@@ -987,6 +988,37 @@
 
 .tab-icon { font-size: 0.8rem; }
 .tab-label { font-weight: 500; font-size: 0.65rem; }
+
+/* Bilingual tab labels - Hebrew + English stacked */
+.tab-label-bilingual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.2;
+  gap: 1px;
+}
+
+.tab-label-hebrew {
+  font-weight: 700;
+  font-size: 0.78rem;
+  font-family: 'SBL Hebrew', 'David', 'Noto Sans Hebrew', serif;
+}
+
+.tab-label-english {
+  font-weight: 600;
+  font-size: 0.6rem;
+  opacity: 0.85;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.scholar-tab.active .tab-label-english {
+  opacity: 1;
+}
+
+.scholar-tab:hover .tab-label-english {
+  opacity: 0.9;
+}
 .tab-badge {
   background: rgba(0, 0, 0, 0.1);
   font-size: 0.55rem;
@@ -1147,7 +1179,7 @@
   gap: 8px;
   font-size: 0.7rem;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin: 20px 0 12px;
@@ -1324,7 +1356,7 @@
 
 .empty-suggestion {
   font-size: 0.8rem;
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 .empty-action {
@@ -1565,17 +1597,18 @@
 .commentary-ref,
 .crossref-ref {
   margin-left: auto;
-  font-size: 0.7rem;
-  color: var(--text-muted);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
   font-family: var(--font-hebrew);
   padding: 2px 8px;
   background: var(--bg-tertiary, var(--bg-subtle));
   border-radius: 4px;
+  font-weight: 500;
 }
 
 .expand-icon {
-  font-size: 0.6rem;
-  color: var(--text-muted);
+  font-size: 0.65rem;
+  color: var(--text-secondary);
   transition: transform var(--scholar-transition);
 }
 .commentary-item.expanded .expand-icon { transform: rotate(180deg); }
@@ -4474,6 +4507,7 @@
   .tab-navigation { padding: 10px 12px; }
   .scholar-tab { padding: 6px 10px; font-size: 0.75rem; }
   .tab-label { display: none; }
+  .tab-label-bilingual { display: none; }
   .tab-icon { font-size: 1.1rem; }
   .tzurat-hadaf-columns { grid-template-columns: 1fr; }
   .tzurat-column { border-left: none !important; border-right: none !important; border-bottom: 1px solid #c4b49a; }
@@ -9410,6 +9444,10 @@
   }
 
   .scholar-tab .tab-label {
+    display: none;
+  }
+
+  .scholar-tab .tab-label-bilingual {
     display: none;
   }
 
@@ -17172,4 +17210,302 @@
 
 .dark-mode .deterministic-mode-indicator .indicator-hint {
   color: #9ca3af;
+}
+
+/* =============================================================================
+   Dark Mode Text Visibility Improvements
+   Ensures all text remains readable in dark mode
+   ============================================================================= */
+
+/* Improve dark mode text contrast for secondary text */
+.dark-mode .tab-label-english {
+  opacity: 0.9;
+  color: #e2e8f0;
+}
+
+.dark-mode .scholar-tab.active .tab-label-english {
+  opacity: 1;
+  color: #ffffff;
+}
+
+/* Ensure commentary and entity refs are visible */
+.dark-mode .commentary-ref,
+.dark-mode .crossref-ref {
+  background: rgba(30, 41, 59, 0.8);
+  color: #94a3b8;
+  border: 1px solid rgba(71, 85, 105, 0.5);
+}
+
+/* Expand icon visibility in dark mode */
+.dark-mode .expand-icon {
+  color: #94a3b8;
+}
+
+/* Pattern labels visibility */
+.dark-mode .pattern-label {
+  color: #94a3b8;
+}
+
+/* Empty states */
+.dark-mode .empty-suggestion {
+  color: #94a3b8;
+}
+
+/* Provider model text */
+.dark-mode .provider-model {
+  color: #94a3b8;
+}
+
+/* Selector labels */
+.dark-mode .selector-label {
+  color: #94a3b8;
+}
+
+/* Analyze hint */
+.dark-mode .analyze-hint {
+  color: #94a3b8;
+}
+
+/* No results message */
+.dark-mode .no-results {
+  color: #94a3b8;
+}
+
+/* Empty reference */
+.dark-mode .empty-ref {
+  color: #94a3b8;
+}
+
+/* Topic category and entity category */
+.dark-mode .topic-category,
+.dark-mode .entity-category {
+  background: rgba(30, 41, 59, 0.8);
+  color: #94a3b8;
+  border: 1px solid rgba(71, 85, 105, 0.3);
+}
+
+/* Search placeholders */
+.dark-mode .commentary-search .search-input::placeholder {
+  color: #64748b;
+}
+
+/* Search clear button */
+.dark-mode .commentary-search .search-clear {
+  background: rgba(30, 41, 59, 0.8);
+  color: #94a3b8;
+}
+
+.dark-mode .commentary-search .search-clear:hover {
+  background: #64748b;
+  color: #f1f5f9;
+}
+
+/* Glossed hint in dark mode */
+.dark-mode .glossed-hint {
+  background: rgba(30, 41, 59, 0.8);
+  color: #94a3b8;
+}
+
+/* Empty state message */
+.dark-mode .glossed-empty-state .empty-message {
+  color: #94a3b8;
+}
+
+/* Section title in dark mode */
+.dark-mode .section-title {
+  color: #94a3b8;
+}
+
+/* Loading submessage */
+.dark-mode .loading-submessage {
+  color: #94a3b8;
+}
+
+/* History reference and date */
+.dark-mode .history-ref,
+.dark-mode .history-date {
+  color: #94a3b8;
+}
+
+/* History delete button */
+.dark-mode .history-delete {
+  color: #64748b;
+}
+
+.dark-mode .history-delete:hover {
+  color: #f87171;
+}
+
+/* Tooltip fullname and label */
+.dark-mode .tooltip-fullname,
+.dark-mode .tooltip-label {
+  color: #94a3b8;
+}
+
+/* Entity search clear button */
+.dark-mode .entity-search-clear {
+  background: rgba(30, 41, 59, 0.8);
+  color: #94a3b8;
+}
+
+/* Abbr arrow and english */
+.dark-mode .abbr-arrow {
+  color: #94a3b8;
+}
+
+.dark-mode .abbr-english {
+  color: #94a3b8;
+}
+
+/* Multi-verse count */
+.dark-mode .multi-verse-count {
+  color: #a78bfa;
+}
+
+/* Term card transliteration */
+.dark-mode .term-card .term-translit {
+  color: #94a3b8;
+}
+
+/* Topic tags */
+.dark-mode .topic-tag {
+  background: rgba(30, 41, 59, 0.8);
+  color: #94a3b8;
+  border: 1px solid rgba(71, 85, 105, 0.3);
+}
+
+/* No commentary text */
+.dark-mode .no-commentary {
+  color: #94a3b8;
+}
+
+/* Entry source */
+.dark-mode .entry-source {
+  background: rgba(30, 41, 59, 0.8);
+  color: #94a3b8;
+}
+
+/* Lookup header sources */
+.dark-mode .lookup-header .lookup-sources {
+  background: rgba(30, 41, 59, 0.8);
+  color: #94a3b8;
+  border: 1px solid rgba(71, 85, 105, 0.3);
+}
+
+/* Lookup close button */
+.dark-mode .lookup-header .lookup-close {
+  background: rgba(30, 41, 59, 0.8);
+  color: #94a3b8;
+}
+
+/* Lookup hints */
+.dark-mode .lookup-hints {
+  color: #94a3b8;
+}
+
+.dark-mode .lookup-hints kbd {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(71, 85, 105, 0.5);
+  color: #e2e8f0;
+}
+
+/* Lookup lang badge */
+.dark-mode .lookup-lang {
+  background: rgba(30, 41, 59, 0.8);
+  color: #94a3b8;
+  border: 1px solid rgba(71, 85, 105, 0.3);
+}
+
+/* Frequency badge percentile */
+.dark-mode .frequency-badge .freq-percentile {
+  color: #94a3b8;
+}
+
+/* Lexicon full name */
+.dark-mode .lexicon-entry .lexicon-full {
+  color: #94a3b8;
+}
+
+/* Tab loading indicator */
+.dark-mode .lexicon-section-tabs .tab-loading {
+  color: #94a3b8;
+}
+
+/* CAL romanization */
+.dark-mode .cal-romanization {
+  background: rgba(30, 41, 59, 0.8);
+  color: #94a3b8;
+}
+
+/* CAL labels */
+.dark-mode .cal-forms .forms-label,
+.dark-mode .cal-hebrew-equiv .equiv-label,
+.dark-mode .cal-related .related-label {
+  color: #94a3b8;
+}
+
+/* Local count */
+.dark-mode .local-count {
+  color: #94a3b8;
+}
+
+/* Search results count */
+.dark-mode .search-results-count {
+  color: #94a3b8;
+}
+
+/* Mode count */
+.dark-mode .mode-count {
+  background: rgba(30, 41, 59, 0.8);
+  color: #94a3b8;
+  border: 1px solid rgba(71, 85, 105, 0.3);
+}
+
+/* Collapse favorites button */
+.dark-mode .collapse-favorites {
+  color: #94a3b8;
+}
+
+/* Show favorites button */
+.dark-mode .show-favorites-btn {
+  background: rgba(30, 41, 59, 0.5);
+  color: #94a3b8;
+  border-color: rgba(71, 85, 105, 0.5);
+}
+
+/* Word english */
+.dark-mode .word-english {
+  color: #94a3b8;
+}
+
+/* Toggle all button */
+.dark-mode .toggle-all-btn {
+  color: #94a3b8;
+  border-color: rgba(71, 85, 105, 0.5);
+}
+
+/* Topics count */
+.dark-mode .topics-count {
+  color: #94a3b8;
+}
+
+/* RAG source summary */
+.dark-mode .rag-source-summary {
+  color: #94a3b8;
+}
+
+/* RAG metadata */
+.dark-mode .rag-metadata {
+  color: #64748b;
+}
+
+/* RAG reliability unknown */
+.dark-mode .rag-reliability-unknown {
+  color: #94a3b8;
+}
+
+/* Section summary */
+.dark-mode .section-summary {
+  background: rgba(30, 41, 59, 0.8);
+  color: #94a3b8;
 }

@@ -31,7 +31,7 @@ export const SugyaFlowResult = memo(({ data }) => {
     practicalHalacha,
     keyPoints,
     novelInsight
-  } = data;
+  } = data || {};
 
   // Handle sugyaOverview as string or object
   const overviewText = typeof sugyaOverview === 'string' ? sugyaOverview : sugyaOverview?.mainTopic;

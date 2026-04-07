@@ -1,0 +1,779 @@
+/* =============================================================================
+   SCHOLAR MODE TEXT VISIBILITY FIXES - Option A Implementation
+   Comprehensive dark mode text contrast improvements
+   ============================================================================= */
+
+/* =============================================================================
+   1. GLOBAL DARK MODE TEXT CONTRAST FIXES
+   Ensures all text meets WCAG AA standards (4.5:1 contrast)
+   ============================================================================= */
+
+.dark-mode .scholar-mode-panel,
+.dark-mode .scholar-mode-panel * {
+  /* Override muted text to be more visible */
+  --text-muted: #94a3b8 !important;
+  --text-muted-dark: #94a3b8 !important;
+}
+
+/* Force better contrast on all text elements */
+.dark-mode .scholar-mode-panel {
+  color: #f1f5f9;
+}
+
+.dark-mode .scholar-mode-panel .text-muted,
+.dark-mode .scholar-mode-panel [class*="muted"],
+.dark-mode .scholar-mode-panel [class*="hint"],
+.dark-mode .scholar-mode-panel [class*="label"],
+.dark-mode .scholar-mode-panel [class*="sublabel"] {
+  color: #94a3b8 !important;
+}
+
+.dark-mode .scholar-mode-panel .text-secondary,
+.dark-mode .scholar-mode-panel [class*="secondary"] {
+  color: #cbd5e1 !important;
+}
+
+/* =============================================================================
+   2. BADGE & CHIP COLOR FIXES
+   Fixes hardcoded light background colors for dark mode
+   ============================================================================= */
+
+/* Enumeration badges (yellow/amber) */
+.dark-mode .badge-enumeration,
+.dark-mode [class*="enumeration"],
+.dark-mode .cat-badge.enumeration {
+  background: rgba(245, 158, 11, 0.2) !important;
+  color: #fbbf24 !important;
+  border: 1px solid rgba(245, 158, 11, 0.4) !important;
+}
+
+/* Condition badges (blue/indigo) */
+.dark-mode .badge-condition,
+.dark-mode [class*="condition"],
+.dark-mode .cat-badge.condition {
+  background: rgba(99, 102, 241, 0.2) !important;
+  color: #a5b4fc !important;
+  border: 1px solid rgba(99, 102, 241, 0.4) !important;
+}
+
+/* Exception/Error badges (red) */
+.dark-mode .badge-exception,
+.dark-mode [class*="exception"],
+.dark-mode .cat-badge.exception {
+  background: rgba(239, 68, 68, 0.2) !important;
+  color: #fca5a5 !important;
+  border: 1px solid rgba(239, 68, 68, 0.4) !important;
+}
+
+/* Ruling badges (green) */
+.dark-mode .badge-ruling,
+.dark-mode [class*="ruling"],
+.dark-mode .cat-badge.ruling,
+.dark-mode .summary-badge.ruling {
+  background: rgba(16, 185, 129, 0.2) !important;
+  color: #6ee7b7 !important;
+  border: 1px solid rgba(16, 185, 129, 0.4) !important;
+}
+
+/* Dispute badges (purple) */
+.dark-mode .badge-dispute,
+.dark-mode [class*="dispute"],
+.dark-mode .cat-badge.dispute {
+  background: rgba(139, 92, 246, 0.2) !important;
+  color: #c4b5fd !important;
+  border: 1px solid rgba(139, 92, 246, 0.4) !important;
+}
+
+/* Case structure badges (cyan/blue) */
+.dark-mode .badge-case-structure,
+.dark-mode [class*="case-structure"],
+.dark-mode .cat-badge.case-structure {
+  background: rgba(14, 165, 233, 0.2) !important;
+  color: #7dd3fc !important;
+  border: 1px solid rgba(14, 165, 233, 0.4) !important;
+}
+
+/* Summary badges */
+.dark-mode .summary-badge {
+  background: rgba(99, 102, 241, 0.15) !important;
+  color: #a5b4fc !important;
+}
+
+.dark-mode .summary-badge.enumeration {
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: #fbbf24 !important;
+}
+
+.dark-mode .summary-badge.condition {
+  background: rgba(99, 102, 241, 0.15) !important;
+  color: #a5b4fc !important;
+}
+
+.dark-mode .summary-badge.exception {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #fca5a5 !important;
+}
+
+/* =============================================================================
+   3. AI ANALYSIS TAB SPECIFIC FIXES
+   Fixes parchment theme colors for dark mode
+   ============================================================================= */
+
+.dark-mode .ai-analysis-tab,
+.dark-mode [class*="ai-analysis"] {
+  /* Override parchment colors */
+  --text-primary: #f1f5f9 !important;
+  --text-secondary: #cbd5e1 !important;
+  --text-muted: #94a3b8 !important;
+}
+
+.dark-mode .ai-analysis-tab .text-primary,
+.dark-mode .ai-analysis-tab [class*="primary"] {
+  color: #f1f5f9 !important;
+}
+
+.dark-mode .ai-analysis-tab .text-secondary,
+.dark-mode .ai-analysis-tab [class*="secondary"] {
+  color: #cbd5e1 !important;
+}
+
+/* AI Result cards */
+.dark-mode .ai-result,
+.dark-mode [class*="ai-result"] {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+.dark-mode .result-section {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+.dark-mode .result-section .section-content {
+  color: #cbd5e1 !important;
+}
+
+/* =============================================================================
+   4. COMMENTARY TAB FIXES
+   ============================================================================= */
+
+.dark-mode .commentary-item {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+.dark-mode .commentary-name {
+  color: #f1f5f9 !important;
+}
+
+.dark-mode .commentary-ref,
+.dark-mode .crossref-ref {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #94a3b8 !important;
+  border: 1px solid rgba(71, 85, 105, 0.5) !important;
+}
+
+.dark-mode .commentary-english,
+.dark-mode .crossref-text-english {
+  color: #cbd5e1 !important;
+}
+
+.dark-mode .expand-icon {
+  color: #94a3b8 !important;
+}
+
+/* =============================================================================
+   5. SUGYA ANALYSIS PANEL FIXES
+   ============================================================================= */
+
+.dark-mode .sugya-section {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+.dark-mode .sugya-section .section-title {
+  color: #f1f5f9 !important;
+}
+
+.dark-mode .sugya-section .section-summary {
+  background: #334155 !important;
+  color: #94a3b8 !important;
+}
+
+.dark-mode .sugya-stats-bar {
+  background: linear-gradient(135deg, #1e293b, #0f172a) !important;
+  border-color: #334155 !important;
+}
+
+.dark-mode .stat-badge {
+  background: #1f2937 !important;
+  border-color: #374151 !important;
+  color: #f1f5f9 !important;
+}
+
+.dark-mode .stat-badge .stat-label {
+  color: #94a3b8 !important;
+}
+
+.dark-mode .resolution-progress {
+  background: #1f2937 !important;
+}
+
+.dark-mode .resolution-progress .progress-label {
+  color: #6ee7b7 !important;
+}
+
+/* =============================================================================
+   6. MISHNA ANALYSIS FIXES
+   ============================================================================= */
+
+.dark-mode .mishna-element {
+  background: #1f2937 !important;
+  border-color: #374151 !important;
+}
+
+.dark-mode .mishna-element .el-text {
+  color: #e2e8f0 !important;
+}
+
+.dark-mode .mishna-element .el-label {
+  background: #334155 !important;
+  color: #94a3b8 !important;
+}
+
+.dark-mode .element-group {
+  background: #1f2937 !important;
+  border-color: #374151 !important;
+}
+
+.dark-mode .element-group .group-label {
+  color: #94a3b8 !important;
+}
+
+.dark-mode .mishna-breakdown .summary-text {
+  color: #6ee7b7 !important;
+}
+
+/* =============================================================================
+   7. QA FLOW TREE FIXES
+   ============================================================================= */
+
+.dark-mode .qa-unit {
+  background: #1f2937 !important;
+  border-color: #374151 !important;
+}
+
+.dark-mode .qa-node {
+  border-bottom-color: #374151 !important;
+}
+
+.dark-mode .qa-node .node-text {
+  color: #e2e8f0 !important;
+}
+
+.dark-mode .qa-node .node-connector {
+  color: #64748b !important;
+}
+
+.dark-mode .qa-node .node-label {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #94a3b8 !important;
+  border: 1px solid #374151 !important;
+}
+
+/* QA Node types */
+.dark-mode .qa-node.question {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.1)) !important;
+  border-right-color: #f59e0b !important;
+}
+
+.dark-mode .qa-node.challenge {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border-right-color: #ef4444 !important;
+}
+
+.dark-mode .qa-node.proof {
+  background: rgba(16, 185, 129, 0.15) !important;
+  border-right-color: #10b981 !important;
+}
+
+.dark-mode .qa-node.resolution {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(109, 40, 217, 0.1)) !important;
+  border-right-color: #a78bfa !important;
+}
+
+.dark-mode .qa-node.pending {
+  background: #1f2937 !important;
+  color: #94a3b8 !important;
+  border-right-color: #eab308 !important;
+}
+
+.dark-mode .qa-node.source {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(2, 132, 199, 0.1)) !important;
+  border-right-color: #0ea5e9 !important;
+}
+
+.dark-mode .qa-node.source-child {
+  background: rgba(14, 165, 233, 0.1) !important;
+  border-right-color: #38bdf8 !important;
+}
+
+.dark-mode .qa-node.challenge-start {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.1)) !important;
+  border-right-color: #f87171 !important;
+}
+
+.dark-mode .qa-mini-stats {
+  background: linear-gradient(135deg, #1e293b, #0f172a) !important;
+  border-color: #334155 !important;
+}
+
+.dark-mode .qa-mini-stats .mini-stat {
+  background: #1f2937 !important;
+  border-color: #374151 !important;
+}
+
+.dark-mode .mini-stat.questions {
+  border-color: #f59e0b !important;
+  color: #fbbf24 !important;
+}
+
+.dark-mode .mini-stat.challenges {
+  border-color: #ef4444 !important;
+  color: #fca5a5 !important;
+}
+
+.dark-mode .mini-stat.proofs {
+  border-color: #3b82f6 !important;
+  color: #93c5fd !important;
+}
+
+.dark-mode .mini-stat.resolved {
+  border-color: #10b981 !important;
+  color: #6ee7b7 !important;
+  background: rgba(16, 185, 129, 0.15) !important;
+}
+
+.dark-mode .mini-stat.unresolved {
+  border-color: #f59e0b !important;
+  color: #fcd34d !important;
+  background: rgba(245, 158, 11, 0.15) !important;
+}
+
+.dark-mode .mini-stat.total {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(2, 132, 199, 0.1)) !important;
+  border-color: #0ea5e9 !important;
+  color: #7dd3fc !important;
+}
+
+.dark-mode .mini-stat.sources {
+  border-color: #38bdf8 !important;
+  color: #7dd3fc !important;
+}
+
+.dark-mode .qa-diagram {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+.dark-mode .diagram-toggle {
+  background: #1f2937 !important;
+  border-color: #374151 !important;
+  color: #94a3b8 !important;
+}
+
+.dark-mode .diagram-toggle:hover {
+  background: #374151 !important;
+  color: #e2e8f0 !important;
+}
+
+/* =============================================================================
+   8. EMPTY STATES & HINTS
+   ============================================================================= */
+
+.dark-mode .empty-suggestion,
+.dark-mode .empty-message {
+  color: #94a3b8 !important;
+}
+
+.dark-mode .loading-submessage {
+  color: #94a3b8 !important;
+}
+
+.dark-mode .no-results {
+  color: #94a3b8 !important;
+}
+
+.dark-mode .empty-ref {
+  color: #94a3b8 !important;
+}
+
+.dark-mode .qa-empty {
+  color: #94a3b8 !important;
+}
+
+.dark-mode .glossed-hint {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #94a3b8 !important;
+}
+
+.dark-mode .glossed-empty-state .empty-message {
+  color: #94a3b8 !important;
+}
+
+/* =============================================================================
+   9. LEXICON & LOOKUP FIXES
+   ============================================================================= */
+
+.dark-mode .lexicon-entry {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+.dark-mode .lexicon-entry .lexicon-header {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+.dark-mode .lexicon-entry .lexicon-full {
+  color: #94a3b8 !important;
+}
+
+.dark-mode .entry-source {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #94a3b8 !important;
+}
+
+.dark-mode .lookup-header .lookup-sources {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #94a3b8 !important;
+  border: 1px solid rgba(71, 85, 105, 0.3) !important;
+}
+
+.dark-mode .lookup-hints {
+  color: #94a3b8 !important;
+}
+
+.dark-mode .lookup-hints kbd {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-color: rgba(71, 85, 105, 0.5) !important;
+  color: #e2e8f0 !important;
+}
+
+.dark-mode .lookup-lang {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #94a3b8 !important;
+}
+
+.dark-mode .frequency-badge .freq-percentile {
+  color: #94a3b8 !important;
+}
+
+.dark-mode .cal-romanization {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #94a3b8 !important;
+}
+
+.dark-mode .cal-forms .forms-label,
+.dark-mode .cal-hebrew-equiv .equiv-label,
+.dark-mode .cal-related .related-label {
+  color: #94a3b8 !important;
+}
+
+.dark-mode .local-count {
+  color: #94a3b8 !important;
+}
+
+/* =============================================================================
+   10. MODE SELECTOR & UI CONTROLS
+   ============================================================================= */
+
+.dark-mode .mode-btn {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+.dark-mode .mode-btn:hover {
+  border-color: #6366f1 !important;
+  background: #334155 !important;
+}
+
+.dark-mode .mode-count {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #94a3b8 !important;
+}
+
+.dark-mode .search-results-count {
+  color: #94a3b8 !important;
+}
+
+.dark-mode .selector-label {
+  color: #94a3b8 !important;
+}
+
+.dark-mode .analyze-hint {
+  color: #94a3b8 !important;
+}
+
+.dark-mode .provider-model {
+  color: #94a3b8 !important;
+}
+
+.dark-mode .settings-icon {
+  color: #64748b !important;
+}
+
+.dark-mode .show-favorites-btn {
+  background: rgba(30, 41, 59, 0.5) !important;
+  color: #94a3b8 !important;
+  border-color: rgba(71, 85, 105, 0.5) !important;
+}
+
+.dark-mode .collapse-favorites {
+  color: #94a3b8 !important;
+}
+
+.dark-mode .toggle-arrow {
+  color: #94a3b8 !important;
+}
+
+.dark-mode .section-title-eng {
+  color: #94a3b8 !important;
+}
+
+/* =============================================================================
+   11. WORD CARDS & VOCABULARY
+   ============================================================================= */
+
+.dark-mode .word-card {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+.dark-mode .word-english {
+  color: #94a3b8 !important;
+}
+
+.dark-mode .toggle-all-btn {
+  color: #94a3b8 !important;
+  border-color: rgba(71, 85, 105, 0.5) !important;
+}
+
+.dark-mode .word-list-header h5 {
+  color: #94a3b8 !important;
+}
+
+/* =============================================================================
+   12. TOPICS & CROSS REFERENCES
+   ============================================================================= */
+
+.dark-mode .topic-category,
+.dark-mode .entity-category {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #94a3b8 !important;
+  border: 1px solid rgba(71, 85, 105, 0.3) !important;
+}
+
+.dark-mode .topics-count {
+  color: #94a3b8 !important;
+}
+
+.dark-mode .topic-tag {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #94a3b8 !important;
+  border: 1px solid rgba(71, 85, 105, 0.3) !important;
+}
+
+.dark-mode .pattern-label {
+  color: #94a3b8 !important;
+}
+
+/* =============================================================================
+   13. HISTORY & SAVED ITEMS
+   ============================================================================= */
+
+.dark-mode .history-ref,
+.dark-mode .history-date {
+  color: #94a3b8 !important;
+}
+
+.dark-mode .history-delete {
+  color: #64748b !important;
+}
+
+.dark-mode .history-delete:hover {
+  color: #f87171 !important;
+}
+
+.dark-mode .history-empty {
+  color: #94a3b8 !important;
+}
+
+/* =============================================================================
+   14. TOOLTIPS & POPOVERS
+   ============================================================================= */
+
+.dark-mode .tooltip-fullname,
+.dark-mode .tooltip-label {
+  color: #94a3b8 !important;
+}
+
+.dark-mode .tooltip-value {
+  color: #cbd5e1 !important;
+}
+
+.dark-mode .rabbi-tooltip {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* =============================================================================
+   15. SEFARIM/TRADITIONAL VIEW FIXES
+   ============================================================================= */
+
+.dark-mode .sefer-container {
+  background: #1a1510 !important;
+  color: #e8dcc8 !important;
+}
+
+.dark-mode .sefer-text {
+  color: #e8dcc8 !important;
+}
+
+/* =============================================================================
+   16. OVERRIDE MEDIA QUERY PREFERENCES
+   Ensures .dark-mode class takes precedence over system preferences
+   ============================================================================= */
+
+@media (prefers-color-scheme: dark) {
+  /* Only apply if not already using .dark-mode class */
+  :root:not(.dark-mode) .scholar-mode-panel {
+    /* Fallback for users with dark system theme but no .dark-mode class */
+  }
+}
+
+/* Force dark mode styles when .dark-mode class is present */
+.dark-mode .scholar-mode-panel,
+.dark-mode .scholar-mode-panel * {
+  /* Text contrast overrides */
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* =============================================================================
+   17. HIGH CONTRAST MODE SUPPORT
+   ============================================================================= */
+
+@media (prefers-contrast: more) {
+  .dark-mode .scholar-mode-panel,
+  .dark-mode .scholar-mode-panel * {
+    --text-muted: #e2e8f0 !important;
+    --text-secondary: #f1f5f9 !important;
+  }
+}
+
+/* =============================================================================
+   18. ACCESSIBILITY IMPROVEMENTS
+   Ensure focus states are visible
+   ============================================================================= */
+
+.dark-mode .scholar-mode-panel *:focus-visible {
+  outline: 2px solid #818cf8 !important;
+  outline-offset: 2px !important;
+}
+
+.dark-mode .mode-btn:focus-visible,
+.dark-mode .action-btn:focus-visible,
+.dark-mode .view-btn:focus-visible {
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.3) !important;
+}
+
+/* =============================================================================
+   19. CATCH-ALL FALLBACKS
+   Ensures any missed elements still have readable text
+   ============================================================================= */
+
+/* Force all text in scholar mode to be visible in dark mode */
+.dark-mode .scholar-mode-panel,
+.dark-mode [class*="scholar"],
+.dark-mode [class*="sugya"],
+.dark-mode [class*="mishna"],
+.dark-mode [class*="gemara"],
+.dark-mode [class*="qa-"],
+.dark-mode [class*="ai-"] {
+  color: #f1f5f9;
+}
+
+/* Force all muted/hint/helper text to proper contrast */
+.dark-mode .scholar-mode-panel [class*="hint"],
+.dark-mode .scholar-mode-panel [class*="help"],
+.dark-mode .scholar-mode-panel [class*="helper"],
+.dark-mode .scholar-mode-panel [class*="description"],
+.dark-mode .scholar-mode-panel [class*="meta"],
+.dark-mode .scholar-mode-panel [class*="info"],
+.dark-mode .scholar-mode-panel [class*="detail"],
+.dark-mode .scholar-mode-panel [class*="caption"] {
+  color: #94a3b8 !important;
+}
+
+/* Ensure all spans and small text inside scholar mode panels are visible */
+.dark-mode .scholar-mode-panel span,
+.dark-mode .scholar-mode-panel small,
+.dark-mode .scholar-mode-panel p,
+.dark-mode .scholar-mode-panel div {
+  /* Inherit proper colors - don't force, just ensure inheritance works */
+  color: inherit;
+}
+
+/* Specific fixes for elements that might have inline styles or hardcoded colors */
+.dark-mode .scholar-mode-panel [style*="color: rgb(100"],
+.dark-mode .scholar-mode-panel [style*="color: #647"],
+.dark-mode .scholar-mode-panel [style*="color: #94a"],
+.dark-mode .scholar-mode-panel [style*="color: #718"] {
+  color: #94a3b8 !important;
+}
+
+/* Override any remaining light backgrounds in dark mode */
+.dark-mode .scholar-mode-panel [style*="background: #fff"],
+.dark-mode .scholar-mode-panel [style*="background-color: #fff"],
+.dark-mode .scholar-mode-panel [style*="background: white"],
+.dark-mode .scholar-mode-panel [style*="background-color: white"] {
+  background: #1e293b !important;
+}
+
+/* =============================================================================
+   20. FINAL LAYER - Maximum Specificity Overrides
+   These use !important to ensure they override any other styles
+   ============================================================================= */
+
+/* Final text color enforcement with maximum specificity */
+.dark-mode .app .scholar-mode-panel .text-muted,
+.dark-mode .app .scholar-mode-panel .hint,
+.dark-mode .app .scholar-mode-panel .label,
+.dark-mode .app .scholar-mode-panel .sublabel,
+.dark-mode .app .scholar-mode-panel [class*="muted"]:not(.active):not(.selected) {
+  color: #94a3b8 !important;
+}
+
+.dark-mode .app .scholar-mode-panel .text-secondary,
+.dark-mode .app .scholar-mode-panel .secondary,
+.dark-mode .app .scholar-mode-panel [class*="secondary"] {
+  color: #cbd5e1 !important;
+}
+
+.dark-mode .app .scholar-mode-panel,
+.dark-mode .app .scholar-mode-panel .text-primary,
+.dark-mode .app .scholar-mode-panel .primary {
+  color: #f1f5f9 !important;
+}
+
+/* Badge and tag final enforcement */
+.dark-mode .app .scholar-mode-panel [class*="badge"],
+.dark-mode .app .scholar-mode-panel [class*="tag"],
+.dark-mode .app .scholar-mode-panel [class*="chip"] {
+  /* Ensure borders are visible */
+  border-width: 1px !important;
+  border-style: solid !important;
+}

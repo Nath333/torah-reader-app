@@ -1,0 +1,745 @@
+/**
+ * TextAttestationsPanel Styles
+ * PRO SCHOLAR V20: Shows where words appear in Jewish texts
+ */
+
+/* =============================================================================
+   PANEL CONTAINER
+   ============================================================================= */
+
+.text-attestations-panel {
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 8px;
+}
+
+.text-attestations-panel.dark {
+  background: var(--card-bg-dark, #1f2937);
+  border-color: var(--border-color-dark, #374151);
+}
+
+.text-attestations-panel.compact {
+  padding: 8px;
+}
+
+/* =============================================================================
+   HEADER
+   ============================================================================= */
+
+.tap-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+}
+
+.text-attestations-panel.dark .tap-header {
+  border-bottom-color: var(--border-color-dark, #374151);
+}
+
+.tap-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary, #1f2937);
+}
+
+.text-attestations-panel.dark .tap-title {
+  color: var(--text-primary-dark, #f3f4f6);
+}
+
+.tap-icon {
+  font-size: 1.1rem;
+}
+
+.tap-title-text {
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+
+.tap-total-badge {
+  background: #3b82f6;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+/* =============================================================================
+   LOADING & ERROR STATES
+   ============================================================================= */
+
+.tap-loading,
+.tap-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  color: var(--text-muted, #6b7280);
+  font-size: 0.9rem;
+}
+
+.tap-loading-icon {
+  animation: tap-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes tap-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.tap-error {
+  color: #dc2626;
+}
+
+/* =============================================================================
+   CATEGORIES
+   ============================================================================= */
+
+.tap-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tap-category {
+  background: color-mix(in srgb, var(--category-color, #6b7280) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--category-color, #6b7280) 25%, transparent);
+  border-radius: 6px;
+  padding: 8px;
+  border-left: 3px solid var(--category-color, #6b7280);
+}
+
+.tap-category-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+  margin-bottom: 6px;
+}
+
+.tap-category-header:hover {
+  opacity: 0.8;
+}
+
+.tap-category-icon {
+  font-size: 1rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.tap-category-name {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--category-color, #374151);
+  flex: 1;
+}
+
+.tap-category-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--category-color, #6b7280);
+  color: white;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+  line-height: 1.3;
+}
+
+.tap-expand-indicator {
+  font-size: 0.65rem;
+  color: var(--text-muted, #6b7280);
+  margin-left: 4px;
+}
+
+/* =============================================================================
+   REFERENCE CHIPS
+   ============================================================================= */
+
+.tap-refs-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tap-ref-chip {
+  background: white;
+  border: 1px solid var(--chip-color, #d1d5db);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 0.8rem;
+  color: var(--text-primary, #374151);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.text-attestations-panel.dark .tap-ref-chip {
+  background: var(--card-bg-dark, #374151);
+  color: var(--text-primary-dark, #e5e7eb);
+}
+
+.tap-ref-chip:hover {
+  background: var(--chip-color, #3b82f6);
+  color: white;
+  border-color: var(--chip-color, #3b82f6);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tap-ref-chip:active {
+  transform: translateY(0);
+}
+
+.tap-ref-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.tap-show-more {
+  background: transparent;
+  border: 1px dashed var(--text-muted, #9ca3af);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 0.75rem;
+  color: var(--text-muted, #6b7280);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tap-show-more:hover {
+  border-color: var(--category-color, #3b82f6);
+  color: var(--category-color, #3b82f6);
+  background: color-mix(in srgb, var(--category-color, #3b82f6) 10%, transparent);
+}
+
+/* =============================================================================
+   FOOTER
+   ============================================================================= */
+
+.tap-footer {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color, #e5e7eb);
+  /* PRO SCHOLAR V23: Enhanced layout with flex for academic indicator */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.text-attestations-panel.dark .tap-footer {
+  border-top-color: var(--border-color-dark, #374151);
+}
+
+.tap-source {
+  font-size: 0.7rem;
+  color: var(--text-muted, #9ca3af);
+  font-style: italic;
+}
+
+/* =============================================================================
+   COMPACT MODE
+   ============================================================================= */
+
+.text-attestations-panel.compact .tap-header {
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+}
+
+.text-attestations-panel.compact .tap-title {
+  font-size: 0.85rem;
+}
+
+.text-attestations-panel.compact .tap-categories {
+  gap: 6px;
+}
+
+.text-attestations-panel.compact .tap-category {
+  padding: 6px;
+}
+
+.text-attestations-panel.compact .tap-category-name {
+  font-size: 0.8rem;
+}
+
+.text-attestations-panel.compact .tap-ref-chip {
+  padding: 2px 6px;
+  font-size: 0.75rem;
+}
+
+.text-attestations-panel.compact .tap-footer {
+  margin-top: 6px;
+  padding-top: 6px;
+}
+
+/* =============================================================================
+   RESPONSIVE
+   ============================================================================= */
+
+@media (max-width: 480px) {
+  .text-attestations-panel {
+    padding: 10px;
+  }
+
+  .tap-ref-text {
+    max-width: 120px;
+  }
+
+  .tap-category-header {
+    flex-wrap: wrap;
+  }
+}
+
+/* =============================================================================
+   PRO SCHOLAR V17: DICTIONARY SOURCES DISPLAY
+   Shows which dictionaries have this word with definitions
+   ============================================================================= */
+
+.tap-dict-badge {
+  background: linear-gradient(135deg, #059669, #0d9488);
+}
+
+.tap-dict-sources {
+  margin-bottom: 12px;
+  padding: 10px;
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.08), rgba(13, 148, 136, 0.08));
+  border: 1px solid rgba(5, 150, 105, 0.2);
+  border-radius: 8px;
+}
+
+.text-attestations-panel.dark .tap-dict-sources {
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.15), rgba(13, 148, 136, 0.15));
+  border-color: rgba(5, 150, 105, 0.3);
+}
+
+.tap-dict-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #059669;
+}
+
+.text-attestations-panel.dark .tap-dict-header {
+  color: #34d399;
+}
+
+.tap-dict-title {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #059669;
+}
+
+.text-attestations-panel.dark .tap-dict-title {
+  color: #34d399;
+}
+
+.tap-dict-icon {
+  font-size: 1rem;
+}
+
+.tap-dict-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tap-dict-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid rgba(5, 150, 105, 0.15);
+  font-size: 0.85rem;
+  transition: all 0.15s ease;
+}
+
+.text-attestations-panel.dark .tap-dict-item {
+  background: rgba(31, 41, 55, 0.8);
+  border-color: rgba(5, 150, 105, 0.25);
+}
+
+.tap-dict-item:hover {
+  border-color: #059669;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.15);
+}
+
+.tap-dict-name {
+  font-weight: 600;
+  color: #059669;
+  white-space: nowrap;
+  min-width: 80px;
+}
+
+.text-attestations-panel.dark .tap-dict-name {
+  color: #34d399;
+}
+
+.tap-dict-pos {
+  background: rgba(5, 150, 105, 0.15);
+  color: #047857;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.text-attestations-panel.dark .tap-dict-pos {
+  background: rgba(52, 211, 153, 0.2);
+  color: #6ee7b7;
+}
+
+.tap-dict-def {
+  flex: 1;
+  color: var(--text-secondary, #4b5563);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.text-attestations-panel.dark .tap-dict-def {
+  color: var(--text-secondary-dark, #9ca3af);
+}
+
+/* Compact mode adjustments */
+.text-attestations-panel.compact .tap-dict-sources {
+  padding: 8px;
+  margin-bottom: 8px;
+}
+
+.text-attestations-panel.compact .tap-dict-item {
+  padding: 6px 8px;
+  font-size: 0.8rem;
+}
+
+.text-attestations-panel.compact .tap-dict-name {
+  min-width: 60px;
+}
+
+/* =============================================================================
+   PRO SCHOLAR V21: EMPTY STATE & ROOT BADGE
+   Shows helpful message when no attestations found
+   ============================================================================= */
+
+.tap-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px;
+  text-align: center;
+  gap: 8px;
+}
+
+.tap-empty-icon {
+  font-size: 2rem;
+  opacity: 0.6;
+}
+
+.tap-empty-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #6b7280);
+  font-weight: 500;
+}
+
+.text-attestations-panel.dark .tap-empty-text {
+  color: var(--text-secondary-dark, #9ca3af);
+}
+
+.tap-empty-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted, #9ca3af);
+  font-style: italic;
+}
+
+.text-attestations-panel.dark .tap-empty-hint {
+  color: var(--text-muted-dark, #6b7280);
+}
+
+/* Root badge - shows when word was found via root fallback */
+.tap-root-badge {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  margin-left: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.tap-root-badge span[dir="rtl"] {
+  font-family: 'SBL Hebrew', 'Times New Roman', serif;
+  font-size: 0.8rem;
+}
+
+/* PRO SCHOLAR V22: Local badge - shows when found in local dictionaries */
+.tap-local-badge {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  margin-left: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.text-attestations-panel.dark .tap-local-badge {
+  background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+}
+
+/* PRO SCHOLAR V24: Live API badge - shows when fetched from Sefaria API */
+.tap-live-badge {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  margin-left: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  animation: tap-live-pulse 2s ease-in-out infinite;
+}
+
+@keyframes tap-live-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  50% { box-shadow: 0 0 0 4px rgba(16, 185, 129, 0); }
+}
+
+.text-attestations-panel.dark .tap-live-badge {
+  background: linear-gradient(135deg, #34d399, #10b981);
+}
+
+/* =============================================================================
+   PRO SCHOLAR V23: ENHANCED DICTIONARY DISPLAY
+   Academic tiers, Strong's numbers, and improved source indicators
+   ============================================================================= */
+
+/* Academic indicator in header */
+.tap-academic-indicator {
+  font-size: 0.9rem;
+  margin-left: 4px;
+  animation: tap-glow 2s ease-in-out infinite;
+}
+
+@keyframes tap-glow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Dictionary tier icon */
+.tap-dict-tier-icon {
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+/* Tier-based item styling */
+.tap-dict-item.tap-tier-academic {
+  border-left: 3px solid #059669;
+  background: linear-gradient(90deg, rgba(5, 150, 105, 0.05), transparent);
+}
+
+.tap-dict-item.tap-tier-specialized {
+  border-left: 3px solid #8b5cf6;
+  background: linear-gradient(90deg, rgba(139, 92, 246, 0.05), transparent);
+}
+
+.tap-dict-item.tap-tier-standard {
+  border-left: 3px solid #6b7280;
+}
+
+.text-attestations-panel.dark .tap-dict-item.tap-tier-academic {
+  background: linear-gradient(90deg, rgba(5, 150, 105, 0.12), transparent);
+}
+
+.text-attestations-panel.dark .tap-dict-item.tap-tier-specialized {
+  background: linear-gradient(90deg, rgba(139, 92, 246, 0.12), transparent);
+}
+
+/* Strong's number badge */
+.tap-strong-number {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  font-family: 'Monaco', 'Consolas', monospace;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.text-attestations-panel.dark .tap-strong-number {
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+}
+
+/* Footer academic indicator */
+.tap-source-academic {
+  font-size: 0.65rem;
+  color: #059669;
+  margin-left: 8px;
+  font-weight: 600;
+}
+
+.text-attestations-panel.dark .tap-source-academic {
+  color: #34d399;
+}
+
+/* Compact mode adjustments for V23 */
+.text-attestations-panel.compact .tap-dict-tier-icon {
+  display: none;
+}
+
+.text-attestations-panel.compact .tap-strong-number {
+  font-size: 0.6rem;
+  padding: 1px 4px;
+}
+
+.text-attestations-panel.compact .tap-source-academic {
+  display: none;
+}
+
+/* =============================================================================
+   PRO SCHOLAR V24: ENHANCED EMPTY STATE
+   Scholarly guidance when no attestations found
+   ============================================================================= */
+
+.tap-empty-suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 10px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(139, 92, 246, 0.08));
+  border-radius: 6px;
+  border: 1px dashed rgba(59, 130, 246, 0.3);
+  width: 100%;
+  max-width: 280px;
+}
+
+.text-attestations-panel.dark .tap-empty-suggestions {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15));
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+.tap-suggestion-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #3b82f6;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.text-attestations-panel.dark .tap-suggestion-title {
+  color: #60a5fa;
+}
+
+.tap-suggestion-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--text-secondary, #4b5563);
+  text-align: left;
+}
+
+.text-attestations-panel.dark .tap-suggestion-item {
+  color: var(--text-secondary-dark, #9ca3af);
+}
+
+.tap-suggestion-icon {
+  flex-shrink: 0;
+  font-size: 0.8rem;
+}
+
+/* Try root lookup button */
+.tap-try-root {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tap-try-root:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+}
+
+.tap-try-root-hebrew {
+  font-family: 'SBL Hebrew', 'Times New Roman', serif;
+  font-size: 0.8rem;
+}
+
+/* Sefaria link */
+.tap-sefaria-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  padding: 3px 8px;
+  background: transparent;
+  color: #3b82f6;
+  border: 1px solid #3b82f6;
+  border-radius: 10px;
+  font-size: 0.65rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.tap-sefaria-link:hover {
+  background: #3b82f6;
+  color: white;
+}
+
+.text-attestations-panel.dark .tap-sefaria-link {
+  color: #60a5fa;
+  border-color: #60a5fa;
+}
+
+.text-attestations-panel.dark .tap-sefaria-link:hover {
+  background: #60a5fa;
+  color: #1e3a5f;
+}

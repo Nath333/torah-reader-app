@@ -32,7 +32,7 @@ import {
   isValidHeadwordMatch as _isValidHeadwordMatch,
   SIMILARITY_THRESHOLD
 } from '../utils/hebrewUtils';
-// PRO SCHOLAR V10: Scholarly source aggregation with consensus scoring
+// Scholarly source aggregation with consensus scoring
 import {
   calculateConsensus,
   getSourceTier,

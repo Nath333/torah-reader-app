@@ -16,7 +16,7 @@ export const PassageAnalysisResult = memo(({ data }) => {
     keyPoints,
     novelInsight,
     practicalMessage
-  } = data;
+  } = data || {};
 
   // Calculate chiasm visualization - creates mirror effect
   const renderChiasmVisualization = () => {

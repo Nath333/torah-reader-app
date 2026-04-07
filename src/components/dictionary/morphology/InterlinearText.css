@@ -1,0 +1,338 @@
+/* =============================================================================
+   InterlinearText Component Styles
+   Hebrew text with English translations underneath each word
+   ============================================================================= */
+
+.interlinear-text {
+  padding: 0.75rem;
+}
+
+/* Stats bar */
+.il-stats {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px dashed var(--border-light, #e2e8f0);
+}
+
+.il-stat {
+  font-size: 0.7rem;
+  color: var(--text-muted, #64748b);
+  background: var(--bg-subtle, #f8fafc);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.il-stat.known {
+  background: var(--success-light, #dcfce7);
+  color: var(--success, #16a34a);
+}
+
+.il-loading {
+  font-size: 0.7rem;
+  color: var(--primary, #6366f1);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Words container - RTL for Hebrew */
+.il-words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  justify-content: flex-start;
+}
+
+/* Individual word block */
+.interlinear-word {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.4rem 0.5rem;
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--border-light, #f1f5f9);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 150ms ease;
+  position: relative;
+  min-width: 50px;
+}
+
+.interlinear-word:hover {
+  border-color: var(--primary, #6366f1);
+  background: var(--primary-light, #f0eeff);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
+}
+
+.interlinear-word.known {
+  opacity: 0.6;
+  background: var(--bg-subtle, #f8fafc);
+}
+
+.interlinear-word.known:hover {
+  opacity: 1;
+}
+
+/* Hebrew word */
+.il-hebrew {
+  font-family: var(--font-hebrew, 'SBL Hebrew', 'David Libre', serif);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+  line-height: 1.3;
+}
+
+/* English translation */
+.il-english {
+  font-size: 0.7rem;
+  color: var(--text-secondary, #64748b);
+  margin-top: 0.15rem;
+  text-align: center;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.il-english.no-trans {
+  color: var(--text-muted, #94a3b8);
+}
+
+/* Root display */
+.il-root {
+  font-size: 0.6rem;
+  color: var(--primary, #6366f1);
+  background: var(--primary-light, #f0eeff);
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  margin-top: 0.2rem;
+  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
+}
+
+/* Known button */
+.il-known-btn {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid var(--border, #e2e8f0);
+  background: var(--card-bg, #fff);
+  font-size: 0.65rem;
+  color: var(--text-muted, #94a3b8);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 150ms ease;
+  opacity: 0;
+}
+
+.interlinear-word:hover .il-known-btn {
+  opacity: 1;
+}
+
+.il-known-btn:hover {
+  background: var(--success-light, #dcfce7);
+  border-color: var(--success, #16a34a);
+  color: var(--success, #16a34a);
+}
+
+.il-known-btn.active {
+  background: var(--success, #16a34a);
+  border-color: var(--success, #16a34a);
+  color: white;
+  opacity: 1;
+}
+
+/* =============================================================================
+   Word Details Popup
+   ============================================================================= */
+
+.word-details-popup {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 400px;
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  animation: slideUp 200ms ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.wd-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-light, #f1f5f9);
+}
+
+.wd-word {
+  font-family: var(--font-hebrew, 'SBL Hebrew', 'David Libre', serif);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+}
+
+.wd-close {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg-subtle, #f1f5f9);
+  color: var(--text-muted, #64748b);
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 150ms ease;
+}
+
+.wd-close:hover {
+  background: var(--error-light, #fee2e2);
+  color: var(--error, #ef4444);
+}
+
+.wd-content {
+  padding: 1rem;
+}
+
+.wd-definition {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-primary, #334155);
+  margin-bottom: 0.75rem;
+}
+
+.wd-root,
+.wd-source {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.wd-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.wd-value {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #475569);
+}
+
+.wd-root .wd-value {
+  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
+  color: var(--primary, #6366f1);
+  font-weight: 600;
+}
+
+/* =============================================================================
+   Dark Mode
+   ============================================================================= */
+
+.dark-mode .interlinear-text {
+  background: transparent;
+}
+
+.dark-mode .il-stat {
+  background: var(--bg-elevated, #1e293b);
+  color: var(--text-muted, #94a3b8);
+}
+
+.dark-mode .il-stat.known {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--success, #4ade80);
+}
+
+.dark-mode .interlinear-word {
+  background: var(--bg-elevated, #1e293b);
+  border-color: var(--border, #334155);
+}
+
+.dark-mode .interlinear-word:hover {
+  background: rgba(129, 140, 248, 0.1);
+  border-color: var(--primary, #818cf8);
+}
+
+.dark-mode .interlinear-word.known {
+  background: var(--bg-subtle, #0f172a);
+}
+
+.dark-mode .il-hebrew {
+  color: var(--text-primary, #f1f5f9);
+}
+
+.dark-mode .il-english {
+  color: var(--text-secondary, #94a3b8);
+}
+
+.dark-mode .il-root {
+  background: rgba(129, 140, 248, 0.15);
+  color: var(--primary, #a5b4fc);
+}
+
+.dark-mode .il-known-btn {
+  background: var(--bg-elevated, #1e293b);
+  border-color: var(--border, #334155);
+}
+
+.dark-mode .il-known-btn.active {
+  background: var(--success, #22c55e);
+}
+
+.dark-mode .word-details-popup {
+  background: var(--bg-elevated, #1e293b);
+  border-color: var(--border, #334155);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+.dark-mode .wd-header {
+  border-color: var(--border, #334155);
+}
+
+.dark-mode .wd-word {
+  color: var(--text-primary, #f1f5f9);
+}
+
+.dark-mode .wd-close {
+  background: var(--bg-subtle, #0f172a);
+  color: var(--text-muted, #64748b);
+}
+
+.dark-mode .wd-definition {
+  color: var(--text-secondary, #cbd5e1);
+}
+
+.dark-mode .wd-value {
+  color: var(--text-secondary, #94a3b8);
+}

@@ -32,6 +32,7 @@ export { default as ChavrutaTab } from './ChavrutaTab';          // CHAVRUTA tab
 export { default as NotebookTab } from './NotebookTab';          // NOTEBOOK tab (NEW - consolidated)
 
 // Talmud-specific tabs
+export { default as SugyaTab } from './SugyaTab';                  // NEW: Halachic Chain visualization
 export { default as TalmudToolsTab, StatBadge, CollapsibleSection } from './TalmudToolsTab';
 export { default as TzuratHaDafTab } from './TzuratHaDafTab';
 export { default as EntitiesTab } from './EntitiesTab';

@@ -1,0 +1,673 @@
+/* =============================================================================
+   SourceComparison Component Styles
+   Displays multiple dictionary sources side-by-side with tier badges
+   ============================================================================= */
+
+.source-comparison {
+  background: var(--bg-elevated, #fff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.comparison-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: var(--bg-subtle, #f8fafc);
+  border-bottom: 1px solid var(--border, #e2e8f0);
+  gap: 1rem;
+}
+
+.comparison-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.word-display {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+}
+
+.source-count {
+  font-size: 0.8rem;
+  color: var(--text-muted, #64748b);
+  background: var(--bg-muted, #e2e8f0);
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+}
+
+.confidence-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.confidence-label {
+  font-size: 0.75rem;
+  color: var(--text-muted, #64748b);
+}
+
+.confidence-value {
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+
+.confidence-value.very_high {
+  background: var(--color-success-bg, #dcfce7);
+  color: var(--color-success, #16a34a);
+}
+
+.confidence-value.high {
+  background: var(--color-info-bg, #dbeafe);
+  color: var(--color-info, #2563eb);
+}
+
+.confidence-value.moderate {
+  background: var(--color-warning-bg, #fef3c7);
+  color: var(--color-warning, #d97706);
+}
+
+.confidence-value.low,
+.confidence-value.very_low {
+  background: var(--color-error-bg, #fee2e2);
+  color: var(--color-error, #dc2626);
+}
+
+.comparison-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-muted, #64748b);
+  font-size: 1.25rem;
+  transition: all 150ms ease;
+}
+
+.comparison-close:hover {
+  background: var(--bg-muted, #e2e8f0);
+  color: var(--text-primary, #1e293b);
+}
+
+/* Content */
+.comparison-content {
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+/* Tier Legend */
+.tier-legend {
+  display: flex;
+  gap: 1rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-subtle, #f8fafc);
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-size: 0.75rem;
+  color: var(--text-muted, #64748b);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Tier Sections */
+.tier-section {
+  margin-bottom: 1.25rem;
+}
+
+.tier-section:last-child {
+  margin-bottom: 0;
+}
+
+.tier-heading {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary, #475569);
+  margin: 0 0 0.5rem 0;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--border-light, #f1f5f9);
+}
+
+.sources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.75rem;
+}
+
+/* Source Card */
+.source-card {
+  background: var(--bg-elevated, #fff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 8px;
+  padding: 0.75rem;
+  transition: all 150ms ease;
+}
+
+.source-card:hover {
+  box-shadow: var(--shadow-sm, 0 2px 4px rgba(0, 0, 0, 0.05));
+}
+
+.source-card.main-source {
+  border-width: 2px;
+}
+
+.source-card.tier-gold {
+  border-color: var(--color-gold, #eab308);
+  background: linear-gradient(135deg, #fffbeb 0%, #fff 50%);
+}
+
+.source-card.tier-silver {
+  border-color: var(--color-silver, #94a3b8);
+  background: linear-gradient(135deg, #f8fafc 0%, #fff 50%);
+}
+
+.source-card.tier-bronze {
+  border-color: var(--color-bronze, #d97706);
+  background: linear-gradient(135deg, #fff7ed 0%, #fff 50%);
+}
+
+.source-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.source-badge {
+  font-size: 1rem;
+}
+
+.source-name {
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+  font-size: 0.9rem;
+}
+
+.source-year {
+  font-size: 0.75rem;
+  color: var(--text-muted, #64748b);
+}
+
+.main-badge {
+  font-size: 0.65rem;
+  background: var(--color-primary, #3b82f6);
+  color: white;
+  padding: 0.1rem 0.4rem;
+  border-radius: 9999px;
+  margin-left: auto;
+}
+
+.source-headword {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text-primary, #1e293b);
+  margin-bottom: 0.4rem;
+  padding: 0.25rem 0.5rem;
+  background: var(--bg-subtle, #f8fafc);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* PRO SCHOLAR V13: Match type badge for morphological lookups */
+.match-type-badge {
+  font-size: 0.65rem;
+  color: var(--text-muted, #64748b);
+  background: var(--bg-muted, #e2e8f0);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-weight: 400;
+  white-space: nowrap;
+  direction: ltr;
+}
+
+.match-type-badge:hover {
+  background: var(--color-primary-light, #dbeafe);
+  color: var(--color-primary, #3b82f6);
+}
+
+.source-definition {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #475569);
+  line-height: 1.5;
+}
+
+.source-meta {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted, #64748b);
+}
+
+.meta-label {
+  font-weight: 500;
+}
+
+.meta-value {
+  font-family: monospace;
+}
+
+.source-language {
+  margin-top: 0.5rem;
+}
+
+.language-badge {
+  font-size: 0.7rem;
+  background: var(--bg-muted, #e2e8f0);
+  color: var(--text-muted, #64748b);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+}
+
+/* PRO SCHOLAR V14: TWOT Theological Data */
+.source-theological,
+.source-semantic,
+.source-derivatives,
+.source-frequency {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.source-theological {
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.06) 0%, rgba(5, 150, 105, 0.02) 100%);
+  border-left: 3px solid var(--color-success, #059669);
+  padding: 0.5rem 0.6rem;
+  border-radius: 0 6px 6px 0;
+  margin-top: 0.75rem;
+}
+
+.theological-text {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--text-secondary, #475569);
+  font-style: italic;
+}
+
+.source-semantic {
+  color: var(--color-info, #0891b2);
+}
+
+.source-derivatives {
+  color: var(--text-secondary, #475569);
+}
+
+.source-frequency {
+  color: var(--text-muted, #64748b);
+}
+
+.twot-meta {
+  background: rgba(5, 150, 105, 0.08);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+/* PRO SCHOLAR V14: Gesenius Grammar Data */
+.source-grammar,
+.source-pattern,
+.source-usage {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.source-grammar {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.06) 0%, rgba(124, 58, 237, 0.02) 100%);
+  border-left: 3px solid var(--color-purple, #7c3aed);
+  padding: 0.5rem 0.6rem;
+  border-radius: 0 6px 6px 0;
+  margin-top: 0.75rem;
+}
+
+.grammar-text {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--text-secondary, #475569);
+}
+
+.source-pattern {
+  color: var(--color-purple, #7c3aed);
+  font-family: var(--font-hebrew, 'Noto Sans Hebrew'), serif;
+}
+
+.source-usage {
+  color: var(--text-secondary, #475569);
+  font-family: var(--font-hebrew, 'Noto Sans Hebrew'), serif;
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .source-comparison {
+    background: var(--bg-elevated-dark, #1e293b);
+    border-color: var(--border-dark, #334155);
+  }
+
+  .comparison-header {
+    background: var(--bg-subtle-dark, #0f172a);
+    border-color: var(--border-dark, #334155);
+  }
+
+  .word-display,
+  .source-name {
+    color: var(--text-primary-dark, #f1f5f9);
+  }
+
+  .source-card {
+    background: var(--bg-card-dark, #1e293b);
+    border-color: var(--border-dark, #334155);
+  }
+
+  .source-card.tier-gold {
+    background: linear-gradient(135deg, #422006 0%, #1e293b 50%);
+  }
+
+  .source-card.tier-silver {
+    background: linear-gradient(135deg, #1e293b 0%, #1e293b 50%);
+  }
+
+  .source-card.tier-bronze {
+    background: linear-gradient(135deg, #431407 0%, #1e293b 50%);
+  }
+}
+
+/* =============================================================================
+   PRO SCHOLAR V12: Citation Toolbar
+   ============================================================================= */
+
+.citation-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: var(--bg-subtle, #f8fafc);
+  border-bottom: 1px solid var(--border, #e2e8f0);
+  font-size: 0.8rem;
+}
+
+.citation-label {
+  color: var(--text-muted, #64748b);
+  white-space: nowrap;
+}
+
+.citation-format-select {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 4px;
+  background: var(--bg-elevated, #fff);
+  color: var(--text-primary, #1e293b);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.citation-format-select:hover {
+  border-color: var(--color-primary, #3b82f6);
+}
+
+.copy-all-citations-btn {
+  margin-left: auto;
+  padding: 0.35rem 0.75rem;
+  background: var(--color-primary, #3b82f6);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.copy-all-citations-btn:hover {
+  background: var(--color-primary-hover, #2563eb);
+}
+
+/* Citation button on individual source cards */
+.source-citation-actions {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-light, #f1f5f9);
+}
+
+.citation-copy-btn {
+  padding: 0.25rem 0.5rem;
+  background: transparent;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 4px;
+  font-size: 0.7rem;
+  color: var(--text-muted, #64748b);
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.citation-copy-btn:hover {
+  background: var(--bg-subtle, #f8fafc);
+  border-color: var(--color-primary, #3b82f6);
+  color: var(--color-primary, #3b82f6);
+}
+
+/* =============================================================================
+   PRO SCHOLAR V12: Uncertainty Badges
+   ============================================================================= */
+
+.uncertainty-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: help;
+}
+
+.uncertainty-icon {
+  font-size: 0.9rem;
+}
+
+.uncertainty-badge.uncertainty-high {
+  background: var(--color-error-bg, #fee2e2);
+  color: var(--color-error, #dc2626);
+  border: 1px solid var(--color-error, #dc2626);
+}
+
+.uncertainty-badge.uncertainty-medium {
+  background: var(--color-warning-bg, #fef3c7);
+  color: var(--color-warning, #d97706);
+  border: 1px solid var(--color-warning, #d97706);
+}
+
+.uncertainty-badge.uncertainty-low {
+  background: var(--bg-muted, #e2e8f0);
+  color: var(--text-muted, #64748b);
+  border: 1px solid var(--border, #e2e8f0);
+}
+
+/* =============================================================================
+   PRO SCHOLAR V12: Hapax Legomena Badge
+   ============================================================================= */
+
+.hapax-badge {
+  font-size: 0.65rem;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  border: 1px solid #f59e0b;
+  cursor: help;
+  white-space: nowrap;
+}
+
+.source-card.hapax {
+  position: relative;
+  border-style: dashed;
+}
+
+.source-card.hapax::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 24px 24px 0;
+  border-color: transparent #f59e0b transparent transparent;
+  border-radius: 0 8px 0 0;
+}
+
+/* =============================================================================
+   Dark Mode Additions
+   ============================================================================= */
+
+@media (prefers-color-scheme: dark) {
+  .citation-toolbar {
+    background: var(--bg-subtle-dark, #0f172a);
+    border-color: var(--border-dark, #334155);
+  }
+
+  .citation-format-select {
+    background: var(--bg-card-dark, #1e293b);
+    border-color: var(--border-dark, #334155);
+    color: var(--text-primary-dark, #f1f5f9);
+  }
+
+  .citation-copy-btn {
+    border-color: var(--border-dark, #334155);
+    color: var(--text-muted-dark, #94a3b8);
+  }
+
+  .citation-copy-btn:hover {
+    background: var(--bg-subtle-dark, #0f172a);
+  }
+
+  .uncertainty-badge.uncertainty-low {
+    background: var(--bg-subtle-dark, #0f172a);
+    border-color: var(--border-dark, #334155);
+    color: var(--text-muted-dark, #94a3b8);
+  }
+
+  .hapax-badge {
+    background: linear-gradient(135deg, #422006 0%, #713f12 100%);
+    color: #fde68a;
+    border-color: #b45309;
+  }
+
+  .source-card.hapax::before {
+    border-color: transparent #b45309 transparent transparent;
+  }
+}
+
+/* =============================================================================
+   Etymology Display (Wiktionary Proto-Semitic, Cognates)
+   ============================================================================= */
+
+.source-etymology {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--border-light, #e2e8f0);
+  font-size: 0.8rem;
+}
+
+.etymology-proto,
+.etymology-root,
+.etymology-cognates {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem;
+  margin-bottom: 0.25rem;
+}
+
+.etymology-proto .meta-label,
+.etymology-root .meta-label,
+.etymology-cognates .meta-label {
+  font-weight: 500;
+  color: var(--text-muted, #64748b);
+}
+
+.proto-semitic {
+  font-family: var(--font-serif, Georgia, serif);
+  font-style: italic;
+  color: var(--text-accent, #6366f1);
+}
+
+.cognate-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.cognate-item {
+  background: var(--bg-muted, #f1f5f9);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: var(--text-secondary, #475569);
+}
+
+.cognate-item:hover {
+  background: var(--bg-hover, #e2e8f0);
+}
+
+/* Dark mode support */
+[data-theme="dark"] .source-etymology {
+  border-top-color: var(--border-dark, #374151);
+}
+
+[data-theme="dark"] .proto-semitic {
+  color: var(--accent-light, #a5b4fc);
+}
+
+[data-theme="dark"] .cognate-item {
+  background: var(--bg-dark-muted, #374151);
+  color: var(--text-dark-secondary, #9ca3af);
+}
+
+/* =============================================================================
+   Responsive
+   ============================================================================= */
+
+@media (max-width: 640px) {
+  .sources-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tier-legend {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .comparison-header {
+    flex-wrap: wrap;
+  }
+
+  .citation-toolbar {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .copy-all-citations-btn {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 0.25rem;
+  }
+}

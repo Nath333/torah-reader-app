@@ -15,7 +15,7 @@ const moveTypeIcons = {
 };
 
 export const ShaklaVetaryaResult = memo(({ data }) => {
-  const { dialecticOverview, exchanges, methodology, conclusion } = data;
+  const { dialecticOverview, exchanges, methodology, conclusion } = data || {};
 
   return (
     <div className="shakla-vetarya-result">

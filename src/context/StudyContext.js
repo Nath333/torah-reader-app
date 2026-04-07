@@ -44,6 +44,15 @@ export function StudyProvider({ children, book, chapter }) {
     currentStreakRef.current = studyStreak.currentStreak;
   }, [studyStreak.currentStreak]);
 
+  // Track mounted state to prevent operations after unmount
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
   useEffect(() => {
     let timeoutId = null;
 
@@ -64,6 +73,9 @@ export function StudyProvider({ children, book, chapter }) {
         // Check for streak milestones after recording (use setTimeout to get updated value)
         // Using ref to get fresh value and cleanup to prevent memory leak
         timeoutId = setTimeout(() => {
+          // Check if still mounted before accessing state or calling toast
+          if (!mountedRef.current) return;
+          
           const newStreak = currentStreakRef.current;
 
           // Only show milestone notification once per milestone

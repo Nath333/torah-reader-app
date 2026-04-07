@@ -24,7 +24,7 @@ jest.mock('../../services/sefariaApi', () => ({
 }));
 
 // Mock the discourse pattern service
-jest.mock('../../services/discoursePatternService', () => ({
+jest.mock('../../services/scholarly/discoursePatternService', () => ({
   detectStructuralMarkers: jest.fn(() => []),
   TALMUDIC_PATTERNS: {
     question: { icon: '❓', label: 'Question', color: '#3b82f6' },
@@ -37,7 +37,7 @@ jest.mock('../../services/discoursePatternService', () => ({
 }));
 
 // Mock the abbreviations service
-jest.mock('../../services/talmudicAbbreviationsService', () => ({
+jest.mock('../../services/textual/talmudicAbbreviationsService', () => ({
   findAbbreviations: jest.fn(() => []),
 }));
 

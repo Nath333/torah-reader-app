@@ -19,6 +19,7 @@ import {
 // PRO SCHOLAR V8: Use createManagedCache instead of deprecated getCached/setCached
 import { createManagedCache } from '../../services/cacheOrchestrator';
 import { useProScholarV4, useKnowledgeGraph } from '../../hooks/useProScholarV4';
+import { sanitizeSvgContent, sanitizeMermaidChart } from '../../utils/safeHtml';
 import './CommentarySummary.css';
 
 // Create managed cache for commentary analysis at module level
@@ -118,11 +119,11 @@ const MermaidDiagram = ({ chart, id, explanation }) => {
         // PRO SCHOLAR V5: Lazy load mermaid on first diagram render
         const mermaid = await loadMermaid();
 
-        // Clean the chart syntax
-        let cleanChart = chart
-          .replace(/\\n/g, '\n')
-          .replace(/\\"/g, '"')
-          .trim();
+        // Clean and sanitize the chart syntax
+        let cleanChart = sanitizeMermaidChart(chart);
+        if (!cleanChart) {
+          throw new Error('Invalid chart syntax');
+        }
 
         // Ensure it starts with a valid graph declaration
         if (!cleanChart.match(/^(graph|flowchart|sequenceDiagram|classDiagram|mindmap)/i)) {
@@ -136,7 +137,9 @@ const MermaidDiagram = ({ chart, id, explanation }) => {
 
         if (!isCancelled) {
           clearTimeout(timeoutId);
-          setSvg(renderedSvg);
+          // Sanitize SVG before storing to prevent XSS
+          const sanitizedSvg = sanitizeSvgContent(renderedSvg);
+          setSvg(sanitizedSvg);
         }
       } catch (err) {
         if (!isCancelled) {

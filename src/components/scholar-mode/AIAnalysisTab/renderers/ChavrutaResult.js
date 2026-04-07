@@ -5,7 +5,7 @@
 import React, { memo } from 'react';
 
 export const ChavrutaResult = memo(({ data }) => {
-  const { standardView, challenges, devilsAdvocate, textualProblems, dialecticConclusion, chavrutaChallenge } = data;
+  const { standardView, challenges, devilsAdvocate, textualProblems, dialecticConclusion, chavrutaChallenge } = data || {};
 
   return (
     <div className="chavruta-result">

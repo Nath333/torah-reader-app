@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "https://Nath333.github.io/torah-reader-app",
   "dependencies": {
+    "dompurify": "^3.3.3",
     "mermaid": "^11.13.0",
     "pdfjs-dist": "^5.5.207",
     "prop-types": "^15.8.1",

@@ -63,6 +63,11 @@ export function useAsyncOperation(asyncFn, options = {}) {
 
   const mountedRef = useRef(true);
   const abortControllerRef = useRef(null);
+  const immediateExecutedRef = useRef(false);
+  const argsRef = useRef(args);
+  
+  // Keep args ref up to date
+  argsRef.current = args;
 
   // Cleanup on unmount
   useEffect(() => {
@@ -143,6 +148,7 @@ export function useAsyncOperation(asyncFn, options = {}) {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
+    immediateExecutedRef.current = false;
     setState({
       data: initialData,
       isLoading: false,
@@ -162,13 +168,13 @@ export function useAsyncOperation(asyncFn, options = {}) {
     }));
   }, []);
 
-  // Execute immediately if configured
+  // Execute immediately if configured - runs only once
   useEffect(() => {
-    if (immediate) {
-      execute(...args);
+    if (immediate && !immediateExecutedRef.current) {
+      immediateExecutedRef.current = true;
+      execute(...argsRef.current);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [immediate, execute]);
 
   return {
     ...state,

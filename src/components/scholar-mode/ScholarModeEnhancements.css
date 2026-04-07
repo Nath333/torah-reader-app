@@ -2598,7 +2598,7 @@
   text-align: center;
 }
 
-/* Dark Mode */
+/* Dark Mode - Comprehensive Text Visibility Fixes */
 @media (prefers-color-scheme: dark) {
   .iyun-deep-panel {
     background: linear-gradient(135deg, #2e1065 0%, #4c1d95 100%);
@@ -2616,4 +2616,279 @@
   }
   .iyun-deep-panel .insight-context { color: #e2e8f0; }
   .iyun-deep-panel .keypoint-text { color: #e2e8f0; }
+
+  /* Element group labels */
+  .element-group .group-label {
+    color: #94a3b8;
+  }
+
+  /* Mishna elements */
+  .mishna-elements.grouped .mishna-element {
+    background: #1f2937;
+    border: 1px solid #374151;
+  }
+  .mishna-elements.grouped .mishna-element:hover {
+    background: #374151;
+  }
+  .mishna-elements.grouped .el-text {
+    color: #e2e8f0;
+  }
+  .mishna-elements.grouped .el-label {
+    color: #94a3b8;
+    background: #1f2937;
+    border: 1px solid #374151;
+  }
+
+  /* QA Nodes */
+  .qa-node .node-connector {
+    color: #64748b;
+  }
+  .qa-node .node-text {
+    color: #e2e8f0;
+  }
+
+  /* QA Node specific types */
+  .qa-node.question {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.1));
+    border-right-color: #f59e0b;
+  }
+  .qa-node.challenge {
+    background: rgba(239, 68, 68, 0.15);
+    border-right-color: #ef4444;
+  }
+  .qa-node.proof {
+    background: rgba(16, 185, 129, 0.15);
+    border-right-color: #10b981;
+  }
+  .qa-node.resolution {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(109, 40, 217, 0.1));
+    border-right-color: #a78bfa;
+  }
+  .qa-node.pending {
+    background: #1f2937;
+    color: #94a3b8;
+    border-right-color: #eab308;
+    opacity: 0.7;
+  }
+
+  /* Node labels */
+  .qa-node .node-label {
+    color: #94a3b8;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid #374151;
+  }
+
+  /* QA Empty state */
+  .qa-empty {
+    color: #94a3b8;
+  }
+
+  /* Element groups in dark mode */
+  .element-group {
+    background: #1f2937;
+    border-color: #374151;
+  }
+
+  /* Mini stats */
+  .qa-mini-stats {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border: 1px solid #334155;
+  }
+  .qa-mini-stats .mini-stat {
+    background: #1f2937;
+    border-color: #374151;
+    color: #e2e8f0;
+  }
+  .mini-stat.questions { 
+    border-color: #f59e0b; 
+    color: #fbbf24; 
+  }
+  .mini-stat.challenges { 
+    border-color: #ef4444; 
+    color: #fca5a5; 
+  }
+  .mini-stat.proofs { 
+    border-color: #3b82f6; 
+    color: #93c5fd; 
+  }
+  .mini-stat.resolved { 
+    border-color: #10b981; 
+    color: #6ee7b7; 
+    background: rgba(16, 185, 129, 0.15);
+  }
+  .mini-stat.unresolved { 
+    border-color: #f59e0b; 
+    color: #fcd34d; 
+    background: rgba(245, 158, 11, 0.15);
+  }
+
+  /* Diagram toggle */
+  .diagram-toggle {
+    background: #1f2937;
+    border-color: #374151;
+    color: #94a3b8;
+  }
+  .diagram-toggle:hover {
+    background: #374151;
+    color: #e2e8f0;
+  }
+
+  /* QA Units */
+  .qa-unit {
+    background: #1f2937;
+    border-color: #374151;
+  }
+
+  /* QA Diagram */
+  .qa-diagram {
+    background: #0f172a;
+    border-color: #334155;
+  }
+
+  /* Mishna breakdown badges */
+  .mishna-breakdown.v25 .cat-badge.enumeration {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.15));
+    color: #fbbf24;
+  }
+  .mishna-breakdown.v25 .cat-badge.condition {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(79, 70, 229, 0.15));
+    color: #a5b4fc;
+  }
+  .mishna-breakdown.v25 .cat-badge.exception {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.15));
+    color: #fca5a5;
+  }
+  .mishna-breakdown.v25 .cat-badge.ruling {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.15));
+    color: #6ee7b7;
+  }
+  .mishna-breakdown.v25 .cat-badge.dispute {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(124, 58, 237, 0.15));
+    color: #c4b5fd;
+  }
+  .mishna-breakdown.v25 .cat-badge.case-structure {
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(2, 132, 199, 0.15));
+    color: #7dd3fc;
+  }
+
+  /* Mishna summary bar */
+  .mishna-summary-bar {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1));
+    border-right-color: #10b981;
+  }
+  .mishna-summary-bar .summary-text {
+    color: #6ee7b7;
+  }
+
+  /* Sugya stats bar v25 */
+  .sugya-stats-bar.v25 {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border-color: #334155;
+  }
+  .sugya-stats-bar.v25 .stat-badge {
+    background: #1f2937;
+    border-color: #374151;
+  }
+  .sugya-stats-bar.v25 .stat-badge:hover {
+    border-color: #6366f1;
+  }
+  .sugya-stats-bar.v25 .stat-badge .stat-value {
+    color: #f1f5f9;
+  }
+
+  /* Resolution progress v25 */
+  .resolution-progress.v25 {
+    background: #1f2937;
+    border-color: #10b981;
+  }
+  .resolution-progress.v25 .progress-label {
+    color: #6ee7b7;
+  }
+
+  /* Sugya section v25 */
+  .sugya-section.pro-v25 {
+    background: #1f2937;
+    border-color: #374151;
+  }
+  .sugya-section.pro-v25.open {
+    border-color: #6366f1;
+  }
+  .section-header.pro:hover {
+    background: #374151;
+  }
+  .section-header.pro .section-title {
+    color: #f1f5f9;
+  }
+  .section-header.pro .section-summary {
+    background: #374151;
+    color: #94a3b8;
+  }
+  .section-header.pro .section-badge {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+  }
+  .section-header.pro .section-count {
+    background: rgba(99, 102, 241, 0.15);
+    color: #a5b4fc;
+  }
+
+  /* Pesukim list v25 */
+  .pesukim-list.v25 .pasuk-item {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.1));
+    border-right-color: #f59e0b;
+  }
+  .pesukim-list.v25 .pasuk-text {
+    color: #e2e8f0;
+  }
+
+  /* Sugya diagram v25 */
+  .sugya-diagram.v25 {
+    background: #0f172a;
+    border-color: #334155;
+  }
+
+  /* Sugya footer v25 */
+  .sugya-footer.v25 button {
+    background: #1f2937;
+    border-color: #374151;
+    color: #94a3b8;
+  }
+  .sugya-footer.v25 button:hover {
+    background: #374151;
+    color: #e2e8f0;
+    border-color: #475569;
+  }
+
+  /* Source nodes */
+  .qa-node.source {
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(2, 132, 199, 0.1));
+    border-right-color: #0ea5e9;
+  }
+  .qa-node.source-child {
+    background: rgba(14, 165, 233, 0.1);
+    border-right-color: #38bdf8;
+  }
+  .qa-node.challenge-start {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.1));
+    border-right-color: #f87171;
+  }
+
+  /* Total mini stat */
+  .mini-stat.total {
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(2, 132, 199, 0.1));
+    border-color: #0ea5e9;
+    color: #7dd3fc;
+  }
+  .mini-stat.sources {
+    border-color: #38bdf8;
+    color: #7dd3fc;
+  }
+
+  /* QA Unit types */
+  .qa-unit.type-source_unit {
+    border-color: #38bdf8;
+  }
+  .qa-unit.type-challenge_unit {
+    border-color: #f87171;
+  }
 }
