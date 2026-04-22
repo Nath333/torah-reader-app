@@ -7,7 +7,7 @@
 
 import { createCache } from '../../utils/cache';
 import { registerCache, CACHE_CONFIGS } from '../cacheOrchestrator';
-import { createLogger } from '../../utils/debug';
+import { createLogger, IS_DEV as isDev } from '../../utils/debug';
 
 const log = createLogger('FrenchTranslation');
 
@@ -41,7 +41,6 @@ const stats = { hits: 0, calls: 0, ok: 0, fail: 0 };
 const pending = new Map();
 let activeCount = 0;
 const waitQueue = [];
-const isDev = process.env.NODE_ENV === 'development';
 
 // Persistence
 const load = () => {

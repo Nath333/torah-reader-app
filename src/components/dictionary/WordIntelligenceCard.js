@@ -7,7 +7,7 @@
  * @module WordIntelligenceCard
  */
 
-import React, { useState, useEffect, useCallback, useMemo, memo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, memo, useRef } from 'react';
 import './WordIntelligenceCard.css';
 
 // FamilyTree component
@@ -17,10 +17,12 @@ import FamilyTree from './FamilyTree';
 import { LearningInsightsPanel, CrossRefsMini } from './ProScholarFeatures';
 import ScholarlySourcePanel from './ScholarlySourcePanel';
 
+// Shared primitive
+import DefinitionsList from './primitives/DefinitionsList';
+
 // Extracted sub-components
 import {
   LookupPathDisplay,
-  DefinitionsSection,
   ConfidenceDisplay,
   SemanticFieldBadgeV6,
   DialectIndicatorV6,
@@ -58,10 +60,7 @@ import {
   getAntonyms
 } from '../../services/scholarly/semanticFieldService';
 
-import {
-  getCard,
-  getStats
-} from '../../services/srsService';
+import { getCard } from '../../services/srsService';
 
 import {
   ROOT_MEANINGS,
@@ -108,11 +107,8 @@ function WordIntelligenceCard({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
-  const [showAllDefs, setShowAllDefs] = useState(false);
 
   const abortControllerRef = useRef(null);
-
-  const handleToggleDefs = useCallback(() => setShowAllDefs(prev => !prev), []);
 
   const cardClassName = useMemo(
     () => `word-intelligence-card ${compact ? 'compact' : ''} ${className}`.trim(),
@@ -397,11 +393,7 @@ function WordIntelligenceCard({
       )}
 
       {/* DEFINITIONS */}
-      <DefinitionsSection
-        definitions={definitions}
-        expanded={showAllDefs}
-        onToggle={handleToggleDefs}
-      />
+      <DefinitionsList definitions={definitions} showToggle />
 
       {/* SCHOLARLY SOURCE PANEL */}
       {!compact && definitions.length > 1 && (

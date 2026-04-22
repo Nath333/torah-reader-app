@@ -10,7 +10,7 @@ import { cleanHtml } from '../../utils/sanitize';
 import { fetchWithFallback } from '../../utils/http';
 import { cleanHebrewWord, normalizeFinals, stripVowels } from '../../utils/hebrewUtils';
 import { analyzeWord as analyzeGrammar, extractRoot as extractGrammarRoot } from '../analysis/grammarAnalysisService';
-import { createLogger } from '../../utils/debug';
+import { createLogger, IS_DEV } from '../../utils/debug';
 // Import halachic overrides for context-specific translations
 import { HALACHIC_OVERRIDE } from '../../utils/commentaryUtils';
 // Import shared morphology constants for prefix/suffix handling
@@ -661,9 +661,6 @@ const lookupAllLocalDictionaries = async (word) => {
 
   return results;
 };
-
-// Environment check
-const IS_DEV = process.env.NODE_ENV === 'development';
 
 // Use local proxy in development to avoid CORS issues
 const SEFARIA_BASE = IS_DEV

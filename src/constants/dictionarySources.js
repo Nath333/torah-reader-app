@@ -555,59 +555,12 @@ export const DICTIONARY_SOURCES = {
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // LEGACY MAPPINGS - For backward compatibility
+  // FALLBACK / GENERIC ENTRIES
+  // (Legacy keys "talmudic", "Talmudic Technical Terms", "Biblical Particles",
+  //  "Common Verb Forms", "Core" are handled by the aliases map in
+  //  getSourceInfo() — they redirect to richer canonical entries above.)
   // ═══════════════════════════════════════════════════════════════════════════
 
-  // Map old "Talmudic" to new "Rabbinic" (local curated)
-  talmudic: {
-    name: 'Rabbinic',
-    fullName: 'Common Rabbinic Vocabulary (local)',
-    type: SOURCE_TYPES.CURATED,
-    reliability: 'curated',
-    tier: 3, // Bronze tier
-    color: '#6366f1',
-    isLocal: true,
-    _deprecated: 'Use rabbinic-vocab instead'
-  },
-
-  // Map old names
-  'Talmudic Technical Terms': {
-    name: 'Technical',
-    type: SOURCE_TYPES.CURATED,
-    reliability: 'curated',
-    color: '#8b5cf6',
-    isLocal: true,
-    _deprecated: 'Use technical-terms instead'
-  },
-
-  'Biblical Particles': {
-    name: 'Particles',
-    type: SOURCE_TYPES.CURATED,
-    reliability: 'curated',
-    color: '#64748b',
-    isLocal: true,
-    _deprecated: 'Use particles instead'
-  },
-
-  'Common Verb Forms': {
-    name: 'Verbs',
-    type: SOURCE_TYPES.CURATED,
-    reliability: 'curated',
-    color: '#f59e0b',
-    isLocal: true,
-    _deprecated: 'Use verb-forms instead'
-  },
-
-  Core: {
-    name: 'Core',
-    type: SOURCE_TYPES.CURATED,
-    reliability: 'curated',
-    color: '#64748b',
-    isLocal: true,
-    _deprecated: 'Use particles instead'
-  },
-
-  // Fallbacks
   local: { name: 'Local', type: SOURCE_TYPES.CURATED, reliability: 'curated', color: '#6b7280', isLocal: true },
   cache: { name: 'Cached', type: SOURCE_TYPES.CURATED, reliability: 'curated', color: '#6b7280', isLocal: true },
   none: { name: 'Unknown', type: SOURCE_TYPES.CURATED, reliability: 'reference', color: '#9ca3af' }

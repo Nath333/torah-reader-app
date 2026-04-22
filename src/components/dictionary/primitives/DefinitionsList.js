@@ -1,13 +1,13 @@
 /**
- * DefinitionsList — shared primitive used by both word-display cards.
+ * DefinitionsList — shared primitive for rendering a list of dictionary sources.
  *
- * Unifies the two parallel implementations:
- *   - WordIntelligenceCard's <DefinitionsSection> (simple list, "show more" toggle)
- *   - WordDefinitionCard's .wdc-defs wrapper (richer header, sliced to N)
+ * Callers:
+ *   - WordIntelligenceCard (showToggle: one primary + expandable rest)
+ *   - WordDefinitionCard   (maxItems=3 + header + optional French)  [pending migration]
  *
- * Both callers now pass a normalized `definitions` array and pick a variant.
- * Under the hood each item renders through <SourceDefinitionItem>, which
- * gracefully skips tier/credibility/sense chrome when the fields aren't present.
+ * Normalizes `{ text | definition }` to `text`; delegates each item to
+ * <SourceDefinitionItem>, which gracefully skips tier/credibility/sense
+ * chrome when the fields aren't present.
  */
 
 import React, { memo, useState, useCallback } from 'react';

@@ -7,7 +7,6 @@
  */
 
 import React, { useMemo, memo } from 'react';
-import { HEBREW_TYPE_LABELS } from '../../../constants/talmudStudy';
 import { generateMishnaSummary, TALMUDIC_PATTERNS } from '../../../services/scholarly/discoursePatternService';
 
 // =============================================================================

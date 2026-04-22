@@ -315,7 +315,8 @@
 
 .glossary-hint {
   display: flex;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.8rem;
   font-size: 0.7rem;
   color: var(--text-muted, #94a3b8);
 }
@@ -326,6 +327,10 @@
 
 .glossary-hint .hint-local {
   color: var(--accent-indigo, #6366f1);
+}
+
+.glossary-hint .hint-medal {
+  color: var(--accent-amber, #b45309);
 }
 
 .glossary-hint .hint-proto {

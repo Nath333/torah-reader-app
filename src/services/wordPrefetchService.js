@@ -4,11 +4,10 @@
 // =============================================================================
 
 import { cleanHebrewWord } from './dictionaries/hebrewDictionary';
-import { createLogger } from '../utils/debug';
+import { createLogger, IS_DEV as DEBUG } from '../utils/debug';
 import { stripAllDiacritics } from '../utils/hebrewUtils';
 
 const log = createLogger('Prefetch');
-const DEBUG = process.env.NODE_ENV === 'development';
 
 // =============================================================================
 // PREFETCH CONFIGURATION

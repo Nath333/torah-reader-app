@@ -23,8 +23,6 @@ import { lookupJastrowSync, lookupBDBSync } from '../dictionaries/dictionaryLoad
 
 // eslint-disable-next-line no-unused-vars
 const log = createLogger('ProScholarV6');
-// eslint-disable-next-line no-unused-vars
-const DEBUG = process.env.NODE_ENV === 'development';
 
 export const PRO_SCHOLAR_V6_VERSION = '6.0.0';
 

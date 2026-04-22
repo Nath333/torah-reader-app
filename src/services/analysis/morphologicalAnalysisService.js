@@ -5,12 +5,11 @@
 // Returns MULTIPLE possible analyses with confidence scores
 // =============================================================================
 
-import { createLogger } from '../../utils/debug';
+import { createLogger, IS_DEV as DEBUG } from '../../utils/debug';
 import { ROOT_MEANINGS } from '../../data/rootDatabase';
 import { stripAllDiacritics } from '../../utils/hebrewUtils';
 
 const log = createLogger('MorphAnalysis');
-const DEBUG = process.env.NODE_ENV === 'development';
 
 // =============================================================================
 // ARAMAIC NOUN DATABASE (Common Talmudic nouns)

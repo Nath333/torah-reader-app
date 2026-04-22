@@ -7,7 +7,7 @@
 
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { CHAZARA_QUESTION_TEMPLATES } from '../../../constants/talmudStudy';
-import { useCopyToClipboard, useStudyNotes, useMasteryLevel } from '../../../hooks/useTalmudStudy';
+import { useStudyNotes, useMasteryLevel } from '../../../hooks/useTalmudStudy';
 import { safeGet, safeSet } from '../../../utils/safeLocalStorage';
 
 // =============================================================================

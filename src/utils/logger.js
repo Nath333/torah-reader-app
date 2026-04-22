@@ -1,12 +1,13 @@
 // =============================================================================
 // Simple Logger Utility
 // =============================================================================
+// Single source of truth for the dev flag lives in utils/debug.js.
 
-const isDev = process.env.NODE_ENV === 'development';
+import { IS_DEV } from './debug';
 
 export const createLogger = (name) => ({
-  debug: (...args) => isDev && console.debug(`[${name}]`, ...args),
-  info: (...args) => isDev && console.info(`[${name}]`, ...args),
+  debug: (...args) => IS_DEV && console.debug(`[${name}]`, ...args),
+  info: (...args) => IS_DEV && console.info(`[${name}]`, ...args),
   warn: (...args) => console.warn(`[${name}]`, ...args),
   error: (...args) => console.error(`[${name}]`, ...args),
 });

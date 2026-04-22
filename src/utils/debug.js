@@ -1,7 +1,11 @@
 // Debug utilities for conditional logging
 // Only logs in development mode to reduce console noise in production
 
-const isDev = process.env.NODE_ENV === 'development';
+// Canonical environment flag — import from here instead of declaring per-module.
+// `isDev` kept as an internal alias for the existing logger functions below.
+export const IS_DEV = process.env.NODE_ENV === 'development';
+export const IS_PROD = process.env.NODE_ENV === 'production';
+const isDev = IS_DEV;
 
 // Verbose logging - only in dev mode
 // Use for detailed debugging that should never appear in production

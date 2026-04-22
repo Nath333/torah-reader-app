@@ -4,7 +4,7 @@
 // This prevents wrong homograph matches like משה="to pull" instead of "Moses"
 // =============================================================================
 
-import { createLogger } from '../../utils/debug';
+import { createLogger, IS_DEV as DEBUG } from '../../utils/debug';
 import { stripVowels, stripDiacriticsAndMaqaf, stripAllDiacritics } from '../../utils/hebrewUtils';
 // PRO SCHOLAR V5: Frequency analysis (single source of truth)
 import {
@@ -13,7 +13,6 @@ import {
 } from '../wordFrequencyService';
 
 const log = createLogger('PreClassification');
-const DEBUG = process.env.NODE_ENV === 'development';
 
 // =============================================================================
 // ABBREVIATION CHARACTER NORMALIZATION

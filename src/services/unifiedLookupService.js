@@ -21,7 +21,7 @@ import {
 import { cleanHebrewWord } from './dictionaries/hebrewDictionary';
 import { isLikelyAramaic } from './dictionaries/babylonianDictionary';
 import { getContextFromReference } from '../constants/bookConstants';
-import { createLogger } from '../utils/debug';
+import { createLogger, IS_DEV as DEBUG } from '../utils/debug';
 
 // Dictionary loaders (lazy) + common words for preloading
 import {
@@ -94,7 +94,6 @@ import {
 import { recordLookup, recordDictionaryLookup } from './telemetryService';
 
 const log = createLogger('UnifiedLookup');
-const DEBUG = process.env.NODE_ENV === 'development';
 
 // =============================================================================
 // CONFIDENCE SCORING CONSTANTS

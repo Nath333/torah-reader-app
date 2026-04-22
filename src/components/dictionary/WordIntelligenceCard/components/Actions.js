@@ -4,8 +4,7 @@
  */
 
 import React, { memo, useState, useEffect, useCallback, useMemo } from 'react';
-import { SOURCE_CATEGORIES, HEBREW_DIALECTS, SRS_RATINGS } from '../constants';
-import { SourceBadge } from './Badges';
+import { SOURCE_CATEGORIES, HEBREW_DIALECTS } from '../constants';
 import { getCard, createCard, getStats, getMasteryLevel } from '../../../../services/srsService';
 import { QuickReviewButtons } from '../../ProScholarFeatures';
 import { cleanHebrewWord } from '../../../../utils/hebrewUtils';
@@ -43,53 +42,6 @@ export const LookupPathDisplay = memo(function LookupPathDisplay({ lookupPath, s
           </>
         )}
       </div>
-    </div>
-  );
-});
-
-// =============================================================================
-// DEFINITIONS SECTION
-// =============================================================================
-
-export const DefinitionsSection = memo(function DefinitionsSection({ definitions, expanded, onToggle }) {
-  if (!definitions || definitions.length === 0) {
-    return (
-      <div className="wic-definitions empty">
-        <span className="no-def">No dictionary entries found</span>
-      </div>
-    );
-  }
-
-  const primary = definitions[0];
-  const hasMore = definitions.length > 1;
-
-  return (
-    <div className="wic-definitions">
-      <div className="def-primary">
-        <div className="def-content">
-          <span className="def-text">{primary.definition}</span>
-        </div>
-        <SourceBadge source={primary.source} year={primary.year} />
-      </div>
-
-      {hasMore && (
-        <>
-          <button className="def-toggle" onClick={onToggle}>
-            {expanded ? 'Show less' : `Show ${definitions.length - 1} more sources`}
-          </button>
-
-          {expanded && (
-            <div className="def-alternatives">
-              {definitions.slice(1).map((def, i) => (
-                <div key={i} className="def-alt">
-                  <span className="def-text">{def.definition}</span>
-                  <SourceBadge source={def.source} year={def.year} compact />
-                </div>
-              ))}
-            </div>
-          )}
-        </>
-      )}
     </div>
   );
 });

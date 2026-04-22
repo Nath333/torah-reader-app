@@ -45,12 +45,11 @@ import {
   extractAramaicRoot,
   computeVerbTranslation
 } from '../constants/morphology';
-import { createLogger } from '../utils/debug';
+import { createLogger, IS_DEV as DEBUG } from '../utils/debug';
 // PRO SCHOLAR V10: Scholarly source aggregation
 import { getSourceTier } from './scholarSourceAggregator';
 
 const log = createLogger('LookupStages');
-const DEBUG = process.env.NODE_ENV === 'development';
 
 // =============================================================================
 // STAGE FACTORY - Creates stages that work with external lookup functions

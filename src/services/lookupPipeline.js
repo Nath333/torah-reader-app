@@ -26,7 +26,7 @@
 import { cleanHebrewWord } from './dictionaries/hebrewDictionary';
 import { isLikelyAramaic } from './dictionaries/babylonianDictionary';
 import { getContextFromReference } from '../constants/bookConstants';
-import { createLogger } from '../utils/debug';
+import { createLogger, IS_DEV as DEBUG } from '../utils/debug';
 // PRO SCHOLAR V9: Use centralized Hebrew utilities (single source of truth)
 import {
   isValidHeadwordMatch as _isValidHeadwordMatch,
@@ -40,7 +40,6 @@ import {
 } from './scholarSourceAggregator';
 
 const log = createLogger('LookupPipeline');
-const DEBUG = process.env.NODE_ENV === 'development';
 
 /** Minimum word length to require validation */
 const MIN_VALIDATION_LENGTH = 3;

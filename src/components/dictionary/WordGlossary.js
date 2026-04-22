@@ -5,7 +5,7 @@
  * Used when no full English translation is available from Sefaria.
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { splitIntoWords, cleanHebrewWord } from '../../services/dictionaries/hebrewDictionary';
 import { cleanHtml } from '../../utils/sanitize';
@@ -151,12 +151,19 @@ const lookupWord = async (word, contextType = 'talmudic') => {
       return t && t < best ? t : best;
     }, 99);
 
-    // Primary source's tier (the one shown in the main badge).
-    // Pipeline uses first-come-first-served primary, so primaryTier may be worse than bestTier
-    // — when that happens, we show a secondary medal to surface the better sources.
-    const primarySource = result.source;
-    const primarySourceObj = sources.find(s => s.name === primarySource);
-    const primaryTier = primarySourceObj ? getTier(primarySourceObj) : null;
+    // Primary source: prefer what the pipeline set, but fall back to sources[0]
+    // when the pipeline primary isn't in the sources list. This catches edge cases
+    // where a stage calls setPrimary without a matching addSource — without this,
+    // the tier medal would silently never show.
+    const pipelinePrimary = result.source;
+    const primaryInSources = pipelinePrimary
+      ? sources.find(s => s.name === pipelinePrimary)
+      : null;
+    const primarySourceObj = primaryInSources || sources[0] || null;
+    const primarySource = primarySourceObj?.name || pipelinePrimary || 'Unknown';
+    // If we couldn't locate the primary in sources, assume tier 3 (curated) — safer default
+    // than null, ensures the medal surfaces academic corroboration when present.
+    const primaryTier = primarySourceObj ? getTier(primarySourceObj) : 3;
 
     // Sources at the best tier, excluding the primary — used in medal tooltip
     const bestTierSources = bestTier < 99
@@ -166,7 +173,7 @@ const lookupWord = async (word, contextType = 'talmudic') => {
     return {
       word: cleaned,
       definition,
-      source: primarySource || 'Unknown',
+      source: primarySource,
       sourceName: getSourceInfo(primarySource)?.name || primarySource,
       isLocal: isLocalSource(primarySource),
       isLexicon: isAcademicLexicon(primarySource),
@@ -182,7 +189,7 @@ const lookupWord = async (word, contextType = 'talmudic') => {
       hasEtymology: !!result.protoSemitic?.form || (sources.length > 1),
       // Language
       isAramaic: result.isAramaic || false,
-      // Sources (with proper tier from aggregation)
+      // Sources
       sources,
       allSources: sourceNames,
       sourceCount: sources.length,
@@ -190,11 +197,7 @@ const lookupWord = async (word, contextType = 'talmudic') => {
       isProperNoun: result.isProperNoun || false,
       isAbbreviation: result.isAbbreviation || false,
       expansion: result.isAbbreviation ? (result.fullEnglish || result.english) : null,
-      note: result.fullEnglish || null,
-      // Quality (from proper confidence scoring)
-      qualityScore: result.confidence?.score || 0,
-      extractedRoot: result.extractedRoot || null,
-      alternativeRoots: result.morphology?.alternativeRoots || []
+      note: result.fullEnglish || null
     };
   } catch (err) {
     // Silent fail - word not found
@@ -212,7 +215,10 @@ const WordGlossary = React.memo(({ text, onClose }) => {
   const [error, setError] = useState(null);
   // PRO SCHOLAR V12: Progress tracking
   const [progress, setProgress] = useState({ current: 0, total: 0 });
-  const [cancelled, setCancelled] = useState(false);
+  // Cancel flag in a ref — not state — so clicking cancel doesn't retrigger the effect.
+  // Previously `cancelled` was in the dep array, which caused setCancelled(true) to
+  // restart the lookup instead of showing partial results.
+  const cancelRef = useRef(false);
 
   // PRO SCHOLAR V13: Extract compound phrases from text
   const compoundPhrases = useMemo(() => {
@@ -247,32 +253,35 @@ const WordGlossary = React.memo(({ text, onClose }) => {
     });
   }, [text]);
 
+  const handleCancelClick = useCallback(() => {
+    cancelRef.current = true;
+    setLoading(false);
+  }, []);
+
   // PRO SCHOLAR V12: Optimized batch lookup with progress tracking
   useEffect(() => {
     let isMounted = true;
+    cancelRef.current = false;
     setLoading(true);
     setError(null);
-    setCancelled(false);
     setProgress({ current: 0, total: words.length });
+    // Seed with compound phrases immediately so they're visible even if user cancels early
+    setDefinitions([...compoundPhrases]);
 
     const lookupAllWords = async () => {
       try {
-        // PRO SCHOLAR V13: Start with compound phrases
         const results = [...compoundPhrases];
-        const BATCH_SIZE = 10; // Process in parallel batches
-        const wordMap = new Map(); // Deduplication cache
+        const BATCH_SIZE = 10;
+        const wordMap = new Map();
 
-        // PRO SCHOLAR V12: Process words in parallel batches for speed
         for (let batchStart = 0; batchStart < words.length; batchStart += BATCH_SIZE) {
-          if (!isMounted || cancelled) break;
+          if (!isMounted || cancelRef.current) break;
 
           const batch = words.slice(batchStart, batchStart + BATCH_SIZE);
 
-          // Process batch in parallel
           const batchPromises = batch.map(async (word) => {
             const cleaned = cleanHebrewWord(word);
 
-            // Check deduplication cache
             if (wordMap.has(cleaned)) {
               return wordMap.get(cleaned);
             }
@@ -282,44 +291,38 @@ const WordGlossary = React.memo(({ text, onClose }) => {
             if (result) {
               wordMap.set(cleaned, result);
               return result;
-            } else if (cleaned && cleaned.length >= 2) {
-              // Word not found - add with morphological hint
-              const hint = getMorphologicalHint(cleaned);
-              const notFoundResult = {
-                word: cleaned,
-                definition: null,
-                notFound: true,
-                hint: hint?.breakdown || null,
-                possibleRoot: hint?.possibleRoot || null,
-                prefixes: hint?.prefixes || null,
-                suffixes: hint?.suffixes || null,
-                source: 'not-found'
-              };
-              wordMap.set(cleaned, notFoundResult);
-              return notFoundResult;
             }
-            return null;
+            // Word not found - add with morphological hint
+            const hint = getMorphologicalHint(cleaned);
+            const notFoundResult = {
+              word: cleaned,
+              definition: null,
+              notFound: true,
+              hint: hint?.breakdown || null,
+              possibleRoot: hint?.possibleRoot || null,
+              prefixes: hint?.prefixes || null,
+              suffixes: hint?.suffixes || null,
+              source: 'not-found'
+            };
+            wordMap.set(cleaned, notFoundResult);
+            return notFoundResult;
           });
 
           const batchResults = await Promise.all(batchPromises);
           results.push(...batchResults.filter(Boolean));
 
-          // Update progress
+          // Incremental update: flush results after each batch so the "Show partial
+          // results" button has something to show if the user clicks it.
           if (isMounted) {
+            setDefinitions([...results]);
             setProgress({
               current: Math.min(batchStart + BATCH_SIZE, words.length),
               total: words.length
             });
           }
-
-          // Small delay between batches to prevent overwhelming
-          if (batchStart + BATCH_SIZE < words.length) {
-            await new Promise(r => setTimeout(r, 20));
-          }
         }
 
-        if (isMounted && !cancelled) {
-          setDefinitions(results);
+        if (isMounted) {
           setLoading(false);
         }
       } catch (err) {
@@ -333,7 +336,7 @@ const WordGlossary = React.memo(({ text, onClose }) => {
     lookupAllWords();
 
     return () => { isMounted = false; };
-  }, [words, cancelled, compoundPhrases]);
+  }, [words, compoundPhrases]);
 
   return (
     <div className="word-glossary slide-down" role="region" aria-label="Word definitions glossary">
@@ -367,7 +370,7 @@ const WordGlossary = React.memo(({ text, onClose }) => {
             </div>
             <button
               className="loading-cancel-btn"
-              onClick={() => setCancelled(true)}
+              onClick={handleCancelClick}
               title="Show partial results"
             >
               Show {progress.current} results now
@@ -521,9 +524,18 @@ const WordGlossary = React.memo(({ text, onClose }) => {
 
         <div className="glossary-footer">
           <span className="glossary-hint">
-            <span className="hint-lexicon">📚 Academic Lexicon</span>
-            <span className="hint-local">📝 Curated [local]</span>
-            <span className="hint-proto">PS Proto-Semitic</span>
+            <span className="hint-lexicon" title="Primary source is a published academic dictionary">
+              📚 Academic Lexicon
+            </span>
+            <span className="hint-local" title="Primary source is a curated local vocabulary list">
+              📝 Curated [local]
+            </span>
+            <span className="hint-medal" title="A higher-tier source (BDB, Jastrow, etc.) also confirms this word">
+              🥇 Academic confirms
+            </span>
+            <span className="hint-proto" title="Proto-Semitic reconstruction available">
+              PS Proto-Semitic
+            </span>
           </span>
         </div>
       </div>

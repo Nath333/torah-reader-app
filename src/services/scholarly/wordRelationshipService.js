@@ -1328,6 +1328,7 @@ export function parseAllCrossReferences(dictionaryData) {
   if (!dictionaryData) return { crossRefs, byType };
 
   const sources = [
+    { key: 'bdb', name: 'BDB' },
     { key: 'jastrow', name: 'Jastrow' },
     { key: 'klein', name: 'Klein' },
     { key: 'gesenius', name: 'Gesenius' },

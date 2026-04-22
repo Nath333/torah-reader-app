@@ -36,7 +36,6 @@ export {
 
 export {
   LookupPathDisplay,
-  DefinitionsSection,
   AudioPronunciation,
   QuickExport,
   SRSSection

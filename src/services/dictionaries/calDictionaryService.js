@@ -12,12 +12,12 @@
 // Use CacheOrchestrator for unified cache management
 import { createManagedCache } from '../cacheOrchestrator';
 import { cleanHebrewWord } from '../../utils/hebrewUtils';
+import { IS_DEV } from '../../utils/debug';
 
 // CAL API base URL
 // Development: use local proxy (setupProxy.js)
 // Production: use CORS proxy with fallbacks
 const CAL_DIRECT_URL = 'https://cal.huc.edu';
-const IS_DEV = process.env.NODE_ENV === 'development';
 
 // CORS proxies for production (with fallbacks)
 const CORS_PROXIES = [

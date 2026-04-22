@@ -3,12 +3,11 @@
 // Parallel source fetching with expert consensus scoring
 // =============================================================================
 
-import { createLogger } from '../utils/debug';
+import { createLogger, IS_DEV as DEBUG } from '../utils/debug';
 import { isValidHeadwordMatch } from '../utils/hebrewUtils';
 // PRO SCHOLAR V10.3: Cache removed - caching delegated to unifiedLookupService
 
 const log = createLogger('SourceAggregator');
-const DEBUG = process.env.NODE_ENV === 'development';
 
 // =============================================================================
 // SOURCE TIERS & SCHOLARLY WEIGHTS

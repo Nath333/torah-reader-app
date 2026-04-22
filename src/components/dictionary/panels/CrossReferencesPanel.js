@@ -1,15 +1,16 @@
 /**
  * CrossReferencesPanel - PRO SCHOLAR V14
  *
- * Displays cross-references parsed from BDB/Jastrow definitions
- * Shows "cf.", "see", "comp.", "opp." references with clickable links
+ * Displays cross-references parsed from scholarly dictionary definitions
+ * (BDB, Jastrow, Klein, Gesenius, Strong's). Shows "cf.", "see", "comp.",
+ * "opp." references with clickable links.
  *
  * @module CrossReferencesPanel
  */
 
 import React, { memo, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { extractCrossReferences } from '../../../services/scholarly/wordRelationshipService';
+import { parseAllCrossReferences } from '../../../services/scholarly/wordRelationshipService';
 import { buildPanelClassName } from '../../../hooks/usePanelData';
 import './CrossReferencesPanel.css';
 
@@ -72,7 +73,7 @@ CrossRefItem.propTypes = {
  * CrossReferencesPanel - Shows cross-references from dictionary definitions
  *
  * @param {Object} props
- * @param {Object} props.dictionaryData - Dictionary entries (bdb, jastrow, etc.)
+ * @param {Object} props.dictionaryData - Dictionary entries (bdb, jastrow, klein, gesenius, strongs)
  * @param {Function} [props.onWordClick] - Callback when a word is clicked
  * @param {boolean} [props.compact=false] - Use compact layout
  * @param {string} [props.className=''] - Additional CSS classes
@@ -84,51 +85,10 @@ function CrossReferencesPanel({
   dark = false,
   className = ''
 }) {
-  // Parse cross-references from all dictionary sources
-  const crossRefs = useMemo(() => {
-    if (!dictionaryData) return [];
-
-    const allRefs = [];
-    const seen = new Set();
-
-    // Extract from each dictionary source
-    const sources = [
-      { data: dictionaryData.bdb, name: 'BDB' },
-      { data: dictionaryData.jastrow, name: 'Jastrow' },
-      { data: dictionaryData.klein, name: 'Klein' },
-      { data: dictionaryData.gesenius, name: 'Gesenius' },
-      { data: dictionaryData.strongs, name: "Strong's" }
-    ];
-
-    for (const { data, name } of sources) {
-      if (!data) continue;
-
-      const definition = data.definition || data.gloss || data.english || '';
-      const refs = extractCrossReferences(definition, name);
-
-      for (const ref of refs) {
-        const key = `${ref.word}-${ref.type}`;
-        if (!seen.has(key)) {
-          seen.add(key);
-          allRefs.push(ref);
-        }
-      }
-    }
-
-    return allRefs;
-  }, [dictionaryData]);
-
-  // Group by type
-  const groupedRefs = useMemo(() => {
-    const groups = {};
-    for (const ref of crossRefs) {
-      if (!groups[ref.type]) {
-        groups[ref.type] = [];
-      }
-      groups[ref.type].push(ref);
-    }
-    return groups;
-  }, [crossRefs]);
+  const { crossRefs, byType: groupedRefs } = useMemo(
+    () => parseAllCrossReferences(dictionaryData),
+    [dictionaryData]
+  );
 
   // Don't render if no cross-references
   if (crossRefs.length === 0) {
@@ -173,7 +133,7 @@ function CrossReferencesPanel({
       <div className="crp-footer">
         <span className="crp-note-icon">📖</span>
         <span className="crp-note-text">
-          // Parsed from BDB, Jastrow, and other scholarly dictionaries
+          {'Parsed from BDB, Jastrow, Klein, Gesenius, and Strong’s'}
         </span>
       </div>
     </div>

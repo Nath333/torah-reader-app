@@ -13,7 +13,7 @@
  * - Context-aware source prioritization
  */
 
-import { createLogger } from '../../utils/debug';
+import { createLogger, IS_DEV as DEBUG } from '../../utils/debug';
 import { getAllPrefixVariants } from '../../utils/prefixTrie';
 import { STOP_WORDS } from '../../constants/morphology';
 // Use CacheOrchestrator for unified cache management
@@ -38,7 +38,6 @@ import { SOURCE_CONFIG } from '../../constants/sourceConfig';
 import { normalizeFinals, stripVowels } from '../../utils/hebrewUtils';
 
 const log = createLogger('UnifiedRoot');
-const DEBUG = process.env.NODE_ENV === 'development';
 
 // =============================================================================
 // HYPOTHESIS CACHE - 30% faster repeat lookups
