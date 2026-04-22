@@ -1,3 +1,22 @@
+import { stripAllDiacritics } from '../../utils/hebrewUtils';
+
+const stripHtmlTags = (str) =>
+  typeof str === 'string' ? str.replace(/<[^>]*>/g, '') : '';
+
+/**
+ * analyzeScholarText — convenience wrapper that handles text cleanup internally.
+ * Pass fullText (preferred) with an optional fallback `text` prop; returns the
+ * same analysis object as analyzeText.
+ *
+ * @param {string} fullText - Full daf text (preferred input)
+ * @param {string} [fallbackText] - Partial text used when fullText is empty
+ * @returns {Object|null}
+ */
+export function analyzeScholarText(fullText, fallbackText) {
+  const source = (fullText && fullText.length > 30) ? fullText : fallbackText;
+  return analyzeText(source, stripAllDiacritics, stripHtmlTags);
+}
+
 /**
  * proScholarAnalysis.js - Text analysis engine for ProScholarSummary
  *

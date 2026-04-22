@@ -15,7 +15,9 @@ const jastrow = JSON.parse(fs.readFileSync('public/data/jastrowComplete.json'));
 const strongs = JSON.parse(fs.readFileSync('public/data/strongsComplete.json'));
 const rootPro = JSON.parse(fs.readFileSync('public/data/root_meanings_pro.json'));
 
-// Load academic lexicons (some may be missing - handle gracefully)
+// Load academic lexicons that actually ship as local JSON.
+// HALOT, DJBA, DJPA, TWOT do NOT have local files — they come from the Sefaria
+// API at runtime (routed in scholarlyLexiconService.js). Nothing to verify here.
 function safeLoad(file) {
   try {
     return JSON.parse(fs.readFileSync(file));
@@ -24,10 +26,7 @@ function safeLoad(file) {
   }
 }
 
-const halot = safeLoad('public/data/halot_lexicon.json');
-const djba = safeLoad('public/data/djba_lexicon.json');
 const gesenius = safeLoad('public/data/gesenius_lexicon.json');
-const twot = safeLoad('public/data/twot_lexicon.json');
 const klein = safeLoad('public/data/klein_lexicon.json');
 const cal = safeLoad('public/data/cal_aramaic.json');
 
@@ -58,22 +57,17 @@ console.log(`  Jastrow merged:  ${jastrowMerged} entries (from jastrow_aramaic.j
 console.log(`  Root PRO merged: ${rootMerged} entries (from root_meanings_enriched.json + root_meanings.json)`);
 console.log('');
 
-// Academic lexicons
-const halotEntries = halot ? Object.keys(halot).filter(k => !k.startsWith('_')).length : 0;
-const djbaEntries = djba ? Object.keys(djba).filter(k => !k.startsWith('_')).length : 0;
+// Academic lexicons (local files only)
 const geseniusEntries = gesenius ? Object.keys(gesenius).filter(k => !k.startsWith('_')).length : 0;
-const twotEntries = twot ? Object.keys(twot).filter(k => !k.startsWith('_')).length : 0;
 const kleinEntries = klein ? Object.keys(klein).filter(k => !k.startsWith('_')).length : 0;
 const calEntries = cal ? Object.keys(cal).filter(k => !k.startsWith('_')).length : 0;
 
-console.log('ACADEMIC LEXICONS (Tier 1 & 2):');
+console.log('ACADEMIC LEXICONS (local files):');
 console.log('────────────────────────────────────────────────────────────────────────────');
-console.log(`  HALOT:        ${halotEntries.toString().padStart(8)} entries - Modern academic standard`);
-console.log(`  DJBA:         ${djbaEntries.toString().padStart(8)} entries - Sokoloff Babylonian Aramaic`);
 console.log(`  Gesenius:     ${geseniusEntries.toString().padStart(8)} entries - Grammar paradigms`);
-console.log(`  TWOT:         ${twotEntries.toString().padStart(8)} entries - Theological wordbook`);
 console.log(`  Klein:        ${kleinEntries.toString().padStart(8)} entries - Etymology dictionary`);
 console.log(`  CAL:          ${calEntries.toString().padStart(8)} entries - Aramaic database`);
+console.log('  HALOT/DJBA/DJPA/TWOT: via Sefaria API (no local file) - routed in scholarlyLexiconService.js');
 console.log('');
 
 // Test word coverage

@@ -1,13 +1,13 @@
 /**
  * CrossReferencePanel Component
- * 
+ *
  * Shows related sugyot, parallel discussions, and cross-references.
  * Helps users understand the broader context of the current sugya.
  */
 
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { groupReferencesByType, filterReferencesByBook } from '../utils/crossReferenceExtractor';
+import { groupReferencesByType } from '../utils/crossReferenceExtractor';
 import './CrossReferencePanel.css';
 
 const CrossReferencePanel = ({ references, currentBook }) => {
@@ -16,35 +16,32 @@ const CrossReferencePanel = ({ references, currentBook }) => {
 
   if (!references || references.length === 0) {
     return (
-      <div className="cross-reference-empty">
-        <span className="empty-icon">🔗</span>
-        <span className="empty-text">No cross-references available</span>
+      <div className="cross-reference-empty" dir="rtl">
+        <span className="empty-text">אין מקורות צולבים זמינים</span>
       </div>
     );
   }
 
-  // Group by type
   const grouped = groupReferencesByType(references);
-  
-  // Filter
-  const filteredRefs = filterType === 'all' 
-    ? references 
+
+  const filteredRefs = filterType === 'all'
+    ? references
     : references.filter(ref => ref.connectionType === filterType);
 
   const typeLabels = {
-    all: 'All References',
-    commentary: 'Commentaries',
-    parallel: 'Parallel Sugyot',
-    reference: 'References',
-    quotation: 'Quotations',
-    tractate_mention: 'Other Tractates'
+    all: 'כל המקורות',
+    commentary: 'פירושים',
+    parallel: 'סוגיות מקבילות',
+    reference: 'מקורות',
+    quotation: 'ציטוטים',
+    tractate_mention: 'מסכתות אחרות'
   };
 
   return (
-    <div className="cross-reference-panel">
+    <div className="cross-reference-panel" dir="rtl">
       <div className="panel-header">
-        <h3 className="panel-title">Cross References</h3>
-        <span className="panel-count">{references.length} found</span>
+        <h3 className="panel-title">מקורות צולבים</h3>
+        <span className="panel-count">{references.length} נמצאו</span>
       </div>
 
       <div className="filter-tabs">
@@ -77,6 +74,14 @@ const CrossReferencePanel = ({ references, currentBook }) => {
   );
 };
 
+const TYPE_LABELS_HE = {
+  commentary: 'פירוש',
+  parallel: 'מקביל',
+  reference: 'מקור',
+  quotation: 'ציטוט',
+  tractate_mention: 'מסכת'
+};
+
 /**
  * Reference card component
  */
@@ -90,17 +95,18 @@ const ReferenceCard = ({ reference, isExpanded, onToggle, isSameBook }) => {
   };
 
   const color = typeColors[reference.connectionType] || '#6b7280';
+  const typeLabel = TYPE_LABELS_HE[reference.connectionType] || 'מקור';
 
   return (
-    <div 
+    <div
       className={`reference-card ${isExpanded ? 'expanded' : ''} ${isSameBook ? 'same-book' : ''}`}
       style={{ '--ref-color': color }}
     >
       <div className="reference-header" onClick={onToggle}>
         <div className="reference-type-badge" style={{ backgroundColor: color }}>
-          {getTypeIcon(reference.connectionType)}
+          {typeLabel}
         </div>
-        
+
         <div className="reference-info">
           <span className="reference-book">{reference.book}</span>
           {reference.ref && (
@@ -108,9 +114,9 @@ const ReferenceCard = ({ reference, isExpanded, onToggle, isSameBook }) => {
           )}
         </div>
 
-        {isSameBook && <span className="same-book-badge">Current</span>}
+        {isSameBook && <span className="same-book-badge">נוכחי</span>}
 
-        <button className="expand-btn">
+        <button className="expand-btn" aria-label={isExpanded ? 'סגור' : 'פתח'}>
           {isExpanded ? '−' : '+'}
         </button>
       </div>
@@ -119,51 +125,41 @@ const ReferenceCard = ({ reference, isExpanded, onToggle, isSameBook }) => {
         <div className="reference-details">
           {reference.hebrewRef && (
             <div className="detail-row">
-              <span className="detail-label">Hebrew:</span>
+              <span className="detail-label">עברית:</span>
               <span className="detail-value hebrew">{reference.hebrewRef}</span>
             </div>
           )}
-          
+
           {reference.snippet && (
             <div className="detail-row">
-              <span className="detail-label">Excerpt:</span>
+              <span className="detail-label">קטע:</span>
               <span className="detail-value snippet">{reference.snippet}</span>
             </div>
           )}
 
           {reference.topic && (
             <div className="detail-row">
-              <span className="detail-label">Topic:</span>
+              <span className="detail-label">נושא:</span>
               <span className="detail-value topic">{reference.topic}</span>
             </div>
           )}
 
-          <div className="reference-actions">
-            <button className="action-btn view-btn">
-              View Source
-            </button>
-            <button className="action-btn compare-btn">
-              Compare
-            </button>
-          </div>
+          {reference.ref && (
+            <div className="reference-actions">
+              <a
+                className="action-btn view-btn"
+                href={`https://www.sefaria.org/${encodeURIComponent(reference.ref)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                צפה במקור
+              </a>
+            </div>
+          )}
         </div>
       )}
     </div>
   );
-};
-
-/**
- * Get icon for reference type
- */
-const getTypeIcon = (type) => {
-  const icons = {
-    commentary: '💬',
-    parallel: '⇄',
-    reference: '→',
-    quotation: '"',
-    tractate_mention: '📚'
-  };
-  return icons[type] || '•';
 };
 
 CrossReferencePanel.propTypes = {

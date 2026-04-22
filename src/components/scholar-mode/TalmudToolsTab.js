@@ -1,46 +1,15 @@
 /**
  * TalmudToolsTab - Kollel/Yeshiva-Style Talmud Study Tools
  *
- * Designed for serious Torah study with practical learning tools:
- *
- * 📚 STUDY MODES:
- * 1. עיון (Iyun) - Deep analysis: shakla v'tarya, svara, nekudot hamachlokes
- * 2. בקיאות (Bekius) - Breadth/overview: main halacha, quick summary
- * 3. חזרה (Chazara) - Review mode: test questions, key points, self-assessment
- *
- * 🔍 LEARNING TOOLS:
- * - Sugya Map: Visual structure of the argumentation
- * - Key Concepts: Main ideas and principles (yesodos)
- * - Chavruta Questions: Discussion points for partner study
- * - Practical Halacha: Connection to psak and maaseh
- * - Abbreviations: ראשי תיבות expansion
- *
- * =============================================================================
- * ARCHITECTURE (PRO SCHOLAR V31)
- * =============================================================================
- *
- * SOURCE OF TRUTH: UnifiedSugyaAnalysis/ folder
- * - Study Panels: AbbreviationsPanel, NotesPanel, ChazaraPanel, BekiusQuickSummary
- * - Analysis: MishnaAnalysisPro, GemaraQAAnalysisPro, RashiTosafotAnalysisPro (V31)
- * - View Modes: FlowView, TreeView, DiagramView, SummaryView
- * - Helpers: CollapsibleSectionWrapper, CrossReferencesPanel, SugyaNavigator
- *
- * THIS FILE: Consumer + Unique PRO Components
- * - Imports from UnifiedSugyaAnalysis (consolidated components)
- * - Unique Components (kept for PRO features):
- *     - IyunDeepAnalysisPanel   <- ACTIVE (sevara/logic extraction)
- *     - SugyaFlowSection        <- ACTIVE (multi-view structure: tree/flow/list/text)
- *     - StatBadge               <- UI component (reserved)
- *     - CollapsibleSection      <- UI component (reserved)
- *
- * REMOVED (V31): MishnaAnalysisPanel, MishnaBreakdown -> MishnaAnalysisPro
- * REMOVED (V31): GemaraQAPanel, QAFlowTree -> GemaraQAAnalysisPro
- * =============================================================================
+ * Study modes: Iyun (deep), Bekius (breadth), Chazara (review).
+ * Consumes shared panels from UnifiedSugyaAnalysis/ and adds:
+ *   DafHeader, StudyModeSelector, OpinionDetailPanel,
+ *   plus Iyun-specific sections (IyunDeepAnalysisPanel, SugyaFlowSection,
+ *   DafDiagramSection, HalachicChain).
  */
 import React, { useState, useMemo, lazy, Suspense } from 'react';
 import PropTypes from 'prop-types';
 import { findAbbreviations } from '../../services/textual/talmudicAbbreviationsService';
-import { sanitizeHtmlContent } from '../../utils/safeHtml';
 import {
   TEXT_TYPE_LABELS,
   STUDY_MODES,
@@ -56,10 +25,8 @@ import {
   RashiTosafotAnalysisPro
 } from './UnifiedSugyaAnalysis';
 import { detectStructuralMarkers, extractGemaraQA } from '../../services/scholarly/discoursePatternService';
-import { StatBadge, CollapsibleSection, LazyLoadFallback } from './TalmudSharedUI';
-import useAnalysisHistory from '../../hooks/useAnalysisHistory';
+import { CollapsibleSection, LazyLoadFallback } from './TalmudSharedUI';
 
-// Extracted components (V33)
 import SugyaFlowSection from './UnifiedSugyaAnalysis/SugyaFlowAnalysis';
 import IyunDeepAnalysisPanel from './UnifiedSugyaAnalysis/IyunAnalysisPanel';
 import DafDiagramSection from './UnifiedSugyaAnalysis/DafDiagramSection';
@@ -69,74 +36,55 @@ import HalachicChain from './HalachicChain';
 const UnifiedSugyaAnalysisPro = lazy(() => import('./UnifiedSugyaAnalysis'));
 
 // =============================================================================
-// Daf Header Component - Shows current amud with Sefaria link
+// Constants
 // =============================================================================
+
+const STUDY_TIPS = {
+  iyun: 'עיון: התמקד בהבנת כל שלב בשקלא וטריא. למה הגמרא שואלת? מה הסברא?',
+  bekius: 'בקיאות: קרא את הסוגיא בשטף, הבן את התמונה הכללית לפני הפרטים',
+  chazara: 'חזרה: נסה לענות בעצמך לפני שתסתכל ברמז. חזרה על חזרה!'
+};
+
+// =============================================================================
+// DafHeader — current amud reference with Sefaria link
+// =============================================================================
+
+const summarizeAmud = (patterns) => {
+  if (!patterns?.length) return null;
+  const has = (type) => patterns.some(p => p.type === type);
+  const count = (types) => patterns.filter(p => types.includes(p.type)).length;
+
+  const parts = [];
+  if (has('mishna')) parts.push('מתחיל במשנה');
+  const questions = count(['question', 'objection']);
+  if (has('gemara') && questions > 0) {
+    parts.push(`${questions} קושי${questions > 1 ? 'ות' : 'א'}`);
+    const resolutions = count(['resolution', 'proof']);
+    if (resolutions > 0) parts.push(`${resolutions} תירוצ${resolutions > 1 ? 'ים' : ''}`);
+  }
+  if (has('baraita')) parts.push('מביא ברייתא');
+  if (has('scripture')) parts.push('דרשת פסוקים');
+  if (has('legal_ruling')) parts.push('מסקנה להלכה');
+  return parts.length > 0 ? parts.join(' • ') : 'דיון בגמרא';
+};
+
+const extractTopicHint = (text) => {
+  if (!text) return null;
+  const match = text.match(/מתני[׳']?\s*[.:]\s*(.{10,50})/);
+  if (!match) return null;
+  const topic = match[1].replace(/\s+/g, ' ').trim();
+  return topic.length > 40 ? topic.substring(0, 40) + '...' : topic;
+};
 
 const DafHeader = React.memo(function DafHeader({ reference, patterns, text }) {
   const dafInfo = useMemo(() => parseDafReference(reference), [reference]);
+  const amudSummary = useMemo(() => summarizeAmud(patterns), [patterns]);
+  const topicHint = useMemo(() => extractTopicHint(text), [text]);
 
-  // Generate amud summary based on detected patterns
-  const amudSummary = useMemo(() => {
-    if (!patterns || patterns.length === 0) return null;
-
-    const hasMishna = patterns.some(p => p.type === 'mishna');
-    const hasGemara = patterns.some(p => p.type === 'gemara');
-    const questionCount = patterns.filter(p => ['question', 'objection'].includes(p.type)).length;
-    const resolutionCount = patterns.filter(p => ['resolution', 'proof'].includes(p.type)).length;
-    const hasLegalRuling = patterns.some(p => p.type === 'legal_ruling');
-    const hasBaraita = patterns.some(p => p.type === 'baraita');
-    const hasScripture = patterns.some(p => p.type === 'scripture');
-
-    // Build summary parts
-    const parts = [];
-
-    if (hasMishna) {
-      parts.push('מתחיל במשנה');
-    }
-
-    if (hasGemara && questionCount > 0) {
-      parts.push(`${questionCount} קושי${questionCount > 1 ? 'ות' : 'א'}`);
-      if (resolutionCount > 0) {
-        parts.push(`${resolutionCount} תירוצ${resolutionCount > 1 ? 'ים' : ''}`);
-      }
-    }
-
-    if (hasBaraita) {
-      parts.push('מביא ברייתא');
-    }
-
-    if (hasScripture) {
-      parts.push('דרשת פסוקים');
-    }
-
-    if (hasLegalRuling) {
-      parts.push('מסקנה להלכה');
-    }
-
-    return parts.length > 0 ? parts.join(' • ') : 'דיון בגמרא';
-  }, [patterns]);
-
-  // Extract first words of mishna/gemara for topic hint
-  const topicHint = useMemo(() => {
-    if (!text) return null;
-
-    // Try to find mishna marker and extract topic
-    const mishnaMatch = text.match(/מתני[׳']?\s*[.:]\s*(.{10,50})/);
-    if (mishnaMatch) {
-      const topic = mishnaMatch[1].replace(/\s+/g, ' ').trim();
-      return topic.length > 40 ? topic.substring(0, 40) + '...' : topic;
-    }
-
-    return null;
-  }, [text]);
-
-  if (!dafInfo) {
-    return null; // Don't show header if we can't parse the reference
-  }
+  if (!dafInfo) return null;
 
   return (
     <div className="daf-header" dir="rtl">
-      {/* Main daf info */}
       <div className="daf-main">
         <div className="daf-icon">📜</div>
         <div className="daf-info">
@@ -145,13 +93,10 @@ const DafHeader = React.memo(function DafHeader({ reference, patterns, text }) {
             <span className="daf-num">{dafInfo.hebrewDaf}</span>
             <span className="amud">{dafInfo.hebrewAmud}</span>
           </div>
-          {amudSummary && (
-            <div className="amud-summary">{amudSummary}</div>
-          )}
+          {amudSummary && <div className="amud-summary">{amudSummary}</div>}
         </div>
       </div>
 
-      {/* Topic hint if available */}
       {topicHint && (
         <div className="topic-hint">
           <span className="hint-label">נושא:</span>
@@ -159,7 +104,6 @@ const DafHeader = React.memo(function DafHeader({ reference, patterns, text }) {
         </div>
       )}
 
-      {/* Sefaria link */}
       <a
         href={dafInfo.sefariaUrl}
         target="_blank"
@@ -175,14 +119,7 @@ const DafHeader = React.memo(function DafHeader({ reference, patterns, text }) {
 });
 
 // =============================================================================
-// EXTRACTED (V33): SugyaFlow, SugyaTree, Iyun -> UnifiedSugyaAnalysis/
-// ProScholarSummary -> ProScholarSummary.js
-// RealiaBrowser, RabbiBrowser -> TalmudBrowsers.js
-// DafDiagramSection -> UnifiedSugyaAnalysis/DafDiagramSection.js
-// =============================================================================
-
-// =============================================================================
-// Study Mode Selector Component
+// StudyModeSelector — compact iyun/bekius/chazara pill row
 // =============================================================================
 
 const StudyModeSelector = React.memo(function StudyModeSelector({ currentMode, onModeChange }) {
@@ -209,62 +146,246 @@ const StudyModeSelector = React.memo(function StudyModeSelector({ currentMode, o
     </div>
   );
 });
+
 // =============================================================================
-// Main TalmudToolsTab Component
+// OpinionDetailPanel — detail view for a focused HalachicChain opinion
 // =============================================================================
-// NOTE: This tab is DETERMINISTIC (no AI) - uses pattern-based analysis
-// For AI-enhanced learning, use the Learn (לימוד) tab instead
-// TEXT_TYPE_LABELS imported from ../../constants/talmudStudy.js (DRY)
+
+const OPINION_PANEL_STYLE = { marginTop: '16px', padding: '12px', background: '#f8f9fa', borderRadius: '8px' };
+const OPINION_HEADER_STYLE = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' };
+const OPINION_CLOSE_STYLE = { background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#666' };
+const OPINION_LABEL_STYLE = { fontWeight: 'bold', color: '#555' };
+
+const OpinionDetailPanel = React.memo(function OpinionDetailPanel({ opinion, onClose }) {
+  if (!opinion) return null;
+  return (
+    <div className="opinion-detail-panel" style={OPINION_PANEL_STYLE}>
+      <div className="detail-header" style={OPINION_HEADER_STYLE}>
+        <h4 style={{ margin: 0, color: '#333' }}>{opinion.authority}</h4>
+        <button className="close-detail" onClick={onClose} style={OPINION_CLOSE_STYLE} type="button">×</button>
+      </div>
+      <div className="detail-content">
+        {opinion.ruling && (
+          <div className="detail-section" style={{ marginBottom: '8px' }}>
+            <label style={OPINION_LABEL_STYLE}>Ruling:</label>
+            <p style={{ margin: '4px 0', color: '#333' }}>{opinion.ruling}</p>
+          </div>
+        )}
+        {opinion.reasoning && (
+          <div className="detail-section">
+            <label style={OPINION_LABEL_STYLE}>Reasoning:</label>
+            <p style={{ margin: '4px 0', color: '#333' }}>{opinion.reasoning}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+});
+
+// =============================================================================
+// ToolSection — compact labeled container used by the Iyun tools panel
+// =============================================================================
+
+const ToolSection = ({ icon, label, count, children }) => (
+  <div className="tool-section-compact">
+    <div className="tool-header-compact">
+      <span>{icon}</span>
+      <span>{label}</span>
+      {count > 0 && <span className="tool-count">{count}</span>}
+    </div>
+    {children}
+  </div>
+);
+
+// =============================================================================
+// Iyun mode — deterministic pattern-based analysis + tools
+// =============================================================================
+
+const IyunMode = ({
+  text, reference, sugyaKey,
+  patterns, qaFlow, patternsCount, abbreviationsCount,
+  activeView, setActiveView,
+  focusedOpinion, setFocusedOpinion
+}) => (
+  <>
+    <div className="iyun-view-toggle">
+      <button
+        className={`view-btn ${activeView === 'analysis' ? 'active' : ''}`}
+        onClick={() => setActiveView('analysis')}
+        type="button"
+      >
+        <span>📖</span>
+        <span>ניתוח</span>
+        {patternsCount > 0 && <span className="count">{patternsCount}</span>}
+      </button>
+      <button
+        className={`view-btn ${activeView === 'tools' ? 'active' : ''}`}
+        onClick={() => setActiveView('tools')}
+        type="button"
+      >
+        <span>🔧</span>
+        <span>כלים</span>
+      </button>
+    </div>
+
+    <div className="tab-content">
+      {activeView === 'analysis' && (
+        <>
+          <IyunDeepAnalysisPanel text={text} qaFlow={qaFlow} patterns={patterns} />
+
+          <Suspense fallback={<LazyLoadFallback />}>
+            <UnifiedSugyaAnalysisPro
+              text={text}
+              reference={reference}
+              sugyaKey={sugyaKey}
+              showCitations={true}
+              showNotes={false}
+              compact={false}
+            />
+          </Suspense>
+
+          <MishnaAnalysisPro text={text} />
+          <GemaraQAAnalysisPro text={text} />
+          <SugyaFlowSection text={text} />
+          <RashiTosafotAnalysisPro reference={reference} text={text} />
+          <DafDiagramSection reference={reference} text={text} />
+
+          <CollapsibleSection
+            title="שושלת הוראה - Halachic Chain"
+            icon="⚖️"
+            badge={0}
+            defaultOpen={false}
+          >
+            <HalachicChain
+              text={text}
+              reference={reference}
+              onOpinionFocus={setFocusedOpinion}
+            />
+            <OpinionDetailPanel opinion={focusedOpinion} onClose={() => setFocusedOpinion(null)} />
+          </CollapsibleSection>
+        </>
+      )}
+
+      {activeView === 'tools' && (
+        <div className="tools-panel-compact">
+          <ToolSection icon="📝" label="הערות">
+            <NotesPanel sugyaKey={sugyaKey} text={text} />
+          </ToolSection>
+          <ToolSection icon="א״ב" label="ר״ת" count={abbreviationsCount}>
+            <AbbreviationsPanel text={text} />
+          </ToolSection>
+          <ToolSection icon="📏" label="מידות">
+            <Suspense fallback={<LazyLoadFallback />}>
+              <RealiaBrowser text={text} />
+            </Suspense>
+          </ToolSection>
+          <ToolSection icon="👤" label="חכמים">
+            <RabbiBrowser text={text} />
+          </ToolSection>
+        </div>
+      )}
+    </div>
+  </>
+);
+
+// =============================================================================
+// Bekius mode — quick summary + abbreviations toggle
+// =============================================================================
+
+const BekiusMode = ({ text, patterns, sugyaKey, abbreviationsCount, activeView, setActiveView }) => (
+  <>
+    <BekiusQuickSummary patterns={patterns} text={text} sugyaKey={sugyaKey} />
+
+    <div className="bekius-tools">
+      <div className="tools-header">
+        <span className="tools-icon">🔧</span>
+        <span className="tools-title">כלי עזר</span>
+      </div>
+      <div className="tools-grid">
+        <button
+          className={`tool-btn ${activeView === 'abbr' ? 'active' : ''}`}
+          onClick={() => setActiveView(activeView === 'abbr' ? 'none' : 'abbr')}
+          type="button"
+        >
+          <span className="btn-icon">א״ב</span>
+          <span className="btn-label">ראשי תיבות ({abbreviationsCount})</span>
+        </button>
+      </div>
+    </div>
+
+    {activeView === 'abbr' && (
+      <div className="tab-content">
+        <AbbreviationsPanel text={text} />
+      </div>
+    )}
+  </>
+);
+
+// =============================================================================
+// Chazara mode — self-test + notes toggle
+// =============================================================================
+
+const ChazaraMode = ({ text, patterns, sugyaKey, activeView, setActiveView }) => (
+  <>
+    <ChazaraPanel patterns={patterns} text={text} sugyaKey={sugyaKey} />
+
+    <div className="chazara-tools">
+      <div className="tools-divider" />
+      <button
+        className={`expand-btn ${activeView === 'notes' ? 'active' : ''}`}
+        onClick={() => setActiveView(activeView === 'notes' ? 'none' : 'notes')}
+        type="button"
+      >
+        <span className="btn-icon">📝</span>
+        <span className="btn-label">עיין בהערות שלך</span>
+        <span className="btn-arrow">{activeView === 'notes' ? '▲' : '▼'}</span>
+      </button>
+    </div>
+
+    {activeView === 'notes' && (
+      <div className="tab-content">
+        <NotesPanel sugyaKey={sugyaKey} text={text} />
+      </div>
+    )}
+  </>
+);
+
+// =============================================================================
+// Main component — deterministic (no AI). For AI, use Learn (לימוד) tab.
 // =============================================================================
 
 const TalmudToolsTab = React.memo(function TalmudToolsTab({ text, reference, textType = 'talmud' }) {
-  // PRO SCHOLAR V14: 2-tab structure - default to analysis
   const [activeView, setActiveView] = useState('analysis');
   const [studyMode, setStudyMode] = useState('iyun');
   const [focusedOpinion, setFocusedOpinion] = useState(null);
 
-  // Get text type label with normalized type
   const normalizedType = (textType || 'talmud').toLowerCase();
   const textLabel = TEXT_TYPE_LABELS[normalizedType] || TEXT_TYPE_LABELS.talmud;
 
-  // Generate a key for storing notes based on reference
   const sugyaKey = useMemo(() => {
     if (reference) return reference.replace(/\s+/g, '_');
     return text ? `sugya_${text.substring(0, 50).replace(/\s+/g, '_')}` : 'default';
   }, [reference, text]);
 
-  // Detect patterns for all modes
-  const patterns = useMemo(() => {
-    if (!text) return [];
-    return detectStructuralMarkers(text);
-  }, [text]);
-
-  // PRO SCHOLAR V29: Extract Q&A flow for deep analysis panels
-  const qaFlow = useMemo(() => {
-    if (!text) return { flow: [], summary: {} };
-    return extractGemaraQA(text);
-  }, [text]);
-
-  // Counts for badges
-  const patternsCount = patterns.length;
+  const patterns = useMemo(() => (text ? detectStructuralMarkers(text) : []), [text]);
+  const qaFlow = useMemo(() => (text ? extractGemaraQA(text) : { flow: [], summary: {} }), [text]);
 
   const abbreviationsCount = useMemo(() => {
     if (!text) return 0;
-    const found = findAbbreviations(text);
     const seen = new Set();
-    return found.filter(abbr => {
+    return findAbbreviations(text).filter(abbr => {
       if (seen.has(abbr.abbreviation)) return false;
       seen.add(abbr.abbreviation);
       return true;
     }).length;
   }, [text]);
 
+  const modeProps = { text, patterns, sugyaKey, abbreviationsCount, activeView, setActiveView };
+
   return (
     <div className="talmud-tools-tab scholarly" dir="rtl">
-      {/* Daf Header - Amud reference with Sefaria link */}
       <DafHeader reference={reference} patterns={patterns} text={text} />
 
-      {/* Compact header with mode selector */}
       <div className="talmud-header-compact">
         <StudyModeSelector currentMode={studyMode} onModeChange={setStudyMode} />
         <div className={`text-type-badge ${normalizedType}`}>
@@ -273,220 +394,22 @@ const TalmudToolsTab = React.memo(function TalmudToolsTab({ text, reference, tex
         </div>
       </div>
 
-      {/* Content based on study mode */}
       {studyMode === 'iyun' && (
-        <>
-          {/* Compact Analysis/Tools Toggle */}
-          <div className="iyun-view-toggle">
-            <button
-              className={`view-btn ${activeView === 'analysis' ? 'active' : ''}`}
-              onClick={() => setActiveView('analysis')}
-              type="button"
-            >
-              <span>📖</span>
-              <span>ניתוח</span>
-              {patternsCount > 0 && <span className="count">{patternsCount}</span>}
-            </button>
-            <button
-              className={`view-btn ${activeView === 'tools' ? 'active' : ''}`}
-              onClick={() => setActiveView('tools')}
-              type="button"
-            >
-              <span>🔧</span>
-              <span>כלים</span>
-            </button>
-          </div>
-
-          <div className="tab-content">
-            {/* ניתוח - Unified Analysis (משנה+שקו״ט+מהלך+חכמים+תרשים) */}
-            {/* NOTE: This is DETERMINISTIC analysis only - no AI */}
-            {activeView === 'analysis' && (
-              <>
-                {/* PRO SCHOLAR V29: Iyun Deep Analysis - סברות, הבחנות, הנחות */}
-                <IyunDeepAnalysisPanel
-                  text={text}
-                  qaFlow={qaFlow}
-                  patterns={patterns}
-                />
-
-                {/* PRO SCHOLAR V27: Full-featured Sugya Analysis with all scholarly tools */}
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <UnifiedSugyaAnalysisPro
-                    text={text}
-                    reference={reference}
-                    sugyaKey={sugyaKey}
-                    showCitations={true}
-                    showNotes={false}
-                    compact={false}
-                  />
-                </Suspense>
-
-                {/* PRO SCHOLAR V31: Consolidated Mishna Analysis (quick/grouped/deep views) */}
-                <MishnaAnalysisPro text={text} />
-
-                {/* PRO SCHOLAR V31: Consolidated Gemara Q&A Analysis (quick/tree/deep views) */}
-                <GemaraQAAnalysisPro text={text} />
-
-                {/* PRO SCHOLAR V31: Sugya Structure Visualization (tree/flow/list/text views) */}
-                <SugyaFlowSection text={text} />
-
-                {/* PRO SCHOLAR V31: Rashi & Tosafot Commentary Panel (quick/split/deep views) */}
-                <RashiTosafotAnalysisPro reference={reference} text={text} />
-
-                {/* PRO SCHOLAR V29: Visual Daf Diagram */}
-                <DafDiagramSection reference={reference} text={text} />
-
-                {/* PRO SCHOLAR: Halachic Chain - שושלת הוראה (Collapsible) */}
-                <CollapsibleSection
-                  title="שושלת הוראה - Halachic Chain"
-                  icon="⚖️"
-                  badge={0}
-                  defaultOpen={false}
-                >
-                  <HalachicChain
-                    text={text}
-                    reference={reference}
-                    onOpinionFocus={setFocusedOpinion}
-                  />
-                  {focusedOpinion && (
-                    <div className="opinion-detail-panel" style={{ marginTop: '16px', padding: '12px', background: '#f8f9fa', borderRadius: '8px' }}>
-                      <div className="detail-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                        <h4 style={{ margin: 0, color: '#333' }}>{focusedOpinion.authority}</h4>
-                        <button 
-                          className="close-detail" 
-                          onClick={() => setFocusedOpinion(null)}
-                          style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#666' }}
-                        >
-                          ×
-                        </button>
-                      </div>
-                      <div className="detail-content">
-                        {focusedOpinion.ruling && (
-                          <div className="detail-section" style={{ marginBottom: '8px' }}>
-                            <label style={{ fontWeight: 'bold', color: '#555' }}>Ruling:</label>
-                            <p style={{ margin: '4px 0', color: '#333' }}>{focusedOpinion.ruling}</p>
-                          </div>
-                        )}
-                        {focusedOpinion.reasoning && (
-                          <div className="detail-section">
-                            <label style={{ fontWeight: 'bold', color: '#555' }}>Reasoning:</label>
-                            <p style={{ margin: '4px 0', color: '#333' }}>{focusedOpinion.reasoning}</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </CollapsibleSection>
-              </>
-            )}
-
-            {/* כלים - Tools (הערות+ר״ת+מידות) */}
-            {activeView === 'tools' && (
-              <div className="tools-panel-compact">
-                <div className="tool-section-compact">
-                  <div className="tool-header-compact">
-                    <span>📝</span>
-                    <span>הערות</span>
-                  </div>
-                  <NotesPanel sugyaKey={sugyaKey} text={text} />
-                </div>
-
-                <div className="tool-section-compact">
-                  <div className="tool-header-compact">
-                    <span>א״ב</span>
-                    <span>ר״ת</span>
-                    {abbreviationsCount > 0 && <span className="tool-count">{abbreviationsCount}</span>}
-                  </div>
-                  <AbbreviationsPanel text={text} />
-                </div>
-
-                <div className="tool-section-compact">
-                  <div className="tool-header-compact">
-                    <span>📏</span>
-                    <span>מידות</span>
-                  </div>
-                  <Suspense fallback={<LazyLoadFallback />}>
-                    <RealiaBrowser text={text} />
-                  </Suspense>
-                </div>
-
-                <div className="tool-section-compact">
-                  <div className="tool-header-compact">
-                    <span>👤</span>
-                    <span>חכמים</span>
-                  </div>
-                  <RabbiBrowser text={text} />
-                </div>
-              </div>
-            )}
-          </div>
-        </>
+        <IyunMode
+          {...modeProps}
+          reference={reference}
+          qaFlow={qaFlow}
+          patternsCount={patterns.length}
+          focusedOpinion={focusedOpinion}
+          setFocusedOpinion={setFocusedOpinion}
+        />
       )}
+      {studyMode === 'bekius' && <BekiusMode {...modeProps} />}
+      {studyMode === 'chazara' && <ChazaraMode {...modeProps} />}
 
-      {studyMode === 'bekius' && (
-        <>
-          {/* Bekius Mode - Quick Overview */}
-          <BekiusQuickSummary patterns={patterns} text={text} sugyaKey={sugyaKey} />
-
-          <div className="bekius-tools">
-            <div className="tools-header">
-              <span className="tools-icon">🔧</span>
-              <span className="tools-title">כלי עזר</span>
-            </div>
-            <div className="tools-grid">
-              <button
-                className={`tool-btn ${activeView === 'abbr' ? 'active' : ''}`}
-                onClick={() => setActiveView(activeView === 'abbr' ? 'none' : 'abbr')}
-                type="button"
-              >
-                <span className="btn-icon">א״ב</span>
-                <span className="btn-label">ראשי תיבות ({abbreviationsCount})</span>
-              </button>
-            </div>
-          </div>
-
-          {activeView === 'abbr' && (
-            <div className="tab-content">
-              <AbbreviationsPanel text={text} />
-            </div>
-          )}
-        </>
-      )}
-
-      {studyMode === 'chazara' && (
-        <>
-          {/* Chazara Mode - Review & Self-Test */}
-          <ChazaraPanel patterns={patterns} text={text} sugyaKey={sugyaKey} />
-
-          <div className="chazara-tools">
-            <div className="tools-divider" />
-            <button
-              className={`expand-btn ${activeView === 'notes' ? 'active' : ''}`}
-              onClick={() => setActiveView(activeView === 'notes' ? 'none' : 'notes')}
-              type="button"
-            >
-              <span className="btn-icon">📝</span>
-              <span className="btn-label">עיין בהערות שלך</span>
-              <span className="btn-arrow">{activeView === 'notes' ? '▲' : '▼'}</span>
-            </button>
-          </div>
-
-          {activeView === 'notes' && (
-            <div className="tab-content">
-              <NotesPanel sugyaKey={sugyaKey} text={text} />
-            </div>
-          )}
-        </>
-      )}
-
-      {/* Quick study tips based on current mode */}
       <div className="study-tip-footer">
         <span className="tip-icon">💡</span>
-        <span className="tip-text">
-          {studyMode === 'iyun' && 'עיון: התמקד בהבנת כל שלב בשקלא וטריא. למה הגמרא שואלת? מה הסברא?'}
-          {studyMode === 'bekius' && 'בקיאות: קרא את הסוגיא בשטף, הבן את התמונה הכללית לפני הפרטים'}
-          {studyMode === 'chazara' && 'חזרה: נסה לענות בעצמך לפני שתסתכל ברמז. חזרה על חזרה!'}
-        </span>
+        <span className="tip-text">{STUDY_TIPS[studyMode]}</span>
       </div>
     </div>
   );
@@ -498,6 +421,4 @@ TalmudToolsTab.propTypes = {
   textType: PropTypes.string
 };
 
-// Export reserved UI components for use in other scholar-mode files
-export { StatBadge, CollapsibleSection };
 export default TalmudToolsTab;

@@ -19,7 +19,7 @@ import { HEBREW_PREFIXES_ORDERED } from '../../constants/morphology';
 // Use shared SOURCE_CONFIG for dictionary tiers (DRY)
 import { SOURCE_CONFIG } from '../../constants/sourceConfig';
 // Book classifiers for context-aware preload gating
-import { isTorahBook, isTalmudBook, isMishnahBook } from '../sefariaApi/bookData';
+import { isTorahBook, isTalmudBook, isMishnahBook } from '../sefariaApi';
 // IndexedDB persistence for parsed dictionary JSON
 import { getCached, putCached } from './dictionaryCache';
 
@@ -105,6 +105,68 @@ const loadingState = {
   etymologyJastrow: false,
   wiktionaryCache: false
 };
+
+// =============================================================================
+// HEALTH MONITORING
+// =============================================================================
+
+/**
+ * Per-dictionary health state. Lets the UI / diagnostic tools distinguish
+ * between "never requested", "loading", "loaded OK", and "failed".
+ *
+ * Entry shape:
+ *   { status: 'idle'|'loading'|'ready'|'failed',
+ *     error: string|null,
+ *     loadedAt: number|null,
+ *     durationMs: number|null,
+ *     entryCount: number|null,
+ *     attempts: number }
+ */
+const dictionaryHealth = Object.fromEntries(
+  Object.keys(cache).map(name => [name, {
+    status: 'idle',
+    error: null,
+    loadedAt: null,
+    durationMs: null,
+    entryCount: null,
+    attempts: 0
+  }])
+);
+
+/**
+ * Read-only snapshot of dictionary health. Safe for UI consumption.
+ * @returns {Object<string, object>} Frozen copy of health state.
+ */
+export function getDictionaryHealth() {
+  const snapshot = {};
+  for (const [name, state] of Object.entries(dictionaryHealth)) {
+    snapshot[name] = { ...state };
+  }
+  return snapshot;
+}
+
+/**
+ * List dictionaries that failed on their most recent load attempt.
+ * @returns {Array<{name: string, error: string, attempts: number}>}
+ */
+export function getUnhealthyDictionaries() {
+  return Object.entries(dictionaryHealth)
+    .filter(([, state]) => state.status === 'failed')
+    .map(([name, state]) => ({ name, error: state.error, attempts: state.attempts }));
+}
+
+/**
+ * Aggregate counts useful for a status badge / diagnostic panel.
+ * @returns {{total: number, ready: number, loading: number, failed: number, idle: number}}
+ */
+export function getDictionaryHealthSummary() {
+  const totals = { total: 0, ready: 0, loading: 0, failed: 0, idle: 0 };
+  for (const state of Object.values(dictionaryHealth)) {
+    totals.total += 1;
+    totals[state.status] = (totals[state.status] || 0) + 1;
+  }
+  return totals;
+}
 
 // =============================================================================
 // SHARED CONSTANTS & HELPERS (DRY)
@@ -244,6 +306,12 @@ async function loadDictionary(name) {
 
   // Start loading
   loadingState[name] = true;
+  if (dictionaryHealth[name]) {
+    dictionaryHealth[name].status = 'loading';
+    dictionaryHealth[name].error = null;
+    dictionaryHealth[name].attempts += 1;
+  }
+  const loadStartedAt = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
   log.debug(`Loading ${name} dictionary...`);
 
   const fileName = {
@@ -275,14 +343,28 @@ async function loadDictionary(name) {
     wiktionaryCache: 'wiktionary_etymology_cache.json'  // 108+ Proto-Semitic
   }[name];
 
+  const markReady = (data, { source }) => {
+    cache[name] = data;
+    loadingState[name] = false;
+    loadingPromises[name] = Promise.resolve(data);
+    const now = Date.now();
+    const nowPerf = (typeof performance !== 'undefined' && performance.now) ? performance.now() : now;
+    const entryCount = Object.keys(data?.byWord || data || {}).length;
+    if (dictionaryHealth[name]) {
+      dictionaryHealth[name].status = 'ready';
+      dictionaryHealth[name].error = null;
+      dictionaryHealth[name].loadedAt = now;
+      dictionaryHealth[name].durationMs = Math.round(nowPerf - loadStartedAt);
+      dictionaryHealth[name].entryCount = entryCount;
+    }
+    log.debug(`Loaded ${name} from ${source}: ${entryCount} entries`);
+  };
+
   loadingPromises[name] = (async () => {
     // IndexedDB hit: skip network entirely on warm sessions.
     const cached = await getCached(fileName);
     if (cached) {
-      cache[name] = cached;
-      loadingState[name] = false;
-      loadingPromises[name] = Promise.resolve(cached);
-      log.debug(`Loaded ${name} from IndexedDB: ${Object.keys(cached.byWord || cached).length} entries`);
+      markReady(cached, { source: 'IndexedDB' });
       return cached;
     }
 
@@ -296,11 +378,7 @@ async function loadDictionary(name) {
         throw new Error(`Expected JSON for ${name} but got ${contentType}`);
       }
       const data = await response.json();
-      cache[name] = data;
-      loadingState[name] = false;
-      // Keep resolved promise so concurrent callers still get the result
-      loadingPromises[name] = Promise.resolve(data);
-      log.debug(`Loaded ${name}: ${Object.keys(data.byWord || data).length} entries`);
+      markReady(data, { source: 'network' });
       // Fire-and-forget persistence so we don't block the first render.
       putCached(fileName, data).catch(() => {});
       return data;
@@ -308,13 +386,27 @@ async function loadDictionary(name) {
       loadingState[name] = false;
       // Clear promise on failure so retry is possible
       loadingPromises[name] = null;
+
+      let classification;
       if (error instanceof SyntaxError) {
-        log.error(`[${name}] Malformed JSON:`, error.message);
+        classification = 'Malformed JSON';
       } else if (error instanceof TypeError) {
-        log.error(`[${name}] Network error:`, error.message);
+        classification = 'Network error';
       } else {
-        log.error(`[${name}] Load failed:`, error.message);
+        classification = 'Load failed';
       }
+      const message = `[${name}] ${classification}: ${error.message}`;
+
+      if (dictionaryHealth[name]) {
+        dictionaryHealth[name].status = 'failed';
+        dictionaryHealth[name].error = message;
+      }
+
+      // Unconditional warn — the debug logger may be silent in production.
+      // Previously swallowed failures masked broken dictionaries from users.
+      // eslint-disable-next-line no-console
+      console.warn(`[DictionaryLoader] ${message}`);
+      log.error(message);
       throw error;
     }
   })();

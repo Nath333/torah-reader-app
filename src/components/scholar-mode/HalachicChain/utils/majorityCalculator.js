@@ -156,8 +156,8 @@ export const calculateTraditionSplit = (decisions) => {
     shared,
     traditionsConverge,
     summary: traditionsConverge
-      ? 'Both traditions align on this issue'
-      : 'Ashkenazi and Sephardic traditions diverge'
+      ? 'שתי המסורות מסכימות בנושא זה'
+      : 'המסורות האשכנזית והספרדית חלוקות'
   };
 };
 
@@ -236,10 +236,10 @@ export const enrichPsakWithAcharonim = (psak, acharonimDecisions) => {
   if (mechaberSupporters.length > 0 || remaSupporters.length > 0) {
     const parts = [];
     if (mechaberSupporters.length > 0) {
-      parts.push(`Mechaber supported by: ${mechaberSupporters.join(', ')}`);
+      parts.push(`המחבר נתמך ע"י: ${mechaberSupporters.join(', ')}`);
     }
     if (remaSupporters.length > 0) {
-      parts.push(`Rema supported by: ${remaSupporters.join(', ')}`);
+      parts.push(`הרמ"א נתמך ע"י: ${remaSupporters.join(', ')}`);
     }
     halachaLemaaseh = halachaLemaaseh ? `${halachaLemaaseh}. ${parts.join('. ')}` : parts.join('. ');
   }

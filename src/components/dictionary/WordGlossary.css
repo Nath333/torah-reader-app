@@ -684,6 +684,60 @@
 }
 
 /* =============================================================================
+   Tier Medal — shown when a better-tier source also confirms the word
+   (e.g., primary is "Rabbinic" but BDB/Jastrow also matched)
+   ============================================================================= */
+.glossary-tier-medal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  line-height: 1;
+  padding: 0.1rem 0.25rem;
+  border-radius: 4px;
+  cursor: help;
+  transition: transform 120ms ease, background 120ms ease;
+}
+
+.glossary-tier-medal:hover {
+  transform: scale(1.15);
+}
+
+.glossary-tier-medal.tier-1 {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.2) 0%, rgba(245, 158, 11, 0.12) 100%);
+  border: 1px solid rgba(251, 191, 36, 0.45);
+}
+
+.glossary-tier-medal.tier-2 {
+  background: linear-gradient(135deg, rgba(156, 163, 175, 0.18) 0%, rgba(107, 114, 128, 0.12) 100%);
+  border: 1px solid rgba(156, 163, 175, 0.45);
+}
+
+.glossary-tier-medal.tier-3,
+.glossary-tier-medal.tier-4,
+.glossary-tier-medal.tier-5 {
+  background: linear-gradient(135deg, rgba(180, 83, 9, 0.12) 0%, rgba(217, 119, 6, 0.08) 100%);
+  border: 1px solid rgba(180, 83, 9, 0.3);
+}
+
+.dark-mode .glossary-tier-medal.tier-1 {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.25) 0%, rgba(245, 158, 11, 0.18) 100%);
+  border-color: rgba(251, 191, 36, 0.5);
+}
+
+.dark-mode .glossary-tier-medal.tier-2 {
+  background: linear-gradient(135deg, rgba(156, 163, 175, 0.22) 0%, rgba(107, 114, 128, 0.16) 100%);
+  border-color: rgba(156, 163, 175, 0.5);
+}
+
+.dark-mode .glossary-tier-medal.tier-3,
+.dark-mode .glossary-tier-medal.tier-4,
+.dark-mode .glossary-tier-medal.tier-5 {
+  background: linear-gradient(135deg, rgba(180, 83, 9, 0.2) 0%, rgba(217, 119, 6, 0.15) 100%);
+  border-color: rgba(180, 83, 9, 0.4);
+}
+
+/* =============================================================================
    Not Found Words - PRO SCHOLAR V12: Enhanced Morphological Hints
    ============================================================================= */
 

@@ -31,8 +31,6 @@ import {
   getSourceCredibility,
   getCredibilityBadge
 } from '../../services/sourceCredibilityService';
-// PRO SCHOLAR V3: Context-aware confidence scoring (available for future use)
-// import { computeConfidence, getSourceTier, getContextFromReference } from '../../services/analysis/preClassificationService';
 import SourceDefinitionItem from './SourceDefinitionItem';
 import VerbConjugationDisplay from './morphology/VerbConjugationDisplay';
 import ProScholarPanel from './panels/ProScholarPanel';

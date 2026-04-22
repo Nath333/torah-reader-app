@@ -361,7 +361,7 @@ const LayerToggleButton = ({ hebrew, isVisible, onToggle }) => (
   <button
     className={`layer-toggle ${isVisible ? 'active' : ''}`}
     onClick={onToggle}
-    title={isVisible ? 'Hide layer' : 'Show layer'}
+    title={isVisible ? 'הסתר שכבה' : 'הצג שכבה'}
   >
     <span className="toggle-hebrew">{hebrew}</span>
   </button>

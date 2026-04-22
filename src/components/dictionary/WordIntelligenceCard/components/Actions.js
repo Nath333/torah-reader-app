@@ -254,7 +254,7 @@ export const SRSSection = memo(function SRSSection({ word, definition, root, onU
   const handleQuickReview = useCallback((quality) => {
     if (!srsCard) return;
     try {
-      const srsService = require('../../../services/srsService');
+      const srsService = require('../../../../services/srsService');
       const updated = srsService.processReview?.(getCardId(word), quality);
       if (updated) {
         setSrsCard(updated);

@@ -1004,7 +1004,7 @@ initializeWordGraph();
  * Related roots database - roots that share letters or semantic fields
  * These are roots that scholars often compare and contrast
  */
-export const RELATED_ROOTS_DB = {
+const RELATED_ROOTS_DB = {
   // Motion roots
   'יצא': {
     related: [
@@ -1159,35 +1159,7 @@ export function getRelatedRoots(root) {
 }
 
 /**
- * Get enriched root family with full definitions from all dictionaries
- * @param {string} root - 3-letter Hebrew root
- * @returns {Promise<Object>} Enriched family data with definitions
- */
-export async function getEnrichedRootFamily(root) {
-  // Get basic root family
-  const basicFamily = getRootFamily(root);
-
-  // Get related roots
-  const relatedRoots = getRelatedRoots(root);
-
-  // Build enriched result
-  const result = {
-    root: basicFamily.root || root,
-    rootMeaning: basicFamily.rootMeaning,
-    words: basicFamily.words || [],
-    relatedRoots: relatedRoots.related || [],
-    hasRelatedRoots: relatedRoots.hasData,
-    // Summary stats
-    wordCount: basicFamily.words?.length || 0,
-    relatedRootCount: relatedRoots.related?.length || 0,
-  };
-
-  return result;
-}
-
-/**
  * Get comprehensive root analysis with synonyms, antonyms, and related roots
- * Enhanced with definitions from BDB/Jastrow
  * @param {string} root - 3-letter Hebrew root
  * @returns {Object} Comprehensive root analysis
  */
@@ -1195,30 +1167,18 @@ export function getComprehensiveRootAnalysis(root) {
   if (!root) return null;
 
   const stripped = root.replace(/[-\s]/g, '');
-
-  // Get root family
   const family = WORD_RELATIONSHIPS_DB.rootFamilies[stripped];
-
-  // Get related roots with definitions
   const relatedRoots = getRelatedRoots(stripped);
 
-// Enhance related roots with definitions from dictionaries
+  // Enhance related roots with synonym/antonym context
   const enhancedRelatedRoots = (relatedRoots.related || []).map(rel => {
-    // Try to get definition from root meanings
-    let definition = rel.meaning || null;
-    let sources = [];
-
-    // Look up in synonyms/antonyms for more context
     const synDef = WORD_RELATIONSHIPS_DB.synonyms[rel.root];
     const antDef = WORD_RELATIONSHIPS_DB.antonyms[rel.root];
+    const sources = [];
+    if (synDef?.length > 0) sources.push({ type: 'synonym', words: synDef });
+    if (antDef?.length > 0) sources.push({ type: 'antonym', words: antDef });
 
-    if (synDef?.length > 0) {
-      sources.push({ type: 'synonym', words: synDef });
-    }
-    if (antDef?.length > 0) {
-      sources.push({ type: 'antonym', words: antDef });
-    }
-
+    const definition = rel.meaning || null;
     return {
       ...rel,
       definition,
@@ -1227,56 +1187,34 @@ export function getComprehensiveRootAnalysis(root) {
     };
   });
 
-  // Find any words from this root in synonyms/antonyms
+  // Walk family words, collecting synonym/antonym connections and parallel roots
   const synonymConnections = [];
   const antonymConnections = [];
-
-  // Build parallel roots (roots that share similar meanings)
   const parallelRoots = [];
+  const parallelSeen = new Set();
 
-  if (family?.words) {
+  const addParallel = (word, relation, sourceWord, sourceMeaning) => {
+    if (parallelSeen.has(word)) return;
+    parallelSeen.add(word);
+    parallelRoots.push({ word, relation, sourceWord, sourceMeaning });
+  };
+
+  const collectRelation = (relationKey, relation, connections) => {
+    if (!family?.words) return;
     family.words.forEach(wordObj => {
-      const word = wordObj.word;
-      if (WORD_RELATIONSHIPS_DB.synonyms[word]) {
-        const syns = WORD_RELATIONSHIPS_DB.synonyms[word];
-        synonymConnections.push({
-          word,
-          meaning: wordObj.meaning,
-          synonyms: syns
-        });
-        // Add parallel roots from synonyms
-        syns.forEach(syn => {
-          if (!parallelRoots.find(p => p.word === syn)) {
-            parallelRoots.push({
-              word: syn,
-              relation: 'synonym',
-              sourceWord: word,
-              sourceMeaning: wordObj.meaning
-            });
-          }
-        });
-      }
-      if (WORD_RELATIONSHIPS_DB.antonyms[word]) {
-        const ants = WORD_RELATIONSHIPS_DB.antonyms[word];
-        antonymConnections.push({
-          word,
-          meaning: wordObj.meaning,
-          antonyms: ants
-        });
-        // Add parallel roots from antonyms
-        ants.forEach(ant => {
-          if (!parallelRoots.find(p => p.word === ant)) {
-            parallelRoots.push({
-              word: ant,
-              relation: 'antonym',
-              sourceWord: word,
-              sourceMeaning: wordObj.meaning
-            });
-          }
-        });
-      }
+      const related = WORD_RELATIONSHIPS_DB[relationKey][wordObj.word];
+      if (!related) return;
+      connections.push({
+        word: wordObj.word,
+        meaning: wordObj.meaning,
+        [relationKey]: related,
+      });
+      related.forEach(w => addParallel(w, relation, wordObj.word, wordObj.meaning));
     });
-  }
+  };
+
+  collectRelation('synonyms', 'synonym', synonymConnections);
+  collectRelation('antonyms', 'antonym', antonymConnections);
 
   return {
     root: stripped,
@@ -1285,16 +1223,15 @@ export function getComprehensiveRootAnalysis(root) {
     relatedRoots: enhancedRelatedRoots,
     synonymConnections,
     antonymConnections,
-    parallelRoots, // New field for parallel roots
+    parallelRoots,
     hasData: !!(family || relatedRoots.hasData || parallelRoots.length > 0),
-    // Summary
     stats: {
       familySize: family?.words?.length || 0,
       relatedRootsCount: enhancedRelatedRoots.length,
       synonymsCount: synonymConnections.length,
       antonymsCount: antonymConnections.length,
-      parallelRootsCount: parallelRoots.length
-    }
+      parallelRootsCount: parallelRoots.length,
+    },
   };
 }
 
@@ -1378,100 +1315,40 @@ export function extractCrossReferences(definition, sourceDict = 'unknown') {
 }
 
 /**
- * Get all cross-references for a word from cached dictionaries
- * @param {string} word - Hebrew word to find cross-references for
- * @returns {Object} Cross-references grouped by type
- */
-export function getCrossReferences(word) {
-  if (!word) return { word, crossRefs: [], byType: {} };
-
-  const allCrossRefs = [];
-
-  // Try to import from dictionaryLoader (sync access to cache)
-  try {
-    // This will be filled in by the calling component which has access to the data
-    // The function signature is designed to be called with the definition text
-  } catch {
-    // Fallback: no cached data available
-  }
-
-  // Group by type
-  const byType = {
-    compare: [],
-    see: [],
-    etymology: [],
-    synonym: [],
-    antonym: [],
-    derivative: []
-  };
-
-  allCrossRefs.forEach(ref => {
-    if (byType[ref.type]) {
-      byType[ref.type].push(ref);
-    }
-  });
-
-  return {
-    word,
-    crossRefs: allCrossRefs,
-    byType,
-    hasData: allCrossRefs.length > 0
-  };
-}
-
-/**
- * Parse a definition and extract all scholarly cross-references
- * Combines multiple sources (BDB, Jastrow) into unified structure
+ * Cross-reference across all supported dictionary sources.
+ * Iterates each source's definition text, extracts refs, and deduplicates
+ * by (word, type) across sources.
  *
- * @param {Object} dictionaryData - Object with definitions from multiple sources
- * @returns {Object} Unified cross-reference data
+ * @param {Object} dictionaryData - Dictionary entries keyed by source (jastrow, klein, gesenius, strongs, …)
+ * @returns {{crossRefs: Array, byType: Object}}
  */
 export function parseAllCrossReferences(dictionaryData) {
-  const result = {
-    crossRefs: [],
-    byType: {
-      compare: [],
-      see: [],
-      etymology: [],
-      synonym: [],
-      antonym: [],
-      derivative: []
-    },
-    bySource: {}
-  };
+  const byType = {};
+  const crossRefs = [];
+  if (!dictionaryData) return { crossRefs, byType };
 
-  if (!dictionaryData) return result;
-
-  // Process each source
   const sources = [
-    { key: 'bdb', name: 'BDB' },
     { key: 'jastrow', name: 'Jastrow' },
     { key: 'klein', name: 'Klein' },
     { key: 'gesenius', name: 'Gesenius' },
-    { key: 'strongs', name: "Strong's" }
+    { key: 'strongs', name: "Strong's" },
   ];
+  const seen = new Set();
 
   for (const { key, name } of sources) {
     const entry = dictionaryData[key];
     if (!entry) continue;
-
     const definition = entry.definition || entry.gloss || entry.english || '';
-    const refs = extractCrossReferences(definition, name);
-
-    if (refs.length > 0) {
-      result.bySource[name] = refs;
-      result.crossRefs.push(...refs);
-
-      // Group by type
-      refs.forEach(ref => {
-        if (result.byType[ref.type]) {
-          result.byType[ref.type].push(ref);
-        }
-      });
+    for (const ref of extractCrossReferences(definition, name)) {
+      const dedupKey = `${ref.word}-${ref.type}`;
+      if (seen.has(dedupKey)) continue;
+      seen.add(dedupKey);
+      crossRefs.push(ref);
+      (byType[ref.type] ||= []).push(ref);
     }
   }
 
-  return result;
+  return { crossRefs, byType };
 }
 
 // =============================================================================
@@ -1481,17 +1358,17 @@ export function parseAllCrossReferences(dictionaryData) {
 /**
  * Etymology layers in historical order
  */
-export const ETYMOLOGY_LAYERS = {
-  // PROTO_SEMITIC: { id: 'proto_semitic', label: 'Proto-Semitic', hebrew: 'פרוטו-שמית', era: -3000, color: '#8b5cf6' },
-  // AKKADIAN: { id: 'akkadian', label: 'Akkadian', hebrew: 'אכדית', era: -2500, color: '#6366f1' },
-  // UGARITIC: { id: 'ugaritic', label: 'Ugaritic', hebrew: 'אוגריתית', era: -1400, color: '#3b82f6' },
-  // PHOENICIAN: { id: 'phoenician', label: 'Phoenician', hebrew: 'פיניקית', era: -1200, color: '#0ea5e9' },
-  // BIBLICAL_HEBREW: { id: 'biblical_hebrew', label: 'Biblical Hebrew', hebrew: 'עברית מקראית', era: -1000, color: '#14b8a6' },
-  // BIBLICAL_ARAMAIC: { id: 'biblical_aramaic', label: 'Biblical Aramaic', hebrew: 'ארמית מקראית', era: -600, color: '#22c55e' },
-  // MISHNAIC_HEBREW: { id: 'mishnaic_hebrew', label: 'Mishnaic Hebrew', hebrew: 'עברית משנאית', era: 200, color: '#84cc16' },
-  // TALMUDIC_ARAMAIC: { id: 'talmudic_aramaic', label: 'Talmudic Aramaic', hebrew: 'ארמית תלמודית', era: 500, color: '#eab308' },
-  // MEDIEVAL_HEBREW: { id: 'medieval_hebrew', label: 'Medieval Hebrew', hebrew: 'עברית ימי הביניים', era: 1000, color: '#f97316' },
-  // MODERN_HEBREW: { id: 'modern_hebrew', label: 'Modern Hebrew', hebrew: 'עברית מודרנית', era: 1900, color: '#ef4444' }
+const ETYMOLOGY_LAYERS = {
+  PROTO_SEMITIC: { id: 'proto_semitic', label: 'Proto-Semitic', hebrew: 'פרוטו-שמית', era: -3000, color: '#8b5cf6' },
+  AKKADIAN: { id: 'akkadian', label: 'Akkadian', hebrew: 'אכדית', era: -2500, color: '#6366f1' },
+  UGARITIC: { id: 'ugaritic', label: 'Ugaritic', hebrew: 'אוגריתית', era: -1400, color: '#3b82f6' },
+  PHOENICIAN: { id: 'phoenician', label: 'Phoenician', hebrew: 'פיניקית', era: -1200, color: '#0ea5e9' },
+  BIBLICAL_HEBREW: { id: 'biblical_hebrew', label: 'Biblical Hebrew', hebrew: 'עברית מקראית', era: -1000, color: '#14b8a6' },
+  BIBLICAL_ARAMAIC: { id: 'biblical_aramaic', label: 'Biblical Aramaic', hebrew: 'ארמית מקראית', era: -600, color: '#22c55e' },
+  MISHNAIC_HEBREW: { id: 'mishnaic_hebrew', label: 'Mishnaic Hebrew', hebrew: 'עברית משנאית', era: 200, color: '#84cc16' },
+  TALMUDIC_ARAMAIC: { id: 'talmudic_aramaic', label: 'Talmudic Aramaic', hebrew: 'ארמית תלמודית', era: 500, color: '#eab308' },
+  MEDIEVAL_HEBREW: { id: 'medieval_hebrew', label: 'Medieval Hebrew', hebrew: 'עברית ימי הביניים', era: 1000, color: '#f97316' },
+  MODERN_HEBREW: { id: 'modern_hebrew', label: 'Modern Hebrew', hebrew: 'עברית מודרנית', era: 1900, color: '#ef4444' }
 };
 
 /**
@@ -1615,35 +1492,11 @@ export function buildEtymologyChainFromData(etymologyData) {
   return chain;
 }
 
-/**
- * Get cognate languages present in etymology data
- * @param {Object} etymologyData - Etymology data
- * @returns {Array} List of cognate languages with counts
- */
-export function getCognateLanguages(etymologyData) {
-  const chain = buildEtymologyChainFromData(etymologyData);
-
-  return Object.entries(chain.cognates)
-    .map(([lang, words]) => ({
-      language: lang,
-      displayName: lang.charAt(0).toUpperCase() + lang.slice(1),
-      count: words.length,
-      words: words.slice(0, 3) // First 3 examples
-    }))
-    .sort((a, b) => b.count - a.count);
-}
-
 // =============================================================================
 // DEFAULT EXPORT
 // =============================================================================
 
 const wordRelationshipService = {
-  // Types
-  // WORD_RELATIONSHIP_TYPES,
-  // SEMANTIC_FIELDS,
-  // WORD_RELATIONSHIPS_DB,
-  // RELATED_ROOTS_DB,
-  // ETYMOLOGY_LAYERS,
   // Init
   initializeWordGraph,
   // Node operations
@@ -1657,16 +1510,13 @@ const wordRelationshipService = {
   getSemanticFieldWords,
   findSemanticFields,
   getLearningPath,
-// Enhanced root analysis
+  // Root analysis
   getRelatedRoots,
-  getEnrichedRootFamily,
   getComprehensiveRootAnalysis,
-// Cross-references & Etymology
+  // Cross-references & Etymology
   extractCrossReferences,
-  getCrossReferences,
   parseAllCrossReferences,
   buildEtymologyChainFromData,
-  getCognateLanguages,
   // Visualization
   generateWordGraph,
   generateWordMermaid,

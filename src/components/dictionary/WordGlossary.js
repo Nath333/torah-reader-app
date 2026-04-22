@@ -142,23 +142,40 @@ const lookupWord = async (word, contextType = 'talmudic') => {
     const sources = result.sources || [];
     const sourceNames = sources.map(s => s.name).filter(Boolean);
 
-    // Determine best tier from aggregated sources (1=academic, 2=scholarly, 3+=curated)
+    // Tier lookup helper (tier can be number or {level} object from different pipeline stages)
+    const getTier = (s) => typeof s.tier === 'object' ? s.tier?.level : s.tier;
+
+    // Best tier across all sources (1=academic, 2=scholarly, 3+=curated)
     const bestTier = sources.reduce((best, s) => {
-      const t = typeof s.tier === 'object' ? s.tier?.level : s.tier;
+      const t = getTier(s);
       return t && t < best ? t : best;
     }, 99);
+
+    // Primary source's tier (the one shown in the main badge).
+    // Pipeline uses first-come-first-served primary, so primaryTier may be worse than bestTier
+    // — when that happens, we show a secondary medal to surface the better sources.
+    const primarySource = result.source;
+    const primarySourceObj = sources.find(s => s.name === primarySource);
+    const primaryTier = primarySourceObj ? getTier(primarySourceObj) : null;
+
+    // Sources at the best tier, excluding the primary — used in medal tooltip
+    const bestTierSources = bestTier < 99
+      ? sources.filter(s => getTier(s) === bestTier && s.name !== primarySource).map(s => s.name)
+      : [];
 
     return {
       word: cleaned,
       definition,
-      source: result.source || 'Unknown',
-      sourceName: getSourceInfo(result.source)?.name || result.source,
-      isLocal: isLocalSource(result.source),
-      isLexicon: isAcademicLexicon(result.source),
+      source: primarySource || 'Unknown',
+      sourceName: getSourceInfo(primarySource)?.name || primarySource,
+      isLocal: isLocalSource(primarySource),
+      isLexicon: isAcademicLexicon(primarySource),
       matchType,
       root: effectiveRoot,
-      // Tier: best source tier (1=Gold/Academic, 2=Silver/Scholarly, 3+=Bronze/Curated)
+      // Tier: best aggregated tier + primary's tier + names of best-tier sources
       bestTier: bestTier < 99 ? bestTier : null,
+      primaryTier,
+      bestTierSources,
       // Proto-Semitic
       protoSemitic: result.protoSemitic?.form || null,
       cognates: result.protoSemitic?.cognates || null,
@@ -423,23 +440,27 @@ const WordGlossary = React.memo(({ text, onClose }) => {
               const sourceLabel = def.sourceName || sourceInfo?.name || def.source;
               const matchLabel = def.matchType === 'ROOT_DERIVED' ? ' √' : '';
 
-              // PRO SCHOLAR V12: Format dialects for display
-              const dialectDisplay = def.dialects?.length > 0 ? def.dialects.slice(0, 2).join(', ') : null;
-              const hasScholarly = def.dialects?.length > 0 || def.talmudUsage || def.definitions?.length > 1;
+              // Tier medal: shown when a better-tier source also matched this word.
+              // The pipeline uses first-come-first-served for the primary badge, so
+              // a Jastrow/BDB match can be hidden behind a "Rabbinic" primary. This
+              // medal surfaces that a higher-tier source confirms the same word.
+              const showTierMedal = def.bestTier && def.primaryTier && def.bestTier < def.primaryTier;
+              const tierMedalIcon = def.bestTier === 1 ? '🥇' : def.bestTier === 2 ? '🥈' : '🥉';
+              const tierMedalLabel = def.bestTier === 1 ? 'Academic' : def.bestTier === 2 ? 'Scholarly' : 'Curated';
 
               return (
                 <li
                   key={`${def.word}-${idx}`}
-                  className={`glossary-item ${def.isCompoundPhrase ? 'compound-phrase' : ''} ${def.isProperNoun ? 'proper-noun' : ''} ${def.isAbbreviation ? 'abbreviation' : ''} ${def.isLexicon ? 'source-lexicon' : ''} ${def.isLocal ? 'source-local' : ''} ${def.hasEtymology ? 'has-etymology' : ''} ${def.isAramaic ? 'aramaic' : ''} ${hasScholarly ? 'has-scholarly' : ''}`}
+                  className={`glossary-item ${def.isCompoundPhrase ? 'compound-phrase' : ''} ${def.isProperNoun ? 'proper-noun' : ''} ${def.isAbbreviation ? 'abbreviation' : ''} ${def.isLexicon ? 'source-lexicon' : ''} ${def.isLocal ? 'source-local' : ''} ${def.hasEtymology ? 'has-etymology' : ''} ${def.isAramaic ? 'aramaic' : ''}`}
                 >
                   <span className="glossary-word" dir="rtl" lang="he">{def.word}</span>
                   {/* PRO SCHOLAR V13: Compound phrase badge */}
                   {def.isCompoundPhrase && (
                     <span className="glossary-phrase-badge" title={def.note || 'Talmudic phrase'}>📚</span>
                   )}
-                  {/* PRO SCHOLAR V12: Aramaic indicator with dialect */}
+                  {/* Aramaic indicator */}
                   {def.isAramaic && (
-                    <span className="glossary-aramaic-badge" title={dialectDisplay || 'Aramaic'}>
+                    <span className="glossary-aramaic-badge" title="Aramaic">
                       ארמ
                     </span>
                   )}
@@ -455,21 +476,9 @@ const WordGlossary = React.memo(({ text, onClose }) => {
                       (√{def.root})
                     </span>
                   )}
-                  {/* PRO SCHOLAR V12: CAL transliteration for Aramaic */}
-                  {def.calTransliteration && (
-                    <span className="glossary-cal" title="CAL transliteration">
-                      [{def.calTransliteration}]
-                    </span>
-                  )}
                   <span className="glossary-arrow" aria-hidden="true">→</span>
                   <span className="glossary-definition">{def.definition}</span>
-                  {/* PRO SCHOLAR V12: Dialects display */}
-                  {dialectDisplay && (
-                    <span className="glossary-dialects" title={`Dialects: ${def.dialects.join(', ')}`}>
-                      ({dialectDisplay})
-                    </span>
-                  )}
-                  {/* PRO SCHOLAR: Proto-Semitic reconstruction */}
+                  {/* Proto-Semitic reconstruction */}
                   {def.protoSemitic && (
                     <span
                       className="glossary-proto-semitic"
@@ -479,7 +488,7 @@ const WordGlossary = React.memo(({ text, onClose }) => {
                       <span className="proto-form">*{def.protoSemitic.replace(/^\*/, '')}</span>
                     </span>
                   )}
-                  {/* PRO SCHOLAR V12: Multiple sources indicator with database details */}
+                  {/* Multiple sources indicator */}
                   {def.sourceCount > 1 && (
                     <span
                       className="glossary-multi-source"
@@ -488,13 +497,16 @@ const WordGlossary = React.memo(({ text, onClose }) => {
                       +{def.sourceCount - 1}
                     </span>
                   )}
-                  {/* Fallback for allSources array */}
-                  {!def.sourceCount && def.allSources?.length > 1 && (
-                    <span className="glossary-multi-source" title={`Sources: ${def.allSources.join(', ')}`}>
-                      +{def.allSources.length - 1}
+                  {/* Tier medal: a better-tier source also confirms this word */}
+                  {showTierMedal && (
+                    <span
+                      className={`glossary-tier-medal tier-${def.bestTier}`}
+                      title={`${tierMedalLabel} source${def.bestTierSources.length > 1 ? 's' : ''} also confirm${def.bestTierSources.length > 1 ? '' : 's'}: ${def.bestTierSources.join(', ')}`}
+                    >
+                      {tierMedalIcon}
                     </span>
                   )}
-                  {/* PRO SCHOLAR V7: Scholarly source badge */}
+                  {/* PRO SCHOLAR V7: Primary source badge (first-matched stage) */}
                   <span
                     className={`glossary-source ${def.isLexicon ? 'lexicon' : def.isLocal ? 'local' : ''}`}
                     title={`${sourceInfo?.fullName || def.source}${def.isLocal ? ' [local vocabulary]' : ' [academic lexicon]'}`}

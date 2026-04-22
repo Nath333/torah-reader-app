@@ -1915,7 +1915,7 @@ const filterByHeadwordMatch = (data, searchedWord) => {
  */
 const parseBySource = (data, searchedWord = null) => {
   if (!data || !Array.isArray(data)) {
-    return { bdb: [], jastrow: [], strong: [], klein: [], steinsaltz: [], sefaria: [], halot: [], gesenius: [], twot: [], other: [] };
+    return { bdb: [], jastrow: [], strong: [], klein: [], steinsaltz: [], sefaria: [], halot: [], gesenius: [], twot: [], djba: [], djpa: [], other: [] };
   }
 
   // Clean the searched word for validation
@@ -1982,6 +1982,8 @@ const parseBySource = (data, searchedWord = null) => {
     halot: [],
     gesenius: [],
     twot: [],
+    djba: [],
+    djpa: [],
     other: []
   };
 
@@ -2054,6 +2056,22 @@ const parseBySource = (data, searchedWord = null) => {
     // TWOT - Theological Wordbook of the Old Testament
     if (lexicon.includes('twot') || lexicon.includes('theological wordbook')) {
       bySource.twot.push(entry);
+      matched = true;
+    }
+
+    // DJBA - Sokoloff, Dictionary of Jewish Babylonian Aramaic (Talmud Bavli)
+    if (lexicon.includes('djba') ||
+        lexicon.includes('jewish babylonian aramaic') ||
+        (lexicon.includes('sokoloff') && lexicon.includes('babylonian'))) {
+      bySource.djba.push(entry);
+      matched = true;
+    }
+
+    // DJPA - Sokoloff, Dictionary of Jewish Palestinian Aramaic (Talmud Yerushalmi, Midrash)
+    if (lexicon.includes('djpa') ||
+        lexicon.includes('jewish palestinian aramaic') ||
+        (lexicon.includes('sokoloff') && lexicon.includes('palestinian'))) {
+      bySource.djpa.push(entry);
       matched = true;
     }
 
@@ -3131,6 +3149,32 @@ export const scholarlyLookup = async (word) => {
           source: SCHOLARLY_SOURCES.TWOT,
           headword: valid[0]?.headword || cleaned,
           definitions: valid.flatMap(extractDefinitions)
+        };
+      })(),
+
+      // DJBA - Sokoloff, Dictionary of Jewish Babylonian Aramaic
+      djba: (() => {
+        const valid = strictHeadwordFilter(bySource.djba || []);
+        if (valid.length === 0) return null;
+        return {
+          source: SCHOLARLY_SOURCES.DJBA,
+          headword: valid[0]?.headword || cleaned,
+          definitions: valid.flatMap(extractDefinitions),
+          language: 'Aramaic',
+          dialect: 'Jewish Babylonian Aramaic'
+        };
+      })(),
+
+      // DJPA - Sokoloff, Dictionary of Jewish Palestinian Aramaic
+      djpa: (() => {
+        const valid = strictHeadwordFilter(bySource.djpa || []);
+        if (valid.length === 0) return null;
+        return {
+          source: SCHOLARLY_SOURCES.DJPA,
+          headword: valid[0]?.headword || cleaned,
+          definitions: valid.flatMap(extractDefinitions),
+          language: 'Aramaic',
+          dialect: 'Jewish Palestinian Aramaic'
         };
       })(),
 

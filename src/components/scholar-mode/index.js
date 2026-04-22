@@ -35,10 +35,12 @@ export { default as NotebookTab } from './NotebookTab';          // NOTEBOOK tab
 export { LookupTab as LexiconTab } from './WordsTab/components';
 
 // Talmud-specific tabs
-export { default as SugyaTab } from './SugyaTab';                  // NEW: Halachic Chain visualization
-export { default as TalmudToolsTab, StatBadge, CollapsibleSection } from './TalmudToolsTab';
+export { default as TalmudToolsTab } from './TalmudToolsTab';
 export { default as TzuratHaDafTab } from './TzuratHaDafTab';
 export { default as EntitiesTab } from './EntitiesTab';
+
+// Shared Talmud UI primitives (re-exported for consumers outside scholar-mode)
+export { StatBadge, CollapsibleSection, LazyLoadFallback } from './TalmudSharedUI';
 
 // Visualization components
 export { default as DisagreementVisualization } from './DisagreementVisualization';

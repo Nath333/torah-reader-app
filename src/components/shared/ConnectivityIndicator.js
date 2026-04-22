@@ -5,12 +5,15 @@
 
 import React, { useState } from 'react';
 import { useConnectivity, useDataAvailability } from '../../hooks/useSmartData';
+import useDictionaryHealth from '../../hooks/useDictionaryHealth';
 import './ConnectivityIndicator.css';
 
 const ConnectivityIndicator = ({ compact = false, showDetails = false }) => {
   const connectivity = useConnectivity();
   const availability = useDataAvailability();
+  const { summary: dictSummary, unhealthy: unhealthyDicts } = useDictionaryHealth();
   const [expanded, setExpanded] = useState(false);
+  const hasDictionaryFailure = unhealthyDicts.length > 0;
 
   const getModeInfo = () => {
     switch (connectivity.mode) {
@@ -121,6 +124,22 @@ const ConnectivityIndicator = ({ compact = false, showDetails = false }) => {
               <li>RAG: {availability.cache.ragMemory} memory / {availability.cache.ragOffline} offline</li>
             </ul>
           </div>
+
+          {hasDictionaryFailure && (
+            <div className="connectivity-dictionaries">
+              <h4>Dictionaries</h4>
+              <p className="connectivity-dict-warning">
+                ⚠ {unhealthyDicts.length} of {dictSummary.total} failed to load
+              </p>
+              <ul>
+                {unhealthyDicts.map(d => (
+                  <li key={d.name} className="unavailable" title={d.error}>
+                    ✗ {d.name} ({d.attempts} attempt{d.attempts === 1 ? '' : 's'})
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <button
             className="connectivity-refresh"

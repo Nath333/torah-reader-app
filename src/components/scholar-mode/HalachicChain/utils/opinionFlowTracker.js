@@ -327,38 +327,5 @@ const determineFinalStatus = (journey) => {
   return 'unknown';
 };
 
-/**
- * Get the flow for a specific authority
- */
-export const getFlowForAuthority = (flows, authority) => {
-  return flows.find(f => f.originAuthority === authority) || null;
-};
-
-/**
- * Get a summary of all flows — which opinions won, lost, or are disputed
- */
-export const getFlowSummary = (flows) => {
-  const accepted = flows.filter(f => f.finalStatus === 'accepted');
-  const rejected = flows.filter(f => f.finalStatus === 'rejected');
-  const partial = flows.filter(f => f.finalStatus === 'partial');
-  const disputed = flows.filter(f => f.finalStatus === 'minority' || f.finalStatus === 'challenged');
-
-  return {
-    accepted: accepted.map(f => f.originAuthority),
-    rejected: rejected.map(f => f.originAuthority),
-    partial: partial.map(f => f.originAuthority),
-    disputed: disputed.map(f => f.originAuthority),
-    totalOpinions: flows.length,
-    summary: accepted.length > 0
-      ? `${accepted.map(f => f.originAuthority).join(', ')}'s opinion was accepted as the final halacha.`
-      : partial.length > 0
-        ? `Different traditions follow different opinions.`
-        : 'The chain analysis is still being processed.'
-  };
-};
-
-export default {
-  buildOpinionFlows,
-  getFlowForAuthority,
-  getFlowSummary
-};
+const opinionFlowTracker = { buildOpinionFlows };
+export default opinionFlowTracker;

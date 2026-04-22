@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-// PRO SCHOLAR V5: Lazy load mermaid (~500KB) only when diagrams are needed
-// import mermaid from 'mermaid'; // REMOVED - now lazy loaded
 import { analyzeCommentary, ANALYSIS_MODES } from '../../services/groqService';
 // 2026 Smart Features - AI Memory & Source Credibility
 import {

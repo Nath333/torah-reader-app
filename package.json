@@ -21,6 +21,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "verify:dicts": "node scripts/verifyDictionaryQuality.js",
+    "minify:dicts": "node scripts/minifyDictionaries.js",
+    "minify:dicts:write": "node scripts/minifyDictionaries.js --write",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
   },
