@@ -12,7 +12,7 @@
 
 import { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { MiniFlowBar } from '../visualization/SugyaFlowVisualization';
-import { getFlowDiagram } from '../../services/discoursePatternService';
+import { getFlowDiagram } from '../../services/scholarly/discoursePatternService';
 import { getCompleteScholarlyAnalysis, addVocalization } from '../../services/scholarlyApiService';
 // Entity detection removed - entities tab consolidated into other features
 import { isTalmudBook, isMishnahBook, isTorahBook, getSefarimCategories, getChapters, getVerses } from '../../services/sefariaApi';
@@ -28,7 +28,8 @@ import {
   CommentaryTab,      // COMMENTARY - Commentaries view
   NotebookTab,        // NOTEBOOK - Personal journal
   TzuratHaDafTab,     // TZURAT HADAF - Traditional layout (toggle view for Talmud)
-  SugyaTab            // SUGYA - NEW: Halachic Chain visualization (replaces TalmudToolsTab)
+  TalmudToolsTab,     // TALMUD - Iyun/Bekius/Chazara modes, abbreviations, sages (Talmud only)
+  ChavrutaTab         // CHAVRUTA - AI study partner (Quiz, Challenge, Compare, Chat)
 } from '.';
 
 // Connectivity indicator for online/offline status
@@ -445,7 +446,7 @@ const ScholarModePanel = ({
   // Reset tab when text type changes (in case old tab IDs were stored)
   useEffect(() => {
     const validTabs = isTalmud
-      ? ['learn', 'sugya', 'words', 'commentary', 'notebook']
+      ? ['learn', 'talmud', 'words', 'commentary', 'notebook']
       : ['learn', 'words', 'commentary', 'notebook'];
     if (!validTabs.includes(activeTab)) {
       setActiveTab('learn');
@@ -503,12 +504,13 @@ const ScholarModePanel = ({
       { id: 'learn', label: 'לימוד Learn', icon: '📚', badge: 0 },
       { id: 'words', label: 'מילים Words', icon: '📖', badge: 0 },
       { id: 'commentary', label: 'פירושים Commentary', icon: '💬', badge: scholarlyData?.summary?.commentaryCount || 0 },
-      { id: 'notebook', label: 'מחברת Notebook', icon: '📝', badge: 0 }
+      { id: 'notebook', label: 'מחברת Notebook', icon: '📝', badge: 0 },
+      { id: 'chavruta', label: 'חברותא Chavruta', icon: '🎓', badge: 0 }
     ];
 
-    // Add Sugya tab for Talmud texts (Halachic Chain visualization)
+    // Add Guemara tab for Talmud texts
     if (isTalmud) {
-      coreTabs.splice(1, 0, { id: 'sugya', label: 'סוגיא Sugya', icon: '⚖️', badge: 0 });
+      coreTabs.splice(1, 0, { id: 'talmud', label: 'גמרא Guemara', icon: '📜', badge: 0 });
     }
 
     return coreTabs;
@@ -1003,9 +1005,9 @@ const ScholarModePanel = ({
               />
             )}
 
-            {/* SUGYA Tab - Halachic Chain visualization (Talmud only) */}
-            {activeTab === 'sugya' && isTalmud && (
-              <SugyaTab
+            {/* GUEMARA Tab - Talmud Study Tools (Iyun/Bekius/Chazara + HalachicChain) */}
+            {activeTab === 'talmud' && isTalmud && (
+              <TalmudToolsTab
                 text={text}
                 reference={reference}
                 textType={detectedTextType}
@@ -1036,6 +1038,19 @@ const ScholarModePanel = ({
             {/* NOTEBOOK Tab - Personal journal (Questions, Insights, Progress, Today) */}
             {activeTab === 'notebook' && (
               <NotebookTab
+                selectedBook={selectedBook}
+                selectedChapter={selectedChapter || effectiveSelectedVerses[0]?.chapter}
+                selectedVerse={selectedVerse || effectiveSelectedVerses[0]}
+              />
+            )}
+
+            {/* CHAVRUTA Tab - AI Study Partner (Chat, Quiz, Challenge, Compare) */}
+            {activeTab === 'chavruta' && (
+              <ChavrutaTab
+                text={effectiveIsMultiVerse ? formattedMultiVerseText : text}
+                reference={multiVerseReference || reference}
+                hebrewText={selectedVerse?.hebrewText || effectiveSelectedVerses[0]?.hebrewText || text}
+                commentaries={scholarlyData?.commentaries}
                 selectedBook={selectedBook}
                 selectedChapter={selectedChapter || effectiveSelectedVerses[0]?.chapter}
                 selectedVerse={selectedVerse || effectiveSelectedVerses[0]}

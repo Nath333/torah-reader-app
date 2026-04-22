@@ -57,15 +57,35 @@ Respond in Hebrew.`,
 For each source explain: (a) the citation, (b) why it's brought here, (c) what it proves or challenges.
 Respond in Hebrew.`,
 
-  halacha: `Extract the halachic conclusion (מסקנה הלכתית) from this Talmudic passage:
-1. **שאלה הלכתית**: What is the practical legal question?
-2. **דעות**: List each opinion and who holds it
-3. **הכרעה**: Which opinion is accepted as halacha, and why?
-4. **פסק**: State the ruling clearly
-5. **נפקא מינה למעשה**: Practical applications and edge cases
-6. **הלכה למעשה**: How this is ruled in later codes (Rambam, Shulchan Aruch) if known
+  halacha: `Trace the complete halachic decision chain (שושלת הוראה) for this Talmudic passage:
 
-Respond in Hebrew. Be precise about the ruling.`,
+**שלב א — משנה (Tannaim):**
+1. What is the מחלוקת (dispute)? List each תנא and their ruling.
+2. Which כלל הפסיקה applies? (e.g., הלכה כבית הלל, הלכה כרבי יוסי, הלכה כסתם משנה)
+
+**שלב ב — גמרא (Shakla v'Tarya):**
+3. What does the Gemara's dialectic conclude? Which opinion survives?
+4. Is there a תיקו (unresolved question)?
+
+**שלב ג — ראשונים:**
+5. How do Rif, Rambam, and Rosh rule? (The three pillars of the Beit Yosef)
+6. Do Rashi and Tosafot offer a different interpretation that affects the halacha?
+
+**שלב ד — טור / בית יוסף:**
+7. How does the Tur organize this topic? Which chelek of Shulchan Aruch?
+8. What is the Beit Yosef's reasoning for choosing the majority view?
+
+**שלב ה — שולחן ערוך / רמ"א:**
+9. What does the Mechaber (R' Yosef Karo) rule? → **Sephardic practice**
+10. Does the Rema (R' Moshe Isserles) disagree? → **Ashkenazi practice**
+11. Do Mechaber and Rema agree or differ?
+
+**שלב ו — הלכה למעשה:**
+12. For Sephardim: the ruling and which Acharonim support it (כף החיים, בן איש חי, ילקוט יוסף)
+13. For Ashkenazim: the ruling and which Acharonim support it (משנה ברורה, ערוך השולחן, אגרות משה)
+14. נפקא מינה למעשה: practical applications and edge cases
+
+Respond entirely in Hebrew. Use proper halachic terminology. Format each שלב clearly.`,
 
   diagram: `Create a Mermaid diagram showing the dialectic flow of this Talmudic passage.
 Use graph TD format. Include:

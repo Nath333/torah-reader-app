@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { translateWithSource, translateEnglishToFrench } from '../services/englishToFrenchService';
+import { translateWithSource, translateEnglishToFrench } from '../services/dictionaries/englishToFrenchService';
 import { createLogger } from '../utils/debug';
 
 const log = createLogger('useTranslationLoading');
@@ -39,21 +39,20 @@ export default function useTranslationLoading({
   useEffect(() => {
     if (!showFrench || !showOnkelos || onkelos.length === 0) return;
 
+    // Filter items that need translation (not already translated or being translated)
+    const toTranslate = onkelos.filter(item => {
+      return item.english && !onkelosTranslatingRef.current.has(item.verse);
+    });
+
+    if (toTranslate.length === 0) return;
+
     let cancelled = false;
+    const itemKeys = toTranslate.map(item => item.verse);
+
+    // Mark as translating to prevent duplicate requests
+    itemKeys.forEach(k => onkelosTranslatingRef.current.add(k));
 
     const translateOnkelos = async () => {
-      // Filter items that need translation (not already translated or being translated)
-      const toTranslate = onkelos.filter(item => {
-        const key = item.verse;
-        return item.english && !onkelosTranslatingRef.current.has(key);
-      });
-
-      if (toTranslate.length === 0) return;
-
-      // Mark as translating to prevent duplicate requests
-      toTranslate.forEach(item => onkelosTranslatingRef.current.add(item.verse));
-
-      // Translate in parallel
       const results = await Promise.all(
         toTranslate.map(async item => {
           try {
@@ -79,31 +78,32 @@ export default function useTranslationLoading({
     };
 
     translateOnkelos();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      // Remove in-flight items from tracking ref so they can be retried
+      itemKeys.forEach(k => onkelosTranslatingRef.current.delete(k));
+    };
   }, [showFrench, showOnkelos, onkelos]);
 
   // Load French translations for main verses (parallel loading)
   useEffect(() => {
     if (!showFrench || verses.length === 0) return;
 
+    // Filter verses that need translation (not already being translated)
+    const toTranslate = verses.filter(verse => {
+      const cacheKey = `${selectedBook}:${selectedChapter}:${verse.verse}`;
+      return verse.englishText && !verseTranslatingRef.current.has(cacheKey);
+    });
+
+    if (toTranslate.length === 0) return;
+
     let cancelled = false;
+    const itemKeys = toTranslate.map(verse => `${selectedBook}:${selectedChapter}:${verse.verse}`);
+
+    // Mark as translating to prevent duplicate requests
+    itemKeys.forEach(k => verseTranslatingRef.current.add(k));
 
     const translateVerses = async () => {
-      // Filter verses that need translation (not already being translated)
-      const toTranslate = verses.filter(verse => {
-        const cacheKey = `${selectedBook}:${selectedChapter}:${verse.verse}`;
-        return verse.englishText && !verseTranslatingRef.current.has(cacheKey);
-      });
-
-      if (toTranslate.length === 0) return;
-
-      // Mark as translating to prevent duplicate requests
-      toTranslate.forEach(verse => {
-        const cacheKey = `${selectedBook}:${selectedChapter}:${verse.verse}`;
-        verseTranslatingRef.current.add(cacheKey);
-      });
-
-      // Translate in parallel - use clean englishText to avoid Sefaria footnote corruption
       const results = await Promise.all(
         toTranslate.map(async verse => {
           const cacheKey = `${selectedBook}:${selectedChapter}:${verse.verse}`;
@@ -130,7 +130,11 @@ export default function useTranslationLoading({
     };
 
     translateVerses();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      // Remove in-flight items from tracking ref so they can be retried
+      itemKeys.forEach(k => verseTranslatingRef.current.delete(k));
+    };
   }, [showFrench, verses, selectedBook, selectedChapter]);
 
   // Clear translations when chapter changes

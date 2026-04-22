@@ -6,7 +6,7 @@ import {
   getStudyFocus,
   generateMilestones,
   analyzeRootFamilyGaps
-} from '../../services/learningRecommendationService';
+} from '../../services/scholarly/learningRecommendationService';
 import { useStudy } from '../../context/StudyContext';
 import { useWordDetail } from '../dictionary/WordIntelligenceModal';
 import EmptyState from '../shared/EmptyState';

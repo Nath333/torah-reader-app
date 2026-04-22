@@ -108,13 +108,13 @@ export {
 } from './translationService';
 
 // Supporting Dictionary Services
-export { default as hebrewDictionary } from './hebrewDictionary';
-export { default as babylonianDictionary } from './babylonianDictionary';
-export { default as calDictionaryService } from './calDictionaryService';
-export { default as scholarlyLexiconService } from './scholarlyLexiconService';
-export { default as englishToFrenchService } from './englishToFrenchService';
+export { default as hebrewDictionary } from './dictionaries/hebrewDictionary';
+export { default as babylonianDictionary } from './dictionaries/babylonianDictionary';
+export { default as calDictionaryService } from './dictionaries/calDictionaryService';
+export { default as scholarlyLexiconService } from './dictionaries/scholarlyLexiconService';
+export { default as englishToFrenchService } from './dictionaries/englishToFrenchService';
 // PRO SCHOLAR: Wiktionary - optional reference source (community-edited)
-export { default as wiktionaryService } from './wiktionaryService';
+export { default as wiktionaryService } from './dictionaries/wiktionaryService';
 export {
   lookupWiktionary,
   fetchWiktionaryEtymology,
@@ -124,14 +124,14 @@ export {
   getProtoSemitic,
   hasProtoSemitic,
   loadCachedEtymology
-} from './wiktionaryService';
+} from './dictionaries/wiktionaryService';
 // PRIMARY: Use dictionaryLoader for all dictionary loading
-export { default as dictionaryLoader } from './dictionaryLoader';
+export { default as dictionaryLoader } from './dictionaries/dictionaryLoader';
 
 // =============================================================================
 // PRE-CLASSIFICATION SERVICE
 // =============================================================================
-export { default as preClassificationService } from './preClassificationService';
+export { default as preClassificationService } from './analysis/preClassificationService';
 export {
   preClassify,
   getContextFromReference,
@@ -139,40 +139,40 @@ export {
   ARAMAIC_PARTICLES,
   PROPER_NAMES,
   TECHNICAL_TERMS
-} from './preClassificationService';
+} from './analysis/preClassificationService';
 
 // =============================================================================
 // MORPHOLOGICAL ANALYSIS SERVICE
 // =============================================================================
-export { default as morphologicalAnalysisService } from './morphologicalAnalysisService';
+export { default as morphologicalAnalysisService } from './analysis/morphologicalAnalysisService';
 export {
   analyzeMorphology,
   getMorphologyBreakdown,
   getVerbMorphology,
   getNounMorphology
-} from './morphologicalAnalysisService';
+} from './analysis/morphologicalAnalysisService';
 
 // =============================================================================
 // COMMENTARY SERVICES
 // =============================================================================
-export { default as rashiService } from './rashiService';
-export { default as tosafotService } from './tosafotService';
-export { default as soncinoService } from './soncinoService';
+export { default as rashiService } from './commentary/rashiService';
+export { default as tosafotService } from './commentary/tosafotService';
+export { default as soncinoService } from './commentary/soncinoService';
 export {
   getCommentary,
   checkCommentaryAvailability,
   clearAllCommentaryCaches
-} from './commentaryServiceFactory';
+} from './commentary/commentaryServiceFactory';
 
 // =============================================================================
 // AI & ANALYSIS SERVICES
 // =============================================================================
-export { default as aiService } from './aiService';
+export { default as aiService } from './ai/aiService';
 export { default as groqService } from './groqService';
 export { default as groqApi } from './groqApi';
-export { default as ragService } from './ragService';
-export { default as aiTutorService } from './aiTutorService';
-export { default as smartDataService } from './smartDataService';
+export { default as ragService } from './ai/ragService';
+export { default as aiTutorService } from './ai/aiTutorService';
+export { default as smartDataService } from './ai/smartDataService';
 
 // AI Tutor Constants
 export {
@@ -181,13 +181,13 @@ export {
   DIFFICULTY_LEVELS,
   LEVEL_CONFIG,
   TALMUDIC_TERMS
-} from './aiTutorService';
+} from './ai/aiTutorService';
 
 // =============================================================================
 // GRAMMAR & LINGUISTICS SERVICES
 // =============================================================================
-export { default as grammarAnalysisService } from './grammarAnalysisService';
-export { default as semanticFieldService } from './semanticFieldService';
+export { default as grammarAnalysisService } from './analysis/grammarAnalysisService';
+export { default as semanticFieldService } from './scholarly/semanticFieldService';
 // PRO SCHOLAR V12: Comparative Semitic linguistics
 export { default as comparativeSemiticService } from './comparativeSemiticService';
 export {
@@ -219,28 +219,28 @@ export {
 // =============================================================================
 // TEXTUAL ANALYSIS SERVICES
 // =============================================================================
-export { default as cantillationService } from './cantillationService';
+export { default as cantillationService } from './textual/cantillationService';
 
 // =============================================================================
 // SCHOLARLY & ACADEMIC SERVICES
 // =============================================================================
 export { default as scholarlyApiService } from './scholarlyApiService';
-export { default as discoursePatternService } from './discoursePatternService';
-export { default as namedEntityService } from './namedEntityService';
-export { default as talmudicAbbreviationsService } from './talmudicAbbreviationsService';
+export { default as discoursePatternService } from './scholarly/discoursePatternService';
+export { default as namedEntityService } from './scholarly/namedEntityService';
+export { default as talmudicAbbreviationsService } from './textual/talmudicAbbreviationsService';
 export { default as rabbinicReferencesService } from './rabbinicReferencesService';
 
 // =============================================================================
 // SMART FEATURES - AI Intelligence Layer (2026)
 // =============================================================================
-export { default as semanticSearchService } from './semanticSearchService';
-export { default as aiMemoryService } from './aiMemoryService';
+export { default as semanticSearchService } from './ai/semanticSearchService';
+export { default as aiMemoryService } from './ai/aiMemoryService';
 export { default as srsService } from './srsService';
-export { default as knowledgeGraphService } from './knowledgeGraphService';
-export { default as talmudDiagramService } from './talmudDiagramService';
-export { default as learningRecommendationService } from './learningRecommendationService';
+export { default as knowledgeGraphService } from './scholarly/knowledgeGraphService';
+export { default as talmudDiagramService } from './scholarly/talmudDiagramService';
+export { default as learningRecommendationService } from './scholarly/learningRecommendationService';
 export { default as sourceCredibilityService } from './sourceCredibilityService';
-export { default as wordRelationshipService } from './wordRelationshipService';
+export { default as wordRelationshipService } from './scholarly/wordRelationshipService';
 export { default as contextualDefinitionService } from './contextualDefinitionService';
 export { default as rootFormsService } from './rootFormsService';
 
@@ -294,7 +294,7 @@ export {
 export {
   lookupAramaicWord,
   isLikelyAramaic
-} from './babylonianDictionary';
+} from './dictionaries/babylonianDictionary';
 
 // =============================================================================
 // NAMED EXPORTS - CAL Dictionary (API)
@@ -311,7 +311,7 @@ export {
   lookupWithFallback as lookupCalWithFallback,
   getCacheStats as getCalCacheStats,
   clearCache as clearCalCache,
-} from './calDictionaryService';
+} from './dictionaries/calDictionaryService';
 
 // =============================================================================
 // NAMED EXPORTS - Scholarly Lexicon
@@ -323,7 +323,7 @@ export {
   scholarlyLookup,
   getEtymology,
   SCHOLARLY_SOURCES
-} from './scholarlyLexiconService';
+} from './dictionaries/scholarlyLexiconService';
 
 // =============================================================================
 // NAMED EXPORTS - English → French Translation
@@ -332,7 +332,7 @@ export {
   translateEnglishToFrench,
   translateWithSource as translateWithSourceFr,
   quickTranslate
-} from './englishToFrenchService';
+} from './dictionaries/englishToFrenchService';
 
 // =============================================================================
 // NAMED EXPORTS - Dictionary Loader (BDB, Jastrow, Strong's)
@@ -365,7 +365,7 @@ export {
   getLoadingStatus as getDictionaryLoadingStatus,
   getCacheStatus as getDictionaryCacheStatus,
   clearCache as clearDictionaryCache
-} from './dictionaryLoader';
+} from './dictionaries/dictionaryLoader';
 
 
 // =============================================================================
@@ -405,7 +405,7 @@ export {
   cancelRequest,
   isRequestActive,
   clearConversation
-} from './aiService';
+} from './ai/aiService';
 
 // =============================================================================
 // NAMED EXPORTS - RAG Service
@@ -415,7 +415,7 @@ export {
   formatRAGContextForPrompt,
   getQuickRAGContext,
   clearRAGCache
-} from './ragService';
+} from './ai/ragService';
 
 // =============================================================================
 // NAMED EXPORTS - Smart Data Service
@@ -430,7 +430,7 @@ export {
   prefetchRAGContext,
   prefetchWordLookups,
   getDataAvailability
-} from './smartDataService';
+} from './ai/smartDataService';
 
 // =============================================================================
 // NAMED EXPORTS - Tosafot Commentary
@@ -439,7 +439,7 @@ export {
   getTosafotOnTalmud,
   getTosafotForDaf,
   isTosafotAvailable
-} from './tosafotService';
+} from './commentary/tosafotService';
 
 // =============================================================================
 // NAMED EXPORTS - Grammar Analysis
@@ -451,7 +451,7 @@ export {
   getBinyanInfo,
   getAllBinyanim,
   GRAMMAR_CONSTANTS
-} from './grammarAnalysisService';
+} from './analysis/grammarAnalysisService';
 
 // =============================================================================
 // NAMED EXPORTS - Construct Chains (Semichut)
@@ -478,7 +478,7 @@ export {
   getDomain,
   getAllDomains,
   searchByMeaning
-} from './semanticFieldService';
+} from './scholarly/semanticFieldService';
 
 // =============================================================================
 // NAMED EXPORTS - Word Frequency
@@ -520,7 +520,7 @@ export {
   getQereVeloKetiv,
   getTiqqunSoferim,
   searchKetivQere
-} from './masoreticService';
+} from './textual/masoreticService';
 
 // =============================================================================
 // NAMED EXPORTS - Manuscript Variants
@@ -535,7 +535,7 @@ export {
   getVariantsForChapter,
   getVariantsForVerse,
   searchVariantsBySource
-} from './manuscriptVariantsService';
+} from './textual/manuscriptVariantsService';
 
 // =============================================================================
 // NAMED EXPORTS - Discourse Patterns
@@ -557,7 +557,7 @@ export {
   getTzuratHaDafStyles,
   getTzuratHaDafProps,
   renderTzuratHaDafHtml
-} from './discoursePatternService';
+} from './scholarly/discoursePatternService';
 
 // =============================================================================
 // NAMED EXPORTS - Named Entity Recognition
@@ -570,7 +570,7 @@ export {
   getTeacherChain,
   RABBI_DATABASE,
   ENTITY_TYPES
-} from './namedEntityService';
+} from './scholarly/namedEntityService';
 
 // =============================================================================
 // NAMED EXPORTS - Talmudic Abbreviations
@@ -580,7 +580,7 @@ export {
   expandAbbreviation,
   expandAllAbbreviations,
   ABBREVIATIONS
-} from './talmudicAbbreviationsService';
+} from './textual/talmudicAbbreviationsService';
 
 // =============================================================================
 // NAMED EXPORTS - Scholarly API
@@ -615,7 +615,7 @@ export {
   getConceptCloud,
   getSearchStats,
   clearIndex
-} from './semanticSearchService';
+} from './ai/semanticSearchService';
 
 // =============================================================================
 // NAMED EXPORTS - AI Memory
@@ -632,7 +632,7 @@ export {
   getFrequentSources,
   clearMemory,
   getMemoryStats
-} from './aiMemoryService';
+} from './ai/aiMemoryService';
 
 // =============================================================================
 // NAMED EXPORTS - Spaced Repetition (SRS)
@@ -677,7 +677,7 @@ export {
   clearGraph,
   exportGraph,
   importGraph
-} from './knowledgeGraphService';
+} from './scholarly/knowledgeGraphService';
 
 // =============================================================================
 // NAMED EXPORTS - Learning Recommendations
@@ -693,7 +693,7 @@ export {
   getProgressSummary,
   getStudyPath,
   resetRecommendations
-} from './learningRecommendationService';
+} from './scholarly/learningRecommendationService';
 
 // =============================================================================
 // NAMED EXPORTS - Source Credibility
@@ -734,7 +734,7 @@ export {
   exportWordGraph,
   importWordGraph,
   clearLearningProgress
-} from './wordRelationshipService';
+} from './scholarly/wordRelationshipService';
 
 // =============================================================================
 // NAMED EXPORTS - Learning Recommendation PRO
@@ -746,7 +746,7 @@ export {
   identifyWeakAreas,
   generateMilestones,
   getStudyFocus
-} from './learningRecommendationService';
+} from './scholarly/learningRecommendationService';
 
 // =============================================================================
 // NAMED EXPORTS - Contextual Definition Service
@@ -782,7 +782,7 @@ export {
   getRashiFootnotes,
   getSoncinoShabbatPages,
   clearSoncinoCache
-} from './soncinoService';
+} from './commentary/soncinoService';
 
 // =============================================================================
 // NAMED EXPORTS - Root Forms Service
@@ -941,7 +941,7 @@ export { default as lookupStages, createStages, STAGE_ORDER } from './lookupStag
 // =============================================================================
 // ROOT EXTRACTION - Unified Root Extraction Service
 // =============================================================================
-export { default as rootExtraction } from './rootExtraction';
+export { default as rootExtraction } from './analysis/rootExtraction';
 export {
   // Complete scholarly analysis
   analyzeWordComplete,
@@ -990,7 +990,7 @@ export {
   // Telemetry
   getTelemetry as getRootTelemetry,
   resetTelemetry as resetRootTelemetry
-} from './rootExtraction';
+} from './analysis/rootExtraction';
 
 // =============================================================================
 // Service Preloader - Parallel initialization
@@ -1011,7 +1011,7 @@ export { wordLookupCache, WordLookupCache } from './cacheOrchestrator';
 // =============================================================================
 // LINGUISTIC ANALYSIS - Advanced Linguistic Analysis + Historical & Cognate Data
 // =============================================================================
-export { default as linguisticAnalysis } from './linguisticAnalysis';
+export { default as linguisticAnalysis } from './analysis/linguisticAnalysis';
 export {
   PRO_SCHOLAR_V6_VERSION,
   // Binyan analysis
@@ -1051,7 +1051,7 @@ export {
 
   // Enhanced Analysis
   analyzeWordV6Enhanced
-} from './linguisticAnalysis';
+} from './analysis/linguisticAnalysis';
 
 // =============================================================================
 // PRO SCHOLAR ENGINE - Unified Orchestrator
@@ -1183,7 +1183,7 @@ export {
 // ETYMOLOGY ENRICHMENT SERVICE - Scholar Pro
 // Multi-source etymology: BDB, Jastrow, CAL, Sefaria (17,976+ entries)
 // =============================================================================
-export { default as etymologyEnrichmentService } from './etymologyEnrichmentService';
+export { default as etymologyEnrichmentService } from './dictionaries/etymologyEnrichmentService';
 export {
   // Main etymology lookup
   getEnrichedEtymology,
@@ -1211,4 +1211,4 @@ export {
   preloadEnrichedData,
   isDataLoaded as isEtymologyLoaded,
   getRawEntry as getRawEtymologyEntry
-} from './etymologyEnrichmentService';
+} from './dictionaries/etymologyEnrichmentService';

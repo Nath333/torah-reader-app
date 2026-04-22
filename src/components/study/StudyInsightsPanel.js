@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import './StudyInsightsPanel.css';
 
 // PRO SCHOLAR V8: Telemetry and semantic field detection (renamed from unifiedRootService)
-import { getTelemetry, getSemanticField } from '../../services/rootExtraction';
+import { getTelemetry, getSemanticField } from '../../services/analysis/rootExtraction';
 
 // =============================================================================
 // SEMANTIC FIELD DEFINITIONS (from proScholarV6)

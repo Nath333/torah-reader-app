@@ -7,7 +7,7 @@ const useKeyboardShortcuts = (shortcuts) => {
   // Update ref when shortcuts change (no re-render triggered)
   useEffect(() => {
     shortcutsRef.current = shortcuts;
-  });
+  }, [shortcuts]);
 
   const handleKeyDown = useCallback((e) => {
     const currentShortcuts = shortcutsRef.current;

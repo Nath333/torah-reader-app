@@ -34,10 +34,10 @@
 // =============================================================================
 
 import { namedStage, isValidHeadwordMatch } from './lookupPipeline';
-import { preClassify } from './preClassificationService';
-import { analyzeWordMorphology } from './morphologicalAnalysisService';
+import { preClassify } from './analysis/preClassificationService';
+import { analyzeWordMorphology, getBestAnalysis, formatAnalysisForDisplay } from './analysis/morphologicalAnalysisService';
 // PRO SCHOLAR V8: Renamed from unifiedRootService to rootExtraction
-import { extractRootsWithDirectValidation } from './rootExtraction';
+import { extractRootsWithDirectValidation } from './analysis/rootExtraction';
 import { lookupHalachicWithPrefix } from '../utils/commentaryUtils';
 import { pickBestDefinition } from '../utils/definitionCleaner';
 import {
@@ -400,42 +400,45 @@ export const createStages = (lookups) => {
   const stageMorphologicalAnalysis = namedStage('MorphologicalAnalysis', (ctx) => {
     if (ctx.isComplete || ctx.primaryEnglish) return;
 
-    const analyses = analyzeWordMorphology(ctx.cleaned, {
+    const best = getBestAnalysis(ctx.cleaned, {
       isAramaic: ctx.isAramaic,
       context: ctx.contextMode
     });
 
-    const best = analyses?.[0];
     if (!best || best.confidence < 65) return;
 
-    // Build morphology breakdown
-    const morphBreakdown = [];
-    if (best.prefix) morphBreakdown.push(`${best.prefix.text} (${best.prefix.meaning})`);
-    if (best.root) morphBreakdown.push(`${best.root} (root)`);
-    if (best.suffix) morphBreakdown.push(`${best.suffix.text} (${best.suffix.meaning})`);
+    // Use formatAnalysisForDisplay for structured output
+    const formatted = formatAnalysisForDisplay(best);
 
     ctx.addSource({
       name: 'Morphological Analysis',
       tier: 'analysis',
-      definition: best.translation,
-      analysis: best.analysisType,
-      confidence: best.confidence
+      definition: formatted.translation,
+      analysis: best.type,
+      confidence: formatted.confidence
     });
-    ctx.setPrimary(best.translation, best.source || 'morphological_analysis');
+    ctx.setPrimary(formatted.translation, formatted.source || 'morphological_analysis');
+
+    // Also get all analyses for the full context
+    const allAnalyses = analyzeWordMorphology(ctx.cleaned, {
+      isAramaic: ctx.isAramaic,
+      context: ctx.contextMode
+    });
+
     ctx.complete({
-      isAramaic: ctx.isAramaic || best.isAramaic,
-      language: (ctx.isAramaic || best.isAramaic) ? 'Aramaic' : 'Hebrew',
+      isAramaic: ctx.isAramaic || best.language === 'Aramaic',
+      language: best.language || ((ctx.isAramaic) ? 'Aramaic' : 'Hebrew'),
       morphology: {
-        breakdown: morphBreakdown.join(' + '),
-        prefix: best.prefix,
-        root: best.root,
-        suffix: best.suffix,
-        rootMeaning: best.rootMeaning,
+        breakdown: formatted.breakdown,
+        prefix: formatted.details.prefix,
+        root: formatted.root,
+        suffix: formatted.details.suffix,
+        rootMeaning: formatted.rootMeaning,
         pattern: best.pattern,
-        binyan: best.binyan
+        binyan: formatted.details.binyan
       },
-      allAnalyses: analyses.slice(0, 3),
-      confidence: best.confidence
+      allAnalyses: allAnalyses.slice(0, 3),
+      confidence: formatted.confidence
     });
   });
 

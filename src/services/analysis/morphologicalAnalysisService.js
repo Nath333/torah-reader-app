@@ -6,7 +6,7 @@
 // =============================================================================
 
 import { createLogger } from '../../utils/debug';
-import { ROOT_MEANINGS } from '../../constants/morphology';
+import { ROOT_MEANINGS } from '../../data/rootDatabase';
 import { stripAllDiacritics } from '../../utils/hebrewUtils';
 
 const log = createLogger('MorphAnalysis');
@@ -83,11 +83,10 @@ const ARAMAIC_POSSESSIVE_SUFFIXES = {
   'הן': { meaning: 'their (f)', person: 3, number: 'plural', gender: 'feminine' },
 };
 
-// PRO SCHOLAR V5: State suffixes - reserved for future Aramaic emphatic state analysis
-// eslint-disable-next-line no-unused-vars
+// PRO SCHOLAR V5: State suffixes for Aramaic emphatic state detection
 const ARAMAIC_STATE_SUFFIXES = {
-  'א': { meaning: 'the (emphatic state)', type: 'determinate' },
   'תא': { meaning: 'the (feminine emphatic)', type: 'determinate' },
+  'א': { meaning: 'the (emphatic state)', type: 'determinate' },
 };
 
 const HEBREW_POSSESSIVE_SUFFIXES = {
@@ -125,15 +124,23 @@ export const analyzeWordMorphology = (word, options = {}) => {
   const aramaicNounAnalyses = tryAramaicNounWithSuffix(cleaned);
   analyses.push(...aramaicNounAnalyses);
 
-  // Strategy 2: Try as Hebrew verb with binyan pattern
+  // Strategy 2: Try as Aramaic emphatic state (detect -א/-תא endings)
+  const aramaicStateAnalyses = tryAramaicEmphatic(cleaned);
+  analyses.push(...aramaicStateAnalyses);
+
+  // Strategy 3: Try as Hebrew noun with possessive suffix
+  const hebrewNounAnalyses = tryHebrewNounWithSuffix(cleaned);
+  analyses.push(...hebrewNounAnalyses);
+
+  // Strategy 4: Try as Hebrew verb with binyan pattern
   const hebrewVerbAnalyses = tryHebrewVerbPatterns(cleaned);
   analyses.push(...hebrewVerbAnalyses);
 
-  // Strategy 3: Try as prefixed word (strip prefix, look up root)
+  // Strategy 5: Try as prefixed word (strip prefix, look up root)
   const prefixedAnalyses = tryPrefixStripping(cleaned);
   analyses.push(...prefixedAnalyses);
 
-  // Strategy 4: Direct root lookup
+  // Strategy 6: Direct root lookup
   const directAnalysis = tryDirectLookup(cleaned);
   if (directAnalysis) analyses.push(directAnalysis);
 
@@ -247,6 +254,116 @@ const tryAramaicNounWithSuffix = (word) => {
 };
 
 /**
+ * Try to detect Aramaic emphatic state (-א/-תא endings)
+ * Uses ARAMAIC_STATE_SUFFIXES to identify determinate nouns
+ */
+const tryAramaicEmphatic = (word) => {
+  const analyses = [];
+  const prefixes = ['', 'ב', 'ל', 'מ', 'כ', 'ד', 'ו'];
+
+  for (const prefix of prefixes) {
+    if (prefix && !word.startsWith(prefix)) continue;
+    const afterPrefix = prefix ? word.slice(prefix.length) : word;
+    if (afterPrefix.length < 3) continue;
+
+    // Check emphatic state suffixes (longest first: תא before א)
+    for (const [suffix, suffixInfo] of Object.entries(ARAMAIC_STATE_SUFFIXES)) {
+      if (!afterPrefix.endsWith(suffix)) continue;
+      const stem = afterPrefix.slice(0, -suffix.length);
+      if (stem.length < 2) continue;
+
+      // Check if the full emphatic form is a known Aramaic noun
+      const nounInfo = ARAMAIC_NOUNS[afterPrefix] || ARAMAIC_NOUNS[stem];
+      if (!nounInfo) continue;
+
+      const prefixInfo = prefix ? PREFIX_MEANINGS[prefix] : null;
+      let translation = '';
+      if (prefixInfo) translation += prefixInfo.meaning + ' ';
+      translation += `the ${nounInfo.meaning}`;
+
+      analyses.push({
+        type: 'aramaic_emphatic_state',
+        original: word,
+        prefix: prefix || null,
+        prefixMeaning: prefixInfo?.meaning,
+        root: stem,
+        rootMeaning: nounInfo.meaning,
+        suffix: suffix,
+        suffixMeaning: suffixInfo.meaning,
+        hebrewEquivalent: nounInfo.hebrew,
+        translation: translation.trim(),
+        breakdown: `${prefix ? prefix + ' + ' : ''}${stem} + ${suffix} (${suffixInfo.meaning})`,
+        confidence: 82,
+        language: 'Aramaic',
+        source: 'Emphatic State Analysis'
+      });
+    }
+  }
+  return analyses;
+};
+
+/**
+ * Try to analyze as Hebrew noun with possessive suffix
+ * Pattern: PREFIX + NOUN_ROOT + POSSESSIVE_SUFFIX
+ * Examples: בביתי = ב + בית + י = "in my house"
+ */
+const tryHebrewNounWithSuffix = (word) => {
+  const analyses = [];
+  const prefixes = ['', 'ב', 'ל', 'מ', 'כ', 'ו', 'ה', 'ש', 'וב', 'ול', 'וה'];
+
+  for (const prefix of prefixes) {
+    if (prefix && !word.startsWith(prefix)) continue;
+    const afterPrefix = prefix ? word.slice(prefix.length) : word;
+    if (afterPrefix.length < 2) continue;
+
+    // Try all Hebrew possessive suffixes (longest first)
+    const suffixes = Object.keys(HEBREW_POSSESSIVE_SUFFIXES).sort((a, b) => b.length - a.length);
+
+    for (const suffix of suffixes) {
+      if (!afterPrefix.endsWith(suffix)) continue;
+      if (afterPrefix.length <= suffix.length) continue;
+
+      const stem = afterPrefix.slice(0, -suffix.length);
+      if (stem.length < 2) continue;
+
+      // Check if stem matches a known root
+      const rootInfo = ROOT_MEANINGS[stem];
+      if (!rootInfo) continue;
+
+      const prefixInfo = prefix ? PREFIX_MEANINGS[prefix[0]] || PREFIX_MEANINGS[prefix] : null;
+      const suffixInfo = HEBREW_POSSESSIVE_SUFFIXES[suffix];
+
+      let translation = '';
+      if (prefixInfo) translation += prefixInfo.meaning + ' ';
+      translation += rootInfo.base;
+      if (suffixInfo) translation += ` (${suffixInfo.meaning})`;
+
+      const parts = [];
+      if (prefix) parts.push(`${prefix} (${prefixInfo?.meaning || 'prefix'})`);
+      parts.push(`${stem} (${rootInfo.base})`);
+      parts.push(`${suffix} (${suffixInfo.meaning})`);
+
+      analyses.push({
+        type: 'hebrew_noun_possessive',
+        original: word,
+        prefix: prefix || null,
+        prefixMeaning: prefixInfo?.meaning,
+        root: stem,
+        rootMeaning: rootInfo.base,
+        suffix: suffix,
+        suffixMeaning: suffixInfo.meaning,
+        translation: translation.trim(),
+        breakdown: parts.join(' + '),
+        confidence: 75 + (prefix ? 5 : 0),
+        language: 'Hebrew',
+        source: 'Hebrew Possessive Analysis'
+      });
+    }
+  }
+  return analyses;
+};
+
+/**
  * Try to analyze as Hebrew verb with binyan pattern
  */
 const tryHebrewVerbPatterns = (word) => {
@@ -287,7 +404,113 @@ const tryHebrewVerbPatterns = (word) => {
     }
   }
 
-  // Add more binyan patterns as needed...
+  // Niphal pattern: נXXX or prefix + נXXX
+  const niphalMatch = word.match(/^([לוב])?נ([א-ת])([א-ת])([א-ת])$/);
+  if (niphalMatch) {
+    const [, prefix, c1, c2, c3] = niphalMatch;
+    const root = c1 + c2 + c3;
+    const rootInfo = ROOT_MEANINGS[root];
+    if (rootInfo) {
+      let translation = rootInfo.passive || `was ${rootInfo.base}`;
+      if (prefix === 'ל') translation = 'to be ' + rootInfo.base;
+
+      analyses.push({
+        type: 'hebrew_verb_niphal',
+        original: word,
+        prefix: prefix || null,
+        root,
+        binyan: 'Niphal',
+        binyanMeaning: 'passive/reflexive',
+        rootMeaning: rootInfo.base,
+        translation,
+        breakdown: `${prefix || ''}נ${c1}${c2}${c3} = Niphal of ${root}`,
+        confidence: 78,
+        language: 'Hebrew',
+        source: 'Binyan Analysis'
+      });
+    }
+  }
+
+  // Piel pattern: XXיX (with dagesh on middle letter, approximated as doubled)
+  const pielMatch = word.match(/^([לוהב])?([א-ת])([א-ת])י?([א-ת])$/);
+  if (pielMatch && !hiphilMatch && !niphalMatch) {
+    const [, prefix, c1, c2, c3] = pielMatch;
+    const root = c1 + c2 + c3;
+    const rootInfo = ROOT_MEANINGS[root];
+    if (rootInfo) {
+      let translation = rootInfo.intensive || rootInfo.base;
+      if (prefix === 'ל') translation = 'to ' + translation;
+
+      analyses.push({
+        type: 'hebrew_verb_piel',
+        original: word,
+        prefix: prefix || null,
+        root,
+        binyan: 'Piel',
+        binyanMeaning: 'intensive',
+        rootMeaning: rootInfo.base,
+        translation,
+        breakdown: `${prefix || ''}${c1}${c2}${c3} = Piel of ${root}`,
+        confidence: 60, // Lower confidence - pattern is ambiguous without nikkud
+        language: 'Hebrew',
+        source: 'Binyan Analysis'
+      });
+    }
+  }
+
+  // Hitpael pattern: הת/את + XXX or prefix + התXXX
+  const hitpaelMatch = word.match(/^([לוב])?(הת|את)([א-ת])([א-ת])([א-ת])$/);
+  if (hitpaelMatch) {
+    const [, prefix, hitPrefix, c1, c2, c3] = hitpaelMatch;
+    const root = c1 + c2 + c3;
+    const rootInfo = ROOT_MEANINGS[root];
+    if (rootInfo) {
+      let translation = rootInfo.reflexive || `${rootInfo.base} oneself`;
+      if (prefix === 'ל') translation = 'to ' + translation;
+
+      analyses.push({
+        type: 'hebrew_verb_hitpael',
+        original: word,
+        prefix: prefix || null,
+        root,
+        binyan: 'Hitpael',
+        binyanMeaning: 'reflexive',
+        rootMeaning: rootInfo.base,
+        translation,
+        breakdown: `${prefix || ''}${hitPrefix}${c1}${c2}${c3} = Hitpael of ${root}`,
+        confidence: 82,
+        language: 'Hebrew',
+        source: 'Binyan Analysis'
+      });
+    }
+  }
+
+  // Hufal pattern: הוXXX (passive of Hiphil)
+  const hufalMatch = word.match(/^([לוב])?הו([א-ת])([א-ת])([א-ת])$/);
+  if (hufalMatch) {
+    const [, prefix, c1, c2, c3] = hufalMatch;
+    const root = c1 + c2 + c3;
+    const rootInfo = ROOT_MEANINGS[root];
+    if (rootInfo) {
+      let translation = `was caused to ${rootInfo.base}`;
+      if (prefix === 'ל') translation = 'to be caused to ' + rootInfo.base;
+
+      analyses.push({
+        type: 'hebrew_verb_hufal',
+        original: word,
+        prefix: prefix || null,
+        root,
+        binyan: 'Hufal',
+        binyanMeaning: 'causative passive',
+        rootMeaning: rootInfo.base,
+        translation,
+        breakdown: `${prefix || ''}הו${c1}${c2}${c3} = Hufal of ${root}`,
+        confidence: 78,
+        language: 'Hebrew',
+        source: 'Binyan Analysis'
+      });
+    }
+  }
 
   return analyses;
 };
@@ -409,6 +632,46 @@ export const getBestAnalysis = (word, options = {}) => {
 };
 
 /**
+ * Backward-compatible alias: returns the best single analysis object (or null).
+ * Consumers that expect a single-object API should use this instead of analyzeWordMorphology.
+ */
+export const analyzeMorphology = (word, options = {}) => {
+  return getBestAnalysis(word, options);
+};
+
+/**
+ * Returns a plain-text breakdown string for a word, or null if unanalyzable.
+ */
+export const getMorphologyBreakdown = (word, options = {}) => {
+  const best = getBestAnalysis(word, options);
+  return best ? best.breakdown : null;
+};
+
+/**
+ * Returns only verb (binyan-based) morphology, or null if the word is not verbal.
+ */
+export const getVerbMorphology = (word, options = {}) => {
+  const analyses = analyzeWordMorphology(word, options);
+  return analyses.find(a => a.binyan) || null;
+};
+
+/**
+ * Returns only noun morphology (nominal analyses), or null if the word is not nominal.
+ */
+export const getNounMorphology = (word, options = {}) => {
+  const analyses = analyzeWordMorphology(word, options);
+  const nounTypes = new Set([
+    'aramaic_noun_possessive',
+    'aramaic_emphatic_state',
+    'hebrew_noun_possessive',
+    'prefixed_aramaic_noun',
+    'direct_aramaic',
+    'direct_root'
+  ]);
+  return analyses.find(a => nounTypes.has(a.type)) || null;
+};
+
+/**
  * Format analysis for display
  */
 export const formatAnalysisForDisplay = (analysis) => {
@@ -441,6 +704,10 @@ const morphologicalAnalysisService = {
   analyzeWordMorphology,
   getBestAnalysis,
   formatAnalysisForDisplay,
+  analyzeMorphology,
+  getMorphologyBreakdown,
+  getVerbMorphology,
+  getNounMorphology,
   ARAMAIC_NOUNS,
   PREFIX_MEANINGS,
   ARAMAIC_POSSESSIVE_SUFFIXES,

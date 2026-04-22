@@ -423,7 +423,7 @@ const useMastery = () => {
         : 0,
       totalReviews: masteryData.stats.totalReviews
     };
-  }, [masteryData]);
+  }, [masteryData.items, masteryData.stats.totalReviews]);
 
   /**
    * Get chapter mastery overview

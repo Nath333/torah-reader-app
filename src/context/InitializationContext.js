@@ -16,7 +16,7 @@
  */
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { initializeDictionaries, getCacheStatus } from '../services/dictionaryLoader';
+import { initializeDictionaries, getCacheStatus } from '../services/dictionaries/dictionaryLoader';
 
 const InitializationContext = createContext(null);
 

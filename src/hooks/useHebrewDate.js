@@ -36,17 +36,18 @@ const useHebrewDate = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
+    const controller = new AbortController();
 
     const fetchDate = async () => {
       try {
         const today = new Date();
         const response = await fetch(
-          `https://www.hebcal.com/converter?cfg=json&gy=${today.getFullYear()}&gm=${today.getMonth() + 1}&gd=${today.getDate()}&g2h=1`
+          `https://www.hebcal.com/converter?cfg=json&gy=${today.getFullYear()}&gm=${today.getMonth() + 1}&gd=${today.getDate()}&g2h=1`,
+          { signal: controller.signal }
         );
         const data = await response.json();
 
-        if (mounted) {
+        if (!controller.signal.aborted) {
           setHebrewDate({
             day: data.hd,
             month: data.hm,
@@ -57,15 +58,17 @@ const useHebrewDate = () => {
             formattedEn: `${data.hd} ${data.hm} ${data.hy}`
           });
         }
-      } catch {
-        // Silent fail - date is optional
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.warn('[useHebrewDate] Failed to fetch Hebrew date:', err);
+        }
       } finally {
-        if (mounted) setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       }
     };
 
     fetchDate();
-    return () => { mounted = false; };
+    return () => controller.abort();
   }, []);
 
   return { hebrewDate, loading, greeting: getGreeting() };

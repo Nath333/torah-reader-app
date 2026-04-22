@@ -14,7 +14,7 @@ import { safeGet, safeSet } from '../../utils/safeLocalStorage';
 import {
   semanticSearch,
   hybridSearch
-} from '../../services/semanticSearchService';
+} from '../../services/ai/semanticSearchService';
 
 const SEARCH_HISTORY_KEY = 'smart-search-history';
 

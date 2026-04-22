@@ -13,8 +13,8 @@
 //
 // =============================================================================
 
-import { scholarlyLookup } from './scholarlyLexiconService';
-import { cleanHebrewWord } from './hebrewDictionary';
+import { scholarlyLookup } from './dictionaries/scholarlyLexiconService';
+import { cleanHebrewWord } from './dictionaries/hebrewDictionary';
 import { createLogger } from '../utils/debug';
 
 const log = createLogger('TranslationService');

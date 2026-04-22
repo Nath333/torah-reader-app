@@ -4,7 +4,7 @@
  * @module ragService
  */
 
-import { createCache } from '../../utils/cache';
+import { createManagedCache } from '../cacheOrchestrator';
 import {
   getCommentary,
   getRelatedTexts,
@@ -20,7 +20,7 @@ import { getRambanForVerse, getMaharshaForDaf } from '../commentary/commentarySe
 import { getTosafotForDaf } from '../commentary/tosafotService';
 
 // Cache for RAG context (longer TTL since source texts don't change)
-const ragCache = createCache({ ttl: 60 * 60 * 1000, maxSize: 200 }); // 1 hour
+const ragCache = createManagedCache('ragContext', { ttl: 60 * 60 * 1000, maxSize: 200 }); // 1 hour
 
 // =============================================================================
 // Configuration - What to fetch from Sefaria for each mode

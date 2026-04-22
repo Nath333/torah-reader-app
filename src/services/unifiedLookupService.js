@@ -18,8 +18,8 @@ import {
   generateSourceComparison,
   SCHOLARLY_TIERS
 } from './scholarSourceAggregator';
-import { cleanHebrewWord } from './hebrewDictionary';
-import { isLikelyAramaic } from './babylonianDictionary';
+import { cleanHebrewWord } from './dictionaries/hebrewDictionary';
+import { isLikelyAramaic } from './dictionaries/babylonianDictionary';
 import { getContextFromReference } from '../constants/bookConstants';
 import { createLogger } from '../utils/debug';
 
@@ -38,22 +38,22 @@ import {
   // PRO SCHOLAR V13: Preload synchronization
   waitForPreload,
   isCoreDictionariesLoaded
-} from './dictionaryLoader';
-import { lookupAramaicWord as lookupCalAramaic } from './calDictionaryService';
-import { lookupWordSefaria } from './scholarlyLexiconService';
+} from './dictionaries/dictionaryLoader';
+import { lookupAramaicWord as lookupCalAramaic } from './dictionaries/calDictionaryService';
+import { lookupWordSefaria } from './dictionaries/scholarlyLexiconService';
 // PRO SCHOLAR: Optional reference source (community-edited)
-import { lookupWiktionary, fetchWiktionaryEtymology, getProtoSemitic } from './wiktionaryService';
+import { lookupWiktionary, fetchWiktionaryEtymology, getProtoSemitic } from './dictionaries/wiktionaryService';
 // PRO SCHOLAR V12: Comparative Semitic - CURATED cognates (primary source)
 import { getCognates as getCuratedCognates, getCognatesAsync } from './comparativeSemiticService';
 // PRO SCHOLAR V12: Etymology enrichment with ALL scholarly databases (78,000+ entries)
-import { getComprehensiveEtymology } from './etymologyEnrichmentService';
+import { getComprehensiveEtymology } from './dictionaries/etymologyEnrichmentService';
 import { normalizeFinals, stripAllDiacritics, restoreFinals } from '../utils/hebrewUtils';
 import { HEBREW_PREFIXES_ORDERED } from '../constants/morphology';
 import { pickBestDefinition } from '../utils/definitionCleaner';
 // Grammar and morphological analysis
-import { tryHebrewVerbAnalysis } from './grammarAnalysisService';
-import { extractRootsWithAsyncValidation, getRootFamily } from './rootExtraction';
-import { analyzeWordMorphology } from './morphologicalAnalysisService';
+import { tryHebrewVerbAnalysis } from './analysis/grammarAnalysisService';
+import { extractRootsWithAsyncValidation, getRootFamily } from './analysis/rootExtraction';
+import { analyzeWordMorphology } from './analysis/morphologicalAnalysisService';
 // Semantic field integration
 import {
   SEMANTIC_DOMAINS,
@@ -62,9 +62,9 @@ import {
   getAntonyms,
   getRelatedWords,
   getDomain
-} from './semanticFieldService';
+} from './scholarly/semanticFieldService';
 // French translation support
-import { translateEnglishToFrench } from './englishToFrenchService';
+import { translateEnglishToFrench } from './dictionaries/englishToFrenchService';
 // Source metadata for citations
 import { getSourceInfo, RELIABILITY_TIERS } from '../constants/dictionarySources';
 // Contextual definition ranking
@@ -81,7 +81,7 @@ import {
   findSemanticFields,
   WORD_RELATIONSHIP_TYPES,
   WORD_RELATIONSHIPS_DB
-} from './wordRelationshipService';
+} from './scholarly/wordRelationshipService';
 // Critical word fallback for common words
 import {
   lookupCriticalWord,
@@ -548,24 +548,28 @@ export const getRootFamilyExpansion = async (word, options = {}) => {
  */
 export const getMorphology = (word) => {
   try {
-    const analysis = analyzeWordMorphology?.(word);
-    if (!analysis) return null;
+    const analyses = analyzeWordMorphology?.(word);
+    if (!analyses || analyses.length === 0) return null;
 
-    return {
+    // analyzeWordMorphology returns an array sorted by confidence — use the best
+    const best = analyses[0];
+
+    const normalized = {
       word,
-      root: analysis.root,
-      prefixes: analysis.prefixes || [],
-      suffixes: analysis.suffixes || [],
-      stem: analysis.stem,
-      pattern: analysis.pattern,
-      binyan: analysis.binyan,
-      person: analysis.person,
-      number: analysis.number,
-      gender: analysis.gender,
-      tense: analysis.tense,
-      state: analysis.state,
-      description: formatMorphologyDescription(analysis)
+      root: best.root,
+      prefixes: best.prefix ? [best.prefix] : [],
+      suffixes: best.suffix ? [best.suffix] : [],
+      stem: best.root,
+      pattern: best.type,
+      binyan: best.binyan,
+      language: best.language,
+      confidence: best.confidence,
+      translation: best.translation,
+      breakdown: best.breakdown,
+      allAnalyses: analyses.slice(0, 3)
     };
+    normalized.description = formatMorphologyDescription(normalized);
+    return normalized;
   } catch (err) {
     return null;
   }

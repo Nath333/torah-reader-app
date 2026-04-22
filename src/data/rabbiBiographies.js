@@ -6,7 +6,7 @@
  * to reduce initial bundle size.
  */
 
-import { getRabbiBiographiesData, getRabbiBiographies } from '../services/dictionaryLoader';
+import { getRabbiBiographiesData, getRabbiBiographies } from '../services/dictionaries/dictionaryLoader';
 import { createLazyProxy } from './proxyHelpers';
 
 // =============================================================================

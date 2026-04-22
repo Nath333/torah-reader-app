@@ -10,40 +10,16 @@
  * Total: ~86 entries (loaded on-demand, not bundled)
  */
 
-import { getJastrowAramaicData } from '../services/dictionaryLoader';
+import { getJastrowAramaicData } from '../services/dictionaries/dictionaryLoader';
 import { stripAllDiacritics } from '../utils/hebrewUtils';
+import { createLazyProxy } from './proxyHelpers';
 
 // =============================================================================
 // LAZY-LOADED LEXICON ACCESS
 // =============================================================================
 
 /** @returns {Object|null} Jastrow Aramaic data (returns Proxy for compatibility) */
-export const JASTROW_ARAMAIC = new Proxy({}, {
-  get: (_, prop) => {
-    const data = getJastrowAramaicData();
-    if (prop === Symbol.iterator) {
-      return function* () {
-        if (data) yield* Object.entries(data);
-      };
-    }
-    return data?.[prop];
-  },
-  has: (_, prop) => {
-    const data = getJastrowAramaicData();
-    return data ? prop in data : false;
-  },
-  ownKeys: () => {
-    const data = getJastrowAramaicData();
-    return data ? Object.keys(data) : [];
-  },
-  getOwnPropertyDescriptor: (_, prop) => {
-    const data = getJastrowAramaicData();
-    if (data && prop in data) {
-      return { enumerable: true, configurable: true, value: data[prop] };
-    }
-    return undefined;
-  }
-});
+export const JASTROW_ARAMAIC = createLazyProxy(getJastrowAramaicData);
 
 // =============================================================================
 // LOOKUP FUNCTIONS (use lazy-loaded data)

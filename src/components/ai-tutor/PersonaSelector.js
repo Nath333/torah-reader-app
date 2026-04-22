@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { TEACHING_PERSONAS, PERSONA_CONFIG } from '../../services/aiTutorService';
+import { TEACHING_PERSONAS, PERSONA_CONFIG } from '../../services/ai/aiTutorService';
 
 const PersonaSelector = ({ value, onChange, compact = false }) => {
   const [isOpen, setIsOpen] = useState(false);

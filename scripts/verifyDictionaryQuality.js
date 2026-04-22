@@ -1,32 +1,57 @@
 /**
  * Verify Dictionary Quality - Check for duplicates and data integrity
+ *
+ * Runs as `npm run prebuild` to gate `react-scripts build`. Exits non-zero if:
+ *   - Any referenced dictionary file is missing from public/data/
+ *   - Any dictionary has > MAX_EMPTY_RATE empty/stub entries
+ *   - Total definitions across all dictionaries fall below MIN_TOTAL_DEFS
  */
 const fs = require('fs');
+const path = require('path');
+
+// Thresholds — tweak here. Build fails if any is breached.
+const MAX_EMPTY_RATE = 0.05;     // 5% per-dictionary empty-definition cap
+const MIN_TOTAL_DEFS = 60000;    // Minimum defs-with-content across all dicts
+
+// Allow `--soft` to warn without failing (for ad-hoc local runs).
+const SOFT_MODE = process.argv.includes('--soft');
 
 console.log('╔═══════════════════════════════════════════════════════════════════════════╗');
 console.log('║              DICTIONARY QUALITY VERIFICATION                              ║');
 console.log('╚═══════════════════════════════════════════════════════════════════════════╝\n');
 
+// Dictionaries that must exist in public/data/ for the app to function.
+// Add a new entry when adding a new dictionary (see DICTIONARIES.md §3).
 const dictionaries = [
   { name: 'BDB', file: 'bdbComplete.json', key: 'byWord' },
   { name: 'Jastrow', file: 'jastrowComplete.json', key: null },
   { name: "Strong's", file: 'strongsComplete.json', key: 'byWord' },
-  { name: 'HALOT', file: 'halot_lexicon.json', key: null },
-  { name: 'DJBA', file: 'djba_lexicon.json', key: null },
   { name: 'Gesenius', file: 'gesenius_lexicon.json', key: null },
-  { name: 'TWOT', file: 'twot_lexicon.json', key: null },
   { name: 'Klein', file: 'klein_lexicon.json', key: null },
   { name: 'CAL', file: 'cal_aramaic.json', key: null },
   { name: 'Root PRO', file: 'root_meanings_pro.json', key: 'entries' }
 ];
 
+const failures = [];
 const stats = {};
 const allWords = new Map(); // Track word -> which dictionaries have it
 
 for (const dict of dictionaries) {
+  const filePath = path.join('public/data', dict.file);
+  if (!fs.existsSync(filePath)) {
+    stats[dict.name] = { error: 'file missing: ' + filePath };
+    failures.push(`${dict.name}: referenced file ${filePath} is missing`);
+    continue;
+  }
   try {
-    const data = JSON.parse(fs.readFileSync('public/data/' + dict.file, 'utf8'));
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
     const entries = dict.key ? data[dict.key] : data;
+
+    if (!entries || typeof entries !== 'object') {
+      stats[dict.name] = { error: `entries key "${dict.key}" not found or not an object` };
+      failures.push(`${dict.name}: entries key "${dict.key}" missing or invalid in ${filePath}`);
+      continue;
+    }
 
     // Filter out metadata
     const words = Object.keys(entries).filter(k => !k.startsWith('_'));
@@ -66,6 +91,7 @@ for (const dict of dictionaries) {
 
   } catch (e) {
     stats[dict.name] = { error: e.message };
+    failures.push(`${dict.name}: failed to parse ${filePath} — ${e.message}`);
   }
 }
 
@@ -147,9 +173,15 @@ for (const dict of dictionaries) {
   if (s.error) continue;
 
   const issues = [];
+  const emptyRate = s.total ? s.emptyDef / s.total : 0;
 
-  if (s.emptyDef > s.total * 0.1) {
-    issues.push(`${s.emptyDef} entries (${(s.emptyDef/s.total*100).toFixed(0)}%) have no definition`);
+  if (emptyRate > MAX_EMPTY_RATE) {
+    const msg = `${s.emptyDef} entries (${(emptyRate * 100).toFixed(1)}%) have no definition — exceeds ${(MAX_EMPTY_RATE * 100).toFixed(0)}% cap`;
+    issues.push(msg);
+    failures.push(`${dict.name}: ${msg}`);
+  } else if (s.emptyDef > s.total * 0.1) {
+    // Keep the old informational warning for 10% — only fails at MAX_EMPTY_RATE.
+    issues.push(`${s.emptyDef} entries (${(s.emptyDef / s.total * 100).toFixed(0)}%) have no definition`);
   }
 
   if (s.uniqueWords < s.total * 0.9) {
@@ -162,4 +194,22 @@ for (const dict of dictionaries) {
   }
 }
 
-console.log('\n✅ Quality verification complete!');
+// Total-definitions gate
+if (totalWithDef < MIN_TOTAL_DEFS) {
+  failures.push(`Total definitions ${totalWithDef} below required minimum ${MIN_TOTAL_DEFS}`);
+}
+
+console.log('\n═══════════════════════════════════════════════════════════════════════════');
+if (failures.length === 0) {
+  console.log('✅ Quality verification passed.');
+  process.exit(0);
+}
+
+console.log(`❌ Quality verification found ${failures.length} blocking issue(s):`);
+failures.forEach(f => console.log(`   • ${f}`));
+if (SOFT_MODE) {
+  console.log('\n(running with --soft: not failing the build)');
+  process.exit(0);
+}
+console.log('\nRun with --soft to bypass locally. Fix issues above to unblock the build.');
+process.exit(1);

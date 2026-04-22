@@ -28,7 +28,7 @@ import {
   getIbnEzraForChapter,
   getSfornoForChapter
 } from '../services/sefariaApi';
-import { getSoncinoFootnotesForTractate, isTractateAvailable } from '../services/soncinoService';
+import { getSoncinoFootnotesForTractate, isTractateAvailable } from '../services/commentary/soncinoService';
 import { createLogger } from '../utils/debug';
 
 const log = createLogger('useCommentaryLoader');
@@ -510,10 +510,6 @@ export function useCommentaryLoader({
     };
   }, [selectedBook, selectedChapter, getRashiForVerse, state.data]);
 
-  const isCommentaryLoading = useCallback(() => {
-    return Object.values(state.loading).some(Boolean);
-  }, [state.loading]);
-
   const isAnyLoading = useMemo(() => {
     return Object.values(state.loading).some(Boolean);
   }, [state.loading]);
@@ -587,7 +583,7 @@ export function useCommentaryLoader({
     // Helper functions
     getRashiForVerse,
     getCommentaryForVerse,
-    isCommentaryLoading,
+    isCommentaryLoading: isAnyLoading,
     clearCache,
 
     // Manual loaders

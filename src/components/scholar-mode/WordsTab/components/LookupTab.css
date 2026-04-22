@@ -1,0 +1,1981 @@
+/**
+ * LookupTab.css - Styles for the dictionary lookup component
+ * 
+ * Comprehensive styling for:
+ * - Search input and history dropdown
+ * - Loading skeleton
+ * - Results display with multiple sections
+ * - Section tabs (Definitions, Semantic, Constructs, Etymology, Shoresh, Morphology, V6 Analysis, Conjugation, Compare)
+ * - Multiple lexicon source displays (BDB, Jastrow, CAL, Strong's, Klein)
+ * - Grammar info badges
+ * - Save to vocabulary button
+ * - Root family and occurrences displays
+ * - Responsive design and dark mode support
+ */
+
+/* =============================================================================
+   Main Container
+   ============================================================================= */
+
+.lookup-tab {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: auto;
+}
+
+/* =============================================================================
+   Header
+   ============================================================================= */
+
+.lookup-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 8px 8px 0 0;
+  margin-bottom: 16px;
+}
+
+.lookup-header .lookup-icon {
+  font-size: 1.3em;
+}
+
+.lookup-header h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  flex: 1;
+}
+
+.lookup-header .lookup-sources {
+  font-size: 0.75rem;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+.lookup-header .lookup-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.lookup-header .lookup-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* =============================================================================
+   Input Group
+   ============================================================================= */
+
+.lookup-input-group {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px 12px;
+  position: relative;
+}
+
+.lookup-input-group .input-wrapper {
+  flex: 1;
+  position: relative;
+}
+
+.lookup-input-group .hebrew-input {
+  width: 100%;
+  padding: 12px 40px 12px 16px;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  font-family: 'SBL Hebrew', 'Ezra SIL', 'Frank Ruehl CLM', serif;
+  font-size: 1.3rem;
+  background: var(--bg-input, #ffffff);
+  color: var(--text-primary, #1a1a1a);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.lookup-input-group .hebrew-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.lookup-input-group .history-toggle-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+  padding: 4px;
+}
+
+.lookup-input-group .history-toggle-btn:hover {
+  opacity: 1;
+}
+
+.lookup-input-group .lookup-btn {
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lookup-input-group .lookup-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.lookup-input-group .lookup-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.lookup-input-group .lookup-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =============================================================================
+   History Dropdown
+   ============================================================================= */
+
+.lookup-history-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.history-dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: var(--bg-elevated, #f9fafb);
+  border-bottom: 1px solid var(--border-light, #e5e7eb);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary, #4b5563);
+}
+
+.clear-history-btn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.clear-history-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: none;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  text-align: right;
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  font-size: 1.1rem;
+  transition: background 0.2s ease;
+  border-bottom: 1px solid var(--border-light, #f3f4f6);
+}
+
+.history-item:last-child {
+  border-bottom: none;
+}
+
+.history-item:hover {
+  background: var(--bg-hover, #f3f4f6);
+}
+
+.history-item.no-result {
+  opacity: 0.6;
+}
+
+.history-word {
+  flex: 1;
+}
+
+.history-found {
+  color: #10b981;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.history-not-found {
+  color: #ef4444;
+  font-size: 0.9rem;
+}
+
+/* =============================================================================
+   Keyboard Hints
+   ============================================================================= */
+
+.lookup-hints {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px 12px;
+  font-size: 0.75rem;
+  color: var(--text-muted, #6b7280);
+}
+
+.lookup-hints kbd {
+  background: var(--bg-elevated, #f3f4f6);
+  border: 1px solid var(--border-color, #d1d5db);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+/* =============================================================================
+   Error Message
+   ============================================================================= */
+
+.lookup-error {
+  margin: 0 16px 16px;
+  padding: 12px 16px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 0.9rem;
+}
+
+/* =============================================================================
+   Skeleton Loading
+   ============================================================================= */
+
+.lexicon-skeleton {
+  padding: 0 16px;
+}
+
+.skeleton-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.skeleton-bar {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-word {
+  width: 120px;
+  height: 28px;
+}
+
+.skeleton-badge {
+  width: 80px;
+  height: 24px;
+}
+
+.skeleton-def-primary {
+  width: 100%;
+  height: 20px;
+  margin-bottom: 20px;
+}
+
+.skeleton-entry {
+  margin-bottom: 16px;
+  padding: 16px;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-light, #e5e7eb);
+  border-radius: 8px;
+}
+
+.skeleton-source {
+  width: 100px;
+  height: 20px;
+  margin-bottom: 12px;
+}
+
+.skeleton-def {
+  width: 90%;
+  height: 16px;
+  margin-bottom: 8px;
+}
+
+.skeleton-def-short {
+  width: 60%;
+  height: 16px;
+}
+
+/* =============================================================================
+   Results Container
+   ============================================================================= */
+
+.lookup-result {
+  padding: 0 16px 16px;
+}
+
+.lookup-word-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.lookup-headword {
+  font-family: 'SBL Hebrew', 'Ezra SIL', 'Frank Ruehl CLM', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.lookup-root {
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  font-size: 1.1rem;
+  color: var(--text-secondary, #4b5563);
+  background: rgba(102, 126, 234, 0.1);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.lookup-lang {
+  margin-left: auto;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted, #6b7280);
+  background: var(--bg-elevated, #f3f4f6);
+  padding: 4px 10px;
+  border-radius: 12px;
+  text-transform: uppercase;
+}
+
+.copy-btn {
+  background: var(--bg-elevated, #f3f4f6);
+  border: 1px solid var(--border-color, #e5e7eb);
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.copy-btn:hover {
+  background: var(--bg-hover, #e5e7eb);
+}
+
+.copy-btn.copied {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: #10b981;
+  color: #059669;
+}
+
+/* =============================================================================
+   Primary Definition
+   ============================================================================= */
+
+.lookup-primary-def {
+  margin-bottom: 20px;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  border-left: 4px solid #667eea;
+  border-radius: 0 8px 8px 0;
+}
+
+.def-english {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text-primary, #1a1a1a);
+  margin-bottom: 8px;
+}
+
+.def-french {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--text-secondary, #4b5563);
+  padding-top: 8px;
+  border-top: 1px dashed var(--border-color, #e5e7eb);
+}
+
+.def-french .fr-flag {
+  margin-right: 4px;
+}
+
+/* =============================================================================
+   Section Tabs
+   ============================================================================= */
+
+.lookup-section-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.section-tab {
+  padding: 8px 14px;
+  background: var(--bg-elevated, #f3f4f6);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary, #4b5563);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.section-tab:hover {
+  background: var(--bg-hover, #e5e7eb);
+  transform: translateY(-1px);
+}
+
+.section-tab.active {
+  background: #667eea;
+  border-color: #667eea;
+  color: white;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.section-tab-pro {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  border: none !important;
+}
+
+.section-tab-pro:hover {
+  background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%) !important;
+}
+
+.section-tab-v6 {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  color: white !important;
+  border: none !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.section-tab-v6::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: v6-shimmer 2s infinite;
+}
+
+@keyframes v6-shimmer {
+  100% {
+    left: 100%;
+  }
+}
+
+.section-tab-conjugation {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+  color: white !important;
+  border: none !important;
+}
+
+.section-tab-compare {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: white !important;
+  border: none !important;
+}
+
+.tab-loading {
+  margin-left: 4px;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* =============================================================================
+   Section Content Areas
+   ============================================================================= */
+
+.lookup-definitions-section,
+.lookup-morphology-section,
+.lookup-v6-section,
+.lookup-conjugation-section,
+.lookup-compare-section {
+  margin-bottom: 20px;
+}
+
+.lookup-morphology-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.lookup-v6-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 16px 0;
+  animation: v6-fade-in 0.3s ease-out;
+}
+
+@keyframes v6-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lookup-v6-section .pro-scholar-panel {
+  border-radius: 12px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fff7ed 100%);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);
+}
+
+.lookup-conjugation-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 12px 0;
+  animation: v6-fade-in 0.3s ease-out;
+}
+
+.lookup-compare-section {
+  animation: v6-fade-in 0.3s ease-out;
+}
+
+/* =============================================================================
+   Lexicon Entry Cards
+   ============================================================================= */
+
+.lexicon-entry {
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.lexicon-entry:last-child {
+  margin-bottom: 0;
+}
+
+.lexicon-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-light, #f3f4f6);
+  flex-wrap: wrap;
+}
+
+.lexicon-name {
+  background: #667eea;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.lexicon-full {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #4b5563);
+  font-weight: 500;
+}
+
+.lexicon-lang {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--text-muted, #6b7280);
+  background: var(--bg-elevated, #f3f4f6);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.strong-num {
+  background: #f59e0b;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.cal-romanization {
+  font-family: 'Times New Roman', serif;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--text-secondary, #4b5563);
+}
+
+.lexicon-def {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.lexicon-def:last-child {
+  margin-bottom: 0;
+}
+
+.def-num {
+  display: inline-block;
+  min-width: 20px;
+  font-weight: 600;
+  color: #667eea;
+}
+
+.def-text {
+  color: var(--text-primary, #1a1a1a);
+}
+
+.def-pos {
+  display: inline-block;
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+/* Specific source colors */
+.bdb-entry .lexicon-name {
+  background: #3b82f6;
+}
+
+.jastrow-entry .lexicon-name {
+  background: #22c55e;
+}
+
+.jastrow-entry {
+  background: rgba(34, 197, 94, 0.02);
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+.cal-entry .lexicon-name {
+  background: #0ea5e9;
+}
+
+.cal-entry {
+  background: rgba(14, 165, 233, 0.02);
+  border-color: rgba(14, 165, 233, 0.2);
+}
+
+.strongs-entry .lexicon-name {
+  background: #f59e0b;
+}
+
+.strongs-entry {
+  background: rgba(245, 158, 11, 0.02);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+.klein-entry .lexicon-name {
+  background: #8b5cf6;
+}
+
+.klein-entry {
+  background: rgba(139, 92, 246, 0.02);
+  border-color: rgba(139, 92, 246, 0.2);
+}
+
+.bdb-aramaic-entry .lexicon-name {
+  background: #06b6d4;
+}
+
+.bdb-aramaic-entry {
+  background: rgba(6, 182, 212, 0.02);
+  border-color: rgba(6, 182, 212, 0.2);
+}
+
+/* CAL Entry Specifics */
+.cal-dialects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.dialect-chip {
+  background: rgba(14, 165, 233, 0.1);
+  color: #0284c7;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: help;
+}
+
+.cal-forms {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border-light, #e5e7eb);
+}
+
+.forms-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted, #6b7280);
+}
+
+.form-chip {
+  background: var(--bg-elevated, #f3f4f6);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+}
+
+.cal-hebrew-equiv,
+.cal-related {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border-light, #e5e7eb);
+}
+
+.equiv-label,
+.related-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted, #6b7280);
+}
+
+.equiv-word,
+.related-chip {
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  background: rgba(102, 126, 234, 0.1);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+/* Grammar Info */
+.grammar-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-light, #e5e7eb);
+}
+
+.grammar-tag {
+  background: var(--bg-elevated, #f3f4f6);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.grammar-tag.pos {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+}
+
+.grammar-tag.gender {
+  background: rgba(236, 72, 153, 0.1);
+  color: #db2777;
+}
+
+.grammar-tag.number {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+}
+
+/* =============================================================================
+   Frequency Badge
+   ============================================================================= */
+
+.frequency-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+}
+
+.freq-count {
+  font-weight: 700;
+  color: var(--freq-color, #667eea);
+}
+
+.freq-label {
+  font-weight: 600;
+  color: var(--text-secondary, #4b5563);
+}
+
+.freq-percentile {
+  font-size: 0.8rem;
+  color: var(--text-muted, #6b7280);
+}
+
+/* =============================================================================
+   Semantic Field Section
+   ============================================================================= */
+
+.semantic-field-section {
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.section-icon {
+  font-size: 1.2em;
+}
+
+.section-title {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.semantic-domains {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.domain-chip {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.semantic-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border-light, #e5e7eb);
+}
+
+.semantic-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary, #4b5563);
+  min-width: 70px;
+}
+
+.semantic-words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1;
+}
+
+.synonym-chip {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+}
+
+.antonym-chip {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+}
+
+/* =============================================================================
+   Construct Chain Section
+   ============================================================================= */
+
+.construct-chain-section {
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.construct-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.construct-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg-elevated, #f9fafb);
+  border-radius: 6px;
+  flex-wrap: wrap;
+}
+
+.construct-hebrew {
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.construct-parsed {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #4b5563);
+}
+
+.construct-type {
+  margin-left: auto;
+  font-size: 0.75rem;
+  text-transform: capitalize;
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+/* =============================================================================
+   Etymology Section
+   ============================================================================= */
+
+.etymology-section {
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.etymology-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.etym-icon {
+  font-size: 1.2em;
+}
+
+.etym-title {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.semantic-core {
+  padding: 12px;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 6px;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
+
+.semantic-core strong {
+  color: #667eea;
+}
+
+.cognate-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cognate-chip {
+  background: var(--bg-elevated, #f3f4f6);
+  border: 1px solid var(--border-light, #e5e7eb);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+/* =============================================================================
+   Root Occurrences Section (Shoresh)
+   ============================================================================= */
+
+.root-occurrences-section {
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.root-occurrences-section.loading {
+  padding: 20px;
+}
+
+.root-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-light, #e5e7eb);
+  flex-wrap: wrap;
+}
+
+.root-icon {
+  font-size: 1.3em;
+}
+
+.root-title {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.root-letters {
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.1);
+  padding: 4px 12px;
+  border-radius: 6px;
+  margin-left: 8px;
+}
+
+.root-count {
+  margin-left: auto;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary, #4b5563);
+  background: var(--bg-elevated, #f3f4f6);
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+
+.root-theological-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(251, 191, 36, 0.1);
+  border-radius: 6px;
+  margin-bottom: 16px;
+  border-left: 3px solid #f59e0b;
+}
+
+.note-icon {
+  font-size: 1.1em;
+}
+
+.note-text {
+  font-size: 0.9rem;
+  color: var(--text-primary, #1a1a1a);
+  line-height: 1.4;
+}
+
+/* Derived Words */
+.derived-words-section {
+  margin-bottom: 20px;
+}
+
+.section-subheader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.subheader-icon {
+  font-size: 1.1em;
+}
+
+.subheader-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.books-count {
+  font-size: 0.85rem;
+  color: var(--text-muted, #6b7280);
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+.derived-words-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.derived-word-card {
+  background: var(--bg-elevated, #f9fafb);
+  border: 1px solid var(--border-light, #e5e7eb);
+  border-radius: 6px;
+  padding: 10px;
+  text-align: center;
+}
+
+.dw-hebrew {
+  display: block;
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.dw-gloss {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-secondary, #4b5563);
+  margin-bottom: 4px;
+}
+
+.dw-count {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Occurrences */
+.occurrences-section {
+  margin-top: 20px;
+}
+
+.first-occurrence {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 10px;
+  background: rgba(16, 185, 129, 0.05);
+  border-radius: 6px;
+}
+
+.first-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted, #6b7280);
+}
+
+.occurrence-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 6px;
+  text-decoration: none;
+  color: #667eea;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  margin: 3px;
+}
+
+.occurrence-link:hover {
+  background: rgba(102, 126, 234, 0.2);
+}
+
+.occurrence-link.first {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+}
+
+.occurrence-link.first:hover {
+  background: rgba(16, 185, 129, 0.2);
+}
+
+.occ-he-ref {
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  font-size: 0.9rem;
+}
+
+.occurrences-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.show-more-occurrences {
+  background: none;
+  border: none;
+  color: #667eea;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.show-more-occurrences:hover {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.books-distribution {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border-light, #e5e7eb);
+  flex-wrap: wrap;
+}
+
+.dist-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted, #6b7280);
+}
+
+.books-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.book-chip {
+  background: var(--bg-elevated, #f3f4f6);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.more-books {
+  font-size: 0.8rem;
+  color: var(--text-muted, #6b7280);
+}
+
+/* =============================================================================
+   Root Family Display
+   ============================================================================= */
+
+.root-family-section {
+  background: var(--surface-elevated, #f8f9fa);
+  border: 1px solid var(--border-light, #e0e0e0);
+  border-radius: 10px;
+  padding: 14px;
+  border-left: 4px solid #10b981;
+}
+
+.root-family-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-light, #e0e0e0);
+}
+
+.rf-icon {
+  font-size: 1.3em;
+}
+
+.rf-title {
+  font-weight: 600;
+  font-size: 1em;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.rf-root {
+  margin-left: auto;
+  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
+  font-size: 1.4em;
+  font-weight: 700;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 4px 12px;
+  border-radius: 6px;
+}
+
+.root-family-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Meanings (Base/Causative) */
+.rf-meanings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.rf-meaning-pair {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rf-label {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--text-muted, #666);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rf-value {
+  font-size: 1em;
+  font-weight: 500;
+  color: var(--text-primary, #1a1a1a);
+}
+
+/* Etymology */
+.rf-etymology {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 8px 10px;
+  background: rgba(139, 92, 246, 0.08);
+  border-radius: 6px;
+}
+
+.rf-etym-label {
+  font-size: 0.75em;
+  font-weight: 600;
+  color: #7c3aed;
+  text-transform: uppercase;
+}
+
+.rf-etym-value {
+  font-size: 0.9em;
+  color: #5b21b6;
+  font-style: italic;
+}
+
+/* Cognates */
+.rf-cognates {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rf-cog-label {
+  font-size: 0.75em;
+  font-weight: 600;
+  color: var(--text-muted, #666);
+  text-transform: uppercase;
+}
+
+.rf-cog-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.rf-cognate-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--surface, #fff);
+  border: 1px solid var(--border-light, #e0e0e0);
+  border-radius: 6px;
+  font-size: 0.85em;
+}
+
+.cog-lang {
+  font-weight: 600;
+  color: #0891b2;
+  text-transform: capitalize;
+}
+
+.cog-word {
+  color: var(--text-primary, #1a1a1a);
+}
+
+/* Frequency */
+.rf-frequency {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rf-freq-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8em;
+  font-weight: 600;
+}
+
+.rf-freq-chip.tanakh {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.rf-freq-chip.talmud {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* Semantic field */
+.rf-semantic {
+  display: flex;
+}
+
+.rf-sem-chip {
+  display: inline-flex;
+  padding: 4px 10px;
+  background: rgba(244, 63, 94, 0.1);
+  color: #e11d48;
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  border-radius: 12px;
+  font-size: 0.8em;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+/* Notes */
+.rf-notes {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 10px;
+  background: rgba(251, 191, 36, 0.1);
+  border-radius: 6px;
+  border-left: 3px solid #f59e0b;
+}
+
+.rf-note-icon {
+  font-size: 1em;
+}
+
+.rf-note-text {
+  font-size: 0.9em;
+  color: #92400e;
+  line-height: 1.4;
+}
+
+/* =============================================================================
+   Save to Vocabulary
+   ============================================================================= */
+
+.save-to-vocab-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color, #e5e7eb);
+  text-align: center;
+}
+
+.btn-save-vocab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-save-vocab:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-save-vocab .btn-icon {
+  font-size: 1.1em;
+}
+
+.already-saved {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 20px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* =============================================================================
+   Hint / Empty State
+   ============================================================================= */
+
+.lookup-hint {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.lookup-hint p {
+  color: var(--text-secondary, #4b5563);
+  margin-bottom: 20px;
+}
+
+.lookup-hint p:first-child {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.source-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.source-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.source-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.local-count {
+  font-size: 0.85rem !important;
+  color: var(--text-muted, #6b7280) !important;
+  background: rgba(16, 185, 129, 0.1);
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 20px;
+}
+
+/* =============================================================================
+   CAL-Only Result
+   ============================================================================= */
+
+.cal-only-result,
+.local-only-result {
+  padding: 0 16px 16px;
+}
+
+/* =============================================================================
+   Responsive Adjustments
+   ============================================================================= */
+
+@media (max-width: 600px) {
+  .lookup-header {
+    padding: 10px 12px;
+  }
+
+  .lookup-header h4 {
+    font-size: 1rem;
+  }
+
+  .lookup-header .lookup-sources {
+    display: none;
+  }
+
+  .lookup-input-group {
+    padding: 0 12px 10px;
+  }
+
+  .lookup-input-group .hebrew-input {
+    font-size: 1.1rem;
+    padding: 10px 36px 10px 12px;
+  }
+
+  .lookup-section-tabs {
+    gap: 4px;
+  }
+
+  .section-tab {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+
+  .lookup-word-header {
+    padding: 12px;
+  }
+
+  .lookup-headword {
+    font-size: 1.4rem;
+  }
+
+  .lookup-root {
+    font-size: 0.95rem;
+  }
+
+  .derived-words-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+
+  .occurrence-link {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+  }
+
+  .construct-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .construct-type {
+    margin-left: 0;
+  }
+
+  .root-family-section {
+    padding: 10px;
+  }
+
+  .rf-root {
+    font-size: 1.2em;
+    padding: 3px 8px;
+  }
+
+  .rf-meanings {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .rf-cognates .rf-cog-list {
+    flex-direction: column;
+  }
+
+  .rf-frequency {
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+/* =============================================================================
+   Dark Mode Support
+   ============================================================================= */
+
+@media (prefers-color-scheme: dark) {
+  .lookup-header {
+    background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
+  }
+
+  .lookup-input-group .hebrew-input {
+    background: var(--bg-input-dark, #1f2937);
+    border-color: var(--border-color-dark, #374151);
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .lookup-input-group .hebrew-input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  }
+
+  .lookup-history-dropdown {
+    background: var(--bg-card-dark, #1f2937);
+    border-color: var(--border-color-dark, #374151);
+  }
+
+  .history-dropdown-header {
+    background: var(--bg-elevated-dark, #374151);
+    border-color: var(--border-color-dark, #4b5563);
+    color: var(--text-secondary-dark, #d1d5db);
+  }
+
+  .history-item {
+    border-color: var(--border-color-dark, #374151);
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .history-item:hover {
+    background: var(--bg-hover-dark, #374151);
+  }
+
+  .lookup-hints {
+    color: var(--text-muted-dark, #9ca3af);
+  }
+
+  .lookup-hints kbd {
+    background: var(--bg-elevated-dark, #374151);
+    border-color: var(--border-color-dark, #4b5563);
+  }
+
+  .lookup-word-header {
+    background: var(--bg-card-dark, #1f2937);
+    border-color: var(--border-color-dark, #374151);
+  }
+
+  .lookup-headword {
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .lookup-root {
+    background: rgba(102, 126, 234, 0.15);
+  }
+
+  .copy-btn {
+    background: var(--bg-elevated-dark, #374151);
+    border-color: var(--border-color-dark, #4b5563);
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .copy-btn:hover {
+    background: var(--bg-hover-dark, #4b5563);
+  }
+
+  .lookup-primary-def {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  }
+
+  .def-english {
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .def-french {
+    color: var(--text-secondary-dark, #d1d5db);
+    border-color: var(--border-color-dark, #4b5563);
+  }
+
+  .section-tab {
+    background: var(--bg-elevated-dark, #374151);
+    border-color: var(--border-color-dark, #4b5563);
+    color: var(--text-secondary-dark, #d1d5db);
+  }
+
+  .section-tab:hover {
+    background: var(--bg-hover-dark, #4b5563);
+  }
+
+  .section-tab-pro {
+    background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%) !important;
+  }
+
+  .section-tab-v6 {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+  }
+
+  .lookup-v6-section .pro-scholar-panel {
+    background: linear-gradient(135deg, #451a03 0%, #422006 100%);
+    border-color: rgba(245, 158, 11, 0.3);
+  }
+
+  .lexicon-entry {
+    background: var(--bg-card-dark, #1f2937);
+    border-color: var(--border-color-dark, #374151);
+  }
+
+  .lexicon-header {
+    border-color: var(--border-color-dark, #4b5563);
+  }
+
+  .lexicon-full {
+    color: var(--text-secondary-dark, #d1d5db);
+  }
+
+  .lexicon-lang {
+    background: var(--bg-elevated-dark, #374151);
+    color: var(--text-muted-dark, #9ca3af);
+  }
+
+  .def-text {
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .semantic-field-section,
+  .construct-chain-section,
+  .etymology-section,
+  .root-occurrences-section {
+    background: var(--bg-card-dark, #1f2937);
+    border-color: var(--border-color-dark, #374151);
+  }
+
+  .section-title,
+  .etym-title {
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .semantic-label,
+  .dist-label,
+  .equiv-label,
+  .related-label,
+  .forms-label {
+    color: var(--text-muted-dark, #9ca3af);
+  }
+
+  .semantic-core {
+    background: rgba(102, 126, 234, 0.1);
+  }
+
+  .construct-item,
+  .derived-word-card {
+    background: var(--bg-elevated-dark, #374151);
+  }
+
+  .construct-parsed,
+  .dw-gloss {
+    color: var(--text-secondary-dark, #d1d5db);
+  }
+
+  .cognate-chip,
+  .form-chip,
+  .book-chip {
+    background: var(--bg-elevated-dark, #374151);
+    border-color: var(--border-color-dark, #4b5563);
+  }
+
+  .root-family-section {
+    background: var(--surface-elevated-dark, #2d2d2d);
+    border-color: var(--border-dark, #444);
+  }
+
+  .rf-root {
+    background: rgba(16, 185, 129, 0.2);
+  }
+
+  .rf-value {
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .rf-etymology {
+    background: rgba(139, 92, 246, 0.15);
+  }
+
+  .rf-etym-value {
+    color: #a78bfa;
+  }
+
+  .rf-cognate-chip {
+    background: var(--surface-dark, #1e1e1e);
+    border-color: var(--border-dark, #444);
+  }
+
+  .cog-lang {
+    color: #22d3ee;
+  }
+
+  .rf-notes {
+    background: rgba(251, 191, 36, 0.15);
+  }
+
+  .rf-note-text {
+    color: #fbbf24;
+  }
+
+  .frequency-badge {
+    background: var(--bg-card-dark, #1f2937);
+    border-color: var(--border-color-dark, #374151);
+  }
+
+  .save-to-vocab-section {
+    border-color: var(--border-color-dark, #374151);
+  }
+
+  .lookup-hint p {
+    color: var(--text-secondary-dark, #d1d5db);
+  }
+
+  .source-badge {
+    background: var(--bg-card-dark, #1f2937);
+    border-color: var(--border-color-dark, #374151);
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .skeleton-entry {
+    background: var(--bg-card-dark, #1f2937);
+    border-color: var(--border-color-dark, #374151);
+  }
+
+  .skeleton-bar {
+    background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+  }
+}

@@ -11,15 +11,15 @@
 
 // PRO SCHOLAR V10: Import from single source of truth
 import { stripAllDiacritics } from './hebrewUtils';
-import { SEMANTIC_DOMAINS } from '../services/semanticFieldService';
+import { SEMANTIC_DOMAINS } from '../services/scholarly/semanticFieldService';
 import { getWordFrequency } from '../services/wordFrequencyService';
-import { analyzeWord as analyzeWordForEnhancement } from '../services/grammarAnalysisService';
+import { analyzeWord as analyzeWordForEnhancement } from '../services/analysis/grammarAnalysisService';
 import {
   getWordSemantics,
   getSynonyms,
   getAntonyms,
   getRelatedWords
-} from '../services/semanticFieldService';
+} from '../services/scholarly/semanticFieldService';
 import { getSourceBadgeData, sortSourcesByReliability } from '../constants/dictionarySources';
 import {
   analyzeWordWithConfidence,
@@ -29,9 +29,9 @@ import {
   computeVerbTranslation
 } from '../constants/morphology';
 // PRO SCHOLAR V8: Multi-hypothesis root extraction (renamed from unifiedRootService)
-import { extractRootsWithDirectValidation } from '../services/rootExtraction';
+import { extractRootsWithDirectValidation } from '../services/analysis/rootExtraction';
 // Grammar analysis for prefix/suffix meanings (used by getPrefixMeaning, getSuffixMeaning, isLikelyNoun)
-import { analyzeWord as analyzeWordForMorphology, GRAMMAR_CONSTANTS } from '../services/grammarAnalysisService';
+import { analyzeWord as analyzeWordForMorphology, GRAMMAR_CONSTANTS } from '../services/analysis/grammarAnalysisService';
 
 // Use PREFIXES and SUFFIXES from grammar service (single source of truth)
 const { PREFIXES, SUFFIXES } = GRAMMAR_CONSTANTS;

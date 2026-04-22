@@ -8,7 +8,7 @@
  *
  * Migration guide:
  *   OLD: import { extractAllPossibleRoots } from './featureFlags';
- *   NEW: import { extractRootsWithDirectValidation } from './rootExtraction';
+ *   NEW: import { extractRootsWithDirectValidation } from './analysis/rootExtraction';
  *
  * This module is STILL VALID for:
  * - Feature flags (FEATURES)
@@ -24,9 +24,9 @@ import {
   lookupJastrowSync,
   lookupBDBSync,
   lookupStrongsSync
-} from './dictionaryLoader';
+} from './dictionaries/dictionaryLoader';
 // PRO SCHOLAR V5: Single source of truth for Aramaic particles
-import { ARAMAIC_PARTICLES } from './preClassificationService';
+import { ARAMAIC_PARTICLES } from './analysis/preClassificationService';
 import { stripAllDiacritics } from '../utils/hebrewUtils';
 
 // =============================================================================
@@ -94,19 +94,19 @@ export const getService = (serviceName) => {
   try {
     switch (serviceName) {
       case 'cantillation':
-        _serviceCache.cantillation = require('./cantillationService');
+        _serviceCache.cantillation = require('./textual/cantillationService');
         break;
       case 'constructChain':
         _serviceCache.constructChain = require('./constructChainService');
         break;
       case 'manuscriptVariants':
-        _serviceCache.manuscriptVariants = require('./manuscriptVariantsService');
+        _serviceCache.manuscriptVariants = require('./textual/manuscriptVariantsService');
         break;
       case 'knowledgeGraph':
-        _serviceCache.knowledgeGraph = require('./knowledgeGraphService');
+        _serviceCache.knowledgeGraph = require('./scholarly/knowledgeGraphService');
         break;
       case 'rag':
-        _serviceCache.rag = require('./ragService');
+        _serviceCache.rag = require('./ai/ragService');
         break;
       case 'srs':
         _serviceCache.srs = require('./srsService');
@@ -116,16 +116,16 @@ export const getService = (serviceName) => {
         _serviceCache.wordLookup = require('./unifiedLookupService');
         break;
       case 'grammarAnalysis':
-        _serviceCache.grammarAnalysis = require('./grammarAnalysisService');
+        _serviceCache.grammarAnalysis = require('./analysis/grammarAnalysisService');
         break;
       case 'semanticField':
-        _serviceCache.semanticField = require('./semanticFieldService');
+        _serviceCache.semanticField = require('./scholarly/semanticFieldService');
         break;
       case 'hebrewDictionary':
-        _serviceCache.hebrewDictionary = require('./hebrewDictionary');
+        _serviceCache.hebrewDictionary = require('./dictionaries/hebrewDictionary');
         break;
       case 'calDictionary':
-        _serviceCache.calDictionary = require('./calDictionaryService');
+        _serviceCache.calDictionary = require('./dictionaries/calDictionaryService');
         break;
       default:
         console.warn(`[ProScholarV4] Unknown service: ${serviceName}`);

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import './FocusMode.css';
 import ClickableText from '../core/ClickableText';
 import { COMMENTATORS, ERAS } from '../../constants/commentatorRegistry';
-import { GEMATRIA_VALUES, calculateGematria } from '../../utils/hebrewUtils';
+import { GEMATRIA_VALUES, calculateGematria, getVerseStats, getChapterStats } from '../../utils/hebrewUtils';
 
 // Theme options - including Jewish scholarly themes
 const THEMES = {
@@ -166,14 +166,29 @@ const FocusMode = React.memo(function FocusMode({
     });
   }, []);
 
-  // Calculate study stats
+  // Calculate study stats (enhanced with verse/chapter statistics)
+  const verseTextStats = useMemo(() => {
+    return currentVerse?.hebrewText ? getVerseStats(currentVerse.hebrewText) : null;
+  }, [currentVerse?.hebrewText]);
+
+  const chapterTextStats = useMemo(() => {
+    return verses?.length ? getChapterStats(verses.map(v => ({ hebrew: v.hebrewText }))) : null;
+  }, [verses]);
+
   const studyStats = useMemo(() => ({
     versesStudied: versesStudied.size,
     totalVerses: verses?.length || 0,
     percentComplete: verses?.length ? Math.round((versesStudied.size / verses.length) * 100) : 0,
     highlightedCount: highlightedVerses.size,
-    readingTimeFormatted: `${Math.floor(readingTime / 60)}:${(readingTime % 60).toString().padStart(2, '0')}`
-  }), [versesStudied, verses?.length, highlightedVerses.size, readingTime]);
+    readingTimeFormatted: `${Math.floor(readingTime / 60)}:${(readingTime % 60).toString().padStart(2, '0')}`,
+    // Enhanced verse stats from hebrewUtils
+    currentVerseWords: verseTextStats?.words || 0,
+    currentVerseLetters: verseTextStats?.letters || 0,
+    currentVerseUniqueWords: verseTextStats?.uniqueWords || 0,
+    chapterTotalWords: chapterTextStats?.totalWords || 0,
+    chapterUniqueWords: chapterTextStats?.uniqueWords || 0,
+    chapterAvgWordsPerVerse: chapterTextStats?.avgWordsPerVerse || 0
+  }), [versesStudied, verses?.length, highlightedVerses.size, readingTime, verseTextStats, chapterTextStats]);
 
   // Split Hebrew text into words for word-by-word highlighting
   const hebrewWords = useMemo(() => {
@@ -548,6 +563,31 @@ const FocusMode = React.memo(function FocusMode({
               <span className="stat-label">Study Time</span>
               <span className="stat-value">{studyStats.readingTimeFormatted}</span>
             </div>
+            {studyStats.currentVerseWords > 0 && (
+              <>
+                <div className="stat-divider" />
+                <div className="stat-item">
+                  <span className="stat-label">Verse Words</span>
+                  <span className="stat-value">{studyStats.currentVerseWords} ({studyStats.currentVerseUniqueWords} unique)</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">Verse Letters</span>
+                  <span className="stat-value">{studyStats.currentVerseLetters}</span>
+                </div>
+              </>
+            )}
+            {studyStats.chapterTotalWords > 0 && (
+              <>
+                <div className="stat-item">
+                  <span className="stat-label">Chapter Words</span>
+                  <span className="stat-value">{studyStats.chapterTotalWords} ({studyStats.chapterUniqueWords} unique)</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">Avg Words/Verse</span>
+                  <span className="stat-value">{studyStats.chapterAvgWordsPerVerse}</span>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

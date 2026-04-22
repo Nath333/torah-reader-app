@@ -15,8 +15,8 @@ import React, { useState, useCallback, useEffect, useMemo, useContext } from 're
 import PropTypes from 'prop-types';
 import { cleanDefinition } from '../../utils/definitionCleaner';
 import { DICTIONARY_SOURCES, RELIABILITY_TIERS } from '../../constants/dictionarySources';
-import { hebrewToCalTransliteration as hebrewToCAL } from '../../services/calDictionaryService';
-import { analyzeVerb } from '../../services/grammarAnalysisService';
+import { hebrewToCalTransliteration as hebrewToCAL } from '../../services/dictionaries/calDictionaryService';
+import { analyzeVerb } from '../../services/analysis/grammarAnalysisService';
 import SettingsContext from '../../context/SettingsContext';
 import { SourceBadge } from '../shared/SourceBadge';
 // PRO SCHOLAR V5: Prefix/suffix utilities from centralized helpers
@@ -32,7 +32,7 @@ import {
   getCredibilityBadge
 } from '../../services/sourceCredibilityService';
 // PRO SCHOLAR V3: Context-aware confidence scoring (available for future use)
-// import { computeConfidence, getSourceTier, getContextFromReference } from '../../services/preClassificationService';
+// import { computeConfidence, getSourceTier, getContextFromReference } from '../../services/analysis/preClassificationService';
 import SourceDefinitionItem from './SourceDefinitionItem';
 import VerbConjugationDisplay from './morphology/VerbConjugationDisplay';
 import ProScholarPanel from './panels/ProScholarPanel';

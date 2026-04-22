@@ -7,32 +7,18 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { scholarlyLookup } from '../../services/scholarlyLexiconService';
-import { splitIntoWords, cleanHebrewWord } from '../../services/hebrewDictionary';
+import { splitIntoWords, cleanHebrewWord } from '../../services/dictionaries/hebrewDictionary';
 import { cleanHtml } from '../../utils/sanitize';
-import {
-  TALMUDIC_ABBREVIATIONS,
-  RASHI_VOCABULARY,
-  lookupHalachicWithPrefix
-} from '../../utils/commentaryUtils';
-// PRO SCHOLAR V6.2: Use comprehensive pre-classification for proper nouns & particles
-import { preClassify } from '../../services/preClassificationService';
-// PRO SCHOLAR V7: Scholarly source classification
 import {
   isAcademicLexicon,
   isLocalSource,
   getSourceInfo
 } from '../../constants/dictionarySources';
-// PRO SCHOLAR V7: Morphological hints for missing words
-import { getMorphologicalHint } from '../../services/unifiedLookupService';
-// PRO SCHOLAR: Proto-Semitic reconstructions from Wiktionary (used by comprehensive lookup)
-// PRO SCHOLAR V12: Full etymology data from ALL databases (78,000+ entries)
-// Sources: Sefaria, Root Pro, BDB, Jastrow, Wiktionary, CAL, DJBA
+// Unified lookup: single entry point for all word lookups (replaces 5 separate services)
 import {
-  getEnrichedEtymologySync,
-  preloadEnrichedData,
-  getComprehensiveEtymology
-} from '../../services/etymologyEnrichmentService';
+  lookupWord as unifiedLookupWord,
+  getMorphologicalHint
+} from '../../services/unifiedLookupService';
 import './WordGlossary.css';
 
 // =============================================================================
@@ -125,229 +111,78 @@ const TALMUDIC_COMPOUND_PHRASES = {
   },
 };
 
-// PRO SCHOLAR V12: Preload etymology data on module load
-preloadEnrichedData().catch(() => {});
-
 /**
- * Look up a single word using shared constants from commentaryUtils
- * Priority: PreClassification → Abbreviations → Halachic → Rashi vocab → API
+ * Look up a single word via the unified lookup pipeline.
+ * The unified service handles: pre-classification, halachic vocab, function words,
+ * academic dictionaries (BDB, Jastrow, Klein, CAL), Aramaic analysis, root extraction,
+ * Proto-Semitic reconstruction — all in one pass with caching & deduplication.
+ *
+ * This adapter maps the unified result shape to what the glossary UI expects.
  */
 const lookupWord = async (word, contextType = 'talmudic') => {
   const cleaned = cleanHebrewWord(word);
   if (!cleaned || cleaned.length < 2) return null;
 
-  // PRO SCHOLAR V6.2: Use preClassificationService FIRST
-  // This catches proper nouns (משה=Moses), particles, and abbreviations comprehensively
   try {
-    const preClassResult = preClassify(word, { textType: contextType });
-    if (preClassResult && preClassResult.skipDictionary) {
-      const definition = preClassResult.english || preClassResult.meaning || preClassResult.expansion;
-      if (definition) {
-        return {
-          word: cleaned,
-          definition: definition,
-          source: preClassResult.source || preClassResult.type || 'Pre-classified',
-          expansion: preClassResult.expansion,
-          isAbbreviation: preClassResult.type === 'abbreviation',
-          isProperNoun: preClassResult.type === 'proper_name',
-          root: preClassResult.root,
-          note: preClassResult.note
-        };
-      }
-    }
-  } catch (err) {
-    // Silent fail - continue to other lookups
-  }
+    const result = await unifiedLookupWord(word, {
+      contextMode: contextType,
+      includeOnline: false
+    });
 
-  // Check abbreviations (shared constants - fallback)
-  if (TALMUDIC_ABBREVIATIONS[word]) {
-    return {
-      word: cleaned,
-      definition: TALMUDIC_ABBREVIATIONS[word],
-      source: 'Abbreviation',
-      expansion: TALMUDIC_ABBREVIATIONS[word],
-      isAbbreviation: true
-    };
-  }
+    // No result or no definition found
+    const definition = result?.english || result?.sources?.[0]?.definition;
+    if (!definition) return null;
 
-  // Check halachic overrides WITH PREFIX STRIPPING
-  // This handles השבת → "the Shabbat", לשבת → "to/for Shabbat", etc.
-  // PRO SCHOLAR V12: Also fetch comprehensive etymology for halachic words
-  const halachicResult = lookupHalachicWithPrefix(cleaned);
-  if (halachicResult) {
-    const fullDef = halachicResult.prefix
-      ? `${halachicResult.prefix} ${halachicResult.definition}`
-      : halachicResult.definition;
+    // Determine match type from root data
+    const effectiveRoot = result.extractedRoot || result.root || null;
+    const matchType = effectiveRoot && effectiveRoot !== cleaned
+      ? 'ROOT_DERIVED' : 'EXACT';
 
-    // PRO SCHOLAR V12: Fetch etymology data for halachic words too
-    let comprehensiveEtymology = null;
-    try {
-      comprehensiveEtymology = await getComprehensiveEtymology(cleaned);
-      console.log('[WordGlossary] PRO SCHOLAR for halachic word "' + cleaned + '":', JSON.stringify({
-        extractedRoot: comprehensiveEtymology?.extractedRoot,
-        root: comprehensiveEtymology?.root,
-        sources: comprehensiveEtymology?.sources,
-        usedRootFallback: comprehensiveEtymology?.usedRootFallback
-      }));
-    } catch (e) {
-      console.error('[WordGlossary] PRO SCHOLAR FAILED for halachic word "' + cleaned + '":', e.message);
-    }
+    // Map source objects to display names for tooltip (.join works on strings)
+    const sources = result.sources || [];
+    const sourceNames = sources.map(s => s.name).filter(Boolean);
 
-    const ety = comprehensiveEtymology || {};
-    const effectiveRoot = ety.extractedRoot || ety.root || halachicResult.root || cleaned;
-
-    // PRO SCHOLAR V12: Build sources array with Halachic as primary + any PRO SCHOLAR sources
-    const halachicSource = {
-      name: halachicResult.source || 'Halachic',
-      fullName: 'Halachic Vocabulary',
-      definition: fullDef,
-      year: null,
-      searchedWord: cleaned,
-      tier: 'bronze' // PRO SCHOLAR V12: Supplementary curated source
-    };
-    // Combine: Halachic first, then PRO SCHOLAR sources (if any)
-    const combinedSources = [halachicSource, ...(ety.sources || [])];
+    // Determine best tier from aggregated sources (1=academic, 2=scholarly, 3+=curated)
+    const bestTier = sources.reduce((best, s) => {
+      const t = typeof s.tier === 'object' ? s.tier?.level : s.tier;
+      return t && t < best ? t : best;
+    }, 99);
 
     return {
       word: cleaned,
-      definition: fullDef,
-      source: halachicResult.source || 'Halachic',
+      definition,
+      source: result.source || 'Unknown',
+      sourceName: getSourceInfo(result.source)?.name || result.source,
+      isLocal: isLocalSource(result.source),
+      isLexicon: isAcademicLexicon(result.source),
+      matchType,
       root: effectiveRoot,
-      // PRO SCHOLAR V12: Set matchType so UI shows root badge when different from word
-      matchType: effectiveRoot && effectiveRoot !== cleaned ? 'ROOT_DERIVED' : 'EXACT',
-      // PRO SCHOLAR V12: Add etymology data
-      protoSemitic: ety.etymology?.protoSemitic || null,
-      cognates: ety.etymology?.cognates || null,
-      hasEtymology: ety.hasEtymology || (combinedSources.length > 1),
-      sources: combinedSources,  // PRO SCHOLAR V12: Full source objects
-      allSources: combinedSources,
-      sourceCount: combinedSources.length,
-      qualityScore: ety.qualityScore || 0,
-      extractedRoot: ety.extractedRoot || null,
-      usedRootFallback: ety.usedRootFallback || false,
-      alternativeRoots: ety.alternativeRoots || [],
-      _halachicOverride: true
+      // Tier: best source tier (1=Gold/Academic, 2=Silver/Scholarly, 3+=Bronze/Curated)
+      bestTier: bestTier < 99 ? bestTier : null,
+      // Proto-Semitic
+      protoSemitic: result.protoSemitic?.form || null,
+      cognates: result.protoSemitic?.cognates || null,
+      hasEtymology: !!result.protoSemitic?.form || (sources.length > 1),
+      // Language
+      isAramaic: result.isAramaic || false,
+      // Sources (with proper tier from aggregation)
+      sources,
+      allSources: sourceNames,
+      sourceCount: sources.length,
+      // Classification
+      isProperNoun: result.isProperNoun || false,
+      isAbbreviation: result.isAbbreviation || false,
+      expansion: result.isAbbreviation ? (result.fullEnglish || result.english) : null,
+      note: result.fullEnglish || null,
+      // Quality (from proper confidence scoring)
+      qualityScore: result.confidence?.score || 0,
+      extractedRoot: result.extractedRoot || null,
+      alternativeRoots: result.morphology?.alternativeRoots || []
     };
-  }
-
-  // Check Rashi/Talmudic vocabulary (local curated)
-  // PRO SCHOLAR V12: Still fetch comprehensive etymology for local matches to get roots/cognates
-  if (RASHI_VOCABULARY[cleaned]) {
-    let comprehensiveEtymology = null;
-    try {
-      comprehensiveEtymology = await getComprehensiveEtymology(cleaned);
-      // PRO SCHOLAR V12: Debug logging for etymology lookup
-      console.log('[WordGlossary] PRO SCHOLAR etymology for "' + cleaned + '":', JSON.stringify({
-        extractedRoot: comprehensiveEtymology?.extractedRoot,
-        root: comprehensiveEtymology?.root,
-        sources: comprehensiveEtymology?.sources,
-        usedRootFallback: comprehensiveEtymology?.usedRootFallback,
-        hasEtymology: comprehensiveEtymology?.hasEtymology,
-        alternativeRoots: comprehensiveEtymology?.alternativeRoots
-      }));
-    } catch (e) {
-      console.error('[WordGlossary] PRO SCHOLAR etymology FAILED for "' + cleaned + '":', e.message);
-    }
-
-    const ety = comprehensiveEtymology || {};
-    // PRO SCHOLAR V12: Use extractedRoot (from smart root extraction) if available
-    const effectiveRoot = ety.extractedRoot || ety.root || cleaned;
-    console.log('[WordGlossary] Effective root for "' + cleaned + '":', effectiveRoot);
-
-    // PRO SCHOLAR V12: Build sources array with Rabbinic as primary + any PRO SCHOLAR sources
-    const rabbinicSource = {
-      name: 'Rabbinic',
-      fullName: 'Rabbinic Vocabulary',
-      definition: RASHI_VOCABULARY[cleaned],
-      year: null,
-      searchedWord: cleaned,
-      tier: 'bronze' // PRO SCHOLAR V12: Supplementary curated source
-    };
-    // Combine: Rabbinic first, then PRO SCHOLAR sources (if any)
-    const combinedSources = [rabbinicSource, ...(ety.sources || [])];
-
-    return {
-      word: cleaned,
-      definition: RASHI_VOCABULARY[cleaned],
-      source: 'rabbinic-vocab',
-      sourceName: 'Rabbinic',
-      isLocal: true,
-      // PRO SCHOLAR V12: Set matchType so UI shows root badge when different from word
-      matchType: effectiveRoot && effectiveRoot !== cleaned ? 'ROOT_DERIVED' : 'EXACT',
-      // PRO SCHOLAR V12: Add etymology data even for local vocab
-      root: effectiveRoot,
-      protoSemitic: ety.etymology?.protoSemitic || null,
-      cognates: ety.etymology?.cognates || null,
-      hasEtymology: ety.hasEtymology || (combinedSources.length > 1),
-      sources: combinedSources,  // PRO SCHOLAR V12: Full source objects
-      allSources: combinedSources,
-      sourceCount: combinedSources.length,
-      qualityScore: ety.qualityScore || 0,
-      extractedRoot: ety.extractedRoot || null,
-      usedRootFallback: ety.usedRootFallback || false,
-      alternativeRoots: ety.alternativeRoots || [] // PRO SCHOLAR V12: Multiple hypotheses
-    };
-  }
-
-  // Fall back to scholarly API lookup (academic lexicons)
-  // PRO SCHOLAR V12: Fetch comprehensive etymology from ALL databases in parallel
-  try {
-    const [result, comprehensiveEtymology] = await Promise.all([
-      scholarlyLookup(cleaned),
-      getComprehensiveEtymology(cleaned).catch(() => null)
-    ]);
-
-    if (result?.primaryDefinition) {
-      const matchType = result._matchType || (result.root && result.root !== cleaned ? 'ROOT_DERIVED' : 'EXACT');
-
-      // PRO SCHOLAR V12: Get sync enriched data as fallback
-      const enrichedData = getEnrichedEtymologySync(cleaned);
-
-      // PRO SCHOLAR V12: Merge comprehensive etymology (78,000+ entries)
-      const ety = comprehensiveEtymology || {};
-
-      // PRO SCHOLAR V12: Use extractedRoot if smart lookup found root via fallback
-      const effectiveRoot = ety.extractedRoot || ety.root || result.root;
-
-      return {
-        word: cleaned,
-        definition: result.primaryDefinition,
-        source: result.primarySource || 'Sefaria',
-        sourceName: getSourceInfo(result.primarySource)?.name || result.primarySource,
-        root: effectiveRoot,
-        isLocal: isLocalSource(result.primarySource),
-        isLexicon: isAcademicLexicon(result.primarySource),
-        matchType,
-        // PRO SCHOLAR V12: Proto-Semitic from comprehensive lookup (all sources)
-        protoSemitic: ety.etymology?.protoSemitic || ety.protoSemitic || enrichedData?.protoSemitic || null,
-        cognates: ety.etymology?.cognates || ety.cognates || enrichedData?.cognates || null,
-        hasEtymology: !!(ety.etymology?.protoSemitic || ety.protoSemitic || enrichedData?.protoSemitic || ety.sources?.length > 0),
-        // PRO SCHOLAR V12: Academic enrichment from all databases
-        isAramaic: ety.isAramaic || enrichedData?.isAramaic || false,
-        dialects: ety.dialects || enrichedData?.dialects || [],
-        talmudUsage: ety.talmudUsage || enrichedData?.talmudUsage || null,
-        calTransliteration: ety.calTransliteration || enrichedData?.calTransliteration || null,
-        semanticField: ety.semanticField || enrichedData?.semanticField || null,
-        definitions: ety.definitions || enrichedData?.definitions || [],
-        sources: ety.sources || enrichedData?.sources || [],  // WordDefinitionCard expects 'sources'
-        allSources: ety.sources || enrichedData?.sources || [],
-        // PRO SCHOLAR V12: Multi-database enrichment details
-        qualityScore: ety.qualityScore || 0,
-        sourceCount: ety.sources?.length || 0,
-        hasSefariaData: !!ety.sefariaData,
-        hasJastrowEty: !!ety.jastrowEtymology,
-        hasBDBEty: !!ety.bdbEtymology,
-        // PRO SCHOLAR V12: Smart lookup metadata
-        extractedRoot: ety.extractedRoot || null,
-        usedRootFallback: ety.usedRootFallback || false,
-        alternativeRoots: ety.alternativeRoots || [] // Multiple root hypotheses
-      };
-    }
   } catch (err) {
-    // Silent fail - word not found in dictionaries
+    // Silent fail - word not found
+    return null;
   }
-
-  return null;
 };
 
 /**
@@ -648,7 +483,7 @@ const WordGlossary = React.memo(({ text, onClose }) => {
                   {def.sourceCount > 1 && (
                     <span
                       className="glossary-multi-source"
-                      title={`${def.sourceCount} sources: ${def.allSources?.join(', ') || 'Multiple databases'}${def.hasSefariaData ? ' • Sefaria' : ''}${def.hasJastrowEty ? ' • Jastrow' : ''}${def.hasBDBEty ? ' • BDB' : ''}`}
+                      title={`${def.sourceCount} sources: ${def.allSources?.join(', ') || 'Multiple databases'}`}
                     >
                       +{def.sourceCount - 1}
                     </span>

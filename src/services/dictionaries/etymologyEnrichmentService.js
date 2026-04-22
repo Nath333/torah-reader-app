@@ -4,11 +4,9 @@
  * PRO SCHOLAR V12: Multi-source etymology with BDB, Jastrow, CAL, Sefaria, and Wiktionary.
  *
  * Data sources (in priority order):
- * 1. public/data/root_meanings_pro.json (22,049 entries - Consolidated PRO)
- * 2. public/data/etymology_unified_pro.json (Full Scholar Pro - CAL + Sefaria)
- * 3. public/data/sefaria_lexicon_cache.json (2,493 pre-parsed entries)
- * 4. public/data/etymology_bdb_extracted.json (2,591 BDB cognates - source data)
- * 5. public/data/etymology_jastrow_extracted.json (16,794 Jastrow cross-refs - source data)
+ * 1. public/data/root_meanings_pro.json (4,105 entries - Consolidated PRO)
+ * 2. public/data/sefaria_lexicon_cache.json (2,493 pre-parsed entries)
+ * 3. public/data/etymology_jastrow_extracted.json (16,794 Jastrow cross-refs - source data)
  * NOTE: root_meanings_enriched.json merged into root_meanings_pro.json (V14)
  * 7. Wiktionary cache/API (fallback for Proto-Semitic and cognates)
  *
@@ -42,8 +40,7 @@ let loadingPromise = null;
 // PRO SCHOLAR V12: Data file paths (in priority order by scholarly quality)
 // PRO SCHOLAR V14: root_meanings_enriched.json merged into root_meanings_pro.json
 const DATA_FILES = [
-  { path: '/data/root_meanings_pro.json', name: 'Root Meanings Pro (22,049)' },
-  { path: '/data/etymology_unified_pro.json', name: 'Scholar Pro (Full)' }
+  { path: '/data/root_meanings_pro.json', name: 'Root Meanings Pro (4,105)' }
 ];
 
 /**
@@ -351,25 +348,7 @@ export async function getComprehensiveEtymology(word) {
     qualityScore = Math.max(qualityScore, entry.qualityScore || 70);
   }
 
-  // 3. Check BDB extracted etymology (2,591 entries)
-  if (allEtymology.etymologyBDB) {
-    const entry = allEtymology.etymologyBDB;
-    sourceNames.push('BDB');
-    sources.push({
-      name: 'BDB',
-      fullName: 'Brown-Driver-Briggs Hebrew Lexicon',
-      definition: entry.definition || entry.headword || '',
-      year: 1906,
-      searchedWord: entry.headword || stripped,
-      tier: 'gold' // PRO SCHOLAR V12: Academic standard for Biblical Hebrew
-    });
-    if (entry.cognates) {
-      cognates = mergeCognates(cognates, formatStoredCognates(entry.cognates));
-    }
-    qualityScore = Math.max(qualityScore, 75);
-  }
-
-  // 4. Check Jastrow extracted etymology (16,794 entries)
+  // 3. Check Jastrow extracted etymology (16,794 entries)
   if (allEtymology.etymologyJastrow) {
     const entry = allEtymology.etymologyJastrow;
     sourceNames.push('Jastrow');

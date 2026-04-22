@@ -25,7 +25,7 @@
 import { createLogger } from '../utils/debug';
 import { lookupCAL, lookupCALSync } from './calService';
 // PRO SCHOLAR V12: Use centralized dictionaryLoader to prevent duplicate fetches
-import { getEtymologyBDB, getEtymologyJastrow } from './dictionaryLoader';
+import { getEtymologyJastrow } from './dictionaries/dictionaryLoader';
 import { stripAllDiacritics, normalizeFinals } from '../utils/hebrewUtils';
 
 const log = createLogger('ComparativeSemitic');
@@ -925,12 +925,12 @@ let enrichedRootData = null;
 
 /**
  * Load unified etymology PRO data (primary source)
- * This combines BDB, Jastrow, curated data, and more
+ * Uses root_meanings_pro.json (consolidated etymology)
  */
 const loadUnifiedEtymology = async () => {
   if (unifiedEtymologyData) return unifiedEtymologyData;
   try {
-    const response = await fetch('/data/etymology_unified_pro.json');
+    const response = await fetch('/data/root_meanings_pro.json');
     if (response.ok) {
       const data = await response.json();
       unifiedEtymologyData = data.entries || {};
@@ -944,20 +944,13 @@ const loadUnifiedEtymology = async () => {
 };
 
 /**
- * Load extracted BDB etymology data (via centralized dictionaryLoader)
- * PRO SCHOLAR V12: Uses shared cache to prevent duplicate network fetches
+ * Load extracted BDB etymology data
+ * DEPRECATED: etymology_bdb_extracted.json removed - data consolidated into root_meanings_pro
+ * Returns empty object for backward compatibility
  */
 const loadExtractedBDB = async () => {
   if (extractedBDBData) return extractedBDBData;
-  try {
-    // Use centralized loader (shares cache with etymologyEnrichmentService)
-    const data = await getEtymologyBDB();
-    extractedBDBData = data?.entries || data || {};
-    log(`Loaded ${Object.keys(extractedBDBData).length} BDB etymology entries (via dictionaryLoader)`);
-  } catch (err) {
-    log('Could not load BDB etymology data:', err.message);
-    extractedBDBData = {};
-  }
+  extractedBDBData = {};
   return extractedBDBData;
 };
 

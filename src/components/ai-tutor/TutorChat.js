@@ -24,7 +24,7 @@ import {
   PERSONA_CONFIG,
   STUDY_MODES,
   STUDY_MODE_CONFIG
-} from '../../services/aiTutorService';
+} from '../../services/ai/aiTutorService';
 // 2026 Smart Features - AI Memory for conversation tracking
 import {
   initializeMemory,
@@ -34,7 +34,7 @@ import {
   trackStudy,
   getTopTopics,
   getMemoryStats
-} from '../../services/aiMemoryService';
+} from '../../services/ai/aiMemoryService';
 import LevelSelector from './LevelSelector';
 import PersonaSelector from './PersonaSelector';
 import './TutorChat.css';

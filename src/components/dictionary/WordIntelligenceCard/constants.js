@@ -1,9 +1,14 @@
 /**
- * Constants for WordIntelligenceCard
- * Display configurations for semantic fields, tiers, and other UI elements
+ * WordIntelligenceCard Constants
+ * Shared constants and configuration for all sub-components
  */
 
-/** Semantic field display configuration - PRO SCHOLAR V6 */
+import { getSourceInfo, RELIABILITY_TIERS } from '../../../constants/dictionarySources';
+
+// =============================================================================
+// SEMANTIC FIELD DISPLAY
+// =============================================================================
+
 export const SEMANTIC_FIELD_DISPLAY = {
   LEGAL: { name: 'Legal/Halachic', hebrew: 'הלכתי', icon: '⚖️', color: '#1d4ed8', bg: '#dbeafe' },
   DIALECTIC: { name: 'Dialectical', hebrew: 'סוגייתי', icon: '💬', color: '#7c3aed', bg: '#ede9fe' },
@@ -17,60 +22,109 @@ export const SEMANTIC_FIELD_DISPLAY = {
   SPATIAL: { name: 'Spatial', hebrew: 'מרחבי', icon: '📍', color: '#84cc16', bg: '#ecfccb' }
 };
 
-/** Dictionary tier display - PRO SCHOLAR V13 */
+// =============================================================================
+// TIER DISPLAY
+// =============================================================================
+
 export const TIER_DISPLAY = {
-  // Modern keys (from dictionarySources.js RELIABILITY_TIERS)
   academic: { icon: '🥇', label: 'Academic', color: '#059669', bg: '#dcfce7' },
   scholarly: { icon: '🥈', label: 'Reference', color: '#0891b2', bg: '#cffafe' },
   curated: { icon: '🥉', label: 'Curated', color: '#6366f1', bg: '#e0e7ff' },
   derived: { icon: '⚙️', label: 'Derived', color: '#8b5cf6', bg: '#ede9fe' },
   reference: { icon: '📑', label: 'General', color: '#64748b', bg: '#f1f5f9' },
-  // Legacy keys (for backward compatibility)
   gold: { icon: '🥇', label: 'Academic', color: '#059669', bg: '#dcfce7' },
   silver: { icon: '🥈', label: 'Reference', color: '#0891b2', bg: '#cffafe' },
   bronze: { icon: '🥉', label: 'Curated', color: '#6366f1', bg: '#e0e7ff' }
 };
 
-/** Source category configurations */
+// =============================================================================
+// SOURCE CATEGORIES
+// =============================================================================
+
 export const SOURCE_CATEGORIES = {
-  dictionary: { icon: '📖', label: 'Academic Dictionary', color: '#3b82f6' },
-  pattern: { icon: '🔬', label: 'Morphological Analysis', color: '#8b5cf6' },
-  corpus: { icon: '📊', label: 'Corpus Reference', color: '#10b981' },
-  scholarly: { icon: '🎓', label: 'Scholarly Source', color: '#6366f1' }
+  dictionary: { label: 'Dictionary', icon: '📖', color: '#2563eb' },
+  algorithm:  { label: 'Pattern Analysis', icon: '🔬', color: '#7c3aed' },
+  curated:    { label: 'Curated', icon: '✨', color: '#059669' },
+  cache:      { label: 'Cached', icon: '💾', color: '#6b7280' }
 };
 
-/** Reference categories for cross-references */
+// =============================================================================
+// REFERENCE CATEGORIES
+// =============================================================================
+
 export const REFERENCE_CATEGORIES = [
-  { key: 'primary', label: 'Primary Sources', icon: '📜' },
-  { key: 'talmud', label: 'Talmudic', icon: '📚' },
-  { key: 'midrash', label: 'Midrashic', icon: '📖' },
-  { key: 'commentaries', label: 'Commentaries', icon: '✍️' }
+  { key: 'tanakh', label: '📖 Tanakh' },
+  { key: 'talmud', label: '📚 Talmud' },
+  { key: 'midrash', label: '✨ Midrash' }
 ];
 
-/** Hebrew dialects for detection */
+// =============================================================================
+// HEBREW DIALECTS
+// =============================================================================
+
 export const HEBREW_DIALECTS = [
-  { code: 'bh', name: 'Biblical Hebrew', icon: '📜', color: '#6b4423' },
-  { code: 'mh', name: 'Mishnaic Hebrew', icon: '📚', color: '#1e40af' },
-  { code: 'lbh', name: 'Late Biblical Hebrew', icon: '📖', color: '#7c3aed' },
-  { code: 'rh', name: 'Rabbinic Hebrew', icon: '✡️', color: '#059669' },
-  { code: 'aramaic', name: 'Aramaic', icon: '🏛️', color: '#b45309' },
-  { code: 'aramaic-babylonian', name: 'Babylonian Aramaic', icon: '🏺', color: '#9a3412' },
-  { code: 'aramaic-palestinian', name: 'Palestinian Aramaic', icon: '🕯️', color: '#7c2d12' },
-  { code: 'aramaic-targumic', name: 'Targumic Aramaic', icon: '📖', color: '#854d0e' }
+  { key: 'modern', label: 'Modern', icon: '🇮🇱' },
+  { key: 'sephardi', label: 'Sephardi', icon: '🌴' },
+  { key: 'ashkenazi', label: 'Ashkenazi', icon: '❄️' }
 ];
 
-/** SRS rating configurations */
+// =============================================================================
+// SRS RATINGS
+// =============================================================================
+
 export const SRS_RATINGS = [
-  { value: 1, label: 'Again', desc: 'Need more practice', color: '#ef4444', icon: '🔄' },
-  { value: 2, label: 'Hard', desc: 'Recalled with difficulty', color: '#f97316', icon: '💪' },
-  { value: 3, label: 'Good', desc: 'Recalled correctly', color: '#22c55e', icon: '✓' },
-  { value: 4, label: 'Easy', desc: 'Very easy recall', color: '#3b82f6', icon: '⚡' }
+  { q: 0, icon: '?', tip: 'Forgot' },
+  { q: 1, icon: '✗', tip: 'Wrong' },
+  { q: 2, icon: '~', tip: 'Hard' },
+  { q: 3, icon: '✓', tip: 'OK' },
+  { q: 4, icon: '✓✓', tip: 'Easy' },
+  { q: 5, icon: '⭐', tip: 'Perfect' }
 ];
 
-/** Mastery thresholds for SRS - fallback if service unavailable */
-export const DEFAULT_MASTERY_THRESHOLDS = {
-  MASTERED: { minInterval: 21, minRepetitions: 5, label: 'mastered', icon: '⭐' },
-  LEARNING: { minRepetitions: 3, label: 'learning', icon: '📚' },
-  STARTED: { minRepetitions: 1, label: 'started', icon: '🌱' },
-  NEW: { minRepetitions: 0, label: 'new', icon: '✨' },
+// =============================================================================
+// CROSS-REFS CACHE
+// =============================================================================
+
+const _crossRefsCache = new Map();
+const CROSS_REFS_CACHE_TTL = 10 * 60 * 1000;
+const CROSS_REFS_CACHE_MAX = 100;
+const CROSS_REFS_CLEANUP_INTERVAL = 5 * 60 * 1000;
+
+export const getCachedCrossRefs = (key) => {
+  const cached = _crossRefsCache.get(key);
+  if (cached && Date.now() - cached.timestamp < CROSS_REFS_CACHE_TTL) {
+    return cached.data;
+  }
+  _crossRefsCache.delete(key);
+  return null;
 };
+
+export const setCachedCrossRefs = (key, data) => {
+  if (_crossRefsCache.size >= CROSS_REFS_CACHE_MAX) {
+    cleanupExpiredCrossRefs();
+    if (_crossRefsCache.size >= CROSS_REFS_CACHE_MAX) {
+      const oldestKey = _crossRefsCache.keys().next().value;
+      _crossRefsCache.delete(oldestKey);
+    }
+  }
+  _crossRefsCache.set(key, { data, timestamp: Date.now() });
+};
+
+const cleanupExpiredCrossRefs = () => {
+  const now = Date.now();
+  for (const [key, entry] of _crossRefsCache.entries()) {
+    if (now - entry.timestamp >= CROSS_REFS_CACHE_TTL) {
+      _crossRefsCache.delete(key);
+    }
+  }
+};
+
+if (typeof window !== 'undefined') {
+  setInterval(cleanupExpiredCrossRefs, CROSS_REFS_CLEANUP_INTERVAL);
+}
+
+// =============================================================================
+// HELPERS
+// =============================================================================
+
+export { getSourceInfo, RELIABILITY_TIERS };

@@ -23,8 +23,8 @@
 //
 // =============================================================================
 
-import { cleanHebrewWord } from './hebrewDictionary';
-import { isLikelyAramaic } from './babylonianDictionary';
+import { cleanHebrewWord } from './dictionaries/hebrewDictionary';
+import { isLikelyAramaic } from './dictionaries/babylonianDictionary';
 import { getContextFromReference } from '../constants/bookConstants';
 import { createLogger } from '../utils/debug';
 // PRO SCHOLAR V9: Use centralized Hebrew utilities (single source of truth)

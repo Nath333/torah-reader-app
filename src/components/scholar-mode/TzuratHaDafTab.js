@@ -11,9 +11,9 @@
  * - Vocabulary tracking for mastery
  */
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { getRashiOnTalmud } from '../../services/rashiService';
-import { getTosafotOnTalmud } from '../../services/tosafotService';
-import { analyzeWord, getGrammarSummary } from '../../services/grammarAnalysisService';
+import { getRashiOnTalmud } from '../../services/commentary/rashiService';
+import { getTosafotOnTalmud } from '../../services/commentary/tosafotService';
+import { analyzeWord, getGrammarSummary } from '../../services/analysis/grammarAnalysisService';
 import { analyzeCommentary, ANALYSIS_MODES, hasApiKey } from '../../services/groqService';
 import { lookupBDBByWord } from '../../data/bdbComplete';
 import { lookupJastrowLocal } from '../../data/jastrowAramaic';

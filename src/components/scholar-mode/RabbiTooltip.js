@@ -2,7 +2,7 @@
  * RabbiTooltip - Displays rabbi information on hover
  */
 import React, { useState, useCallback } from 'react';
-import { lookupRabbi } from '../../services/namedEntityService';
+import { lookupRabbi } from '../../services/scholarly/namedEntityService';
 
 const RabbiTooltip = React.memo(({ rabbiName, children }) => {
   const [showTooltip, setShowTooltip] = useState(false);

@@ -4,7 +4,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { DIFFICULTY_LEVELS, LEVEL_CONFIG } from '../../services/aiTutorService';
+import { DIFFICULTY_LEVELS, LEVEL_CONFIG } from '../../services/ai/aiTutorService';
 
 const LevelSelector = ({ value, onChange, compact = false }) => {
   const levels = Object.values(DIFFICULTY_LEVELS);

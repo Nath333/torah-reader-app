@@ -39,7 +39,7 @@
  */
 import React, { useState, useMemo, lazy, Suspense } from 'react';
 import PropTypes from 'prop-types';
-import { findAbbreviations } from '../../services/talmudicAbbreviationsService';
+import { findAbbreviations } from '../../services/textual/talmudicAbbreviationsService';
 import { sanitizeHtmlContent } from '../../utils/safeHtml';
 import {
   TEXT_TYPE_LABELS,
@@ -55,7 +55,7 @@ import {
   GemaraQAAnalysisPro,
   RashiTosafotAnalysisPro
 } from './UnifiedSugyaAnalysis';
-import { detectStructuralMarkers, extractGemaraQA } from '../../services/discoursePatternService';
+import { detectStructuralMarkers, extractGemaraQA } from '../../services/scholarly/discoursePatternService';
 import { StatBadge, CollapsibleSection, LazyLoadFallback } from './TalmudSharedUI';
 import useAnalysisHistory from '../../hooks/useAnalysisHistory';
 
@@ -64,6 +64,7 @@ import SugyaFlowSection from './UnifiedSugyaAnalysis/SugyaFlowAnalysis';
 import IyunDeepAnalysisPanel from './UnifiedSugyaAnalysis/IyunAnalysisPanel';
 import DafDiagramSection from './UnifiedSugyaAnalysis/DafDiagramSection';
 import { RealiaBrowser, RabbiBrowser } from './TalmudBrowsers';
+import HalachicChain from './HalachicChain';
 
 const UnifiedSugyaAnalysisPro = lazy(() => import('./UnifiedSugyaAnalysis'));
 
@@ -220,6 +221,7 @@ const TalmudToolsTab = React.memo(function TalmudToolsTab({ text, reference, tex
   // PRO SCHOLAR V14: 2-tab structure - default to analysis
   const [activeView, setActiveView] = useState('analysis');
   const [studyMode, setStudyMode] = useState('iyun');
+  const [focusedOpinion, setFocusedOpinion] = useState(null);
 
   // Get text type label with normalized type
   const normalizedType = (textType || 'talmud').toLowerCase();
@@ -333,6 +335,48 @@ const TalmudToolsTab = React.memo(function TalmudToolsTab({ text, reference, tex
 
                 {/* PRO SCHOLAR V29: Visual Daf Diagram */}
                 <DafDiagramSection reference={reference} text={text} />
+
+                {/* PRO SCHOLAR: Halachic Chain - שושלת הוראה (Collapsible) */}
+                <CollapsibleSection
+                  title="שושלת הוראה - Halachic Chain"
+                  icon="⚖️"
+                  badge={0}
+                  defaultOpen={false}
+                >
+                  <HalachicChain
+                    text={text}
+                    reference={reference}
+                    onOpinionFocus={setFocusedOpinion}
+                  />
+                  {focusedOpinion && (
+                    <div className="opinion-detail-panel" style={{ marginTop: '16px', padding: '12px', background: '#f8f9fa', borderRadius: '8px' }}>
+                      <div className="detail-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                        <h4 style={{ margin: 0, color: '#333' }}>{focusedOpinion.authority}</h4>
+                        <button 
+                          className="close-detail" 
+                          onClick={() => setFocusedOpinion(null)}
+                          style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#666' }}
+                        >
+                          ×
+                        </button>
+                      </div>
+                      <div className="detail-content">
+                        {focusedOpinion.ruling && (
+                          <div className="detail-section" style={{ marginBottom: '8px' }}>
+                            <label style={{ fontWeight: 'bold', color: '#555' }}>Ruling:</label>
+                            <p style={{ margin: '4px 0', color: '#333' }}>{focusedOpinion.ruling}</p>
+                          </div>
+                        )}
+                        {focusedOpinion.reasoning && (
+                          <div className="detail-section">
+                            <label style={{ fontWeight: 'bold', color: '#555' }}>Reasoning:</label>
+                            <p style={{ margin: '4px 0', color: '#333' }}>{focusedOpinion.reasoning}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </CollapsibleSection>
               </>
             )}
 
@@ -450,7 +494,8 @@ const TalmudToolsTab = React.memo(function TalmudToolsTab({ text, reference, tex
 
 TalmudToolsTab.propTypes = {
   text: PropTypes.string,
-  reference: PropTypes.string
+  reference: PropTypes.string,
+  textType: PropTypes.string
 };
 
 // Export reserved UI components for use in other scholar-mode files

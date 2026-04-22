@@ -6,33 +6,14 @@
 // PRO SCHOLAR V12: Centralized Hebrew text utilities (DRY)
 import { stripAllDiacritics } from '../utils/hebrewUtils';
 
-// Import expanded root database with etymology, cognates, and frequency data
-import {
-  ROOT_MEANINGS,
-  SEMANTIC_FIELDS,
-  getRootInfo,
-  searchRootsByMeaning,
-  getRootsBySemanticField,
-  getCognates,
-  getFrequency,
-  isPeNunVerb,
-  getRootsByCognateLanguage,
-  getRootDatabaseStats
-} from '../data/rootDatabase';
-
-// Re-export root database utilities for use by other modules
-export {
-  ROOT_MEANINGS,
-  SEMANTIC_FIELDS,
-  getRootInfo,
-  searchRootsByMeaning,
-  getRootsBySemanticField,
-  getCognates,
-  getFrequency,
-  isPeNunVerb,
-  getRootsByCognateLanguage,
-  getRootDatabaseStats
-};
+// Lazy accessor to avoid circular dependency: morphology → rootDatabase → dictionaryLoader → morphology
+let _rootMeaningsRef = null;
+function _getRootMeanings() {
+  if (!_rootMeaningsRef) {
+    _rootMeaningsRef = require('../data/rootDatabase').ROOT_MEANINGS;
+  }
+  return _rootMeaningsRef || {};
+}
 
 /**
  * Hebrew prefixes with their meanings and grammatical information
@@ -627,8 +608,14 @@ export const smartPrefixAnalysis = (word) => {
  * - Semantic field classifications
  */
 
-// Set of valid roots (for quick validation) - uses imported ROOT_MEANINGS
-const COMMON_TALMUDIC_ROOTS = new Set(Object.keys(ROOT_MEANINGS));
+// Set of valid roots (for quick validation) - lazily initialized
+let _COMMON_TALMUDIC_ROOTS = null;
+function getCommonTalmudicRoots() {
+  if (!_COMMON_TALMUDIC_ROOTS) {
+    _COMMON_TALMUDIC_ROOTS = new Set(Object.keys(_getRootMeanings()));
+  }
+  return _COMMON_TALMUDIC_ROOTS;
+}
 
 // =============================================================================
 // CONJUGATION RULES - Maps prefixes/suffixes to person/number
@@ -830,7 +817,7 @@ export const getConjugationSuffixLabel = (suffix) => {
 export const computeVerbTranslation = (rootAnalysis) => {
   if (!rootAnalysis || !rootAnalysis.root) return null;
 
-  const rootMeaning = ROOT_MEANINGS[rootAnalysis.root];
+  const rootMeaning = _getRootMeanings()[rootAnalysis.root];
   if (!rootMeaning) return null;
 
   // Get base or causative meaning based on pattern
@@ -945,7 +932,7 @@ export const extractAramaicRoot = (word) => {
 
   // Helper to enhance result with ROOT_MEANINGS data
   const enhanceWithRootData = (result) => {
-    const rootInfo = ROOT_MEANINGS[result.root];
+    const rootInfo = _getRootMeanings()[result.root];
     if (rootInfo) {
       result.rootMeaning = rootInfo.base;
       result.causativeMeaning = rootInfo.causative;
@@ -980,7 +967,7 @@ export const extractAramaicRoot = (word) => {
     const c3 = verbStem[2];
     const reconstructedNun = 'נ' + c1 + c3;
 
-    if (COMMON_TALMUDIC_ROOTS.has(reconstructedNun)) {
+    if (getCommonTalmudicRoots().has(reconstructedNun)) {
       return enhanceWithRootData({
         root: reconstructedNun,
         originalStem: verbStem,
@@ -1002,7 +989,7 @@ export const extractAramaicRoot = (word) => {
     const c3 = verbStem[2];
     const reconstructedYod = 'י' + c1 + c3;
 
-    if (COMMON_TALMUDIC_ROOTS.has(reconstructedYod)) {
+    if (getCommonTalmudicRoots().has(reconstructedYod)) {
       return enhanceWithRootData({
         root: reconstructedYod,
         originalStem: verbStem,
@@ -1023,7 +1010,7 @@ export const extractAramaicRoot = (word) => {
     // Try adding א at beginning
     const reconstructedAleph = 'א' + verbStem.slice(0, 2);
 
-    if (COMMON_TALMUDIC_ROOTS.has(reconstructedAleph)) {
+    if (getCommonTalmudicRoots().has(reconstructedAleph)) {
       return enhanceWithRootData({
         root: reconstructedAleph,
         originalStem: verbStem,
@@ -1046,7 +1033,7 @@ export const extractAramaicRoot = (word) => {
 
     // Try ו middle
     const hollowVav = c1 + 'ו' + c2;
-    if (COMMON_TALMUDIC_ROOTS.has(hollowVav)) {
+    if (getCommonTalmudicRoots().has(hollowVav)) {
       return enhanceWithRootData({
         root: hollowVav,
         originalStem: verbStem,
@@ -1063,7 +1050,7 @@ export const extractAramaicRoot = (word) => {
 
     // Try י middle
     const hollowYod = c1 + 'י' + c2;
-    if (COMMON_TALMUDIC_ROOTS.has(hollowYod)) {
+    if (getCommonTalmudicRoots().has(hollowYod)) {
       return enhanceWithRootData({
         root: hollowYod,
         originalStem: verbStem,
@@ -1083,7 +1070,7 @@ export const extractAramaicRoot = (word) => {
   if (verbStem.length === 2) {
     // The doubled letter might have simplified to single
     const geminate = verbStem[0] + verbStem[1] + verbStem[1];
-    if (COMMON_TALMUDIC_ROOTS.has(geminate)) {
+    if (getCommonTalmudicRoots().has(geminate)) {
       return enhanceWithRootData({
         root: geminate,
         originalStem: verbStem,
@@ -1102,7 +1089,7 @@ export const extractAramaicRoot = (word) => {
   // Strategy F: Lamed-He (ל"ה) - final ה alternates with ת/י
   if (verbStem.length >= 2 && ['ת', 'י', 'ה'].includes(verbStem[verbStem.length - 1])) {
     const lamedHe = verbStem.slice(0, -1) + 'ה';
-    if (lamedHe.length === 3 && COMMON_TALMUDIC_ROOTS.has(lamedHe)) {
+    if (lamedHe.length === 3 && getCommonTalmudicRoots().has(lamedHe)) {
       return enhanceWithRootData({
         root: lamedHe,
         originalStem: verbStem,
@@ -1121,7 +1108,7 @@ export const extractAramaicRoot = (word) => {
   // Strategy G: Lamed-Aleph (ל"א) - final א quiesces
   if (verbStem.length >= 2) {
     const lamedAleph = verbStem.slice(0, 2) + 'א';
-    if (COMMON_TALMUDIC_ROOTS.has(lamedAleph)) {
+    if (getCommonTalmudicRoots().has(lamedAleph)) {
       return enhanceWithRootData({
         root: lamedAleph,
         originalStem: verbStem,
@@ -1138,7 +1125,7 @@ export const extractAramaicRoot = (word) => {
   }
 
   // Strategy H: Direct match (strong verb or already 3-letter root)
-  if (verbStem.length === 3 && COMMON_TALMUDIC_ROOTS.has(verbStem)) {
+  if (verbStem.length === 3 && getCommonTalmudicRoots().has(verbStem)) {
     // Determine binyan from context
     const detectedBinyan = binyan ||
       (conjPrefix === 'מ' ? 'peal' : // participle
@@ -1157,7 +1144,7 @@ export const extractAramaicRoot = (word) => {
   }
 
   // Strategy I: Try the original word without stripping (it might be the root)
-  if (word.length === 3 && COMMON_TALMUDIC_ROOTS.has(word)) {
+  if (word.length === 3 && getCommonTalmudicRoots().has(word)) {
     return enhanceWithRootData({
       root: word,
       pattern: 'root form',
@@ -2068,7 +2055,7 @@ export const FUNCTION_WORDS = {
   // These are NO LONGER hardcoded here. Instead, they are computed by:
   //   1. extractAramaicRoot() - detects pattern, reconstructs weak roots
   //   2. computeVerbTranslation() - generates translation from:
-  //      - ROOT_MEANINGS[root].base/causative
+  //      - _getRootMeanings()[root].base/causative
   //      - CONJUGATION_PREFIXES[prefix].label (you/I/we/he)
   //      - CONJUGATION_SUFFIXES[suffix].label ((pl)/(f))
   //
@@ -2080,7 +2067,7 @@ export const FUNCTION_WORDS = {
   //     - Returns: { root: 'נפק', pattern: 'Aphel', conjPrefix: 'ת', suffix: 'ו' }
   //
   //   Step 2: computeVerbTranslation(rootAnalysis)
-  //     - ROOT_MEANINGS['נפק'].causative = 'bring out'
+  //     - _getRootMeanings()['נפק'].causative = 'bring out'
   //     - CONJUGATION_PREFIXES['ת'].label = 'you'
   //     - CONJUGATION_SUFFIXES['ו'].label = '(pl)'
   //     - Returns: "you (pl) bring out"
@@ -2610,7 +2597,7 @@ export const extractHebrewRoot = (word) => {
 
   if (!binyanResult?.bestMatch) {
     // Try simple 3-letter extraction
-    if (cleanWord.length === 3 && COMMON_TALMUDIC_ROOTS.has(cleanWord)) {
+    if (cleanWord.length === 3 && getCommonTalmudicRoots().has(cleanWord)) {
       return {
         root: cleanWord,
         binyan: HEBREW_BINYANIM.qal,
@@ -2642,7 +2629,7 @@ export const extractHebrewRoot = (word) => {
   }
 
   // Validate against known roots
-  if (possibleRoot.length === 3 && COMMON_TALMUDIC_ROOTS.has(possibleRoot)) {
+  if (possibleRoot.length === 3 && getCommonTalmudicRoots().has(possibleRoot)) {
     return {
       root: possibleRoot,
       binyan: binyan,
@@ -2656,7 +2643,7 @@ export const extractHebrewRoot = (word) => {
   for (const suffix of VERB_SUFFIXES) {
     if (possibleRoot.endsWith(suffix) && possibleRoot.length > suffix.length + 2) {
       const stripped = possibleRoot.slice(0, -suffix.length);
-      if (stripped.length === 3 && COMMON_TALMUDIC_ROOTS.has(stripped)) {
+      if (stripped.length === 3 && getCommonTalmudicRoots().has(stripped)) {
         return {
           root: stripped,
           binyan: binyan,
@@ -2685,7 +2672,6 @@ const morphology = {
   STOP_WORDS,
   ARAMAIC_PREFIXES,
   FUNCTION_WORDS,
-  COMMON_TALMUDIC_ROOTS,
   getPrefixMeaning,
   getPrefixInfo,
   getCombinedPrefixMeaning,
@@ -2697,7 +2683,6 @@ const morphology = {
   extractAramaicRoot,
   // PRO SCHOLAR: Systematic translation from pattern analysis
   computeVerbTranslation,
-  ROOT_MEANINGS,
   // PRO SCHOLAR: Confidence-based analysis
   analyzeWordWithConfidence,
   getAramaicConfidence,

@@ -18,7 +18,7 @@ import {
   getProgressSummary,
   trackStudyActivity,
   LEARNING_LEVELS
-} from '../../services/learningRecommendationService';
+} from '../../services/scholarly/learningRecommendationService';
 import './StudyDashboard.css';
 
 // =============================================================================

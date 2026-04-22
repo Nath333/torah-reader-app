@@ -4,10 +4,10 @@ import '../../styles/OzVeHadar.css';
 import ClickableText from '../core/ClickableText';
 import { getRashiOnTalmud, getTosafotForDaf, getMaharshaForDaf } from '../../services/sefariaApi';
 import { removeHtmlTags } from '../../utils/sanitize';
-import { detectStructuralMarkers, TALMUDIC_PATTERNS } from '../../services/discoursePatternService';
+import { detectStructuralMarkers, TALMUDIC_PATTERNS } from '../../services/scholarly/discoursePatternService';
 import { processHebrewText, getDisplayModeLabel } from '../../utils/hebrewUtils';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
-import { findAbbreviations } from '../../services/talmudicAbbreviationsService';
+import { findAbbreviations } from '../../services/textual/talmudicAbbreviationsService';
 import { createLogger } from '../../utils/debug';
 
 const log = createLogger('TzuratHaDaf');

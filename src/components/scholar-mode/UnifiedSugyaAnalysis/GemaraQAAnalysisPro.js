@@ -16,7 +16,7 @@
  */
 
 import React, { memo, useMemo, useState, lazy, Suspense } from 'react';
-import { extractGemaraQA, generateQAFlowDiagram } from '../../../services/discoursePatternService';
+import { extractGemaraQA, generateQAFlowDiagram } from '../../../services/scholarly/discoursePatternService';
 import { stripAllDiacritics as stripNikud } from '../../../utils/hebrewUtils';
 import './GemaraQAAnalysisPro.css';
 

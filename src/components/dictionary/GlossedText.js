@@ -13,7 +13,7 @@
  */
 
 import React, { useMemo, useCallback, useRef, useState } from 'react';
-import { splitIntoWords } from '../../services/hebrewDictionary';
+import { splitIntoWords } from '../../services/dictionaries/hebrewDictionary';
 import { lookupWordSync, clearCaches as clearServiceCaches } from '../../services/unifiedLookupService';
 import { useSettings } from '../../context/SettingsContext';
 import {
@@ -23,7 +23,7 @@ import {
   formatSourceDisplay
 } from '../../constants/dictionarySources';
 import { lookupFunctionWord } from '../../constants/morphology';
-import { preClassify } from '../../services/preClassificationService';
+import { preClassify } from '../../services/analysis/preClassificationService';
 import { analyzeVerbGrammar, formatVerbGrammar, calculateConfidence } from '../../utils/morphologyAnalyzer';
 import './GlossedText.css';
 

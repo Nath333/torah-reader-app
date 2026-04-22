@@ -15,7 +15,7 @@
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useStudyMode } from '../../context/StudyModeContext';
-import { askQuestion } from '../../services/aiService';
+import { askQuestion } from '../../services/ai/aiService';
 // 2026 Smart Features - AI Memory for persistent conversation intelligence
 import {
   initializeMemory,
@@ -23,7 +23,7 @@ import {
   getConversationContext,
   startNewSession,
   trackStudy
-} from '../../services/aiMemoryService';
+} from '../../services/ai/aiMemoryService';
 import './ChavrutaAI.css';
 
 // =============================================================================

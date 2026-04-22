@@ -40,8 +40,8 @@
  * @version 7.0.0
  */
 
-import { ARAMAIC_PARTICLES, BIBLICAL_PARTICLES } from './preClassificationService';
-import { lookupJastrowSync, lookupBDBSync, lookupStrongsSync } from './dictionaryLoader';
+import { ARAMAIC_PARTICLES, BIBLICAL_PARTICLES } from './analysis/preClassificationService';
+import { lookupJastrowSync, lookupBDBSync, lookupStrongsSync } from './dictionaries/dictionaryLoader';
 import { stripVowels, GEMATRIA_VALUES } from '../utils/hebrewUtils';
 
 export const ENGINE_VERSION = '7.0.0';

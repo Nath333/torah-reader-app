@@ -23,13 +23,13 @@ try {
 }
 
 try {
-  semanticFieldService = require('../services/semanticFieldService');
+  semanticFieldService = require('../services/scholarly/semanticFieldService');
 } catch (e) {
   console.debug('[useWordIntelligence] semanticFieldService not available');
 }
 
 try {
-  knowledgeGraphService = require('../services/knowledgeGraphService');
+  knowledgeGraphService = require('../services/scholarly/knowledgeGraphService');
 } catch (e) {
   console.debug('[useWordIntelligence] knowledgeGraphService not available');
 }

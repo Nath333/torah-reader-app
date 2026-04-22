@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { translateEnglishToFrench } from '../../services/englishToFrenchService';
+import { translateEnglishToFrench } from '../../services/dictionaries/englishToFrenchService';
 import SafeText from '../core/SafeText';
 import { SourceBadge } from '../shared/SourceBadge';
 

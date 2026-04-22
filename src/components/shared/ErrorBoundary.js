@@ -69,14 +69,8 @@ Time: ${new Date().toISOString()}
 URL: ${window.location.href}`;
 
     navigator.clipboard.writeText(errorText)
-      .then(() => {
-        // Could add visual feedback state here if needed
-        console.log('[ErrorBoundary] Error details copied to clipboard');
-      })
-      .catch((err) => {
-        // Fallback: log the error text to console for manual copy
-        console.warn('[ErrorBoundary] Failed to copy to clipboard:', err);
-        console.log('[ErrorBoundary] Error details for manual copy:\n', errorText);
+      .catch(() => {
+        // Clipboard API failed - no action needed, error is already visible in UI
       });
   };
 

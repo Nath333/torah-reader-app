@@ -19,16 +19,16 @@
 // =============================================================================
 
 export const WORD_RELATIONSHIP_TYPES = {
-  ROOT_FAMILY: 'root_family',      // Same Hebrew root (shoresh)
-  // SYNONYM: 'synonym',              // Similar meaning
-  // ANTONYM: 'antonym',              // Opposite meaning
-  // SEMANTIC_FIELD: 'semantic_field',// Conceptual category
-  // COLLOCATION: 'collocation',      // Frequently co-occur
-  // DERIVED: 'derived',              // Morphological derivation
-  // BIBLICAL_PAIR: 'biblical_pair',  // Hendiadys/merisms
-  // ARAMAIC_COGNATE: 'aramaic_cognate', // Hebrew-Aramaic cognates
-  // BORROWED: 'borrowed',            // Loanwords
-  // EUPHEMISM: 'euphemism',          // Euphemistic relationship
+  ROOT_FAMILY: 'root_family',         // Same Hebrew root (shoresh)
+  SYNONYM: 'synonym',                 // Similar meaning
+  ANTONYM: 'antonym',                 // Opposite meaning
+  SEMANTIC_FIELD: 'semantic_field',   // Conceptual category
+  COLLOCATION: 'collocation',         // Frequently co-occur
+  DERIVED: 'derived',                 // Morphological derivation
+  BIBLICAL_PAIR: 'biblical_pair',     // Hendiadys/merisms
+  ARAMAIC_COGNATE: 'aramaic_cognate', // Hebrew-Aramaic cognates
+  BORROWED: 'borrowed',               // Loanwords
+  EUPHEMISM: 'euphemism',             // Euphemistic relationship
 };
 
 // =============================================================================
@@ -376,7 +376,7 @@ function populateBuiltInRelationships() {
           addWordRelationship(
             wordData.word,
             otherWord.word,
-            // WORD_RELATIONSHIP_TYPES.ROOT_FAMILY,
+            WORD_RELATIONSHIP_TYPES.ROOT_FAMILY,
             { root: family.root }
           );
         }
@@ -1515,7 +1515,6 @@ export function buildEtymologyChainFromData(etymologyData) {
 
   // Extract data from various sources
   const rootPro = etymologyData.rootMeaningsPro;
-  const bdbEty = etymologyData.etymologyBDB;
   const jastrowEty = etymologyData.etymologyJastrow;
   const wiktionary = etymologyData.wiktionary;
 
@@ -1523,7 +1522,7 @@ export function buildEtymologyChainFromData(etymologyData) {
   const protoSemitic =
     rootPro?.etymology?.protoSemitic ||
     wiktionary?.protoSemitic ||
-    bdbEty?.etymology?.protoSemitic;
+    jastrowEty?.etymology?.protoSemitic;
 
   if (protoSemitic) {
     chain.protoSemitic = protoSemitic;
@@ -1567,7 +1566,6 @@ export function buildEtymologyChainFromData(etymologyData) {
 
   // Merge cognates from all sources
   mergeCognates(rootPro?.etymology?.cognates, 'Root Meanings Pro');
-  mergeCognates(bdbEty?.etymology?.cognates, 'BDB');
   mergeCognates(jastrowEty?.etymology?.cognates, 'Jastrow');
   mergeCognates(wiktionary?.cognates, 'Wiktionary');
 
@@ -1591,12 +1589,12 @@ export function buildEtymologyChainFromData(etymologyData) {
   });
 
   // Add Biblical Hebrew layer (primary)
-  if (rootPro?.isBiblicalHebrew || bdbEty) {
+  if (rootPro?.isBiblicalHebrew) {
     chain.layers.push({
       ...ETYMOLOGY_LAYERS.BIBLICAL_HEBREW,
       form: chain.root || chain.word,
-      meaning: rootPro?.definition || bdbEty?.definition || '',
-      source: 'BDB/Root Meanings'
+      meaning: rootPro?.definition || '',
+      source: 'Root Meanings'
     });
   }
 

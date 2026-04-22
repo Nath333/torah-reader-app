@@ -302,9 +302,13 @@ Respond in JSON format:
     // Parse JSON response
     const jsonMatch = response.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
+      try {
+        return JSON.parse(jsonMatch[0]);
+      } catch {
+        // Regex matched non-JSON content, fall through to default
+      }
     }
-    return { concepts: [], hebrewTerms: [], themes: [], suggestedQueries: [] };
+    return { concepts: extractConcepts(query), hebrewTerms: [], themes: [], suggestedQueries: [] };
   } catch (err) {
     console.warn('AI semantic search failed:', err);
     return { concepts: extractConcepts(query), hebrewTerms: [], themes: [], suggestedQueries: [] };

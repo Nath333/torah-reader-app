@@ -9,7 +9,7 @@ import { useCallback, useMemo, useEffect, lazy, Suspense, memo } from 'react';
 import './App.css';
 
 // Services - PRO SCHOLAR V8: Use dictionaryLoader (consolidated from dictionaryPreloader)
-import { initializePreload } from './services/dictionaryLoader';
+import { initializePreload, preloadForBook } from './services/dictionaries/dictionaryLoader';
 // PRO SCHOLAR V7: Preload common words for faster lookup
 import { preloadCommonWords } from './services/unifiedLookupService';
 
@@ -114,14 +114,16 @@ function App() {
   const { view, setView, goToReader, toggleView } = useViewRouting(torah.book, torah.chapter);
   const { getShareLink } = useUrlState(torah.book, torah.chapter, torah.goTo);
 
-  // Initialize dictionary preloading AFTER initial render (deferred for fast startup)
+  // Initialize dictionary preloading AFTER initial render (deferred for fast startup).
+  // Scoped to the current book's category so we don't pull ~78MB of lexicons
+  // that are irrelevant to the passage being read.
   useEffect(() => {
     // Use requestIdleCallback to defer preloading until browser is idle
     const schedulePreload = window.requestIdleCallback || ((cb) => setTimeout(cb, 100));
 
     const preloadId = schedulePreload(() => {
       // Defer dictionary preload to not block initial render
-      initializePreload();
+      initializePreload({ book: torah.book });
 
       // PRO SCHOLAR V7: Preload common words for faster lookups (also deferred)
       setTimeout(() => {
@@ -136,7 +138,18 @@ function App() {
         window.cancelIdleCallback(preloadId);
       }
     };
+    // Intentionally only runs once at mount; navigation-driven top-ups are handled below.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // When the user navigates to a different book category, top up the lexicons
+  // for that category. Idempotent: no-ops if already loaded.
+  useEffect(() => {
+    if (!torah.book) return;
+    preloadForBook(torah.book).catch(err => {
+      console.debug('[App] preloadForBook error:', err?.message);
+    });
+  }, [torah.book]);
 
   // =============================================================================
   // Event Handlers

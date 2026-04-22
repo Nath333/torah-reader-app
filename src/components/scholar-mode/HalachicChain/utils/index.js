@@ -33,3 +33,16 @@ export {
   clearAllCache,
   getCacheStats
 } from './chainCache';
+export {
+  analyzeKlaleiPesika,
+  getRulesForLayer,
+  TANNAIM_RULES,
+  GEMARA_RULES,
+  RISHONIM_RULES,
+  SHULCHAN_ARUCH_RULES
+} from './klaleiPesika';
+export {
+  buildOpinionFlows,
+  getFlowForAuthority,
+  getFlowSummary
+} from './opinionFlowTracker';

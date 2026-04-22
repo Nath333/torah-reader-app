@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import './CitationHighlighter.css';
 
 // PRO SCHOLAR V8: Citation pattern detection (renamed from unifiedRootService)
-import { detectCitations } from '../../services/rootExtraction';
+import { detectCitations } from '../../services/analysis/rootExtraction';
 
 // =============================================================================
 // CITATION TYPE CONFIGURATIONS

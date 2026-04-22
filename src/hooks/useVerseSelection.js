@@ -262,8 +262,7 @@ export function useVerseSelection({
     isMultiSelection: selectedVerses.length > 1
   }), [selectedVerses.length]);
 
-  // Memoize the entire return object to provide stable reference
-  return useMemo(() => ({
+  return {
     // State
     selectedVerses,
     isDragging,
@@ -298,31 +297,7 @@ export function useVerseSelection({
 
     // Computed values
     ...computedValues
-  }), [
-    selectedVerses,
-    isDragging,
-    dragStartVerse,
-    dragCurrentVerse,
-    rippleVerse,
-    highlightedVerse,
-    lastSelectedIndex,
-    setSelectedVerses,
-    setHighlightedVerse,
-    toggleVerseSelection,
-    selectVerse,
-    addToSelection,
-    removeFromSelection,
-    clearSelection,
-    selectRange,
-    selectAll,
-    isVerseSelected,
-    handleDragStart,
-    handleDragMove,
-    handleDragEnd,
-    isInDragRange,
-    highlightVerseTemporarily,
-    computedValues
-  ]);
+  };
 }
 
 export default useVerseSelection;

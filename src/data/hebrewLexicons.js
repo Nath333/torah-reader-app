@@ -22,33 +22,19 @@ import {
   getJastrowLexiconData,
   getStrongLexiconData,
   preloadLexicons
-} from '../services/dictionaryLoader';
+} from '../services/dictionaries/dictionaryLoader';
 import { stripAllDiacritics, normalizeFinals } from '../utils/hebrewUtils';
+import { createLazyProxy } from './proxyHelpers';
 
 // =============================================================================
 // LAZY-LOADED LEXICON GETTERS
-// These return null if data hasn't been preloaded yet
+// These return undefined for individual keys until data has been preloaded.
 // =============================================================================
 
-/** @returns {Object|null} BDB Lexicon data */
-export const BDB_LEXICON = new Proxy({}, {
-  get: (_, prop) => getBDBLexiconData()?.[prop]
-});
-
-/** @returns {Object|null} BDB Aramaic data */
-export const BDB_ARAMAIC = new Proxy({}, {
-  get: (_, prop) => getBDBAramaicData()?.[prop]
-});
-
-/** @returns {Object|null} Jastrow Lexicon data */
-export const JASTROW_LEXICON = new Proxy({}, {
-  get: (_, prop) => getJastrowLexiconData()?.[prop]
-});
-
-/** @returns {Object|null} Strong's Lexicon data */
-export const STRONG_LEXICON = new Proxy({}, {
-  get: (_, prop) => getStrongLexiconData()?.[prop]
-});
+export const BDB_LEXICON = createLazyProxy(getBDBLexiconData);
+export const BDB_ARAMAIC = createLazyProxy(getBDBAramaicData);
+export const JASTROW_LEXICON = createLazyProxy(getJastrowLexiconData);
+export const STRONG_LEXICON = createLazyProxy(getStrongLexiconData);
 
 // =============================================================================
 // LOOKUP FUNCTIONS (use lazy-loaded data)

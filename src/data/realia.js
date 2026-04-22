@@ -5,7 +5,7 @@
  * to reduce initial bundle size.
  */
 
-import { getRealiaData, getRealia } from '../services/dictionaryLoader';
+import { getRealiaData, getRealia } from '../services/dictionaries/dictionaryLoader';
 import { createLazyProxy } from './proxyHelpers';
 
 // =============================================================================

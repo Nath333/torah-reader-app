@@ -14,9 +14,9 @@ import {
   isLikelyCompleteRoot,
   // PRO SCHOLAR V10.2: For tryHebrewVerbAnalysis (moved from combinedTranslationService)
   extractHebrewRoot,
-  ROOT_MEANINGS,
   HEBREW_BINYANIM as MORPHOLOGY_BINYANIM
 } from '../../constants/morphology';
+import { ROOT_MEANINGS } from '../../data/rootDatabase';
 // PRO SCHOLAR V12: Use centralized Hebrew utilities (DRY)
 import { cleanHebrewWordStrict as cleanHebrewWord, stripAllDiacritics } from '../../utils/hebrewUtils';
 

@@ -47,11 +47,11 @@ const HalachicChain = ({
 
   if (isLoading && !chain) {
     return (
-      <div className="halachic-chain-loading">
+      <div className="halachic-chain-loading" dir="rtl">
         <div className="loading-spinner" />
-        <span>Building halachic chain...</span>
+        <span>בונה שושלת הוראה...</span>
         {isBackgroundRefreshing && (
-          <span className="refreshing-indicator">(refreshing data)</span>
+          <span className="refreshing-indicator">(מרענן נתונים)</span>
         )}
       </div>
     );
@@ -59,8 +59,9 @@ const HalachicChain = ({
 
   if (!chain) {
     return (
-      <div className="halachic-chain-empty">
-        <span className="empty-text">Select text to view halachic chain</span>
+      <div className="halachic-chain-empty" dir="rtl">
+        <span className="empty-icon">⛓️</span>
+        <span className="empty-text">בחר טקסט כדי לצפות בשושלת ההוראה</span>
       </div>
     );
   }
@@ -71,22 +72,22 @@ const HalachicChain = ({
   };
 
   return (
-    <div className="halachic-chain">
+    <div className="halachic-chain" dir="rtl">
       {/* Header Controls */}
       <div className="chain-header">
         <div className="header-left">
-          <h2 className="chain-title">Halachic Chain</h2>
+          <h2 className="chain-title">⛓️ שושלת הוראה</h2>
           {stats && (
             <div className="chain-stats">
-              <span className="stat-item">{stats.totalOpinions} opinions</span>
-              <span className="stat-item">{stats.rishonimCount} rishonim</span>
-              {stats.hasTur && <span className="stat-item tur">Tur</span>}
+              <span className="stat-item">{stats.totalOpinions} דעות</span>
+              <span className="stat-item">{stats.rishonimCount} ראשונים</span>
+              {stats.hasTur && <span className="stat-item tur">טור</span>}
               {stats.acharonimCount > 0 && (
-                <span className="stat-item">{stats.acharonimCount} acharonim</span>
+                <span className="stat-item">{stats.acharonimCount} אחרונים</span>
               )}
               {stats.hasPsak && (
                 <span className={`stat-item psak ${!stats.traditionsAgree ? 'disputed' : ''}`}>
-                  {stats.traditionsAgree ? 'Agreed psak' : 'Traditions differ'}
+                  {stats.traditionsAgree ? '✅ פסק מוסכם' : '⚔️ מסורות חלוקות'}
                 </span>
               )}
             </div>
@@ -136,18 +137,18 @@ const HalachicChain = ({
           <button
             className="mode-toggle"
             onClick={toggleEducationalMode}
-            title={educationalMode ? 'Switch to practical mode' : 'Switch to educational mode'}
+            title={educationalMode ? 'מצב מעשי' : 'מצב לימודי'}
           >
-            {educationalMode ? 'Educational' : 'Practical'}
+            {educationalMode ? '📖 לימודי' : '⚖️ מעשי'}
           </button>
 
           <button
             className="refresh-btn"
             onClick={refresh}
             disabled={isLoading}
-            title="Refresh data"
+            title="רענן נתונים"
           >
-            Refresh
+            🔄 רענן
           </button>
         </div>
       </div>
@@ -158,13 +159,13 @@ const HalachicChain = ({
           className={`view-tab ${activeView === 'timeline' ? 'active' : ''}`}
           onClick={() => setActiveView('timeline')}
         >
-          Timeline
+          📊 ציר זמן
         </button>
         <button
           className={`view-tab ${activeView === 'flow' ? 'active' : ''}`}
           onClick={() => setActiveView('flow')}
         >
-          Opinion Flow
+          🔄 מסלול דעות
           {opinionFlows.length > 0 && (
             <span className="tab-badge">{opinionFlows.length}</span>
           )}
@@ -173,13 +174,13 @@ const HalachicChain = ({
           className={`view-tab ${activeView === 'matrix' ? 'active' : ''}`}
           onClick={() => setActiveView('matrix')}
         >
-          Matrix
+          📋 מטריצה
         </button>
         <button
           className={`view-tab ${activeView === 'references' ? 'active' : ''}`}
           onClick={() => setActiveView('references')}
         >
-          References
+          🔗 מקורות
           {chain.crossReferences?.length > 0 && (
             <span className="tab-badge">{chain.crossReferences.length}</span>
           )}
@@ -212,6 +213,8 @@ const HalachicChain = ({
           <DecisionMatrix
             decisions={fullChain?.layers[HALACHIC_LAYERS.RISHONIM]?.decisions}
             majority={fullChain?.majority}
+            acharonimDecisions={fullChain?.layers[HALACHIC_LAYERS.ACHARONIM]?.decisions}
+            psak={fullChain?.layers[HALACHIC_LAYERS.PSAK]?.psak}
             compact={false}
           />
         )}
@@ -228,7 +231,7 @@ const HalachicChain = ({
       <div className="chain-status">
         <span className="status-ref">{reference}</span>
         {isBackgroundRefreshing && (
-          <span className="status-refreshing">Refreshing...</span>
+          <span className="status-refreshing">מרענן...</span>
         )}
         {error && <span className="status-error">{error}</span>}
       </div>
@@ -242,61 +245,63 @@ const HalachicChain = ({
 const OpinionFlowView = ({ flows, focusedFlow, focusedOpinion, onOpinionClick, klaleiPesika }) => {
   if (!flows || flows.length === 0) {
     return (
-      <div className="flow-view-empty">
-        <span className="empty-text">No opinion flows detected. Select a Talmudic passage with a Mishnah.</span>
+      <div className="flow-view-empty" dir="rtl">
+        <span className="empty-icon">🔄</span>
+        <span className="empty-text">לא נמצאו מסלולי דעות. בחר קטע תלמודי עם משנה.</span>
       </div>
     );
   }
 
   const STATUS_LABELS = {
-    originated: { text: 'Originated', cls: 'status-originated' },
-    survived: { text: 'Survived', cls: 'status-survived' },
-    challenged: { text: 'Challenged', cls: 'status-challenged' },
-    adopted: { text: 'Adopted', cls: 'status-adopted' },
-    cited: { text: 'Cited', cls: 'status-cited' },
-    not_cited: { text: 'Not cited', cls: 'status-neutral' },
-    codified: { text: 'Codified', cls: 'status-codified' },
-    codified_sephardic: { text: 'Sephardic psak', cls: 'status-partial' },
-    codified_ashkenazi: { text: 'Ashkenazi psak', cls: 'status-partial' },
-    not_codified: { text: 'Not codified', cls: 'status-rejected' },
-    supported: { text: 'Supported', cls: 'status-supported' },
-    not_discussed: { text: 'Not discussed', cls: 'status-neutral' },
-    minority: { text: 'Minority', cls: 'status-minority' },
-    rejected: { text: 'Rejected', cls: 'status-rejected' },
-    unknown: { text: 'Pending', cls: 'status-neutral' }
+    originated: { text: 'מקור', cls: 'status-originated' },
+    survived: { text: 'שרד', cls: 'status-survived' },
+    challenged: { text: 'הוקשה', cls: 'status-challenged' },
+    adopted: { text: 'אומץ', cls: 'status-adopted' },
+    cited: { text: 'הובא', cls: 'status-cited' },
+    not_cited: { text: 'לא הובא', cls: 'status-neutral' },
+    codified: { text: 'נפסק', cls: 'status-codified' },
+    codified_sephardic: { text: 'פסק ספרדי', cls: 'status-partial' },
+    codified_ashkenazi: { text: 'פסק אשכנזי', cls: 'status-partial' },
+    not_codified: { text: 'לא נפסק', cls: 'status-rejected' },
+    supported: { text: 'נתמך', cls: 'status-supported' },
+    not_discussed: { text: 'לא נדון', cls: 'status-neutral' },
+    minority: { text: 'מיעוט', cls: 'status-minority' },
+    rejected: { text: 'נדחה', cls: 'status-rejected' },
+    not_analyzed: { text: 'לא נותח', cls: 'status-neutral' },
+    unknown: { text: 'ממתין', cls: 'status-neutral' }
   };
 
   const FINAL_STATUS_LABELS = {
-    accepted: { text: 'Accepted as Halacha', cls: 'final-accepted' },
-    partial: { text: 'Accepted by one tradition', cls: 'final-partial' },
-    rejected: { text: 'Not accepted', cls: 'final-rejected' },
-    minority: { text: 'Minority opinion', cls: 'final-minority' },
-    challenged: { text: 'Challenged', cls: 'final-challenged' },
-    pending: { text: 'Analysis pending', cls: 'final-pending' },
-    unknown: { text: 'Unknown', cls: 'final-unknown' }
+    accepted: { text: '✅ נפסק להלכה', cls: 'final-accepted' },
+    partial: { text: '⚖️ נפסק במסורת אחת', cls: 'final-partial' },
+    rejected: { text: '❌ לא נפסק', cls: 'final-rejected' },
+    minority: { text: 'דעת מיעוט', cls: 'final-minority' },
+    challenged: { text: 'הוקשה', cls: 'final-challenged' },
+    pending: { text: 'ממתין לניתוח', cls: 'final-pending' },
+    unknown: { text: 'לא ידוע', cls: 'final-unknown' }
   };
 
   const LAYER_LABELS = {
-    mishnah: 'Mishnah',
-    gemara: 'Gemara',
-    rishonim: 'Rishonim',
-    tur: 'Tur',
-    psak: 'Shulchan Aruch',
-    acharonim: 'Acharonim',
-    poskim: 'Poskim'
+    mishnah: 'משנה',
+    gemara: 'גמרא',
+    rishonim: 'ראשונים',
+    tur: 'טור',
+    psak: 'שולחן ערוך',
+    acharonim: 'אחרונים',
+    poskim: 'פוסקים'
   };
 
   return (
-    <div className="flow-view">
+    <div className="flow-view" dir="rtl">
       <div className="flow-view-header">
-        <h3 className="flow-view-title">Opinion Flow Tracker</h3>
-        <p className="flow-view-subtitle">Trace each opinion from Tanna to Psak</p>
+        <h3 className="flow-view-title">🔄 מעקב מסלול דעות</h3>
+        <p className="flow-view-subtitle">עקוב אחר כל דעה מהתנא ועד הפסק</p>
       </div>
 
       {/* Klalei Pesika educational panel */}
       {klaleiPesika?.educationalNotes?.length > 0 && (
         <div className="klalei-pesika-panel">
-          <div className="kp-header">Rules Applied</div>
+          <div className="kp-header">📜 כללי פסיקה שהופעלו</div>
           {klaleiPesika.educationalNotes.map((note, i) => (
             <div key={i} className={`kp-note kp-${note.type}`}>
               <span className="kp-title">{note.title}</span>

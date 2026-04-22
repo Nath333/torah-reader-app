@@ -35,7 +35,6 @@ const ProScholarSummary = React.memo(function ProScholarSummary({ text, referenc
     // If we have Gemara markers but text is short (< 3000 chars), likely incomplete
     // A single page is ~1200 chars, but full Gemara discussions span 4-8+ pages
     if (hasGemaraMarker && cleanText.length < 3000) {
-      console.log('[ProScholar V23] Detected incomplete Gemara, fetching FULL SUGYA (4 pages)...');
       setFetchingFullText(true);
 
       // Use getFullSugya to fetch 4 consecutive pages (2 full leaves)
@@ -45,10 +44,8 @@ const ProScholarSummary = React.memo(function ProScholarSummary({ text, referenc
           // getFullSugya returns fullHebrewText (combined string) and hebrew (array)
           const combined = result.fullHebrewText || result.hebrew?.join(' ') || '';
           if (combined.length > cleanText.length) {
-            console.log(`[ProScholar V23] Fetched full sugya: ${combined.length} chars from ${result.pageCount || 4} pages (was ${cleanText.length})`);
             setFullText(combined);
           } else {
-            console.log('[ProScholar V23] No additional content from sugya fetch');
             setFullText(text);
           }
           setFetchingFullText(false);
@@ -83,15 +80,7 @@ const ProScholarSummary = React.memo(function ProScholarSummary({ text, referenc
       setSugyaExpanded(true);
 
       // Log loading status
-      if (data.status) {
-        const statusMessages = {
-          'resolved': 'נמצא תירוץ/מסקנה',
-          'next_mishna': 'נמצאה משנה הבאה',
-          'max_pages': 'הגיע למקסימום דפים',
-          'incomplete': 'טעינה חלקית'
-        };
-        console.log(`[ProScholar V22] Loaded sugya: ${data.ref} | Status: ${statusMessages[data.status] || data.status} | ${data.segments?.length || 0} segments`);
-      }
+      // Status available in data.status for debugging if needed
     } catch (err) {
       console.error('[ProScholar V22] Failed to load sugya:', err);
       setSugyaError(err.message || 'שגיאה בטעינת הסוגיה');
@@ -605,21 +594,18 @@ const ProScholarSummary = React.memo(function ProScholarSummary({ text, referenc
       // If we found a Gemara marker and it's after potential Mishna content
       if (bestMatch && bestIndex > 50 && bestIndex < cleanText.length - 20) {
         gemaraText = cleanText.slice(bestIndex).trim();
-        console.log('[ProScholar V22] Found Gemara at position', bestIndex, 'marker:', bestMatch);
       }
     }
 
     // STRATEGY 4: If text is long enough and has no clear Mishna, treat it all as Gemara
     if (!gemaraText && !mishnaText && cleanText.length > 100 && hasGemaraDiscoursePatterns) {
       gemaraText = cleanText;
-      console.log('[ProScholar V22] Treating full text as Gemara, length:', cleanText.length);
     }
 
     // Store the Gemara content
     if (gemaraText) {
       result.gemaraContent = gemaraText;
       result.gemaraFullText = gemaraText;
-      console.log('[ProScholar V22] Gemara extracted:', gemaraText.length, 'chars');
     }
 
     if (gemaraText) {
@@ -1307,7 +1293,6 @@ const ProScholarSummary = React.memo(function ProScholarSummary({ text, referenc
               // Update fullText with the loaded sugya text to trigger re-analysis
               if (sugyaData.fullHebrewText) {
                 setFullText(sugyaData.fullHebrewText);
-                console.log('[ProScholar V22] Analyzing loaded sugya text:', sugyaData.fullHebrewText.length, 'chars');
               }
             }}
           >

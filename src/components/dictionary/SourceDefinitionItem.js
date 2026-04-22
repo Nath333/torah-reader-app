@@ -12,7 +12,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { translateEnglishToFrench, quickTranslate } from '../../services/englishToFrenchService';
+import { translateEnglishToFrench, quickTranslate } from '../../services/dictionaries/englishToFrenchService';
 import { getSourceStyle } from '../../constants/dictionarySources';
 
 // =============================================================================

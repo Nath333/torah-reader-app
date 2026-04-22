@@ -15,7 +15,7 @@
  */
 
 import React, { memo, useMemo, useState } from 'react';
-import { analyzeMishnaStructure } from '../../../services/discoursePatternService';
+import { analyzeMishnaStructure } from '../../../services/scholarly/discoursePatternService';
 import { stripAllDiacritics as stripNikud } from '../../../utils/hebrewUtils';
 import './MishnaAnalysisPro.css';
 

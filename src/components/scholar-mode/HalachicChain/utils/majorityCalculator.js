@@ -177,17 +177,17 @@ export const getConsensusLevel = (majorityResult) => {
  */
 export const formatMajorityResult = (majorityResult) => {
   if (!majorityResult || !majorityResult.ruling) {
-    return { text: 'No consensus', color: 'gray', icon: '?' };
+    return { text: 'אין הכרעה', color: 'gray', icon: '?' };
   }
 
   const level = getConsensusLevel(majorityResult);
 
   const formats = {
-    strong: { text: `Clear majority: ${majorityResult.ruling}`, color: 'green', icon: 'V' },
-    moderate: { text: `Majority opinion: ${majorityResult.ruling}`, color: 'blue', icon: 'O' },
-    weak: { text: `Lean toward: ${majorityResult.ruling}`, color: 'yellow', icon: '~' },
-    disputed: { text: 'Valid disagreement', color: 'orange', icon: '=' },
-    unknown: { text: 'No consensus', color: 'gray', icon: '?' }
+    strong: { text: `רוב ברור: ${majorityResult.ruling}`, color: 'green', icon: '✓' },
+    moderate: { text: `דעת רוב: ${majorityResult.ruling}`, color: 'blue', icon: '◯' },
+    weak: { text: `נוטה ל: ${majorityResult.ruling}`, color: 'yellow', icon: '~' },
+    disputed: { text: 'מחלוקת שקולה', color: 'orange', icon: '⚖' },
+    unknown: { text: 'אין הכרעה', color: 'gray', icon: '?' }
   };
 
   return formats[level] || formats.unknown;
@@ -205,18 +205,50 @@ export const enrichPsakWithAcharonim = (psak, acharonimDecisions) => {
 
   const mechaberSupporters = [];
   const remaSupporters = [];
+  const minorityPositions = [...(psak.minorityPositions || [])];
 
   acharonimDecisions.forEach(d => {
     if (d.ruling === mechaberRuling) {
       mechaberSupporters.push(d.hebrewName || d.authority);
-    } else if (d.ruling === remaRuling && remaRuling) {
+    } else if (d.ruling === remaRuling && remaRuling && remaRuling !== mechaberRuling) {
       remaSupporters.push(d.hebrewName || d.authority);
+    } else if (d.ruling && d.ruling !== 'relevant' && d.ruling !== 'comments' &&
+               d.ruling !== mechaberRuling && d.ruling !== remaRuling) {
+      // Track acharon opinions that differ from both Mechaber and Rema
+      const existing = minorityPositions.find(p => p.ruling === d.ruling);
+      if (existing) {
+        existing.authorities.push({ name: d.authority, hebrewName: d.hebrewName || d.authority });
+        existing.count++;
+      } else {
+        minorityPositions.push({
+          ruling: d.ruling,
+          authorities: [{ name: d.authority, hebrewName: d.hebrewName || d.authority }],
+          count: 1,
+          isSignificant: false,
+          tradition: d.tradition
+        });
+      }
     }
   });
+
+  // Update halacha lemaaseh with supporter info
+  let halachaLemaaseh = psak.halachaLemaaseh || '';
+  if (mechaberSupporters.length > 0 || remaSupporters.length > 0) {
+    const parts = [];
+    if (mechaberSupporters.length > 0) {
+      parts.push(`Mechaber supported by: ${mechaberSupporters.join(', ')}`);
+    }
+    if (remaSupporters.length > 0) {
+      parts.push(`Rema supported by: ${remaSupporters.join(', ')}`);
+    }
+    halachaLemaaseh = halachaLemaaseh ? `${halachaLemaaseh}. ${parts.join('. ')}` : parts.join('. ');
+  }
 
   return {
     ...psak,
     mechaber: psak.mechaber ? { ...psak.mechaber, supportedBy: mechaberSupporters } : null,
-    rema: psak.rema ? { ...psak.rema, supportedBy: remaSupporters } : null
+    rema: psak.rema ? { ...psak.rema, supportedBy: remaSupporters } : null,
+    minorityPositions,
+    halachaLemaaseh
   };
 };

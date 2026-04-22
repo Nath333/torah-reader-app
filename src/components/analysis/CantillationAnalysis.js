@@ -13,7 +13,7 @@ import {
   extractCantillation,
   analyzeVerseStructure,
   getSyntacticParsing
-} from '../../services/cantillationService';
+} from '../../services/textual/cantillationService';
 import './CantillationAnalysis.css';
 
 const CantillationAnalysis = ({ verseText, verseRef }) => {

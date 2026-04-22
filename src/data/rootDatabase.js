@@ -12,7 +12,7 @@
  * to reduce initial bundle size.
  */
 
-import { getRootMeaningsData, getSemanticFieldsData, getRootMeanings, getSemanticFields } from '../services/dictionaryLoader';
+import { getRootMeaningsData, getSemanticFieldsData, getRootMeanings, getSemanticFields } from '../services/dictionaries/dictionaryLoader';
 import { createLazyProxy } from './proxyHelpers';
 
 // =============================================================================

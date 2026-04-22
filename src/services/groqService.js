@@ -14,7 +14,7 @@ import {
   hasApiKey,
   checkConnection as checkGroqConnection
 } from './groqApi';
-import { buildRAGContext, formatRAGContextForPrompt } from './ragService';
+import { buildRAGContext, formatRAGContextForPrompt } from './ai/ragService';
 import { getModePrompt, MODE_DESCRIPTIONS } from './prompts/modePrompts';
 
 const MAX_TEXT_CHARS = 8000;

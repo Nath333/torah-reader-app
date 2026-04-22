@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import smartDataService from '../services/smartDataService';
+import smartDataService from '../services/ai/smartDataService';
 
 // =============================================================================
 // useConnectivity - Track network/API status
@@ -181,7 +181,7 @@ export const useSmartRAG = (options = {}) => {
         setIsLoading(false);
       }
     }
-  }, [autoPrefetch, isLoading, context]);
+  }, [autoPrefetch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const clear = useCallback(() => {
     currentRef.current = null;

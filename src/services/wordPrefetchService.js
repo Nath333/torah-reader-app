@@ -3,7 +3,7 @@
 // Intelligent word prefetching for faster lookup experience
 // =============================================================================
 
-import { cleanHebrewWord } from './hebrewDictionary';
+import { cleanHebrewWord } from './dictionaries/hebrewDictionary';
 import { createLogger } from '../utils/debug';
 import { stripAllDiacritics } from '../utils/hebrewUtils';
 

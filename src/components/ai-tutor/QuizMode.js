@@ -9,7 +9,7 @@
  * - Progress tracking and achievements
  */
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { generateQuizQuestions, DIFFICULTY_LEVELS } from '../../services/aiTutorService';
+import { generateQuizQuestions, DIFFICULTY_LEVELS } from '../../services/ai/aiTutorService';
 import LevelSelector from './LevelSelector';
 import './QuizMode.css';
 

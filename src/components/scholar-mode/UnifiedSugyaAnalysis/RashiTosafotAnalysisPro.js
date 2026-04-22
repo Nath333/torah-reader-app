@@ -288,7 +288,9 @@ const RashiTosafotAnalysisPro = memo(({ reference, text, compact = false }) => {
   const [expandedTosafot, setExpandedTosafot] = useState(new Set());
 
   // Parse reference
-  const { tractate, daf } = useMemo(() => parseReference(reference), [reference]);
+  const parsedRef = useMemo(() => parseReference(reference), [reference]);
+  const tractate = parsedRef?.tractate || null;
+  const daf = parsedRef?.daf || null;
 
   // Fetch commentaries
   useEffect(() => {

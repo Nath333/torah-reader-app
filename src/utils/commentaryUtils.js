@@ -5,10 +5,11 @@
 import { cleanHtml } from './sanitize';
 import { createLogger } from './debug';
 import { pickBestDefinition } from './definitionCleaner';
+import { normalizeArticles } from './articleUtils';
 // Centralized Hebrew utilities
 import { normalizeFinals } from './hebrewUtils';
 // LOCAL dictionaries - use sync lookup functions (no deprecation warnings)
-import { lookupJastrowSync, lookupBDBSync } from '../services/dictionaryLoader';
+import { lookupJastrowSync, lookupBDBSync } from '../services/dictionaries/dictionaryLoader';
 // Centralized morphology constants
 import { getPrefixMeaning, SINGLE_PREFIXES } from '../constants/morphology';
 
@@ -709,6 +710,8 @@ const buildDynamicGlossary = async (words) => {
     }
 
     if (definition) {
+      // Normalize articles (a/an) in definitions
+      definition = normalizeArticles(definition);
       glossaryCache.set(word, definition);
       glossary.set(word, definition);
     } else {
@@ -1046,10 +1049,13 @@ const translateHebrewText = async (hebrewText) => {
       /^[a-zA-Z]+$/.test(w) && w.length > 2
     );
 
+    // Normalize articles (a/an) in the final translation
+    const normalizedResult = normalizeArticles(cleanedResult);
+
     // Must have meaningful English content and not be garbled
-    if (!isGarbled && cleanedResult && cleanedResult.length > 5 && englishWords.length >= 3) {
+    if (!isGarbled && normalizedResult && normalizedResult.length > 5 && englishWords.length >= 3) {
       const result = {
-        text: cleanedResult,
+        text: normalizedResult,
         isScholarly: true,
         coverage: Math.round(coverage * 100)
       };

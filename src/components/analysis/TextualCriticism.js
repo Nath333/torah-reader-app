@@ -12,8 +12,8 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { getVariantsForVerse } from '../../services/manuscriptVariantsService';
-import { getMasoreticNotes } from '../../services/masoreticService';
+import { getVariantsForVerse } from '../../services/textual/manuscriptVariantsService';
+import { getMasoreticNotes } from '../../services/textual/masoreticService';
 import './TextualCriticism.css';
 
 // Manuscript display order (primary witnesses first)

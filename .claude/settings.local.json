@@ -182,10 +182,21 @@
       "Read(//c/Users/natha/Desktop/App_N/torah-reader-app/**)",
       "Bash(__NEW_LINE_3d62cc33fa1193bf__ echo:*)",
       "Bash(rm -f BinyanConjugationPanel.js BinyanConjugationPanel.css CognateLanguagesPanel.js CognateLanguagesPanel.css HistoricalLayerPanel.js HistoricalLayerPanel.css ProScholarPanel.js ProScholarPanel.css RootFamilyTree.js RootFamilyTree.css RootMeaningPanel.js RootMeaningPanel.css SourceComparison.js SourceComparison.css SourceComparisonView.js SourceComparisonView.css TextAttestationsPanel.js TextAttestationsPanel.css V6AnalysisBadge.js V6AnalysisBadge.css V6TelemetryDashboard.js V6TelemetryDashboard.css)",
-      "Bash(rm -f MorphologyBreakdown.js MorphologyBreakdown.css ConjugationTable.js ConjugationTable.css VerbConjugationDisplay.js WeakVerbIndicator.js WeakVerbIndicator.css InterlinearText.js InterlinearText.css EtymologyChain.js EtymologyChain.css)"
+      "Bash(rm -f MorphologyBreakdown.js MorphologyBreakdown.css ConjugationTable.js ConjugationTable.css VerbConjugationDisplay.js WeakVerbIndicator.js WeakVerbIndicator.css InterlinearText.js InterlinearText.css EtymologyChain.js EtymologyChain.css)",
+      "Bash(while read:*)",
+      "Bash(do basename:*)",
+      "Bash(__NEW_LINE_d3b644ae84e6949f__ echo:*)",
+      "Bash(find /c/Users/natha/Desktop/App_N/torah-reader-app/src -type f \\\\\\(-name *.js -o -name *.jsx \\\\\\))",
+      "WebFetch(domain:www.sefaria.org)",
+      "Bash(grep -o \"from ''''[^'''']*''''\" src/components/scholar-mode/UnifiedSugyaAnalysis/index.js)",
+      "Bash(/tmp/refactoring_verification.txt:*)"
     ],
     "additionalDirectories": [
-      "\\tmp"
+      "\\tmp",
+      "c:\\Users\\natha\\Desktop\\App_N\\torah-reader-app\\src\\hooks",
+      "c:\\Users\\natha\\Desktop\\App_N\\torah-reader-app",
+      "c:\\Users\\natha\\Desktop\\App_N\\torah-reader-app\\src\\services",
+      "C:\\Users\\natha\\Desktop\\App_N\\torah-reader-app\\node_modules\\.cache"
     ]
   }
 }

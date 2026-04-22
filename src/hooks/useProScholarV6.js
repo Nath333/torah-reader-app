@@ -28,7 +28,7 @@ import { WEAK_VERB_DISPLAY } from '../constants/morphologyPatterns';
 // PRO SCHOLAR: Root extraction service
 let UnifiedRootService = null;
 try {
-  UnifiedRootService = require('../services/rootExtraction');
+  UnifiedRootService = require('../services/analysis/rootExtraction');
 } catch (e) {
   console.warn('[useProScholarV6] rootExtraction not available');
 }

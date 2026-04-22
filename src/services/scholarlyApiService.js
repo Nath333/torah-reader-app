@@ -511,7 +511,7 @@ export async function checkNakdanAvailability() {
  */
 export async function getCompleteScholarlyAnalysis(ref, text = '') {
   // Import dynamically to avoid circular dependencies
-  const { analyzeDiscourseStructure, detectRabbis } = await import('./discoursePatternService.js');
+  const { analyzeDiscourseStructure, detectRabbis } = await import('./scholarly/discoursePatternService.js');
 
   const [scholarlyData, discourseAnalysis] = await Promise.all([
     getScholarlyData(ref),

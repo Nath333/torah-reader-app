@@ -7,7 +7,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { getCrossReferences, getTopicsForRef } from '../../services/sefariaApi';
 import { getReferencesForVerse } from '../../services/rabbinicReferencesService';
-import { analyzeVerseStructure } from '../../services/cantillationService';
+import { analyzeVerseStructure } from '../../services/textual/cantillationService';
 import './VerseInsights.css';
 
 // Cache for cross-refs and topics (persists across renders)

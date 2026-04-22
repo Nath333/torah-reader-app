@@ -14,60 +14,29 @@ import {
   lookupBDBByStrongs as dynamicLookupByStrongs,
   lookupBDBSync as syncLookup,
   isDictionaryLoaded
-} from '../services/dictionaryLoader';
+} from '../services/dictionaries/dictionaryLoader';
+import { createDeprecatedLookupProxy } from './proxyHelpers';
 
 // =============================================================================
 // DEPRECATED: Direct data access
-// These are kept for backward compatibility but will trigger data loading.
-// Prefer using the async lookup functions instead.
+// Kept for backward compatibility. Prefer the async lookup functions below.
 // =============================================================================
 
-// Properties checked by React Fast Refresh - don't warn for these
-const REACT_INTERNAL_PROPS = new Set([
-  '$$typeof', 'prototype', 'render', 'displayName', 'name', 'length',
-  'propTypes', 'defaultProps', 'contextTypes', 'childContextTypes',
-  'getDerivedStateFromProps', 'getDerivedStateFromError', 'type',
-  Symbol.toStringTag, Symbol.iterator, 'then', 'constructor'
-]);
-
 /** @deprecated Use lookupBDBByWord() instead */
-export const BDB_BY_WORD = new Proxy({}, {
-  get(target, prop) {
-    // Ignore React Fast Refresh internal property checks
-    if (REACT_INTERNAL_PROPS.has(prop) || typeof prop === 'symbol') {
-      return undefined;
-    }
-
-    // Synchronous access - only works if data is already loaded
-    const cached = syncLookup(prop);
-    if (cached) return cached;
-
-    // If not loaded, warn and trigger async load
-    if (!isDictionaryLoaded('bdb')) {
-      console.warn('[BDB] Direct access to BDB_BY_WORD is deprecated. Use lookupBDBByWord() instead.');
-      getBDB(); // Trigger async load for next access
-    }
-    return undefined;
-  },
-  has(target, prop) {
-    return syncLookup(prop) !== null;
-  },
-  ownKeys() {
-    console.warn('[BDB] Enumerating BDB_BY_WORD is not supported with dynamic loading.');
-    return [];
-  }
+export const BDB_BY_WORD = createDeprecatedLookupProxy({
+  syncLookup,
+  triggerLoad: getBDB,
+  isLoaded: () => isDictionaryLoaded('bdb'),
+  name: 'BDB',
+  apiName: 'BDB_BY_WORD',
+  preferredFn: 'lookupBDBByWord()'
 });
 
 /** @deprecated Use lookupBDBByStrongs() instead */
-export const BDB_BY_STRONGS = new Proxy({}, {
-  get(target, prop) {
-    // Ignore React Fast Refresh internal property checks
-    if (REACT_INTERNAL_PROPS.has(prop) || typeof prop === 'symbol') {
-      return undefined;
-    }
-    console.warn('[BDB] Direct access to BDB_BY_STRONGS is deprecated. Use lookupBDBByStrongs() instead.');
-    return undefined;
-  }
+export const BDB_BY_STRONGS = createDeprecatedLookupProxy({
+  name: 'BDB',
+  apiName: 'BDB_BY_STRONGS',
+  preferredFn: 'lookupBDBByStrongs()'
 });
 
 // =============================================================================

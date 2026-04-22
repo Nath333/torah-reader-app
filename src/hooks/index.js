@@ -60,7 +60,6 @@ export { default as useStudySession } from './useStudySession';
 export { default as useStudyStreak } from './useStudyStreak';
 export { default as useVerseNotes } from './useVerseNotes';
 export { default as useVocabulary } from './useVocabulary';
-export { default as useWordLookup } from './useWordLookup';
 export {
   default as useWordIntelligence,
   LRUCache,

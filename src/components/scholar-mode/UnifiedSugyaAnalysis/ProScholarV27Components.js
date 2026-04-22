@@ -4,7 +4,7 @@
  */
 
 import React, { memo, useMemo, useState, useCallback } from 'react';
-import { RABBI_DATABASE } from '../../../services/namedEntityService';
+import { RABBI_DATABASE } from '../../../services/scholarly/namedEntityService';
 import { safeGet, safeSet } from '../../../utils/safeLocalStorage';
 
 const STORAGE_KEYS = {

@@ -7,8 +7,8 @@
  * - Dead Sea Scrolls variants
  */
 import React, { useState, useMemo, useCallback } from 'react';
-import { getMasoreticNotes, KETIV_QERE_TYPE_LABELS } from '../../services/masoreticService';
-import { getVariantsForVerse, SIGNIFICANCE_LEVELS } from '../../services/manuscriptVariantsService';
+import { getMasoreticNotes, KETIV_QERE_TYPE_LABELS } from '../../services/textual/masoreticService';
+import { getVariantsForVerse, SIGNIFICANCE_LEVELS } from '../../services/textual/manuscriptVariantsService';
 import './MasoreticIndicator.css';
 
 const MasoreticIndicator = ({ book, chapter, verse, compact = true }) => {

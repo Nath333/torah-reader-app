@@ -23,13 +23,13 @@ let wordRelationshipService = {};
 let srsService = {};
 
 try {
-  learningRecommendationService = require('../../services/learningRecommendationService');
+  learningRecommendationService = require('../../services/scholarly/learningRecommendationService');
 } catch (e) {
   console.warn('Learning recommendation service not available');
 }
 
 try {
-  wordRelationshipService = require('../../services/wordRelationshipService');
+  wordRelationshipService = require('../../services/scholarly/wordRelationshipService');
 } catch (e) {
   console.warn('Word relationship service not available');
 }

@@ -495,19 +495,26 @@ export const askQuestion = async (conversationId, question, textContext = '', st
   ];
 
   // 4. Call API
-  const response = await callGroqAPI(messages, { temperature: 0.7, maxTokens: 2048 });
+  try {
+    const response = await callGroqAPI(messages, { temperature: 0.7, maxTokens: 2048 });
 
-  // 5. Store assistant response
-  const finalConv = conversationManager.addMessage(conversationId, 'assistant', response);
+    // 5. Store assistant response
+    const finalConv = conversationManager.addMessage(conversationId, 'assistant', response);
 
-  // 6. Return structured result
-  return {
-    response,
-    conversationId,
-    messageCount: finalConv.messages.length,
-    level: finalConv.level,
-    persona: finalConv.persona
-  };
+    // 6. Return structured result
+    return {
+      response,
+      conversationId,
+      messageCount: finalConv.messages.length,
+      level: finalConv.level,
+      persona: finalConv.persona
+    };
+  } catch (error) {
+    throw new AIError(
+      `Failed to get response: ${error.message}`,
+      error.type || ERROR_TYPES.API_ERROR
+    );
+  }
 };
 
 /**

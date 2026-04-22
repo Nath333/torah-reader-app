@@ -1,0 +1,108 @@
+/**
+ * WordsTab Styles
+ * 
+ * Main container styles for the split WordsTab architecture
+ */
+
+.words-tab {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Sub-tab Navigation */
+.words-subtab-nav {
+  display: flex;
+  gap: 4px;
+  padding: 12px 16px;
+  background: var(--bg-elevated, #f9fafb);
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.words-subtab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary, #4b5563);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  position: relative;
+}
+
+.words-subtab:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.words-subtab.active {
+  background: white;
+  color: var(--primary-color, #3b82f6);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-weight: 500;
+}
+
+.subtab-icon {
+  font-size: 1.1rem;
+}
+
+.subtab-label {
+  font-size: 0.875rem;
+}
+
+.due-badge {
+  background: #ef4444;
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: 600;
+  min-width: 18px;
+  text-align: center;
+}
+
+.words-subtab-debug {
+  opacity: 0.7;
+}
+
+/* Content Area */
+.words-subtab-content {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+}
+
+/* Debug Section */
+.debug-section {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-muted, #6b7280);
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .words-subtab-nav {
+    background: var(--bg-elevated-dark, #374151);
+    border-color: var(--border-color-dark, #4b5563);
+  }
+
+  .words-subtab {
+    color: var(--text-secondary-dark, #d1d5db);
+  }
+
+  .words-subtab:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .words-subtab.active {
+    background: var(--bg-card-dark, #1f2937);
+    color: #60a5fa;
+  }
+}

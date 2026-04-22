@@ -14,40 +14,16 @@
  * Total: ~169 entries (loaded on-demand, not bundled)
  */
 
-import { getCALAramaicData } from '../services/dictionaryLoader';
+import { getCALAramaicData } from '../services/dictionaries/dictionaryLoader';
 import { stripAllDiacritics, normalizeFinals } from '../utils/hebrewUtils';
+import { createLazyProxy } from './proxyHelpers';
 
 // =============================================================================
 // LAZY-LOADED LEXICON ACCESS
 // =============================================================================
 
 /** @returns {Object|null} CAL Aramaic data (returns Proxy for compatibility) */
-export const CAL_ARAMAIC = new Proxy({}, {
-  get: (_, prop) => {
-    const data = getCALAramaicData();
-    if (prop === Symbol.iterator) {
-      return function* () {
-        if (data) yield* Object.entries(data);
-      };
-    }
-    return data?.[prop];
-  },
-  has: (_, prop) => {
-    const data = getCALAramaicData();
-    return data ? prop in data : false;
-  },
-  ownKeys: () => {
-    const data = getCALAramaicData();
-    return data ? Object.keys(data) : [];
-  },
-  getOwnPropertyDescriptor: (_, prop) => {
-    const data = getCALAramaicData();
-    if (data && prop in data) {
-      return { enumerable: true, configurable: true, value: data[prop] };
-    }
-    return undefined;
-  }
-});
+export const CAL_ARAMAIC = createLazyProxy(getCALAramaicData);
 
 // =============================================================================
 // LOOKUP FUNCTIONS (use lazy-loaded data)

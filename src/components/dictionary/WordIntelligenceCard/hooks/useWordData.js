@@ -34,7 +34,7 @@ try {
 // Semantic field service
 let getWordSemantics, getSynonyms, getAntonyms;
 try {
-  const semanticService = require('../../../../services/semanticFieldService');
+  const semanticService = require('../../../../services/scholarly/semanticFieldService');
   getWordSemantics = semanticService.getWordSemantics;
   getSynonyms = semanticService.getSynonyms;
   getAntonyms = semanticService.getAntonyms;

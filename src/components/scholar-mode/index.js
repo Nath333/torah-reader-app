@@ -26,10 +26,13 @@ export { default as RAGSourcesPanel } from './RAGSourcesPanel';
 
 // Core tab components (5 tabs)
 export { default as AIAnalysisTab } from './AIAnalysisTab';      // LEARN tab
-export { default as WordsTab } from './LexiconTab';              // WORDS tab
+export { default as WordsTab } from './WordsTab';                 // WORDS tab (NEW - split architecture)
 export { default as CommentaryTab } from './CommentaryTab';      // COMMENTARY tab
 export { default as ChavrutaTab } from './ChavrutaTab';          // CHAVRUTA tab (NEW - consolidated)
 export { default as NotebookTab } from './NotebookTab';          // NOTEBOOK tab (NEW - consolidated)
+
+// Backward compatibility - export LookupTab as LexiconTab
+export { LookupTab as LexiconTab } from './WordsTab/components';
 
 // Talmud-specific tabs
 export { default as SugyaTab } from './SugyaTab';                  // NEW: Halachic Chain visualization

@@ -14,31 +14,21 @@ import {
   lookupJastrowByWord,
   lookupJastrowSync,
   isDictionaryLoaded
-} from '../services/dictionaryLoader';
+} from '../services/dictionaries/dictionaryLoader';
+import { createDeprecatedLookupProxy } from './proxyHelpers';
 
 // =============================================================================
 // DEPRECATED: Direct data access
 // =============================================================================
 
 /** @deprecated Use lookupJastrow() instead */
-export const JASTROW_COMPLETE = new Proxy({}, {
-  get(target, prop) {
-    const cached = lookupJastrowSync(prop);
-    if (cached) return cached;
-
-    if (!isDictionaryLoaded('jastrow')) {
-      console.warn('[Jastrow] Direct access to JASTROW_COMPLETE is deprecated. Use lookupJastrow() instead.');
-      getJastrow();
-    }
-    return undefined;
-  },
-  has(target, prop) {
-    return lookupJastrowSync(prop) !== null;
-  },
-  ownKeys() {
-    console.warn('[Jastrow] Enumerating JASTROW_COMPLETE is not supported with dynamic loading.');
-    return [];
-  }
+export const JASTROW_COMPLETE = createDeprecatedLookupProxy({
+  syncLookup: lookupJastrowSync,
+  triggerLoad: getJastrow,
+  isLoaded: () => isDictionaryLoaded('jastrow'),
+  name: 'Jastrow',
+  apiName: 'JASTROW_COMPLETE',
+  preferredFn: 'lookupJastrow()'
 });
 
 // =============================================================================

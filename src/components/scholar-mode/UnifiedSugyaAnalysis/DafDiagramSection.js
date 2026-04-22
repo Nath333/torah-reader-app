@@ -51,50 +51,31 @@ const DafDiagramSection = React.memo(function DafDiagramSection({ reference, tex
     return null;
   }, [reference]);
 
-  // PRO SCHOLAR V22: ALWAYS fetch full daf text from Sefaria for complete analysis
+  // Fetch full daf text from Sefaria for complete analysis
   // The text prop often contains only partial content (Mishna + small Gemara snippet)
   useEffect(() => {
-    console.log('[DafDiagram V22] useEffect triggered:', { dafInfo, textLen: text?.length });
-
     if (!dafInfo) {
-      console.log('[DafDiagram V22] No dafInfo available');
       setFullDafText(null);
       return;
     }
 
     let cancelled = false;
     setLoadingFullText(true);
-    console.log(`[DafDiagram V22] Fetching ${dafInfo.tractate} ${dafInfo.daf}...`);
 
-    // ALWAYS fetch the complete daf text from Sefaria
-    // This ensures we have the full Gemara content for proper analysis
     getTalmudDaf(dafInfo.tractate, dafInfo.daf)
       .then(result => {
-        console.log('[DafDiagram V22] API Response:', {
-          ref: result?.ref,
-          segments: result?.segments?.length,
-          hebrewArr: result?.hebrew?.length,
-          totalChars: result?.hebrew?.join?.(' ')?.length
-        });
-
         if (!cancelled) {
-          // Combine all Hebrew segments into one complete text
           const combinedText = result.hebrew?.join(' ') || '';
           if (combinedText.length > 0) {
             setFullDafText(combinedText);
-            console.log(`[DafDiagram V22] SUCCESS: ${combinedText.length} chars, ${result.segments?.length} segments`);
           } else {
-            // Fallback to provided text if fetch returns empty
             setFullDafText(text || '');
-            console.warn(`[DafDiagram V22] API empty, fallback to text: ${text?.length || 0} chars`);
           }
           setLoadingFullText(false);
         }
       })
-      .catch(err => {
-        console.error('[DafDiagram V22] FETCH ERROR:', err.message, err);
+      .catch(() => {
         if (!cancelled) {
-          // Use provided text as fallback
           setFullDafText(text || '');
           setLoadingFullText(false);
         }

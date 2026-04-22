@@ -19,4 +19,4 @@ export {
   LEVEL_CONFIG,
   TEACHING_PERSONAS,
   PERSONA_CONFIG
-} from '../../services/aiTutorService';
+} from '../../services/ai/aiTutorService';

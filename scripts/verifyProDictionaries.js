@@ -15,13 +15,21 @@ const jastrow = JSON.parse(fs.readFileSync('public/data/jastrowComplete.json'));
 const strongs = JSON.parse(fs.readFileSync('public/data/strongsComplete.json'));
 const rootPro = JSON.parse(fs.readFileSync('public/data/root_meanings_pro.json'));
 
-// Load academic lexicons
-const halot = JSON.parse(fs.readFileSync('public/data/halot_lexicon.json'));
-const djba = JSON.parse(fs.readFileSync('public/data/djba_lexicon.json'));
-const gesenius = JSON.parse(fs.readFileSync('public/data/gesenius_lexicon.json'));
-const twot = JSON.parse(fs.readFileSync('public/data/twot_lexicon.json'));
-const klein = JSON.parse(fs.readFileSync('public/data/klein_lexicon.json'));
-const cal = JSON.parse(fs.readFileSync('public/data/cal_aramaic.json'));
+// Load academic lexicons (some may be missing - handle gracefully)
+function safeLoad(file) {
+  try {
+    return JSON.parse(fs.readFileSync(file));
+  } catch (e) {
+    return null;
+  }
+}
+
+const halot = safeLoad('public/data/halot_lexicon.json');
+const djba = safeLoad('public/data/djba_lexicon.json');
+const gesenius = safeLoad('public/data/gesenius_lexicon.json');
+const twot = safeLoad('public/data/twot_lexicon.json');
+const klein = safeLoad('public/data/klein_lexicon.json');
+const cal = safeLoad('public/data/cal_aramaic.json');
 
 // Count entries
 const bdbEntries = Object.keys(bdb.byWord || {}).length;
@@ -51,12 +59,12 @@ console.log(`  Root PRO merged: ${rootMerged} entries (from root_meanings_enrich
 console.log('');
 
 // Academic lexicons
-const halotEntries = Object.keys(halot).filter(k => !k.startsWith('_')).length;
-const djbaEntries = Object.keys(djba).filter(k => !k.startsWith('_')).length;
-const geseniusEntries = Object.keys(gesenius).filter(k => !k.startsWith('_')).length;
-const twotEntries = Object.keys(twot).filter(k => !k.startsWith('_')).length;
-const kleinEntries = Object.keys(klein).filter(k => !k.startsWith('_')).length;
-const calEntries = Object.keys(cal).filter(k => !k.startsWith('_')).length;
+const halotEntries = halot ? Object.keys(halot).filter(k => !k.startsWith('_')).length : 0;
+const djbaEntries = djba ? Object.keys(djba).filter(k => !k.startsWith('_')).length : 0;
+const geseniusEntries = gesenius ? Object.keys(gesenius).filter(k => !k.startsWith('_')).length : 0;
+const twotEntries = twot ? Object.keys(twot).filter(k => !k.startsWith('_')).length : 0;
+const kleinEntries = klein ? Object.keys(klein).filter(k => !k.startsWith('_')).length : 0;
+const calEntries = cal ? Object.keys(cal).filter(k => !k.startsWith('_')).length : 0;
 
 console.log('ACADEMIC LEXICONS (Tier 1 & 2):');
 console.log('────────────────────────────────────────────────────────────────────────────');
@@ -74,6 +82,7 @@ function normalize(w) {
 }
 
 function lookup(dict, word, key = null) {
+  if (!dict) return null;
   const data = key ? dict[key] : dict;
   if (!data) return null;
   return data[word] || data[normalize(word)] || null;

@@ -20,6 +20,7 @@
  */
 import React, { memo } from 'react';
 import PropTypes from 'prop-types';
+import './LoadingSpinner.css';
 
 const SIZES = {
   xs: 16,
@@ -70,12 +71,6 @@ const LoadingSpinner = memo(function LoadingSpinner({
         />
       </svg>
       {text && <span className="loading-spinner-text">{text}</span>}
-      <style>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </span>
   );
 });

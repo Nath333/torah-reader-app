@@ -31,7 +31,7 @@ import {
   getMaharshaForDaf,
   checkCommentaryAvailability,
   getAvailableCommentators
-} from '../services/commentaryServiceFactory';
+} from '../services/commentary/commentaryServiceFactory';
 import { isTalmudBook } from '../services/sefariaApi';
 import { COMMENTATORS } from '../constants/commentatorRegistry';
 import { createLogger } from '../utils/debug';

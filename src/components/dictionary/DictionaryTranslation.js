@@ -11,7 +11,7 @@
  */
 
 import React, { useMemo, useState } from 'react';
-import { splitIntoWords, cleanHebrewWord } from '../../services/hebrewDictionary';
+import { splitIntoWords, cleanHebrewWord } from '../../services/dictionaries/hebrewDictionary';
 import { lookupWordSync } from '../../services/unifiedLookupService';
 import { stripAllDiacritics } from '../../utils/hebrewUtils';
 import { getSourceInfo, RELIABILITY_TIERS, isAcademicSource } from '../../constants/dictionarySources';
@@ -20,7 +20,7 @@ import { cleanDefinition } from '../../utils/definitionCleaner';
 import { lookupHalachicWithPrefix, RASHI_VOCABULARY } from '../../utils/commentaryUtils';
 import { STOP_WORDS, lookupFunctionWord, FUNCTION_WORDS } from '../../constants/morphology';
 // PRO SCHOLAR V5: Pre-classification for proper nouns, abbreviations, technical terms
-import { preClassify } from '../../services/preClassificationService';
+import { preClassify } from '../../services/analysis/preClassificationService';
 import './DictionaryTranslation.css';
 
 // Hebrew prefixes (grammatical, from standard Hebrew grammar)

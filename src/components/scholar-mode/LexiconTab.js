@@ -7,31 +7,36 @@
  *
  * Features: search history, keyboard shortcuts, copy/share, SRS flashcards
  */
-import React, { useState, useCallback, useEffect, useRef, useMemo, memo } from 'react';
+import React, { useState, useCallback, useEffect, useRef, memo } from 'react';
 import PropTypes from 'prop-types';
 import { safeGet, safeSet } from '../../utils/safeLocalStorage';
-import { scholarlyLookup, getEtymology, SCHOLARLY_SOURCES } from '../../services/scholarlyLexiconService';
+import { scholarlyLookup, getEtymology, SCHOLARLY_SOURCES } from '../../services/dictionaries/scholarlyLexiconService';
 import { getWordFrequency, getRootOccurrences, getDerivedWords } from '../../services/wordFrequencyService';
-import { getWordSemantics, SEMANTIC_DOMAINS } from '../../services/semanticFieldService';
+import { getWordSemantics } from '../../services/scholarly/semanticFieldService';
 import { findConstructsWithWord } from '../../services/constructChainService';
-import { translateEnglishToFrench } from '../../services/englishToFrenchService';
+import { translateEnglishToFrench } from '../../services/dictionaries/englishToFrenchService';
 import { lookupCAL } from '../../data/calAramaic';
 import { lookupJastrowLocal } from '../../data/jastrowAramaic';
 import { lookupAllLexicons } from '../../data/hebrewLexicons';
 import { lookupBDBByWord } from '../../data/bdbComplete';
-import { lookupStrongsByWord } from '../../data/strongsComplete';
+import { lookupStrongsByWord } from '../../services/dictionaries/dictionaryLoader';
 import { useVocabulary } from '../../hooks';
-import VocabularyReview from '../study/VocabularyReview';
 import CantillationAnalysis from '../analysis/CantillationAnalysis';
-import TextualCriticism from '../analysis/TextualCriticism';
-import { getMasoreticNotes, KETIV_QERE_TYPE_LABELS } from '../../services/masoreticService';
-import { analyzePhrase, GRAMMAR_CONSTANTS } from '../../services/grammarAnalysisService';
 // PRO SCHOLAR: Morphology breakdown with pattern analysis
 import MorphologyBreakdown from '../dictionary/morphology/MorphologyBreakdown';
-import { getRootInfo } from '../../data/rootDatabase';
-import { extractAramaicRoot } from '../../constants/morphology';
 // PRO SCHOLAR V6: Advanced linguistic components
 import { WeakVerbIndicator, ProScholarPanel, BinyanConjugationPanel, V6TelemetryDashboard, SourceComparisonView } from '../dictionary';
+// Sub-components extracted to separate file
+import {
+  LexiconSkeleton,
+  FrequencyBadge,
+  SemanticFieldDisplay,
+  ConstructChainDisplay,
+  MyWordsSection,
+  RootOccurrencesDisplay,
+  RootFamilyDisplay,
+  TextualAnalysisSection
+} from './LexiconTab.components';
 import './ScholarModeEnhancements.css';
 
 // LocalStorage key for search history

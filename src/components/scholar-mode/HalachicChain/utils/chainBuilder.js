@@ -52,7 +52,11 @@ export const buildHalachicChain = async (text, reference, options, signal) => {
 
     // Layer 4: Tur / Beit Yosef — bridge to Shulchan Aruch
     if (options.includeTur) {
-      chain.layers[HALACHIC_LAYERS.TUR] = await buildTurLayer(reference, signal);
+      chain.layers[HALACHIC_LAYERS.TUR] = await buildTurLayer(
+        reference,
+        chain.layers[HALACHIC_LAYERS.RISHONIM]?.decisions,
+        signal
+      );
     }
 
     // Layer 5: Psak — Shulchan Aruch + Rema (structured Mechaber/Rema comparison)
@@ -174,7 +178,7 @@ const buildRishonimLayer = async (reference, text, signal) => {
  * Shows how the Tur organizes Rishonim opinions and
  * the Beit Yosef's analysis of why SA rules as it does.
  */
-const buildTurLayer = async (reference, signal) => {
+const buildTurLayer = async (reference, rishonimDecisions, signal) => {
   const layer = {
     id: HALACHIC_LAYERS.TUR,
     hebrewName: 'טור / בית יוסף',
@@ -184,6 +188,25 @@ const buildTurLayer = async (reference, signal) => {
   };
   try {
     layer.turAnalysis = await fetchTurBeitYosef(reference, signal);
+
+    // Cross-reference Tur citations with actual Rishonim decisions
+    if (layer.turAnalysis?.turSummary && rishonimDecisions?.length) {
+      layer.turAnalysis.turSummary = layer.turAnalysis.turSummary.map(citation => {
+        const matchingDecision = rishonimDecisions.find(d =>
+          d.authority === citation.authority || d.hebrewName === citation.hebrewName
+        );
+        if (matchingDecision) {
+          return {
+            ...citation,
+            confirmedRuling: matchingDecision.ruling,
+            sourceRef: matchingDecision.sourceRef,
+            crossReferenced: true
+          };
+        }
+        return { ...citation, crossReferenced: false };
+      });
+    }
+
     layer.isComplete = true;
     return layer;
   } catch (error) {

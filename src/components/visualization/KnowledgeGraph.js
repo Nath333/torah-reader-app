@@ -12,7 +12,7 @@
  */
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { RABBINIC_NETWORK } from '../../services/knowledgeGraphService';
+import { RABBINIC_NETWORK } from '../../services/scholarly/knowledgeGraphService';
 import './KnowledgeGraph.css';
 
 // Local storage keys for tracking learning

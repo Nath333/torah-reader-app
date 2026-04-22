@@ -22,7 +22,7 @@ import PropTypes from 'prop-types';
 import './ClickableText.css';
 
 // Services - PRO SCHOLAR V10: Use unifiedLookupService (consolidated)
-import { splitIntoWords, hasTranslation as hasLocalTranslation } from '../../services/hebrewDictionary';
+import { splitIntoWords, hasTranslation as hasLocalTranslation } from '../../services/dictionaries/hebrewDictionary';
 import {
   lookupWord,
   quickLookup,

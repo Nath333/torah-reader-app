@@ -69,26 +69,39 @@ export const buildOpinionFlows = (chainData) => {
       reasoning: opinion.reasoning || null
     });
 
+    // Helper to add a placeholder node when a layer is missing
+    const addPlaceholder = (layer) => ({
+      layer,
+      authority: opinion.authority,
+      hebrewName: opinion.authorityHebrew || opinion.authority,
+      ruling: opinion.ruling,
+      status: 'not_analyzed',
+      reasoning: 'שכבה זו לא זמינה'
+    });
+
     // Node 2: Gemara — did this opinion survive?
     const gemaraLayer = chainData.layers[HALACHIC_LAYERS.GEMARA];
-    if (gemaraLayer) {
-      const gemaraNode = traceInGemara(opinion, gemaraLayer);
-      flow.journey.push(gemaraNode);
-    }
+    flow.journey.push(
+      gemaraLayer
+        ? traceInGemara(opinion, gemaraLayer)
+        : addPlaceholder(HALACHIC_LAYERS.GEMARA)
+    );
 
     // Node 3: Rishonim — who adopted this opinion?
     const rishonimLayer = chainData.layers[HALACHIC_LAYERS.RISHONIM];
-    if (rishonimLayer?.decisions?.length) {
-      const rishonimNode = traceInRishonim(opinion, rishonimLayer.decisions);
-      flow.journey.push(rishonimNode);
-    }
+    flow.journey.push(
+      rishonimLayer?.decisions?.length
+        ? traceInRishonim(opinion, rishonimLayer.decisions)
+        : addPlaceholder(HALACHIC_LAYERS.RISHONIM)
+    );
 
     // Node 4: Tur — is this opinion cited?
     const turLayer = chainData.layers[HALACHIC_LAYERS.TUR];
-    if (turLayer?.turAnalysis) {
-      const turNode = traceInTur(opinion, turLayer.turAnalysis);
-      flow.journey.push(turNode);
-    }
+    flow.journey.push(
+      turLayer?.turAnalysis
+        ? traceInTur(opinion, turLayer.turAnalysis)
+        : addPlaceholder(HALACHIC_LAYERS.TUR)
+    );
 
     // Node 5: Psak — did Mechaber/Rema follow this opinion?
     const psakLayer = chainData.layers[HALACHIC_LAYERS.PSAK];
@@ -96,14 +109,17 @@ export const buildOpinionFlows = (chainData) => {
       const psakNode = traceInPsak(opinion, psakLayer.psak);
       flow.journey.push(psakNode);
       flow.finalPsak = psakNode.status;
+    } else {
+      flow.journey.push(addPlaceholder(HALACHIC_LAYERS.PSAK));
     }
 
     // Node 6: Acharonim — who supports this in the Acharonim layer?
     const acharonimLayer = chainData.layers[HALACHIC_LAYERS.ACHARONIM];
-    if (acharonimLayer?.decisions?.length) {
-      const acharonimNode = traceInAcharonim(opinion, acharonimLayer.decisions);
-      flow.journey.push(acharonimNode);
-    }
+    flow.journey.push(
+      acharonimLayer?.decisions?.length
+        ? traceInAcharonim(opinion, acharonimLayer.decisions)
+        : addPlaceholder(HALACHIC_LAYERS.ACHARONIM)
+    );
 
     // Determine final status
     flow.finalStatus = determineFinalStatus(flow.journey);

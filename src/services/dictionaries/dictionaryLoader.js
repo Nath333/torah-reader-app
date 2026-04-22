@@ -18,6 +18,10 @@ import { normalizeFinals, stripAllDiacritics, restoreFinals } from '../../utils/
 import { HEBREW_PREFIXES_ORDERED } from '../../constants/morphology';
 // Use shared SOURCE_CONFIG for dictionary tiers (DRY)
 import { SOURCE_CONFIG } from '../../constants/sourceConfig';
+// Book classifiers for context-aware preload gating
+import { isTorahBook, isTalmudBook, isMishnahBook } from '../sefariaApi/bookData';
+// IndexedDB persistence for parsed dictionary JSON
+import { getCached, putCached } from './dictionaryCache';
 
 const log = createLogger('DictionaryLoader');
 
@@ -48,7 +52,6 @@ const cache = {
 // Major Etymology Databases
   sefariaCache: null,         // 2,493 entries - Pre-parsed Klein, BDB, Jastrow, Strong's
   rootMeaningsPro: null,      // 18,898 entries - Main unified etymology database
-  etymologyBDB: null,         // 2,591 entries - Cognates from BDB
   etymologyJastrow: null,     // 16,794 entries - Cross-refs from Jastrow
   wiktionaryCache: null       // 108+ entries - Proto-Semitic reconstructions
 };
@@ -74,7 +77,6 @@ const loadingPromises = {
 // Major Etymology Databases
   sefariaCache: null,
   rootMeaningsPro: null,
-  etymologyBDB: null,
   etymologyJastrow: null,
   wiktionaryCache: null
 };
@@ -100,7 +102,6 @@ const loadingState = {
 // Major Etymology Databases
   sefariaCache: false,
   rootMeaningsPro: false,
-  etymologyBDB: false,
   etymologyJastrow: false,
   wiktionaryCache: false
 };
@@ -270,13 +271,23 @@ async function loadDictionary(name) {
     // Major Etymology Databases
     sefariaCache: 'sefaria_lexicon_cache.json',        // 2,493 pre-parsed entries
     rootMeaningsPro: 'root_meanings_pro.json',          // 22,049 unified entries (strengthened!)
-    etymologyBDB: 'etymology_bdb_extracted.json',       // 2,591 cognates (source data)
     etymologyJastrow: 'etymology_jastrow_extracted.json', // 16,794 cross-refs (source data)
     wiktionaryCache: 'wiktionary_etymology_cache.json'  // 108+ Proto-Semitic
   }[name];
 
-  loadingPromises[name] = fetch(`${process.env.PUBLIC_URL}/data/${fileName}`)
-    .then(response => {
+  loadingPromises[name] = (async () => {
+    // IndexedDB hit: skip network entirely on warm sessions.
+    const cached = await getCached(fileName);
+    if (cached) {
+      cache[name] = cached;
+      loadingState[name] = false;
+      loadingPromises[name] = Promise.resolve(cached);
+      log.debug(`Loaded ${name} from IndexedDB: ${Object.keys(cached.byWord || cached).length} entries`);
+      return cached;
+    }
+
+    try {
+      const response = await fetch(`${process.env.PUBLIC_URL}/data/${fileName}`);
       if (!response.ok) {
         throw new Error(`HTTP ${response.status} loading ${name}`);
       }
@@ -284,17 +295,16 @@ async function loadDictionary(name) {
       if (contentType && !contentType.includes('json')) {
         throw new Error(`Expected JSON for ${name} but got ${contentType}`);
       }
-      return response.json();
-    })
-    .then(data => {
+      const data = await response.json();
       cache[name] = data;
       loadingState[name] = false;
       // Keep resolved promise so concurrent callers still get the result
       loadingPromises[name] = Promise.resolve(data);
       log.debug(`Loaded ${name}: ${Object.keys(data.byWord || data).length} entries`);
+      // Fire-and-forget persistence so we don't block the first render.
+      putCached(fileName, data).catch(() => {});
       return data;
-    })
-    .catch(error => {
+    } catch (error) {
       loadingState[name] = false;
       // Clear promise on failure so retry is possible
       loadingPromises[name] = null;
@@ -306,7 +316,8 @@ async function loadDictionary(name) {
         log.error(`[${name}] Load failed:`, error.message);
       }
       throw error;
-    });
+    }
+  })();
 
   return loadingPromises[name];
 }
@@ -684,15 +695,6 @@ export async function getRootMeaningsPro() {
 }
 
 /**
- * Get BDB extracted etymology (2,591 entries)
- * Cognates and etymological data parsed from BDB
- * @returns {Promise<Object>} Etymology BDB data
- */
-export async function getEtymologyBDB() {
-  return loadDictionary('etymologyBDB');
-}
-
-/**
  * Get Jastrow extracted etymology (16,794 entries)
  * Cross-references and etymological data parsed from Jastrow
  * @returns {Promise<Object>} Etymology Jastrow data
@@ -715,7 +717,6 @@ export async function getWiktionaryCache() {
  */
 export function getSefariaCacheData() { return cache.sefariaCache; }
 export function getRootMeaningsProData() { return cache.rootMeaningsPro; }
-export function getEtymologyBDBData() { return cache.etymologyBDB; }
 export function getEtymologyJastrowData() { return cache.etymologyJastrow; }
 export function getWiktionaryCacheData() { return cache.wiktionaryCache; }
 
@@ -730,19 +731,18 @@ export async function lookupAllEtymology(word) {
   const lookupWord = async (w) => {
     const accessData = (d, key) => d?.[key] || d?.entries?.[key] || d?.byWord?.[key] || null;
 
-    const [sefaria, rootPro, bdbEty, jastrowEty, wiktionary] = await Promise.all([
+    const [sefaria, rootPro, jastrowEty, wiktionary] = await Promise.all([
       getSefariaCache().then(d => accessData(d, w)).catch(() => null),
       getRootMeaningsPro().then(d => accessData(d, w)).catch(() => null),
-      getEtymologyBDB().then(d => accessData(d, w)).catch(() => null),
       getEtymologyJastrow().then(d => accessData(d, w)).catch(() => null),
       getWiktionaryCache().then(d => accessData(d, w)).catch(() => null)
     ]);
-    return { sefaria, rootMeaningsPro: rootPro, etymologyBDB: bdbEty, etymologyJastrow: jastrowEty, wiktionary };
+    return { sefaria, rootMeaningsPro: rootPro, etymologyJastrow: jastrowEty, wiktionary };
   };
 
   // Check if result has any data
   const hasData = (result) => !!(result.sefaria || result.rootMeaningsPro ||
-    result.etymologyBDB || result.etymologyJastrow || result.wiktionary);
+    result.etymologyJastrow || result.wiktionary);
 
   const { root: extractedRoot, alternativeRoots } = await extractRootHelper(word);
 
@@ -864,7 +864,6 @@ export async function preloadEtymologyDatabases() {
   await Promise.all([
     loadDictionary('sefariaCache').catch(() => null),      // 2,493 entries
     loadDictionary('rootMeaningsPro').catch(() => null),   // 18,898 entries
-    loadDictionary('etymologyBDB').catch(() => null),      // 2,591 entries
     loadDictionary('etymologyJastrow').catch(() => null),  // 16,794 entries
     loadDictionary('wiktionaryCache').catch(() => null)    // 108+ entries
   ]);
@@ -1630,7 +1629,6 @@ export function getCacheStatus() {
 // Etymology databases
     sefariaCache: cache.sefariaCache !== null,
     rootMeaningsPro: cache.rootMeaningsPro !== null,
-    etymologyBDB: cache.etymologyBDB !== null,
     etymologyJastrow: cache.etymologyJastrow !== null,
     wiktionaryCache: cache.wiktionaryCache !== null
   };
@@ -1793,6 +1791,72 @@ export function shouldPreload() {
 let preloadPromise = null;
 let preloadComplete = false;
 
+// Per-category deduplication: once a category's lexicons are loaded, skip repeat work.
+const categoryPreloadPromises = Object.create(null);
+const categoryPreloadComplete = Object.create(null);
+
+/**
+ * Per-category preload plans.
+ *
+ * The aggregate files (sefariaCache, rootMeaningsPro) are loaded for every
+ * category — they contain pre-parsed entries from BDB/Jastrow/Klein/Strong's
+ * and cover most lookups on the reading path.
+ *
+ * Full source JSONs stay lazy (loaded on first individual getBDB/getJastrow/
+ * getStrongs call) unless explicitly listed here for the active book category.
+ */
+const CATEGORY_PRELOAD = {
+  // Biblical Hebrew: BDB + Gesenius + Strong's cover Torah/Prophets/Writings.
+  // Skip Jastrow/CAL — those are Talmudic Aramaic.
+  tanakh: ['bdb', 'gesenius', 'strongs'],
+  // Babylonian Talmud: Jastrow + CAL Aramaic cover rabbinic vocabulary.
+  // Skip BDB/Gesenius/Strong's — those are Biblical Hebrew.
+  talmud: ['jastrow', 'calAramaic'],
+  // Mishnah: rabbinic Hebrew with biblical roots. Jastrow + BDB.
+  mishnah: ['jastrow', 'bdb'],
+  // Unknown/mixed: load the common trio, leave specialty lexicons lazy.
+  mixed: ['bdb', 'jastrow', 'strongs']
+};
+
+/**
+ * Classify a book name into a preload category.
+ * @param {string|null|undefined} book
+ * @returns {'tanakh'|'talmud'|'mishnah'|'mixed'}
+ */
+export function classifyBookCategory(book) {
+  if (!book) return 'mixed';
+  try {
+    if (isTorahBook(book)) return 'tanakh';
+    if (isTalmudBook(book)) return 'talmud';
+    if (isMishnahBook(book)) return 'mishnah';
+  } catch {
+    // Fall through
+  }
+  return 'mixed';
+}
+
+/**
+ * Preload only the lexicons relevant to the given book category.
+ * Idempotent per category. Safe to call on every book navigation.
+ *
+ * @param {string} book - Book name (English, e.g. "Genesis" or "Shabbat")
+ * @returns {Promise<void>}
+ */
+export async function preloadForBook(book) {
+  const category = classifyBookCategory(book);
+  if (categoryPreloadComplete[category]) return;
+  if (categoryPreloadPromises[category]) return categoryPreloadPromises[category];
+
+  const targets = CATEGORY_PRELOAD[category] || CATEGORY_PRELOAD.mixed;
+  categoryPreloadPromises[category] = (async () => {
+    log.debug(`[Preload] Category "${category}" loading: ${targets.join(', ')}`);
+    await Promise.all(targets.map(name => loadDictionary(name).catch(() => null)));
+    categoryPreloadComplete[category] = true;
+    log.debug(`[Preload] Category "${category}" complete`);
+  })();
+  return categoryPreloadPromises[category];
+}
+
 /**
  * Wait for core dictionary preload to complete
  * Call this before performing lookups to ensure dictionaries are available.
@@ -1833,47 +1897,49 @@ export function isCoreDictionariesLoaded() {
 }
 
 /**
- * Full initialization with common word preloading
- * Replaces dictionaryPreloader.initializePreload()
+ * Initialize dictionary preload for the current session.
+ *
+ * Loads the aggregate files (rootMeaningsPro + sefariaCache) that cover most
+ * lookups, then — if a book context is supplied — the lexicons relevant to
+ * that category. Full source JSONs not listed in the category plan remain
+ * lazy and fetch on first individual lookup.
  *
  * Features deduplication to prevent multiple concurrent calls.
  *
+ * @param {{ book?: string, category?: string }} [context]
  * @returns {Promise<void>}
  */
-export async function initializePreload() {
-  // Deduplication: If already complete, return immediately
+export async function initializePreload(context = null) {
+  // Normalize context (also accept a bare book string)
+  if (typeof context === 'string') context = { book: context };
+  const category = context?.category || classifyBookCategory(context?.book);
+
+  // Deduplication: If already complete, just make sure this category is covered.
   if (preloadComplete) {
-    log.debug('[Preload] Already complete, skipping');
-    return;
+    log.debug('[Preload] Base complete, ensuring category:', category);
+    return preloadForBook(context?.book);
   }
 
-  // Deduplication: If already in progress, return the existing promise
+  // Deduplication: If already in progress, wait for it then top up the category.
   if (preloadPromise) {
     log.debug('[Preload] Already in progress, waiting for existing preload');
-    return preloadPromise;
+    await preloadPromise;
+    return preloadForBook(context?.book);
   }
 
   // Start the preload and store the promise for deduplication
   preloadPromise = (async () => {
     try {
-      // PRIORITY 1: Load core dictionaries (BDB, Jastrow, Strong's)
-      await preloadDictionaries();
-      const status = getCacheStatus();
-      log.debug(`[Preload] Core dictionaries loaded: BDB=${status.bdb}, Jastrow=${status.jastrow}, Strongs=${status.strongs}`);
-
-      // PRIORITY 2: Preload additional lexicons, academic sources, and etymology databases
-      // Await all secondary preloads before marking complete to avoid incomplete lookups
+      // PRIORITY 1: Aggregate etymology files — covers most lookups without
+      // pulling in the full 40MB+ of individual source JSONs.
       await Promise.allSettled([
-        preloadLexicons().then(() => {
-          log.debug('[Preload] Additional lexicons loaded');
-        }),
-        preloadAcademicSources().then(() => {
-          log.debug('[Preload] Academic sources loaded (DJBA, DJPA, HALOT, etc.)');
-        }),
-        preloadEtymologyDatabases().then(() => {
-          log.debug('[Preload] Etymology databases loaded (Sefaria, BDB, Jastrow, Wiktionary)');
-        })
+        loadDictionary('rootMeaningsPro').catch(() => null),
+        loadDictionary('sefariaCache').catch(() => null)
       ]);
+      log.debug('[Preload] Aggregate files loaded (rootMeaningsPro + sefariaCache)');
+
+      // PRIORITY 2: Category-specific lexicons.
+      await preloadForBook(context?.book);
 
       // PRIORITY 3: Preload common words into translation cache (if cache is cold)
       if (shouldPreload()) {
@@ -1954,12 +2020,10 @@ const dictionaryLoader = {
 // Etymology Databases (lazy-loaded)
   getSefariaCache,
   getRootMeaningsPro,
-  getEtymologyBDB,
   getEtymologyJastrow,
   getWiktionaryCache,
   getSefariaCacheData,
   getRootMeaningsProData,
-  getEtymologyBDBData,
   getEtymologyJastrowData,
   getWiktionaryCacheData,
   lookupAllEtymology,
@@ -1987,6 +2051,8 @@ const dictionaryLoader = {
 // Unified initialization
   initializeDictionaries,
   initializePreload,
+  preloadForBook,
+  classifyBookCategory,
   shouldPreload,
   // COMMON_HEBREW_WORDS,
   // COMMON_ARAMAIC_WORDS,

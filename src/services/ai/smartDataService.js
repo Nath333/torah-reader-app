@@ -576,7 +576,9 @@ export const prefetchWordLookups = async (words) => {
 
   for (const batch of batches) {
     await Promise.all(
-      batch.map(word => smartLookup(word, { includeFrench: false }))
+      batch.map(word => smartLookup(word, { includeFrench: false }).catch(err => {
+        console.warn(`[SmartPrefetch] Failed to prefetch "${word}":`, err.message);
+      }))
     );
     // Small delay between batches to avoid overwhelming API
     await new Promise(resolve => setTimeout(resolve, 100));

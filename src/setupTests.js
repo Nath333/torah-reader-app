@@ -11,7 +11,7 @@ import '@testing-library/jest-dom';
 // This allows tests to run without loading large JSON files.
 // Note: jest.mock is hoisted, so all data must be defined inside the factory.
 
-jest.mock('./services/dictionaryLoader', () => {
+jest.mock('./services/dictionaries/dictionaryLoader', () => {
   // Hebrew words (BDB dictionary)
   const bdbData = {
     'מלך': { definition: 'king, reign', lemma: 'מלך', strongNumber: 'H4428' },

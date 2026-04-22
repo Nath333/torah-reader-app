@@ -6,7 +6,7 @@ import { analyzeCommentary, ANALYSIS_MODES } from '../../services/groqService';
 import {
   addMessage as addToMemory,
   trackStudy
-} from '../../services/aiMemoryService';
+} from '../../services/ai/aiMemoryService';
 import {
   getSourceCredibility,
   getCredibilityBadge

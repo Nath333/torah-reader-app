@@ -1,0 +1,341 @@
+/**
+ * TextAnalysisTab Styles
+ */
+
+.text-analysis-tab {
+  padding: 16px;
+}
+
+.text-analysis-tab.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-muted, #6b7280);
+  min-height: 300px;
+}
+
+.text-analysis-tab.empty .empty-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.text-analysis-tab.empty h5 {
+  margin: 0 0 8px 0;
+  color: var(--text-primary, #111827);
+  font-size: 1.1rem;
+}
+
+.text-analysis-tab.empty p {
+  margin: 0;
+  font-size: 0.9rem;
+  max-width: 400px;
+}
+
+/* View Toggle */
+.textual-view-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 4px;
+  background: var(--bg-elevated, #f9fafb);
+  border-radius: 10px;
+}
+
+.textual-view-toggle button {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary, #4b5563);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.textual-view-toggle button:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.textual-view-toggle button.active {
+  background: white;
+  color: var(--primary-color, #3b82f6);
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Grammar View */
+.grammar-view h5 {
+  margin: 0 0 16px 0;
+  color: var(--text-primary, #111827);
+  font-size: 1rem;
+}
+
+.grammar-words {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.grammar-word-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  background: var(--bg-elevated, #f9fafb);
+  border-radius: 10px;
+  border: 1px solid var(--border-color, #e5e7eb);
+}
+
+.word-hebrew {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+  min-width: 80px;
+}
+
+.word-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex: 1;
+}
+
+.word-info .prefixes {
+  font-size: 0.85rem;
+  color: var(--text-muted, #6b7280);
+  background: rgba(0, 0, 0, 0.05);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.word-info .root {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #4b5563);
+  background: #fef3c7;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #fcd34d;
+}
+
+.word-info .aramaic-badge {
+  font-size: 0.7rem;
+  background: #3b82f6;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 6px;
+}
+
+.word-info .pos {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.word-info .binyan {
+  font-size: 0.9rem;
+  color: #059669;
+  background: rgba(5, 150, 105, 0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.talmudic-term-badge {
+  font-size: 0.8rem;
+}
+
+.no-data {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted, #6b7280);
+  font-style: italic;
+}
+
+/* Binyan Reference */
+.binyan-ref {
+  background: var(--bg-elevated, #f9fafb);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.binyan-ref summary {
+  font-weight: 600;
+  color: var(--text-secondary, #4b5563);
+  cursor: pointer;
+  user-select: none;
+}
+
+.binyan-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color, #e5e7eb);
+}
+
+.binyan-grid div {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #4b5563);
+}
+
+.binyan-grid b {
+  color: var(--text-primary, #111827);
+  margin-left: 4px;
+}
+
+/* Masoretic View */
+.masoretic-view h5 {
+  margin: 0 0 16px 0;
+  color: var(--text-primary, #111827);
+  font-size: 1rem;
+}
+
+.masoretic-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.kq-item {
+  background: var(--bg-elevated, #f9fafb);
+  padding: 16px;
+  border-radius: 10px;
+  border-right: 4px solid #8b5cf6;
+}
+
+.kq-item div:first-child {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
+
+.kq-item b {
+  color: var(--text-primary, #111827);
+}
+
+.kq-type {
+  display: inline-block;
+  font-size: 0.8rem;
+  color: #7c3aed;
+  background: rgba(139, 92, 246, 0.1);
+  padding: 4px 10px;
+  border-radius: 6px;
+  margin-top: 4px;
+}
+
+.kq-item .notes {
+  margin: 8px 0 0 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary, #4b5563);
+  font-style: italic;
+}
+
+.tiqqun {
+  background: #fef3c7;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border-right: 4px solid #f59e0b;
+  font-size: 0.95rem;
+}
+
+.no-variants {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted, #6b7280);
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .text-analysis-tab.empty {
+    color: var(--text-muted-dark, #9ca3af);
+  }
+
+  .text-analysis-tab.empty h5 {
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .textual-view-toggle {
+    background: var(--bg-elevated-dark, #374151);
+  }
+
+  .textual-view-toggle button {
+    color: var(--text-secondary-dark, #d1d5db);
+  }
+
+  .textual-view-toggle button:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .textual-view-toggle button.active {
+    background: var(--bg-card-dark, #1f2937);
+    color: #60a5fa;
+  }
+
+  .grammar-view h5,
+  .masoretic-view h5 {
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .grammar-word-card {
+    background: var(--bg-elevated-dark, #374151);
+    border-color: var(--border-color-dark, #4b5563);
+  }
+
+  .word-hebrew {
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .word-info .root {
+    background: rgba(252, 211, 77, 0.2);
+    border-color: rgba(252, 211, 77, 0.3);
+  }
+
+  .binyan-ref {
+    background: var(--bg-elevated-dark, #374151);
+  }
+
+  .binyan-ref summary {
+    color: var(--text-secondary-dark, #d1d5db);
+  }
+
+  .binyan-grid {
+    border-color: var(--border-color-dark, #4b5563);
+  }
+
+  .binyan-grid div {
+    color: var(--text-secondary-dark, #d1d5db);
+  }
+
+  .binyan-grid b {
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .kq-item {
+    background: var(--bg-elevated-dark, #374151);
+  }
+
+  .kq-item b {
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .kq-item .notes {
+    color: var(--text-secondary-dark, #d1d5db);
+  }
+
+  .tiqqun {
+    background: rgba(245, 158, 11, 0.2);
+  }
+}

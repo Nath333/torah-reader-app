@@ -69,9 +69,7 @@ export function useToggleWithCallback(key, defaultValue = false, onChange) {
   const toggle = useCallback(() => {
     setValue(prev => {
       const newValue = !prev;
-      if (onChange) {
-        setTimeout(() => onChange(newValue), 0);
-      }
+      onChange?.(newValue);
       return newValue;
     });
   }, [setValue, onChange]);

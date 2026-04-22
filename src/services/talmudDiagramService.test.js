@@ -9,7 +9,7 @@ import talmudDiagramService, {
   DIAGRAM_TYPES,
   clearDiagramCache,
   validateMermaidSyntax
-} from './talmudDiagramService';
+} from './scholarly/talmudDiagramService';
 
 describe('talmudDiagramService', () => {
   describe('generateCommentatorNetworkDiagram', () => {

@@ -1,0 +1,44 @@
+/**
+ * TropTab Styles
+ */
+
+.trop-tab {
+  height: 100%;
+}
+
+.trop-tab.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-muted, #6b7280);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.trop-tab.empty h5 {
+  margin: 0 0 8px 0;
+  color: var(--text-primary, #111827);
+  font-size: 1.1rem;
+}
+
+.trop-tab.empty p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .trop-tab.empty {
+    color: var(--text-muted-dark, #9ca3af);
+  }
+
+  .trop-tab.empty h5 {
+    color: var(--text-primary-dark, #f9fafb);
+  }
+}

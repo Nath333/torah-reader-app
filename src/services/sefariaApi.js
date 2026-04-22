@@ -23,8 +23,8 @@
 import { createManagedCache } from './cacheOrchestrator';
 import { fetchWithFallback } from '../utils/http';
 import { cleanHtml } from '../utils/sanitize';
-import { getRashiOnTorah, getRashiOnTalmud, getRashiOnTanach, getRashiForVerse, getRashiForChapter } from './rashiService';
-import { getTosafotOnTalmud, getTosafotForDaf, isTosafotAvailable } from './tosafotService';
+import { getRashiOnTorah, getRashiOnTalmud, getRashiOnTanach, getRashiForVerse, getRashiForChapter } from './commentary/rashiService';
+import { getTosafotOnTalmud, getTosafotForDaf, isTosafotAvailable } from './commentary/tosafotService';
 // PRO SCHOLAR V10.2: Use translationService for text translation (separated from word lookup)
 import { translateCommentary } from './translationService';
 
@@ -916,7 +916,7 @@ export {
   getMaharshaForDaf,
   getIbnEzraForChapter,
   getSfornoForChapter
-} from './commentaryServiceFactory';
+} from './commentary/commentaryServiceFactory';
 
 // =============================================================================
 // IBN EZRA COMMENTARY FUNCTIONS
@@ -1875,7 +1875,7 @@ export const getRashiOnShabbat = async (daf) => {
  */
 export const getShabbatCommentaries = async (daf) => {
   // Import Soncino service dynamically to avoid circular deps
-  const { getSoncinoFootnotes } = await import('./soncinoService');
+  const { getSoncinoFootnotes } = await import('./commentary/soncinoService');
 
   const [rashi, tosafot, soncinoFootnotes] = await Promise.all([
     getRashiOnShabbat(daf),

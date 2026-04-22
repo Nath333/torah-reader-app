@@ -5,6 +5,11 @@
 // =============================================================================
 
 // =============================================================================
+// IMPORTS
+// =============================================================================
+import { normalizeArticles } from './articleUtils';
+
+// =============================================================================
 // CONTEXT DETECTION SYSTEM (PRO SCHOLAR)
 // Automatically detect if word is Talmudic/Aramaic vs Biblical Hebrew
 // This drives source priority: Jastrow for Talmud, BDB/Strong's for Biblical
@@ -465,6 +470,9 @@ export const cleanDefinition = (text, options = {}) => {
       cleaned = cleaned.substring(0, targetLength - 3).trim() + '...';
     }
   }
+
+  // Normalize articles (a/an) in the final cleaned text
+  cleaned = normalizeArticles(cleaned);
 
   return cleaned;
 };

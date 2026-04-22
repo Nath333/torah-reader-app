@@ -137,7 +137,6 @@ export function useAsyncOperation(asyncFn, options = {}) {
 
         onError?.(err);
       }
-      throw err;
     }
   }, [asyncFn, onSuccess, onError, resetOnExecute]);
 
