@@ -2,16 +2,23 @@
  * RabbiTooltip - Displays rabbi information on hover
  */
 import React, { useState, useCallback } from 'react';
-import { lookupRabbi } from '../../services/scholarly/namedEntityService';
+import {
+  lookupRabbi,
+  getRabbiRelationships,
+  getTeacherChain
+} from '../../services/scholarly/namedEntityService';
 
 const RabbiTooltip = React.memo(({ rabbiName, children }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipData, setTooltipData] = useState(null);
+  const [relationships, setRelationships] = useState(null);
+  const [teacherChain, setTeacherChain] = useState(null);
 
   const handleMouseEnter = useCallback(() => {
     if (!tooltipData) {
-      const info = lookupRabbi(rabbiName);
-      setTooltipData(info);
+      setTooltipData(lookupRabbi(rabbiName));
+      setRelationships(getRabbiRelationships(rabbiName));
+      setTeacherChain(getTeacherChain(rabbiName));
     }
     setShowTooltip(true);
   }, [rabbiName, tooltipData]);
@@ -86,6 +93,32 @@ const RabbiTooltip = React.memo(({ rabbiName, children }) => {
             <div className="tooltip-section">
               <span className="tooltip-label">Known for:</span>
               <span className="tooltip-value">{tooltipData.famousRulings.join(', ')}</span>
+            </div>
+          )}
+
+          {relationships?.chavruta && (
+            <div className="tooltip-section">
+              <span className="tooltip-label">Chavruta:</span>
+              <span className="tooltip-value" dir="rtl">
+                {relationships.chavruta.hebrew}
+                {relationships.chavruta.english && relationships.chavruta.english !== relationships.chavruta.hebrew && (
+                  <span className="tooltip-value-en"> ({relationships.chavruta.english})</span>
+                )}
+              </span>
+            </div>
+          )}
+
+          {teacherChain && teacherChain.length > 1 && (
+            <div className="tooltip-section tooltip-chain">
+              <span className="tooltip-label">Transmission:</span>
+              <span className="tooltip-value tooltip-chain-value" dir="rtl">
+                {teacherChain.map((r, i) => (
+                  <React.Fragment key={r.hebrew || i}>
+                    {i > 0 && <span className="tooltip-chain-arrow"> → </span>}
+                    <span className="tooltip-chain-name">{r.hebrew}</span>
+                  </React.Fragment>
+                ))}
+              </span>
             </div>
           )}
         </div>

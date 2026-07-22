@@ -17,8 +17,16 @@ import FamilyTree from './FamilyTree';
 import { LearningInsightsPanel, CrossRefsMini } from './ProScholarFeatures';
 import ScholarlySourcePanel from './ScholarlySourcePanel';
 
+// PRO SCHOLAR rich panels (surfaced for modal parity with WordDefinitionCard)
+import CognateLanguagesPanel from './panels/CognateLanguagesPanel';
+import HistoricalLayerPanel from './panels/HistoricalLayerPanel';
+import TextAttestationsPanel from './panels/TextAttestationsPanel';
+import RelatedRootsPanel from './panels/RelatedRootsPanel';
+import CrossReferencesPanel from './panels/CrossReferencesPanel';
+
 // Shared primitive
 import DefinitionsList from './primitives/DefinitionsList';
+import { FEATURES } from '../../services/featureFlags';
 
 // Extracted sub-components
 import {
@@ -440,7 +448,7 @@ function WordIntelligenceCard({
       )}
 
       {/* CANTILLATION */}
-      {showCantillation && !compact && (
+      {showCantillation && FEATURES.CANTILLATION && !compact && (
         <CantillationDisplay word={word} />
       )}
 
@@ -463,7 +471,7 @@ function WordIntelligenceCard({
       )}
 
       {/* FAMILY TREE */}
-      {showFamilyTree && !compact && root && (
+      {showFamilyTree && FEATURES.FAMILY_TREE && !compact && root && (
         <FamilyTree
           root={root}
           language={language}
@@ -516,6 +524,38 @@ function WordIntelligenceCard({
           onSelect={onWordClick}
         />
       )}
+
+      {/* PRO SCHOLAR: Cognate languages (Akkadian, Arabic, Aramaic, Phoenician, ...) */}
+      {!compact && (root || word) && (
+        <CognateLanguagesPanel root={root} word={word} compact />
+      )}
+
+      {/* PRO SCHOLAR: Historical usage layer (Biblical → Mishnaic → Medieval → Modern) */}
+      {!compact && (root || word) && (
+        <HistoricalLayerPanel root={root} word={word} compact />
+      )}
+
+      {/* PRO SCHOLAR V20: Text attestations — where word appears in corpus */}
+      {!compact && word && (
+        <TextAttestationsPanel word={word} compact />
+      )}
+
+      {/* PRO SCHOLAR V13: Related roots (semantic / phonetic / scholarly) */}
+      {!compact && (root || word) && (
+        <RelatedRootsPanel root={root} word={word} compact />
+      )}
+
+      {/* PRO SCHOLAR V14: Cross-references parsed from BDB/Jastrow/Klein/Gesenius/Strong's */}
+      {!compact && definitions.length > 0 && (() => {
+        const dictionaryData = {};
+        for (const d of definitions) {
+          const key = (d.source || d.name || '').toLowerCase().replace(/[^a-z]/g, '');
+          const definition = d.text || d.definition;
+          if (key && definition) dictionaryData[key] = { definition };
+        }
+        if (Object.keys(dictionaryData).length === 0) return null;
+        return <CrossReferencesPanel dictionaryData={dictionaryData} compact />;
+      })()}
 
       {/* LEARNING INSIGHTS */}
       {!compact && (

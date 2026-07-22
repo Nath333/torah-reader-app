@@ -12,6 +12,9 @@ import './App.css';
 import { initializePreload, preloadForBook } from './services/dictionaries/dictionaryLoader';
 // PRO SCHOLAR V7: Preload common words for faster lookup
 import { preloadCommonWords } from './services/unifiedLookupService';
+import { FEATURES } from './services/featureFlags';
+// Semantic search index (populates the corpus that SmartSearch queries)
+import { indexVerses } from './services/ai/semanticSearchService';
 
 // Context
 import { useTorah } from './context/TorahContext';
@@ -151,6 +154,22 @@ function App() {
     });
   }, [torah.book]);
 
+  // Index loaded verses into the semantic search corpus so SmartSearch has something to match.
+  // Runs on every chapter load; indexVerse is a cheap idempotent upsert.
+  useEffect(() => {
+    if (!Array.isArray(torah.verses) || torah.verses.length === 0 || !torah.book) return;
+    const payload = torah.verses.map(v => ({
+      ref: `${torah.book} ${torah.chapter}:${v.verse}`,
+      hebrew: v.hebrewText || '',
+      english: v.englishText || ''
+    }));
+    try {
+      indexVerses(payload);
+    } catch (err) {
+      console.debug('[App] indexVerses error:', err?.message);
+    }
+  }, [torah.book, torah.chapter, torah.verses]);
+
   // =============================================================================
   // Event Handlers
   // =============================================================================
@@ -268,6 +287,7 @@ function App() {
         );
 
       case 'versions':
+        if (!FEATURES.TEXT_VERSIONS) return null;
         return (
           <Suspense fallback={<ViewLoadingFallback />}>
             <ErrorBoundary name="TextVersions">

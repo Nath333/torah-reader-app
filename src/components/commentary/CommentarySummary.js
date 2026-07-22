@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { analyzeCommentary, ANALYSIS_MODES } from '../../services/groqService';
+import { analyzeCommentary, askWithRAG, ANALYSIS_MODES } from '../../services/groqService';
 // 2026 Smart Features - AI Memory & Source Credibility
 import {
   addMessage as addToMemory,
-  trackStudy
+  trackStudy,
+  getRelevantPastContext
 } from '../../services/ai/aiMemoryService';
 import {
   getSourceCredibility,
@@ -31,6 +32,37 @@ const commentaryAnalysisCache = createManagedCache('commentary', {
   maxSize: 200,
   ttl: 30 * 60 * 1000 // 30 minutes
 });
+
+// Parse markdown-style [text](url) citations from askWithRAG into clickable links
+const renderAnswerWithCitations = (text) => {
+  if (!text) return null;
+  const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
+  const parts = [];
+  let lastIndex = 0;
+  let match;
+  while ((match = linkPattern.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(<span key={`t-${lastIndex}`}>{text.slice(lastIndex, match.index)}</span>);
+    }
+    parts.push(
+      <a
+        key={`l-${match.index}`}
+        href={match[2]}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="citation-link"
+        title={`Open in Sefaria: ${match[1]}`}
+      >
+        {match[1]}
+      </a>
+    );
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < text.length) {
+    parts.push(<span key={`t-${lastIndex}`}>{text.slice(lastIndex)}</span>);
+  }
+  return parts;
+};
 
 
 // ============================================================================
@@ -429,37 +461,48 @@ const CommentarySummary = ({
     });
 
     try {
-      // Build context from current analysis and conversation
-      const contextPrompt = `Based on this ${mode} analysis of "${verse}":
-${data.summary || ''}
+      // Group prior messages into {question, answer} pairs for askWithRAG,
+      // keeping only the last 3 exchanges to bound prompt size
+      const pairs = [];
+      for (let i = 0; i < conversationHistory.length - 1; i += 2) {
+        const q = conversationHistory[i];
+        const a = conversationHistory[i + 1];
+        if (q?.role === 'user' && a?.role === 'assistant') {
+          pairs.push({ question: q.content, answer: a.content });
+        }
+      }
 
-Previous context: ${conversationHistory.slice(-4).map(m => `${m.role}: ${m.content}`).join('\n')}
+      // Pull prior study sessions whose topics/verses overlap with the question
+      const pastStudyContext = getRelevantPastContext(`${question} ${verse}`, 3);
 
-User asks: ${question}
-
-Provide a concise, scholarly response in the style of the current analysis mode.`;
-
-      const result = await analyzeCommentary(contextPrompt, {
-        mode: ANALYSIS_MODES.SUMMARY,
-        maxTokens: 500
+      const result = await askWithRAG({
+        question,
+        reference: verse,
+        hebrewText: commentaryText,
+        previousAnalysis: data,
+        conversationHistory: pairs.slice(-3),
+        pastStudyContext
       });
 
-      if (result && !result.error) {
+      if (result?.success) {
         const aiResponse = {
           role: 'assistant',
-          content: result.summary || result.answer || 'I could not generate a response.'
+          content: result.answer || 'I could not generate a response.'
         };
         setConversationHistory(prev => [...prev, aiResponse]);
 
-        // Track AI response
         addToMemory({
           role: 'assistant',
           content: aiResponse.content,
           metadata: {
             type: 'follow_up_response',
-            reference: verse
+            reference: verse,
+            ragSourceCount: result.ragSourceCount,
+            sourcesUsed: result.sourcesUsed
           }
         });
+      } else {
+        throw new Error(result?.error || 'Follow-up request failed');
       }
     } catch (err) {
       console.error('Follow-up question error:', err);
@@ -470,7 +513,7 @@ Provide a concise, scholarly response in the style of the current analysis mode.
     } finally {
       setFollowUpLoading(false);
     }
-  }, [followUpQuestion, followUpLoading, data, mode, verse, conversationHistory]);
+  }, [followUpQuestion, followUpLoading, data, mode, verse, commentaryText, conversationHistory]);
 
   const diagramId = useMemo(() =>
     `${source}-${verse}-${mode}`.replace(/[^a-zA-Z0-9]/g, '-'),
@@ -603,7 +646,11 @@ Provide a concise, scholarly response in the style of the current analysis mode.
                     <span className="message-icon">
                       {msg.role === 'user' ? '👤' : '🤖'}
                     </span>
-                    <p className="message-content">{msg.content}</p>
+                    <p className="message-content">
+                      {msg.role === 'assistant'
+                        ? renderAnswerWithCitations(msg.content)
+                        : msg.content}
+                    </p>
                   </div>
                 ))}
               </div>

@@ -17,6 +17,7 @@ import { getCompleteScholarlyAnalysis, addVocalization } from '../../services/sc
 // Entity detection removed - entities tab consolidated into other features
 import { isTalmudBook, isMishnahBook, isTorahBook, getSefarimCategories, getChapters, getVerses } from '../../services/sefariaApi';
 import { NEVIIM_BOOKS, KETUVIM_BOOKS } from '../../constants/bookConstants';
+import { FEATURES } from '../../services/featureFlags';
 import './ScholarModePanel.css';
 
 // Import extracted components - 5 TAB STRUCTURE (with Talmud tools for Talmud mode)
@@ -455,7 +456,7 @@ const ScholarModePanel = ({
 
   // Local analysis (no API needed) - only for Talmud flow visualization
   const flowData = useMemo(() => {
-    return isTalmud && text ? getFlowDiagram(text) : null;
+    return isTalmud && text && FEATURES.DISCOURSE_ANALYSIS ? getFlowDiagram(text) : null;
   }, [text, isTalmud]);
 
   // Fetch scholarly data when reference changes
@@ -953,7 +954,7 @@ const ScholarModePanel = ({
       })()}
 
       {/* Mini Flow Bar (Talmud only) */}
-      {isTalmud && flowData && flowData.nodes?.length > 0 && (
+      {FEATURES.DISCOURSE_ANALYSIS && isTalmud && flowData && flowData.nodes?.length > 0 && (
         <div className="mini-flow-container">
           <MiniFlowBar flowData={flowData} />
         </div>

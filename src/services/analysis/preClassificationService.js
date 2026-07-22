@@ -1827,7 +1827,7 @@ export const preClassify = (word, context = {}) => {
       expansion: directAbbrev.expansion,
       meaning: directAbbrev.meaning,
       source: 'Talmudic Abbreviations',
-      skipDictionary: true
+      skipDictionary: false // Let dictionary enrich via expansion
     };
   }
 
@@ -1861,7 +1861,7 @@ export const preClassify = (word, context = {}) => {
           meaning: `${prefixMeanings[firstLetter]} ${abbrevMatch.meaning}`,
           english: `${prefixMeanings[firstLetter]} ${abbrevMatch.meaning}`,
           source: 'Talmudic Abbreviations',
-          skipDictionary: true
+          skipDictionary: false // Let dictionary enrich via expansion
         };
       }
     }
@@ -1884,7 +1884,7 @@ export const preClassify = (word, context = {}) => {
             meaning: `${prefixMeanings[first]} ${prefixMeanings[second]} ${abbrevMatch.meaning}`,
             english: `${prefixMeanings[first]} ${prefixMeanings[second]} ${abbrevMatch.meaning}`,
             source: 'Talmudic Abbreviations',
-            skipDictionary: true
+            skipDictionary: false // Let dictionary enrich via expansion
           };
         }
       }
@@ -1905,7 +1905,7 @@ export const preClassify = (word, context = {}) => {
       note: techTermEarly.note,
       source: 'Talmudic Technical Terms',
       confidence: 95,
-      skipDictionary: true
+      skipDictionary: false // Let full dictionary pipeline enrich the source panel
     };
   }
 
@@ -1995,7 +1995,7 @@ export const preClassify = (word, context = {}) => {
         source: 'Biblical Particles',
         confidence: biblicalParticle.confidence,
         note: biblicalParticle.note,
-        skipDictionary: true
+        skipDictionary: false // Let full dictionary pipeline enrich the source panel
       };
     }
   }
@@ -2011,7 +2011,7 @@ export const preClassify = (word, context = {}) => {
       form: particle.form,
       source: 'Aramaic Particles',
       confidence: particle.confidence,
-      skipDictionary: true
+      skipDictionary: false // Let Jastrow/CAL enrich (they have entries for דְּ, כְּדִי, מַאי, etc.)
     };
   }
 
@@ -2031,7 +2031,7 @@ export const preClassify = (word, context = {}) => {
         source: 'Biblical Particles',
         confidence: biblicalParticle.confidence - 5, // Slightly lower in non-Biblical context
         note: biblicalParticle.note,
-        skipDictionary: true
+        skipDictionary: false // Let full dictionary pipeline enrich the source panel
       };
     }
   }
@@ -2056,7 +2056,7 @@ export const preClassify = (word, context = {}) => {
       // Enhanced scholarly data
       relatedRoots: relatedRoots ? relatedRoots.allRelated : null,
       rootFamily: relatedRoots ? relatedRoots.family : null,
-      skipDictionary: true, // Use our well-formed definitions instead of truncated dictionary
+      skipDictionary: false, // Let full dictionary pipeline enrich with BDB/Jastrow/etc.
       enhancedLookup: true // Signal to use root for deeper lookup
     };
   }

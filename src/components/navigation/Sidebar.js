@@ -5,6 +5,7 @@ import StudyDashboard from '../study/StudyDashboard';
 import StreakBadge from '../study/StreakBadge';
 import HebrewCalendarWidget from '../settings/HebrewCalendarWidget';
 import { PARSHIOT, GEMARA_SEDARIM, MISHNAH_SEDARIM } from '../../constants/bookConstants';
+import { FEATURES } from '../../services/featureFlags';
 
 // Error boundary for graceful degradation of badge components
 class BadgeErrorBoundary extends Component {
@@ -617,9 +618,11 @@ function Sidebar({
                 }
               }}
             />
-            <BadgeErrorBoundary>
-              <StreakBadge />
-            </BadgeErrorBoundary>
+            {FEATURES.STUDY_STREAK && (
+              <BadgeErrorBoundary>
+                <StreakBadge />
+              </BadgeErrorBoundary>
+            )}
             <StudyDashboard
               compact={true}
               onNavigateToText={(ref) => {

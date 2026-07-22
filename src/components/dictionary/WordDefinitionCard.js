@@ -40,6 +40,8 @@ import CognateLanguagesPanel from './panels/CognateLanguagesPanel';
 import TextAttestationsPanel from './panels/TextAttestationsPanel';
 import RootMeaningPanel from './panels/RootMeaningPanel';
 import V6AnalysisBadge from './panels/V6AnalysisBadge';
+import RelatedRootsPanel from './panels/RelatedRootsPanel';
+import CrossReferencesPanel from './panels/CrossReferencesPanel';
 // PRO SCHOLAR V5: Loading skeleton for better UX
 import LoadingSkeleton from '../shared/LoadingSkeleton';
 
@@ -89,6 +91,17 @@ const WordDefinitionCard = React.memo(function WordDefinitionCard({
 
   // Memoize sources with stable empty array fallback
   const sources = translationData?.sources || EMPTY_SOURCES;
+  // Normalize sources[] into { bdb, jastrow, ... } shape consumed by CrossReferencesPanel
+  const dictionaryData = useMemo(() => {
+    const map = {};
+    for (const s of sources) {
+      const key = s?.source?.toLowerCase?.().replace(/[^a-z]/g, '');
+      if (!key) continue;
+      const definition = s.definition || s.text || s.english || s.gloss;
+      if (definition) map[key] = { definition };
+    }
+    return map;
+  }, [sources]);
 
   // Get Strong's number if available
   const strongNumber = sources.find(s => s.strongNumber)?.strongNumber ||
@@ -1017,6 +1030,35 @@ const WordDefinitionCard = React.memo(function WordDefinitionCard({
           </summary>
           <TextAttestationsPanel
             word={word}
+            compact={true}
+          />
+        </details>
+      )}
+
+      {/* PRO SCHOLAR V13: Related roots (semantic/phonetic/scholarly) */}
+      {(root || word) && showMorphology && (
+        <details className="wdc-related-roots-details">
+          <summary className="wdc-related-roots-summary">
+            <span className="summary-icon">🌿</span>
+            <span className="summary-text">Related Roots</span>
+          </summary>
+          <RelatedRootsPanel
+            root={root}
+            word={word}
+            compact={true}
+          />
+        </details>
+      )}
+
+      {/* PRO SCHOLAR V14: Cross-references parsed from BDB/Jastrow/Klein/Gesenius/Strong's */}
+      {Object.keys(dictionaryData).length > 0 && showMorphology && (
+        <details className="wdc-cross-refs-details">
+          <summary className="wdc-cross-refs-summary">
+            <span className="summary-icon">🔗</span>
+            <span className="summary-text">Cross-References</span>
+          </summary>
+          <CrossReferencesPanel
+            dictionaryData={dictionaryData}
             compact={true}
           />
         </details>

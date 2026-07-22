@@ -42,24 +42,8 @@ export const ANALYSIS_MODES = {
   // הלכה למעשה - Practical law with chain of transmission
   HALACHA: 'halacha',
 
-  // טעמי המקרא - Cantillation analysis with AI insights
-  TAAMIM: 'taamim',
-
-  // שורש - Living Root System with occurrence patterns
-  SHORESH: 'shoresh',
-
-  // חברותא - AI Chavruta mode (devil's advocate)
-  CHAVRUTA: 'chavruta',
-
-  // שיעור - Shiur Preparation mode for teachers
-  SHIUR: 'shiur',
-
-  // נפקא מינה - Practical Differences Analysis
-  // THE key yeshiva question: "What's the practical outcome?"
-  NAFKA_MINA: 'nafka_mina',
-
-  // מקבילות - Related Passages & Cross-Textual Connections
-  MEKABILOT: 'mekabilot'
+  // חברותא - AI Chavruta mode (devil's advocate) - used by TzuratHaDafTab
+  CHAVRUTA: 'chavruta'
 };
 
 // =============================================================================
@@ -88,12 +72,7 @@ const getModeConfig = (mode) => {
       [ANALYSIS_MODES.MAREI_MEKOMOT]: 0.2,  // Balanced for cross-references
       [ANALYSIS_MODES.MUSSAR]: 0.3,         // Slightly warmer for ethical guidance
       [ANALYSIS_MODES.SUMMARY]: 0.25,
-      [ANALYSIS_MODES.TAAMIM]: 0.2,         // Precise for cantillation analysis
-      [ANALYSIS_MODES.SHORESH]: 0.15,       // Precise for root analysis
       [ANALYSIS_MODES.CHAVRUTA]: 0.4,       // Warmer for creative debate
-      [ANALYSIS_MODES.SHIUR]: 0.3,          // Balanced for teaching content
-      [ANALYSIS_MODES.NAFKA_MINA]: 0.15,    // Precise for practical differences
-      [ANALYSIS_MODES.MEKABILOT]: 0.2,      // Balanced for cross-references
       default: 0.25
     },
     // Max tokens - increased for comprehensive scholarly output
@@ -104,12 +83,7 @@ const getModeConfig = (mode) => {
       [ANALYSIS_MODES.MAREI_MEKOMOT]: 3000, // Many cross-references
       [ANALYSIS_MODES.HALACHA]: 2500,       // Legal chain of transmission
       [ANALYSIS_MODES.MUSSAR]: 2500,        // Ethical development
-      [ANALYSIS_MODES.TAAMIM]: 3000,        // Cantillation analysis
-      [ANALYSIS_MODES.SHORESH]: 3500,       // Root occurrence patterns
       [ANALYSIS_MODES.CHAVRUTA]: 4000,      // Full debate mode
-      [ANALYSIS_MODES.SHIUR]: 4500,         // Full shiur preparation
-      [ANALYSIS_MODES.NAFKA_MINA]: 3500,    // Practical differences analysis
-      [ANALYSIS_MODES.MEKABILOT]: 3000,     // Related passages
       default: 2000
     }
   };
@@ -394,6 +368,7 @@ export const summarizeCommentary = (text, source, verse) =>
  * @param {Object} params.previousAnalysis - Previous analysis result (optional)
  * @param {Object} params.ragContext - Existing RAG context (optional, will fetch if not provided)
  * @param {Array} params.conversationHistory - Previous Q&A exchanges (optional)
+ * @param {Array} params.pastStudyContext - Relevant past study sessions from aiMemoryService.getRelevantPastContext (optional)
  * @returns {Promise<Object>} Answer with citations
  */
 export const askWithRAG = async ({
@@ -402,7 +377,8 @@ export const askWithRAG = async ({
   hebrewText,
   previousAnalysis = null,
   ragContext = null,
-  conversationHistory = []
+  conversationHistory = [],
+  pastStudyContext = []
 }) => {
   const apiKey = getStoredApiKey();
   if (!apiKey) {
@@ -437,6 +413,14 @@ export const askWithRAG = async ({
         ).join('\n\n')
       : '';
 
+    // Study continuity: prior sessions the learner explored with overlapping topics/verses
+    const pastStudySection = pastStudyContext.length > 0
+      ? '\n\nLearner\'s recent related study (use only if directly relevant, do not force connections):\n' +
+        pastStudyContext.map(s =>
+          `- ${s.date} | topics: ${(s.topics || []).join(', ') || 'n/a'} | ${s.summary}`
+        ).join('\n')
+      : '';
+
     // Build system prompt for Q&A
     const systemPrompt = `You are a learned Torah scholar (talmid chacham) answering questions about Jewish texts.
 
@@ -453,7 +437,7 @@ CRITICAL INSTRUCTIONS:
 
 ${previousAnalysis ? `\nContext from previous analysis:\n${previousAnalysis.summary || ''}\n` : ''}
 ${ragPrompt}
-${conversationContext}`;
+${conversationContext}${pastStudySection}`;
 
     const userPrompt = `Reference: ${reference}
 Hebrew text: ${hebrewText?.slice(0, 500) || 'N/A'}

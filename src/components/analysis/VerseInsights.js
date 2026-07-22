@@ -8,6 +8,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { getCrossReferences, getTopicsForRef } from '../../services/sefariaApi';
 import { getReferencesForVerse } from '../../services/rabbinicReferencesService';
 import { analyzeVerseStructure } from '../../services/textual/cantillationService';
+import { analyzePassageSemantics } from '../../services/scholarly/semanticFieldService';
 import './VerseInsights.css';
 
 // Cache for cross-refs and topics (persists across renders)
@@ -26,6 +27,7 @@ const VerseInsights = ({
   const [topics, setTopics] = useState(null);
   const [rabbinicRefs, setRabbinicRefs] = useState(null);
   const [cantillation, setCantillation] = useState(null);
+  const [themes, setThemes] = useState(null);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState('refs');
@@ -45,6 +47,7 @@ const VerseInsights = ({
         setTopics(cached.topics);
         setRabbinicRefs(cached.rabbinicRefs);
         setCantillation(cached.cantillation);
+        setThemes(cached.themes);
         setLoading(false);
         return;
       }
@@ -75,12 +78,24 @@ const VerseInsights = ({
           } catch { /* ignore */ }
         }
 
+        // Semantic-domain analysis (synchronous) — only keep if it found vocabulary
+        let themesData = null;
+        if (hebrewText) {
+          try {
+            const s = analyzePassageSemantics(hebrewText);
+            if (s?.analyzedWords > 0 && s.dominantDomains?.length > 0) {
+              themesData = s;
+            }
+          } catch { /* ignore */ }
+        }
+
         // Cache the results
         const results = {
           crossRefs: verseRefs,
           topics: topicsData?.slice(0, 5) || [], // Limit topics
           rabbinicRefs: rabbinicData,
-          cantillation: cantData
+          cantillation: cantData,
+          themes: themesData
         };
         insightsCache.set(cacheKey, results);
 
@@ -88,6 +103,7 @@ const VerseInsights = ({
         setTopics(results.topics);
         setRabbinicRefs(results.rabbinicRefs);
         setCantillation(results.cantillation);
+        setThemes(results.themes);
       } catch (error) {
         console.warn('Failed to load verse insights:', error);
       }
@@ -112,7 +128,7 @@ const VerseInsights = ({
     return count;
   }, [crossRefs, rabbinicRefs]);
 
-  const hasData = totalRefs > 0 || topics?.length > 0;
+  const hasData = totalRefs > 0 || topics?.length > 0 || (themes?.dominantDomains?.length > 0);
 
   const handleRefClick = useCallback((ref) => {
     if (onNavigateToRef) {
@@ -144,6 +160,11 @@ const VerseInsights = ({
             {cantillation?.structure && (
               <span className="insight-badge cant-badge" title="Cantillation structure">
                 🎵
+              </span>
+            )}
+            {themes?.dominantDomains?.length > 0 && (
+              <span className="insight-badge themes-badge" title={`Themes: ${themes.dominantDomains.map(d => d.labelEn || d.label || d.key).join(', ')}`}>
+                🧬 {themes.dominantDomains.length}
               </span>
             )}
           </div>
@@ -179,6 +200,14 @@ const VerseInsights = ({
               onClick={() => setActiveTab('cant')}
             >
               Trope
+            </button>
+          )}
+          {themes?.dominantDomains?.length > 0 && (
+            <button
+              className={`tab-btn ${activeTab === 'themes' ? 'active' : ''}`}
+              onClick={() => setActiveTab('themes')}
+            >
+              Themes ({themes.dominantDomains.length})
             </button>
           )}
         </div>
@@ -354,6 +383,45 @@ const VerseInsights = ({
                     <span className="mark-chip more">+{cantillation.marks.length - 8}</span>
                   )}
                 </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Themes / Semantic Domains Tab */}
+        {activeTab === 'themes' && themes && (
+          <div className="themes-panel">
+            <div className="themes-coverage">
+              <span className="themes-label">Vocabulary analyzed:</span>
+              <span className="themes-value">
+                {themes.analyzedWords} / {themes.totalWords}
+                {themes.coverage > 0 && ` (${Math.round(themes.coverage * 100)}%)`}
+              </span>
+            </div>
+            <div className="domain-chips">
+              {themes.dominantDomains.map((d, i) => (
+                <span
+                  key={d.key || i}
+                  className="domain-chip"
+                  style={d.color ? { borderLeftColor: d.color } : undefined}
+                  title={d.description || d.labelEn || d.label}
+                >
+                  {d.icon && <span className="domain-icon">{d.icon}</span>}
+                  <span className="domain-label">{d.labelEn || d.label || d.key}</span>
+                  <span className="domain-count">×{d.count}</span>
+                </span>
+              ))}
+            </div>
+            {themes.foundWords?.length > 0 && (
+              <div className="domain-words">
+                <span className="themes-label">Keywords:</span>
+                <span className="domain-word-list" dir="rtl">
+                  {themes.foundWords.slice(0, 12).map((w, i) => (
+                    <span key={i} className="domain-word" title={w.gloss || w.primaryDomain}>
+                      {w.word}
+                    </span>
+                  ))}
+                </span>
               </div>
             )}
           </div>

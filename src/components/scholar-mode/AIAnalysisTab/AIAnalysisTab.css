@@ -2,8 +2,8 @@
    AIAnalysisTab CSS - Scholarly Jewish Torah Study Styles
    ============================================================================= */
 
-/* Import scholarly fonts */
-@import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap');
+/* Scholarly fonts (Frank Ruhl Libre 400/500/700, Crimson Pro 400/600 + italic)
+   loaded via <link> in public/index.html to avoid render-blocking CSS @import. */
 
 /* CSS Variables */
 .ai-analysis-tab,

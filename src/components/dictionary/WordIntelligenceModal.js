@@ -18,6 +18,7 @@ import React, { useCallback } from 'react';
 import { useModals, useModal } from '../../context/ModalContext';
 import ErrorBoundary from '../shared/ErrorBoundary';
 import WordIntelligenceCard from './WordIntelligenceCard';
+import { FEATURES } from '../../services/featureFlags';
 import './WordIntelligenceModal.css';
 
 /**
@@ -42,6 +43,7 @@ const WordIntelligenceModal = () => {
   }, [customWordClick, handlers.wordDetail, options]);
 
   if (!isOpen || !word) return null;
+  if (!FEATURES.WORD_INTELLIGENCE) return null;
 
   return (
     <div

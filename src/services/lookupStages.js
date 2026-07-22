@@ -4,19 +4,20 @@
 // Enhanced with parallel source aggregation and scholarly consensus
 // =============================================================================
 //
-// This module provides the 9 lookup stages that form the translation pipeline.
+// This module provides the 10 lookup stages that form the translation pipeline.
 // Each stage is a pure function that modifies a LookupContext.
 //
 // STAGE ORDER (most specific → most general):
-// 1. PreClassification      - Proper nouns, abbreviations, technical terms
-// 2. HebrewVerbAnalysis     - Binyan detection (להביא → "to bring")
-// 3. HalachicLookup         - Talmudic vocabulary with prefix handling
-// 4. FunctionWordLookup     - Common particles (את, אל, על, כי, אשר)
-// 5. LocalDictionaries      - Jastrow, BDB, Strong's, Klein, CAL
-// 6. AramaicPatternAnalysis - Aramaic verb conjugation (תפיקו → Aphel נפק)
-// 7. MorphologicalAnalysis  - Systematic prefix/suffix decomposition
-// 8. MultiHypothesisLookup  - Root extraction with validation
-// 9. PreClassificationFallback - Use preClass if all else failed
+//  1. PreClassification         - Proper nouns, abbreviations, technical terms
+//  2. HebrewVerbAnalysis        - Binyan detection (להביא → "to bring")
+//  3. HalachicLookup            - Talmudic vocabulary with prefix handling
+//  4. FunctionWordLookup        - Common particles (את, אל, על, כי, אשר)
+//  5. LocalDictionaries         - Jastrow, BDB, Strong's, Klein, CAL
+//  6. CrossReferenceResolution  - Follow Jastrow "v./ch./= X" redirects
+//  7. AramaicPatternAnalysis    - Aramaic verb conjugation (תפיקו → Aphel נפק)
+//  8. MorphologicalAnalysis     - Systematic prefix/suffix decomposition
+//  9. MultiHypothesisLookup     - Root extraction with validation
+// 10. PreClassificationFallback - Use preClass if all else failed
 //
 // USAGE:
 //   import { createStages } from './lookupStages';
@@ -48,6 +49,8 @@ import {
 import { createLogger, IS_DEV as DEBUG } from '../utils/debug';
 // PRO SCHOLAR V10: Scholarly source aggregation
 import { getSourceTier } from './scholarSourceAggregator';
+// PRO SCHOLAR V14: Follow dictionary cross-references (Jastrow "v.", "ch.", "= X", …)
+import { resolveCanonical as resolveCrossReferences } from './analysis/crossReferenceResolver';
 
 const log = createLogger('LookupStages');
 
@@ -316,7 +319,90 @@ export const createStages = (lookups) => {
   });
 
   // =========================================================================
-  // STAGE 6: Aramaic verb pattern analysis
+  // STAGE 6: Cross-reference resolution
+  // Follow dictionary redirects so variant/feminine/construct/Chaldee forms
+  // resolve to their canonical headword.
+  //
+  // Example: שתים → Jastrow "שְׁתַּיִם , v. שְׁנַיִם" → re-lookup שנים → get
+  //   the real definition ("two"), root (שני), cognates, semantic field, etc.
+  //
+  // Triggers when ≥2 sources redirect to the same target, OR a single Tier-1
+  // source is a *pure* redirect with no substantive gloss. Handles v. / ch. /
+  // (= X) / cmp. / sub patterns. Cycle-safe, bounded depth.
+  // =========================================================================
+  const stageCrossReferenceResolution = namedStage('CrossReferenceResolution', (ctx) => {
+    if (ctx.isComplete || ctx.skipDictionary) return;
+    if (!Array.isArray(ctx.sources) || ctx.sources.length === 0) return;
+
+    const result = resolveCrossReferences(ctx.sources, lookupLocalDictionaries, {
+      contextMode: ctx.contextMode,
+      maxDepth: 2
+    });
+
+    if (!result.resolved || result.resolvedSources.length === 0) return;
+
+    if (DEBUG) {
+      log.debug(
+        `[CrossRef] ${ctx.cleaned} → ${result.chain.join(' → ')} ` +
+        `(${result.redirectType}, supporters: ${result.supporters.join(', ')})`
+      );
+    }
+
+    // Mark the original sources as redirects so the UI can render "→ canonical"
+    for (const src of ctx.sources) {
+      if (result.supporters.includes(src.name)) {
+        src.isRedirect = true;
+        src.redirectTo = result.canonical;
+        src.redirectType = result.redirectType;
+      }
+    }
+
+    // Add the canonical sources, tagged with provenance so the UI can show
+    // "Resolved from שתים" and tier math stays honest.
+    const canonicalSources = result.resolvedSources
+      .filter(s => s.definition)
+      .map(s => {
+        const tier = typeof s.tier === 'object' ? s.tier : getSourceTier(s.name);
+        return {
+          ...s,
+          tier: tier.level ?? s.tier,
+          tierName: tier.name ?? s.tierName,
+          tierWeight: tier.weight ?? s.tierWeight,
+          redirectedFrom: ctx.cleaned,
+          redirectChain: result.chain,
+          redirectType: result.redirectType
+        };
+      })
+      .sort((a, b) => a.tier - b.tier);
+
+    ctx.addSources(canonicalSources);
+
+    // Promote the canonical definition to primary — the prior primary (if any)
+    // was just the redirect marker, not a real gloss.
+    const canonicalPrimary = canonicalSources[0];
+    if (canonicalPrimary?.definition) {
+      ctx.primaryEnglish = pickBestDefinition(canonicalPrimary.definition) || canonicalPrimary.definition;
+      ctx.primarySource = canonicalPrimary.name;
+    }
+
+    // Infer root if the canonical entry carries one. For the numerals case,
+    // שנים has root שני — this is what lets the Root Family, Historical
+    // Layer, and Cognate panels have something to work with.
+    const canonicalRoot = canonicalSources.find(s => s.raw?.root)?.raw?.root
+      || canonicalSources.find(s => s.root)?.root;
+
+    ctx.setMetadata({
+      canonicalForm: result.canonical,
+      redirectChain: result.chain,
+      redirectType: result.redirectType,
+      redirectSupporters: result.supporters,
+      ...(canonicalRoot ? { root: canonicalRoot } : {}),
+      _crossRefResolved: true
+    });
+  });
+
+  // =========================================================================
+  // STAGE 7: Aramaic verb pattern analysis
   // For conjugated forms like תפיקו → Aphel of נפק = "to bring out"
   // PRO SCHOLAR V12: Even if we have a primaryEnglish from halachic lookup,
   // we STILL run this stage to add ACADEMIC SOURCES (Jastrow, CAL, etc.)
@@ -393,7 +479,7 @@ export const createStages = (lookups) => {
   });
 
   // =========================================================================
-  // STAGE 7: Morphological analysis
+  // STAGE 8: Morphological analysis
   // Systematic decomposition for complex affixes, possessives, binyanim
   // =========================================================================
   const stageMorphologicalAnalysis = namedStage('MorphologicalAnalysis', (ctx) => {
@@ -442,7 +528,7 @@ export const createStages = (lookups) => {
   });
 
   // =========================================================================
-  // STAGE 8: Multi-hypothesis root extraction
+  // STAGE 9: Multi-hypothesis root extraction
   // Generates all possible roots and validates against dictionaries
   // =========================================================================
   const stageMultiHypothesisLookup = namedStage('MultiHypothesisLookup', (ctx) => {
@@ -505,7 +591,7 @@ export const createStages = (lookups) => {
   });
 
   // =========================================================================
-  // STAGE 9: Pre-classification fallback
+  // STAGE 10: Pre-classification fallback
   // Use stored preClassResult if all dictionary lookups failed
   // =========================================================================
   const stagePreClassificationFallback = namedStage('PreClassificationFallback', (ctx) => {
@@ -548,6 +634,7 @@ export const createStages = (lookups) => {
     stageHalachicLookup,
     stageFunctionWordLookup,
     stageLocalDictionaries,
+    stageCrossReferenceResolution,
     stageAramaicPatternAnalysis,
     stageMorphologicalAnalysis,
     stageMultiHypothesisLookup,
@@ -560,15 +647,16 @@ export const createStages = (lookups) => {
 // =============================================================================
 
 export const STAGE_ORDER = [
-  'PreClassification',        // 1. Proper nouns, abbreviations
-  'HebrewVerbAnalysis',       // 2. Binyan patterns (להביא → bring)
-  'HalachicLookup',           // 3. Talmudic terms
-  'FunctionWordLookup',       // 4. Common particles (את, אל, על)
-  'LocalDictionaries',        // 5. Jastrow, BDB, Strong's, Klein
-  'AramaicPatternAnalysis',   // 6. Aramaic verb conjugation
-  'MorphologicalAnalysis',    // 7. Systematic decomposition
-  'MultiHypothesisLookup',    // 8. Root validation
-  'PreClassificationFallback' // 9. Use preClass if all else fails
+  'PreClassification',         //  1. Proper nouns, abbreviations
+  'HebrewVerbAnalysis',        //  2. Binyan patterns (להביא → bring)
+  'HalachicLookup',            //  3. Talmudic terms
+  'FunctionWordLookup',        //  4. Common particles (את, אל, על)
+  'LocalDictionaries',         //  5. Jastrow, BDB, Strong's, Klein
+  'CrossReferenceResolution',  //  6. Follow Jastrow "v./ch./= X" redirects
+  'AramaicPatternAnalysis',    //  7. Aramaic verb conjugation
+  'MorphologicalAnalysis',     //  8. Systematic decomposition
+  'MultiHypothesisLookup',     //  9. Root validation
+  'PreClassificationFallback'  // 10. Use preClass if all else fails
 ];
 
 export default createStages;

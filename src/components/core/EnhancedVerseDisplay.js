@@ -15,6 +15,7 @@ import useMastery, { MASTERY_LEVELS } from '../../hooks/useMastery';
 import ClickableText from './ClickableText';
 import { prefetchVerse } from '../../services/wordPrefetchService';
 import { lookupParallel } from '../../services/unifiedLookupService';
+import { FEATURES } from '../../services/featureFlags';
 import './EnhancedVerseDisplay.css';
 
 // =============================================================================
@@ -308,7 +309,7 @@ const EnhancedVerseDisplay = ({
       </div>
 
       {/* Mastery Rating - ALWAYS VISIBLE for easy self-assessment */}
-      {showMastery && (
+      {showMastery && FEATURES.MASTERY_TRACKING && (
         <InlineMasteryRating
           book={book}
           chapter={chapter}

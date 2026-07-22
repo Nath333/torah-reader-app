@@ -12,6 +12,7 @@ import { processHebrewText } from '../../utils/hebrewUtils';
 import MasoreticIndicator from '../analysis/MasoreticIndicator';
 import { TranslationSourceHeader, CommentarySourceBadge } from '../shared/SourceBadge';
 import { MASTERY_LEVELS } from '../../hooks/useMastery';
+import { FEATURES } from '../../services/featureFlags';
 
 /**
  * VerseRow - Single verse display with all commentaries
@@ -194,7 +195,7 @@ const VerseRow = ({
         </span>
 
         {/* Masoretic/Textual Variant Indicator */}
-        {!isTalmud && (
+        {!isTalmud && FEATURES.MASORETIC_NOTES && (
           <MasoreticIndicator
             book={selectedBook}
             chapter={selectedChapter}
