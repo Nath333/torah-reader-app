@@ -29,3 +29,5 @@ yarn-debug.log*
 yarn-error.log*
 nul
 .env
+node_modules/
+build/
