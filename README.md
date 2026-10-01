@@ -1,3 +1,7 @@
+> ⚠️ **DOC FIGÉE AU 08/09/2026** — Ce README date de mars 2026 ; le code a été modifié
+> en avril 2026 sans mise à jour de la doc. Vérifier le code avant de se fier au
+> contenu (features, installation). À actualiser au prochain travail sur ce projet.
+
 # Torah Reader App
 
 A modern, feature-rich React application for reading and studying Torah, Talmud, and Mishnah with AI-powered analysis and seamless integration to the Sefaria Project API.

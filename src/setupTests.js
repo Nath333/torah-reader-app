@@ -61,6 +61,11 @@ jest.mock('./services/dictionaries/dictionaryLoader', () => {
     'מלך': { lemma: 'מֶלֶךְ', definition: 'king', pos: 'noun', source: 'Gesenius' },
   };
 
+  // PRO SCHOLAR V16: Klein etymological dictionary
+  const kleinData = {
+    'מלך': { lemma: 'מֶלֶךְ', definition: 'king', pos: 'noun', source: 'Klein' },
+  };
+
   return {
     __esModule: true,
     // Data getters (primary interface for unifiedLookupService)
@@ -72,8 +77,11 @@ jest.mock('./services/dictionaries/dictionaryLoader', () => {
     getJastrowAramaicData: jest.fn(() => jastrowAramaicData),
     // PRO SCHOLAR V15: Academic Sources (streamlined)
     getGeseniusLexiconData: jest.fn(() => geseniusData),
-    // PRO SCHOLAR V15: Async loaders for academic sources
+    // PRO SCHOLAR V16: Klein (added with the academic sources)
+    getKleinLexiconData: jest.fn(() => kleinData),
+    // PRO SCHOLAR V15/V16: Async loaders for academic sources
     getGeseniusLexicon: jest.fn().mockResolvedValue(geseniusData),
+    getKleinLexicon: jest.fn().mockResolvedValue(kleinData),
     preloadAcademicSources: jest.fn().mockResolvedValue(undefined),
     // Async loaders
     getBDB: jest.fn().mockResolvedValue({ byWord: bdbData }),
@@ -144,3 +152,8 @@ jest.mock('./services/dictionaries/dictionaryLoader', () => {
     isCoreDictionariesLoaded: jest.fn(() => true),
   };
 });
+
+console.log("[setupTests] mock dictionaryLoader APPLIQUE");
+import * as loaderProbe from './services/dictionaries/dictionaryLoader';
+console.log('[setupTests] probe getBDBData() =', JSON.stringify(loaderProbe.getBDBData()));
+console.log('[setupTests] probe isCoreDictionariesLoaded() =', loaderProbe.isCoreDictionariesLoaded());

@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "homepage": "https://Nath333.github.io/torah-reader-app",
+  "jest": {
+    "resetMocks": false
+  },
   "dependencies": {
     "dompurify": "^3.3.3",
     "mermaid": "^11.13.0",

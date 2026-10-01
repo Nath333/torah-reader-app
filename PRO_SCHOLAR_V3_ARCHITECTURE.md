@@ -1,3 +1,7 @@
+> ⚠️ **PLAN POSSIBLEMENT OBSOLÈTE (constaté 08/09/2026)** — écrit ~mars 2026,
+> non mis à jour depuis ; le code a évolué en avril. Vérifier ce qui est déjà
+> implémenté avant de suivre ce plan.
+
 # PRO SCHOLAR V3 - Professional Scholarly Dictionary Architecture
 
 ## Executive Summary
