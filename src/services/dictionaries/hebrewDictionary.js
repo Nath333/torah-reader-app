@@ -254,8 +254,19 @@ export const hasTranslation = (word) => {
  */
 export const splitIntoWords = (text) => {
   if (!text) return [];
-  // Remove HTML tags first
-  const cleanText = text.replace(/<[^>]*>/g, ' ');
+  // Retirer les balises HTML puis décoder les entités que les textes Sefaria
+  // contiennent encore (&thinsp;, &nbsp;, &amp;…) — sinon elles fuient dans
+  // les mots affichés (« אֱלֹהִים&thinsp; »). Les espaces nommées deviennent
+  // de vrais espaces ; &amp; se décode en dernier (double-échappement).
+  const cleanText = text
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&thinsp;/gi, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/gi, '&');
   // Split by whitespace and filter empty strings
   return cleanText.split(/\s+/).filter(word => word.length > 0);
 };
