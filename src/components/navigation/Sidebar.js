@@ -33,7 +33,7 @@ class BadgeErrorBoundary extends Component {
           color: 'var(--text-secondary, #6b7280)',
           textAlign: 'center'
         }}>
-          <span>📚 Keep studying!</span>
+          <span>Keep studying!</span>
         </div>
       );
     }
@@ -82,45 +82,6 @@ const CATEGORIES = {
     theme: 'gemara-theme',
     description: 'Talmud Bavli'
   }
-};
-
-// Core book icons - Mishnah tractates inherit from their Gemara counterparts
-const BOOK_ICONS = {
-  // Torah
-  'Genesis': '🌍', 'Exodus': '🔥', 'Leviticus': '⛪', 'Numbers': '🏜️', 'Deuteronomy': '📜',
-  // Neviim
-  'Joshua': '⚔️', 'Judges': '⚖️', 'I Samuel': '👑', 'II Samuel': '👑', 'I Kings': '🏛️', 'II Kings': '🏛️',
-  'Isaiah': '🕊️', 'Jeremiah': '😢', 'Ezekiel': '👁️', 'Hosea': '💔', 'Joel': '🦗', 'Amos': '🐑',
-  'Obadiah': '🏔️', 'Jonah': '🐋', 'Micah': '⚖️', 'Nahum': '🦁', 'Habakkuk': '🙏', 'Zephaniah': '🌑',
-  'Haggai': '🏗️', 'Zechariah': '🌿', 'Malachi': '✉️',
-  // Ketuvim
-  'Psalms': '🎵', 'Proverbs': '💡', 'Job': '🎭', 'Song of Songs': '❤️', 'Ruth': '🌾',
-  'Lamentations': '😭', 'Ecclesiastes': '⏳', 'Esther': '👸', 'Daniel': '🦁', 'Ezra': '📖',
-  'Nehemiah': '🧱', 'I Chronicles': '📝', 'II Chronicles': '📝',
-  // Talmud tractates (shared by Mishnah)
-  'Berakhot': '🙏', 'Shabbat': '🕯️', 'Eruvin': '🏘️', 'Pesachim': '🍷', 'Shekalim': '💰',
-  'Yoma': '⛪', 'Sukkah': '🌿', 'Beitzah': '🥚', 'Rosh Hashanah': '📯', 'Taanit': '🌧️',
-  'Megillah': '📜', 'Moed Katan': '📅', 'Chagigah': '🎉', 'Yevamot': '💍', 'Ketubot': '📃',
-  'Nedarim': '🤝', 'Nazir': '✂️', 'Sotah': '💔', 'Gittin': '📄', 'Kiddushin': '💒',
-  'Bava Kamma': '⚖️', 'Bava Metzia': '🔍', 'Bava Batra': '🏠', 'Sanhedrin': '👨‍⚖️',
-  'Makkot': '⚡', 'Shevuot': '✋', 'Avodah Zarah': '🚫', 'Horayot': '📋', 'Zevachim': '🐑',
-  'Menachot': '🌾', 'Chullin': '🍖', 'Bekhorot': '🐄', 'Arakhin': '💎', 'Temurah': '🔄',
-  'Keritot': '✂️', 'Meilah': '⛪', 'Tamid': '🔥', 'Niddah': '💧',
-  // Additional Mishnah-only tractates
-  'Peah': '🌾', 'Demai': '❓', 'Kilayim': '🌱', 'Sheviit': '7️⃣', 'Terumot': '🎁',
-  'Maasrot': '📊', 'Maaser Sheni': '💰', 'Challah': '🍞', 'Orlah': '🍎', 'Bikkurim': '🧺',
-  'Eduyot': '📜', 'Avot': '📖', 'Middot': '📐', 'Kinnim': '🐦', 'Kelim': '🏺',
-  'Oholot': '⛺', 'Negaim': '🔬', 'Parah': '🐂', 'Tahorot': '✨', 'Mikvaot': '🌊',
-  'Makhshirin': '💦', 'Zavim': '🩺', 'Tevul Yom': '🌅', 'Yadayim': '🤲', 'Oktzin': '🍃'
-};
-
-// Get icon for any book (handles "Mishnah X" prefix)
-const getBookIcon = (bookName) => {
-  // Direct match
-  if (BOOK_ICONS[bookName]) return BOOK_ICONS[bookName];
-  // Strip "Mishnah " prefix
-  const baseName = bookName.replace(/^Mishnah\s+/, '');
-  return BOOK_ICONS[baseName] || '📖';
 };
 
 function Sidebar({
@@ -237,7 +198,7 @@ function Sidebar({
     <aside className="sidebar" role="navigation">
       {/* Header */}
       <header className="sidebar-header">
-        <h2>📚 Library</h2>
+        <h2>Library</h2>
         <button className="sidebar-toggle" onClick={onToggleCollapse} title="Collapse">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M15 18l-6-6 6-6" />
@@ -251,20 +212,20 @@ function Sidebar({
           className={activeTab === 'browse' ? 'active' : ''}
           onClick={() => setActiveTab('browse')}
         >
-          📖 Browse
+          Browse
         </button>
         <button
           className={activeTab === 'saved' ? 'active' : ''}
           onClick={() => setActiveTab('saved')}
         >
-          🔖 Saved
+          Saved
           {savedCount > 0 && <span className="count">{savedCount}</span>}
         </button>
         <button
           className={activeTab === 'progress' ? 'active' : ''}
           onClick={() => setActiveTab('progress')}
         >
-          📊 Progress
+          Progress
         </button>
       </nav>
 
@@ -302,7 +263,6 @@ function Sidebar({
                       className="category-header"
                       onClick={() => setExpandedCategory(isExpanded ? null : catKey)}
                     >
-                      <span className="cat-icon">{cat.icon}</span>
                       <span className="cat-name">{cat.name}</span>
                       <span className="cat-hebrew">{cat.hebrew}</span>
                       <span className={`arrow ${isExpanded ? 'up' : ''}`}>▼</span>
@@ -319,13 +279,13 @@ function Sidebar({
                                 className={viewMode === 'parsha' ? 'active' : ''}
                                 onClick={() => setViewMode('parsha')}
                               >
-                                📜 By Parsha
+                                By Parsha
                               </button>
                               <button
                                 className={viewMode === 'chapters' ? 'active' : ''}
                                 onClick={() => setViewMode('chapters')}
                               >
-                                📖 By Chapter
+                                By Chapter
                               </button>
                             </div>
 
@@ -335,7 +295,6 @@ function Sidebar({
                                 {catData.books.map(book => (
                                   <div key={book} className="torah-book-section">
                                     <div className="torah-book-header">
-                                      <span className="book-icon">{getBookIcon(book)}</span>
                                       <span className="book-name">{book}</span>
                                     </div>
                                     <div className="parsha-grid">
@@ -350,7 +309,6 @@ function Sidebar({
                                           }}
                                           title={`${parsha.hebrew} (Ch. ${parsha.chapters[0]}-${parsha.chapters[1]})`}
                                         >
-                                          <span className="parsha-icon">{parsha.icon}</span>
                                           <span className="parsha-name">{parsha.hebrew}</span>
                                           <span className="parsha-english">{parsha.name}</span>
                                         </button>
@@ -386,7 +344,6 @@ function Sidebar({
                               catData.books.map(book => (
                                 <div key={book} className={`book ${selectedBook === book ? 'selected' : ''}`}>
                                   <button className="book-btn" onClick={() => handleBookSelect(book)}>
-                                    <span className="book-icon">{getBookIcon(book)}</span>
                                     <span className="book-name">{book}</span>
                                   </button>
                                   {selectedBook === book && chapters.length > 0 && (
@@ -417,7 +374,6 @@ function Sidebar({
                                   className="seder-header"
                                   onClick={() => setExpandedSeder(expandedSeder === sederKey ? null : sederKey)}
                                 >
-                                  <span className="seder-icon">{seder.icon}</span>
                                   <span className="seder-name">{seder.name}</span>
                                   <span className="seder-hebrew">{seder.hebrew}</span>
                                   <span className="seder-count">{seder.tractates.length}</span>
@@ -428,7 +384,6 @@ function Sidebar({
                                     {seder.tractates.map(tractate => (
                                       <div key={tractate} className={`tractate ${selectedBook === tractate ? 'selected' : ''}`}>
                                         <button className="tractate-btn" onClick={() => handleBookSelect(tractate)}>
-                                          <span className="tractate-icon">{getBookIcon(tractate)}</span>
                                           <span className="tractate-name">{tractate}</span>
                                         </button>
                                         {selectedBook === tractate && chapters.length > 0 && (
@@ -486,7 +441,6 @@ function Sidebar({
                                   className="seder-header"
                                   onClick={() => setExpandedSeder(expandedSeder === sederKey ? null : sederKey)}
                                 >
-                                  <span className="seder-icon">{seder.icon}</span>
                                   <span className="seder-name">{seder.name}</span>
                                   <span className="seder-hebrew">{seder.hebrew}</span>
                                   <span className="seder-count">{seder.tractates.length}</span>
@@ -499,7 +453,6 @@ function Sidebar({
                                       return (
                                         <div key={tractate} className={`tractate ${selectedBook === tractate ? 'selected' : ''}`}>
                                           <button className="tractate-btn" onClick={() => handleBookSelect(tractate)}>
-                                            <span className="tractate-icon">{getBookIcon(tractate)}</span>
                                             <span className="tractate-name">{displayName}</span>
                                           </button>
                                           {selectedBook === tractate && chapters.length > 0 && (
@@ -530,7 +483,6 @@ function Sidebar({
                           catData.books.map(book => (
                             <div key={book} className={`book ${selectedBook === book ? 'selected' : ''}`}>
                               <button className="book-btn" onClick={() => handleBookSelect(book)}>
-                                <span className="book-icon">{getBookIcon(book)}</span>
                                 <span className="book-name">{book}</span>
                               </button>
                               {selectedBook === book && chapters.length > 0 && (

@@ -2,98 +2,14 @@
    Sidebar - Clean & Modern Design with Category-Specific Themes
    ============================================================================= */
 
-/* ============ CATEGORY COLOR THEMES ============ */
-
-/* Torah Theme - Warm golden parchment tones */
-.category.torah-theme.expanded .category-header {
-  background: linear-gradient(135deg, #d4a574 0%, #c4956a 50%, #b38860 100%);
-  border-color: #b38860;
-}
-
-.category.torah-theme .book-list {
-  background: linear-gradient(180deg, #fef9f3 0%, #fff 100%);
-  border-color: #d4a574;
-}
-
-.category.torah-theme .parsha-btn.active,
-.category.torah-theme .ch-btn.active {
-  background: linear-gradient(135deg, #d4a574 0%, #c4956a 100%);
-  border-color: #b38860;
-  color: white;
-}
-
-/* Gemara Theme - Cool blue scholarly tones */
-.category.gemara-theme.expanded .category-header {
-  background: linear-gradient(135deg, #4a6fa5 0%, #3d5a87 50%, #2c4a6e 100%);
-  border-color: #2c4a6e;
-}
-
-.category.gemara-theme .book-list {
-  background: linear-gradient(180deg, #f0f4f8 0%, #fff 100%);
-  border-color: #4a6fa5;
-}
-
-.category.gemara-theme .seder-header {
-  background: linear-gradient(135deg, #e8eef5 0%, #dce4ed 100%);
-  border-color: #b8c9dc;
-}
-
-.category.gemara-theme .seder-section.expanded .seder-header {
-  background: linear-gradient(135deg, #4a6fa5 0%, #3d5a87 100%);
-  color: white;
-}
-
-.category.gemara-theme .daf-btn.active {
-  background: linear-gradient(135deg, #4a6fa5 0%, #3d5a87 100%);
-  border-color: #2c4a6e;
-  color: white;
-}
-
-/* Mishnah Theme - Fresh green tones */
-.category.mishnah-theme.expanded .category-header {
-  background: linear-gradient(135deg, #5a9e6f 0%, #4a8e5f 50%, #3a7e4f 100%);
-  border-color: #3a7e4f;
-}
-
-.category.mishnah-theme .book-list {
-  background: linear-gradient(180deg, #f0f8f3 0%, #fff 100%);
-  border-color: #5a9e6f;
-}
-
-.category.mishnah-theme .seder-header {
-  background: linear-gradient(135deg, #e8f5ed 0%, #dceee3 100%);
-  border-color: #b8dcca;
-}
-
-.category.mishnah-theme .seder-section.expanded .seder-header {
-  background: linear-gradient(135deg, #5a9e6f 0%, #4a8e5f 100%);
-  color: white;
-}
-
-.category.mishnah-theme .perek-btn.active {
-  background: linear-gradient(135deg, #5a9e6f 0%, #4a8e5f 100%);
-  border-color: #3a7e4f;
-  color: white;
-}
-
-/* Tanach Theme - Neutral purple tones for Nevi'im & Ketuvim */
-.category.tanach-theme.expanded .category-header {
-  background: linear-gradient(135deg, #7c6c9a 0%, #6b5b89 50%, #5a4a78 100%);
-  border-color: #5a4a78;
-}
-
-.category.tanach-theme .book-list {
-  background: linear-gradient(180deg, #f5f3f8 0%, #fff 100%);
-  border-color: #7c6c9a;
-}
-
-.category.tanach-theme .ch-btn.active {
-  background: linear-gradient(135deg, #7c6c9a 0%, #6b5b89 100%);
-  border-color: #5a4a78;
-  color: white;
-}
-
-/* ============ END CATEGORY THEMES ============ */
+/* ============ CATEGORY ACCENTS (sobres) ============ */
+/* Une seule couleur d'accent par section, utilisee en filet discret ;
+   tout le reste passe par les tokens (auto dark mode). */
+.category.torah-theme   { --cat-accent: var(--accent-amber); }
+.category.gemara-theme  { --cat-accent: var(--accent-blue); }
+.category.mishnah-theme { --cat-accent: var(--accent-emerald); }
+.category.tanach-theme  { --cat-accent: var(--accent-purple); }
+/* ============ END CATEGORY ACCENTS ============ */
 
 .sidebar {
   width: 280px;
@@ -351,21 +267,15 @@
 }
 
 .category-header:hover {
-  background: var(--primary-light, #eef2ff);
-  border-color: rgba(99, 102, 241, 0.3);
-  transform: translateX(2px);
+  background: var(--card-bg-subtle, var(--bg-subtle, #f8fafc));
 }
 
 .category.expanded .category-header {
   border-radius: var(--card-border-radius-sm, 8px) var(--card-border-radius-sm, 8px) 0 0;
-  background: linear-gradient(135deg, var(--primary, #6366f1) 0%, #8b5cf6 100%);
-  border-color: var(--primary, #6366f1);
-  color: white;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
-}
-
-.cat-icon {
-  font-size: 1.1rem;
+  background: var(--card-bg-subtle, var(--bg-subtle, #f8fafc));
+  border-color: var(--card-border, var(--border, #e2e8f0));
+  border-left: 2px solid var(--cat-accent, var(--primary));
+  color: var(--text-primary);
 }
 
 .cat-name {
@@ -375,7 +285,7 @@
 }
 
 .category.expanded .cat-name {
-  color: white;
+  color: var(--text-primary);
 }
 
 .cat-hebrew {
@@ -387,7 +297,7 @@
 }
 
 .category.expanded .cat-hebrew {
-  color: rgba(255,255,255,0.85);
+  color: var(--text-secondary);
 }
 
 .arrow {
@@ -401,18 +311,17 @@
 }
 
 .category.expanded .arrow {
-  color: white;
+  color: var(--text-muted);
 }
 
 /* Book List */
 .book-list {
-  background: var(--card-bg, var(--bg-primary, #fff));
-  border: 1px solid var(--primary, #6366f1);
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--card-border, var(--border, #e2e8f0));
   border-top: none;
   border-radius: 0 0 var(--card-border-radius-sm, 10px) var(--card-border-radius-sm, 10px);
   padding: var(--card-padding-sm, 8px);
   animation: slideDown 0.2s ease;
-  box-shadow: var(--card-shadow);
 }
 
 @keyframes slideDown {
@@ -451,10 +360,6 @@
   background: transparent;
 }
 
-.book-icon {
-  font-size: 1.1rem;
-}
-
 .book-name {
   font-size: 0.85rem;
   font-weight: 500;
@@ -490,14 +395,13 @@
 }
 
 .view-mode-toggle button:hover {
-  background: rgba(212, 165, 116, 0.1);
-  border-color: #d4a574;
+  background: var(--card-bg-subtle, var(--bg-subtle, #f8fafc));
 }
 
 .view-mode-toggle button.active {
-  background: linear-gradient(135deg, #d4a574 0%, #c4956a 100%);
-  border-color: #b38860;
-  color: white;
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
   font-weight: 600;
 }
 
@@ -518,15 +422,11 @@
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background: linear-gradient(135deg, #f5efe6 0%, #ede5d8 100%);
-  border-bottom: 1px solid #d4c4a8;
+  background: var(--card-bg-subtle, var(--bg-subtle, #f8fafc));
+  border-bottom: 1px solid var(--card-border, var(--border, #e2e8f0));
   font-weight: 600;
   font-size: 0.85rem;
-  color: #5a4a3a;
-}
-
-.torah-book-header .book-icon {
-  font-size: 1.1rem;
+  color: var(--text-secondary);
 }
 
 .parsha-grid {
@@ -534,7 +434,7 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 4px;
   padding: 6px;
-  background: #fefcf8;
+  background: transparent;
 }
 
 .parsha-btn {
@@ -543,30 +443,23 @@
   align-items: center;
   gap: 2px;
   padding: 8px 4px;
-  background: white;
-  border: 1px solid #e8dcc8;
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--card-border, var(--border, #e2e8f0));
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: border-color 0.15s ease, background 0.15s ease;
   text-align: center;
 }
 
 .parsha-btn:hover {
-  background: #fef9f3;
-  border-color: #d4a574;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(180, 140, 100, 0.15);
+  background: var(--card-bg-subtle, var(--bg-subtle, #f8fafc));
+  border-color: var(--card-border-hover, var(--border, #e2e8f0));
 }
 
 .parsha-btn.active {
-  background: linear-gradient(135deg, #d4a574 0%, #c4956a 100%);
-  border-color: #b38860;
-  color: white;
-  box-shadow: 0 2px 8px rgba(180, 140, 100, 0.3);
-}
-
-.parsha-icon {
-  font-size: 1.2rem;
+  background: var(--primary-light);
+  border-color: var(--cat-accent, var(--primary));
+  color: var(--primary);
 }
 
 .parsha-name {
@@ -577,7 +470,7 @@
 }
 
 .parsha-btn.active .parsha-name {
-  color: white;
+  color: var(--primary);
 }
 
 .parsha-english {
@@ -586,7 +479,7 @@
 }
 
 .parsha-btn.active .parsha-english {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-secondary);
 }
 
 .parsha-chapters {
@@ -594,8 +487,8 @@
   flex-wrap: wrap;
   gap: 4px;
   padding: 8px;
-  background: linear-gradient(135deg, #fef9f3 0%, #fff 100%);
-  border-top: 1px dashed #d4c4a8;
+  background: var(--card-bg-subtle, var(--bg-subtle, #f8fafc));
+  border-top: 1px solid var(--card-border, var(--border, #e2e8f0));
   animation: fadeIn 0.2s ease;
 }
 
@@ -626,17 +519,17 @@
 }
 
 .seder-header:hover {
-  transform: translateX(2px);
+  background: var(--card-bg-subtle, var(--bg-subtle, #f8fafc));
 }
 
 .seder-section.expanded .seder-header {
   border-radius: 8px 8px 0 0;
-  color: white;
+  background: var(--card-bg-subtle, var(--bg-subtle, #f8fafc));
+  border-color: var(--card-border, var(--border, #e2e8f0));
+  border-left: 2px solid var(--cat-accent, var(--primary));
+  color: var(--text-primary);
 }
 
-.seder-icon {
-  font-size: 1.1rem;
-}
 
 .seder-name {
   font-weight: 600;
@@ -651,15 +544,17 @@
 }
 
 .seder-count {
-  background: rgba(0,0,0,0.1);
-  padding: 2px 8px;
+  background: var(--card-bg-subtle, var(--bg-subtle, #f8fafc));
+  border: 1px solid var(--card-border, var(--border, #e2e8f0));
+  padding: 1px 8px;
   border-radius: 10px;
   font-size: 0.7rem;
   font-weight: 600;
+  color: var(--text-secondary);
 }
 
 .seder-section.expanded .seder-count {
-  background: rgba(255,255,255,0.2);
+  background: var(--card-bg, #fff);
 }
 
 .seder-header .arrow {
@@ -686,7 +581,7 @@
 }
 
 .tractate.selected {
-  background: rgba(74, 111, 165, 0.08);
+  background: var(--primary-light);
 }
 
 .tractate-btn {
@@ -705,12 +600,9 @@
 }
 
 .tractate-btn:hover {
-  background: rgba(74, 111, 165, 0.08);
+  background: var(--card-bg-subtle, var(--bg-subtle, #f8fafc));
 }
 
-.tractate-icon {
-  font-size: 1rem;
-}
 
 .tractate-name {
   font-weight: 500;
@@ -719,7 +611,7 @@
 
 .tractate.selected .tractate-name {
   font-weight: 600;
-  color: #4a6fa5;
+  color: var(--primary);
 }
 
 /* ============ DAF GRID (Gemara) ============ */
@@ -728,17 +620,17 @@
   align-items: center;
   justify-content: space-between;
   padding: 6px 10px;
-  background: linear-gradient(135deg, #e8eef5 0%, #dce4ed 100%);
+  background: var(--card-bg-subtle, var(--bg-subtle, #f8fafc));
   border-radius: 6px 6px 0 0;
   margin: 4px 6px 0;
-  border: 1px solid #b8c9dc;
+  border: 1px solid var(--card-border, var(--border, #e2e8f0));
   border-bottom: none;
 }
 
 .daf-count {
   font-size: 0.7rem;
   font-weight: 600;
-  color: #4a6fa5;
+  color: var(--text-secondary);
   font-family: var(--font-hebrew, 'SBL Hebrew', serif);
 }
 
@@ -747,12 +639,12 @@
   grid-template-columns: repeat(auto-fill, minmax(38px, 1fr));
   gap: 3px;
   padding: 8px;
-  background: #f0f4f8;
+  background: var(--card-bg-subtle, var(--bg-subtle, #f8fafc));
   border-radius: 0 0 6px 6px;
   margin: 0 6px 6px;
   max-height: 160px;
   overflow-y: auto;
-  border: 1px solid #b8c9dc;
+  border: 1px solid var(--card-border, var(--border, #e2e8f0));
   border-top: none;
   animation: fadeIn 0.2s ease;
 }
@@ -763,36 +655,34 @@
 
 .daf-btn {
   padding: 6px 2px;
-  background: white;
-  border: 1px solid #d0dae8;
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--card-border, var(--border, #e2e8f0));
   border-radius: 4px;
   font-size: 0.7rem;
   font-weight: 500;
-  color: var(--text-primary, #111827);
+  color: var(--text-primary);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
 
 .daf-btn.amud-a {
-  border-left: 3px solid #4a6fa5;
+  border-left: 2px solid var(--cat-accent, var(--accent-blue));
 }
 
 .daf-btn.amud-b {
-  border-left: 3px solid #8ba4c4;
+  border-left: 2px solid var(--border, #e2e8f0);
 }
 
 .daf-btn:hover {
-  background: #e8eef5;
-  border-color: #4a6fa5;
-  transform: translateY(-1px);
+  background: var(--card-bg-subtle, var(--bg-subtle, #f8fafc));
+  border-color: var(--card-border-hover, var(--border, #e2e8f0));
 }
 
 .daf-btn.active {
-  background: linear-gradient(135deg, #4a6fa5 0%, #3d5a87 100%);
-  border-color: #2c4a6e;
-  color: white;
+  background: var(--primary-light);
+  border-color: var(--cat-accent, var(--accent-blue));
+  color: var(--primary);
   font-weight: 600;
-  box-shadow: 0 2px 6px rgba(74, 111, 165, 0.3);
 }
 
 /* ============ PEREK GRID (Mishnah) ============ */
@@ -801,7 +691,7 @@
   grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
   gap: 4px;
   padding: 8px;
-  background: #f0f8f3;
+  background: var(--card-bg-subtle, var(--bg-subtle, #f8fafc));
   border-radius: 6px;
   margin: 4px 6px 6px;
   animation: fadeIn 0.2s ease;
@@ -809,30 +699,28 @@
 
 .perek-btn {
   padding: 8px 6px;
-  background: white;
-  border: 1px solid #b8dcca;
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--card-border, var(--border, #e2e8f0));
   border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 500;
   font-family: var(--font-hebrew, 'SBL Hebrew', serif);
-  color: var(--text-primary, #111827);
+  color: var(--text-primary);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: border-color 0.15s ease, background 0.15s ease;
   direction: rtl;
 }
 
 .perek-btn:hover {
-  background: #e8f5ed;
-  border-color: #5a9e6f;
-  transform: translateY(-1px);
+  background: var(--card-bg-subtle, var(--bg-subtle, #f8fafc));
+  border-color: var(--card-border-hover, var(--border, #e2e8f0));
 }
 
 .perek-btn.active {
-  background: linear-gradient(135deg, #5a9e6f 0%, #4a8e5f 100%);
-  border-color: #3a7e4f;
-  color: white;
+  background: var(--primary-light);
+  border-color: var(--cat-accent, var(--accent-emerald));
+  color: var(--primary);
   font-weight: 600;
-  box-shadow: 0 2px 6px rgba(90, 158, 111, 0.3);
 }
 
 /* Chapter Grid */
@@ -1212,135 +1100,6 @@
   border-color: var(--border, #374151);
 }
 
-/* ============ DARK MODE - Category Themes ============ */
-
-/* Torah Dark */
-.dark-mode .category.torah-theme .book-list,
-.app.dark-mode .category.torah-theme .book-list {
-  background: linear-gradient(180deg, #2a2520 0%, var(--bg-primary, #1f2937) 100%);
-}
-
-.dark-mode .category.torah-theme .torah-book-header,
-.app.dark-mode .category.torah-theme .torah-book-header {
-  background: linear-gradient(135deg, #3a3025 0%, #2a2520 100%);
-  border-color: #5a4a3a;
-  color: #d4a574;
-}
-
-.dark-mode .category.torah-theme .parsha-grid,
-.app.dark-mode .category.torah-theme .parsha-grid {
-  background: #252018;
-}
-
-.dark-mode .category.torah-theme .parsha-btn,
-.app.dark-mode .category.torah-theme .parsha-btn {
-  background: var(--bg-secondary, #111827);
-  border-color: #4a3a2a;
-  color: var(--text-primary, #f9fafb);
-}
-
-.dark-mode .category.torah-theme .parsha-btn:hover,
-.app.dark-mode .category.torah-theme .parsha-btn:hover {
-  background: #3a3025;
-  border-color: #d4a574;
-}
-
-.dark-mode .category.torah-theme .parsha-chapters,
-.app.dark-mode .category.torah-theme .parsha-chapters {
-  background: linear-gradient(135deg, #2a2520 0%, var(--bg-primary, #1f2937) 100%);
-  border-color: #4a3a2a;
-}
-
-/* Gemara Dark */
-.dark-mode .category.gemara-theme .book-list,
-.app.dark-mode .category.gemara-theme .book-list {
-  background: linear-gradient(180deg, #1a2535 0%, var(--bg-primary, #1f2937) 100%);
-}
-
-.dark-mode .category.gemara-theme .seder-header,
-.app.dark-mode .category.gemara-theme .seder-header {
-  background: linear-gradient(135deg, #2a3545 0%, #1a2535 100%);
-  border-color: #3a4a5a;
-  color: var(--text-primary, #f9fafb);
-}
-
-.dark-mode .category.gemara-theme .tractate-list,
-.app.dark-mode .category.gemara-theme .tractate-list {
-  background: var(--bg-primary, #1f2937);
-  border-color: #3a4a5a;
-}
-
-.dark-mode .category.gemara-theme .tractate-btn:hover,
-.app.dark-mode .category.gemara-theme .tractate-btn:hover {
-  background: rgba(74, 111, 165, 0.15);
-}
-
-.dark-mode .category.gemara-theme .daf-range-header,
-.app.dark-mode .category.gemara-theme .daf-range-header {
-  background: linear-gradient(135deg, #2a3545 0%, #1a2535 100%);
-  border-color: #3a4a5a;
-}
-
-.dark-mode .category.gemara-theme .daf-grid,
-.app.dark-mode .category.gemara-theme .daf-grid {
-  background: #1a2535;
-  border-color: #3a4a5a;
-}
-
-.dark-mode .category.gemara-theme .daf-btn,
-.app.dark-mode .category.gemara-theme .daf-btn {
-  background: var(--bg-secondary, #111827);
-  border-color: #3a4a5a;
-  color: var(--text-primary, #f9fafb);
-}
-
-.dark-mode .category.gemara-theme .daf-btn:hover,
-.app.dark-mode .category.gemara-theme .daf-btn:hover {
-  background: #2a3545;
-}
-
-/* Mishnah Dark */
-.dark-mode .category.mishnah-theme .book-list,
-.app.dark-mode .category.mishnah-theme .book-list {
-  background: linear-gradient(180deg, #1a2a20 0%, var(--bg-primary, #1f2937) 100%);
-}
-
-.dark-mode .category.mishnah-theme .seder-header,
-.app.dark-mode .category.mishnah-theme .seder-header {
-  background: linear-gradient(135deg, #2a3a30 0%, #1a2a20 100%);
-  border-color: #3a5a4a;
-  color: var(--text-primary, #f9fafb);
-}
-
-.dark-mode .category.mishnah-theme .tractate-list,
-.app.dark-mode .category.mishnah-theme .tractate-list {
-  background: var(--bg-primary, #1f2937);
-  border-color: #3a5a4a;
-}
-
-.dark-mode .category.mishnah-theme .perek-grid,
-.app.dark-mode .category.mishnah-theme .perek-grid {
-  background: #1a2a20;
-}
-
-.dark-mode .category.mishnah-theme .perek-btn,
-.app.dark-mode .category.mishnah-theme .perek-btn {
-  background: var(--bg-secondary, #111827);
-  border-color: #3a5a4a;
-  color: var(--text-primary, #f9fafb);
-}
-
-.dark-mode .category.mishnah-theme .perek-btn:hover,
-.app.dark-mode .category.mishnah-theme .perek-btn:hover {
-  background: #2a3a30;
-}
-
-/* Tanach Dark */
-.dark-mode .category.tanach-theme .book-list,
-.app.dark-mode .category.tanach-theme .book-list {
-  background: linear-gradient(180deg, #252030 0%, var(--bg-primary, #1f2937) 100%);
-}
-
 /* View Mode Toggle Dark */
 .dark-mode .view-mode-toggle,
 .app.dark-mode .view-mode-toggle {
@@ -1353,10 +1112,7 @@
   color: var(--text-secondary, #9ca3af);
 }
 
-.dark-mode .view-mode-toggle button:hover,
-.app.dark-mode .view-mode-toggle button:hover {
-  background: rgba(212, 165, 116, 0.15);
-}
+
 
 /* Mobile */
 @media (max-width: 768px) {
