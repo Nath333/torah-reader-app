@@ -1,6 +1,11 @@
 /* eslint-disable no-restricted-globals */
 
-const CACHE_NAME = 'sefarim-reader-v3';
+// v4 : les navigations (index.html) passent en network-first — l'ancien
+// cache-first servait un index.html périmé après chaque déploiement, et le
+// activate ne pouvait rien nettoyer (CACHE_NAME inchangé depuis v3) : les
+// onglets ouverts finissaient par demander des chunks partis (404) et
+// plantaient sur « Something went wrong ».
+const CACHE_NAME = 'sefarim-reader-v4';
 const API_CACHE_NAME = 'sefarim-api-v1';
 
 // Static assets to cache on install
@@ -105,6 +110,27 @@ self.addEventListener('fetch', (event) => {
             return cache.match(request);
           });
       })
+    );
+  } else if (request.mode === 'navigate') {
+    // Network first pour les navigations : l'app shell doit TOUJOURS être la
+    // version déployée (sinon index.html périmé = chunks 404). Le cache ne
+    // sert qu'en offline.
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
+          return response;
+        })
+        .catch(() =>
+          caches.match(request).then(
+            (cached) =>
+              cached ||
+              caches.match('./index.html').then((idx) => idx || Response.error())
+          )
+        )
     );
   } else {
     // Cache first for static assets
