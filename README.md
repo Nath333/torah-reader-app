@@ -1,134 +1,111 @@
-> ⚠️ **DOC FIGÉE AU 08/09/2026** — Ce README date de mars 2026 ; le code a été modifié
-> en avril 2026 sans mise à jour de la doc. Vérifier le code avant de se fier au
-> contenu (features, installation). À actualiser au prochain travail sur ce projet.
+# Torah Reader App (Limud)
 
-# Torah Reader App
+A modern, feature-rich React application for reading and studying Torah, Talmud, and Mishnah — with a multi-source scholarly dictionary (Pro Scholar), AI-powered analysis, and seamless integration with the Sefaria Project API.
 
-A modern, feature-rich React application for reading and studying Torah, Talmud, and Mishnah with AI-powered analysis and seamless integration to the Sefaria Project API.
+> Last updated: 2026-10-03 (README rewritten to match the code; the previous version dated from March 2026).
 
 ## Features
 
-### Text Library
-- **Torah** - All 5 books with Hebrew text and English translations
-- **Nevi'im (Prophets)** - 21 books including Joshua, Isaiah, Jeremiah
-- **Ketuvim (Writings)** - 13 books including Psalms, Proverbs, Job
-- **Talmud Bavli** - 39 tractates with traditional Tzurat HaDaf layout
-- **Mishnah** - All 6 orders (63 tractates)
+### Text Library (via Sefaria API)
+- **Torah** — all 5 books with Hebrew text and English translations
+- **Nevi'im (Prophets)** — 21 books including Joshua, Isaiah, Jeremiah
+- **Ketuvim (Writings)** — 13 books including Psalms, Proverbs, Job
+- **Talmud Bavli** — tractates with traditional *Tzurat HaDaf* page layout
+- **Mishnah** — all 6 orders (63 tractates)
 
 ### Commentaries
-- **Rashi** - Primary commentary on Torah and Talmud
-- **Ramban (Nachmanides)** - Philosophical and mystical insights
-- **Tosafot** - Talmudic discussions and analysis
-- **Maharsha** - Deep Talmudic analysis
-- **Onkelos** - Aramaic Targum translation
-- **Ibn Ezra, Sforno, Radak** - Additional classic commentators
+- **Rashi** (with French translation support), **Ramban**, **Tosafot**, **Maharsha**, **Onkelos**, **Ibn Ezra**, **Sforno**, **Radak** and more, fetched from Sefaria with local caching.
 
-### AI-Powered Study Tools
-- **Smart Summaries** - AI-generated summaries of verses and commentaries
-- **PaRDeS Analysis** - Four levels of Torah interpretation (Pshat, Remez, Drash, Sod)
-- **Mussar Insights** - Character development and ethical teachings
-- **Gematria Analysis** - Numerical patterns in Hebrew text
-- **Lexicon Mode** - Scholarly dictionary analysis (BDB, Jastrow, HALOT)
-- **Intertextual Analysis** - Cross-references across Jewish texts
-- **Talmud-Specific Modes** - Sugya flow, Shakla Vetarya dialectic analysis
+### Scholar Mode — Study Center
+Tabbed interface that adapts to the book being read:
+- **לימוד Learn** — AI analysis modes (Summary, Iyun, Mussar, Machloket/PaRDeS, Gematria, intertextual…) in 3 categories
+- **מילים Words** — dictionary lookup (see Pro Scholar below)
+- **פירושים Commentary** — multi-commentary view with summaries and disagreement visualization
+- **חברותא Chavruta** — AI study partner (Chat, Quiz, Challenge, Compare)
+- **מחברת Notebook** — personal journal (questions, insights, progress)
+- Talmud mode adds **גמרא Talmud tools** (Iyun/Bekius/Chazara, abbreviations, sages) and **צורת הדף** traditional layout
+
+### Pro Scholar — Multi-Source Dictionary
+- Tiered scholarly sources: **BDB, Jastrow, Strong's, CAL Aramaic, Gesenius, Klein** — aggregated with consensus scoring and per-source citations
+- Morphological analysis (binyanim detection, conjugation tables, weak verbs), root family trees, etymology chains, cognate languages (comparative Semitic)
+- Aramaic detection for Talmudic text, hapax legomena, dialect/period analysis, semantic fields
+- Word lookup works offline on preloaded local dictionaries; online sources enrich in background
+- Scholarly exports: JSON-LD, Markdown, flashcards (SRS)
 
 ### Study Features
-- **Bookmarks** - Save and organize favorite verses with import/export
-- **Reading History** - Track your learning progress
-- **Verse Notes** - Personal annotations on any verse
-- **Vocabulary Bank** - Learn and review Hebrew/Aramaic words
-- **Reading Statistics** - Track your study habits
+- **Bookmarks** — save and organize favorite verses with import/export
+- **Reading history & statistics**
+- **Verse notes** and vocabulary bank
+- **Cross-references** between related texts
 
 ### Navigation
-- **Weekly Parsha** - Jump to current Torah portion
-- **Daf Yomi** - Daily Talmud page
-- **Cross-References** - Navigate between related texts
-- **Powerful Search** - Full-text search across all texts
-- **URL Sharing** - Share specific verses via URL
+- **Weekly Parsha** and **Daf Yomi** (Hebcal API, with offline fallback)
+- Full-text search, URL sharing of specific verses
+- Keyboard shortcuts (Ctrl+K search, Ctrl+B bookmarks, Ctrl+D dark mode)
 
 ### Accessibility & UX
-- **Dark/Light Mode** - System preference detection
-- **Adjustable Font Sizes** - Comfortable reading at any size
-- **Keyboard Shortcuts** - Efficient navigation (Ctrl+K search, Ctrl+B bookmarks)
-- **Text-to-Speech** - Hebrew audio with voice selection
-- **Pronunciation Guide** - Ashkenazi and Sephardic traditions
-- **Offline Support** - Service Worker for offline access
-- **Responsive Design** - Works on desktop and mobile
+- Dark/light mode, adjustable font sizes, responsive design (desktop & mobile)
+- Text-to-speech for Hebrew with voice selection, Ashkenazi/Sephardic pronunciation guide
+- Offline support via Service Worker + locally served dictionary data
 
 ### Translations
-- **English** - Full English translations
-- **French** - AI-powered English to French translation
+- **English** — full translations
+- **French** — AI-powered translation of definitions and commentaries
 
 ## Technical Stack
 
-- **React 19** - Modern hooks-based architecture
-- **Context API** - State management (Torah, Settings, Study contexts)
-- **Sefaria API** - Authentic Jewish text data
-- **Groq AI** - Llama 3.3 70B for intelligent analysis
-- **CSS Variables** - Theming and design system
-- **LocalStorage** - Persistent user data
+- **React 19** — hooks-based architecture, 8 contexts (Torah, Settings, Study, Commentary…)
+- **Vite** — dev server and production build (rolldown); **Vitest** for the test suite
+- **Sefaria API** — authentic Jewish text data, with caching layers
+- **Groq AI** (Llama 3.3 70B) — analysis, summaries and translations
+- **CSS Variables** theming; **LocalStorage** persistence
 
 ## Project Structure
 
 ```
 src/
-├── components/          # 75+ UI components
-│   ├── TorahReader.js   # Main text display
-│   ├── AIStudyPanel.js  # AI analysis interface
-│   ├── CommentarySelector.js
-│   ├── Sidebar.js
-│   └── ...
-├── services/            # 25 specialized services
-│   ├── sefariaApi.js    # API integration & caching
-│   ├── groqService.js   # AI analysis
-│   ├── rashiService.js  # Rashi commentary
-│   └── ...
-├── context/             # State management
-│   ├── TorahContext.js  # Text data
-│   ├── SettingsContext.js # User preferences
-│   └── StudyContext.js  # Learning data
-├── hooks/               # 14 custom hooks
-│   ├── useDarkMode.js
-│   ├── useKeyboardShortcuts.js
-│   └── ...
-├── utils/               # Utilities
-│   ├── cache.js         # Unified caching
-│   └── ...
-└── styles/              # CSS design system
+├── components/       # ~210 files in 12 domain folders
+│   ├── core/         #   TorahReader, verse display, reader controls
+│   ├── scholar-mode/ #   Study Center tabs (Learn, Words, Commentary, Chavruta…)
+│   ├── dictionary/   #   Pro Scholar panels, morphology, etymology
+│   ├── commentary/   #   Commentary viewer, summaries, Rashi French
+│   ├── analysis/     #   Cantillation, textual criticism, rabbinic refs
+│   ├── ai-tutor/     #   Chavruta AI (chat, quiz, personas)
+│   ├── layout/       #   Tzurat HaDaf, Mikraot Gedolot layouts
+│   └── …             #   ai-tutor, navigation, settings, shared, study, visualization
+├── services/         # ~80 modules: Sefaria, Groq, unified lookup pipeline,
+│   │                 #   dictionary loaders (lazy JSON), cache orchestrator,
+│   │                 #   scholarly aggregators, hebcal, audio…
+├── context/          # 8 React contexts
+├── hooks/            # ~40 custom hooks
+├── constants/        # Books, morphology, function words, citations
+├── utils/            # Cache, sanitization (DOMPurify), Hebrew text utils
+└── styles/           # CSS design system
 ```
+
+Dictionary data is served from `public/data/` and lazy-loaded per source.
 
 ## Getting Started
 
 1. Clone the repository
 2. Install dependencies: `npm install`
-3. Create `.env` file with your API key (optional):
-   ```
-   REACT_APP_GROQ_API_KEY=your_groq_api_key
-   ```
-4. Start the development server: `npm start`
-5. Open http://localhost:3000 in your browser
-
-## Keyboard Shortcuts
-
-| Shortcut | Action |
-|----------|--------|
-| `Ctrl/Cmd + K` | Open search |
-| `Ctrl/Cmd + B` | Toggle bookmarks |
-| `Ctrl/Cmd + D` | Toggle dark mode |
-| `Escape` | Close modals/panels |
-| `←` / `→` | Previous/Next chapter |
+3. Start the development server: `npm start` (Vite, http://localhost:5173)
+4. Run the tests: `npm test` (Vitest)
+5. Production build: `npm run build` → `dist/`
 
 ## API Keys
 
-### Groq AI (Optional)
-For AI-powered analysis features, get a free API key from [Groq](https://console.groq.com/).
-You can add it via the app's AI settings panel or in your `.env` file.
+### Groq AI (optional)
+AI features need a free [Groq](https://console.groq.com/) API key.
+
+**Enter it in the app (Réglages / AI settings panel).** The key is stored in the browser via encrypted storage and is **not** bundled in the application — the old `.env` / `REACT_APP_GROQ_API_KEY` mechanism was removed for security (a build-time key ends up in plain text in the public JS bundle).
 
 ## Deployment
 
+Hosted on GitHub Pages: https://Nath333.github.io/torah-reader-app
+
 ```bash
-npm run build     # Create production build
-npm run deploy    # Deploy to GitHub Pages
+npm run deploy    # build (predeploy) + publish dist/ to GitHub Pages
 ```
 
 ## License
