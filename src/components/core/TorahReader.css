@@ -7757,3 +7757,86 @@
     left: -8px;
   }
 }
+
+/* =============================================================================
+   REFONTE LECTURE (03/10/2026) — surface calme, hiérarchie par la typographie
+   Objectif : moins de boîtes, plus de texte. Les versets se séparent par de
+   l'air et un filet discret ; l'hébreu domine ; les traductions se fondent ;
+   les commentaires restent des cartes distinctes. Tokens partout.
+   ============================================================================= */
+
+/* Versets : plus des cartes, des lignes de lecture */
+.verse {
+  padding: 20px 14px;
+  margin-bottom: 6px;
+  border: none;
+  border-bottom: 1px solid var(--border-light);
+  border-radius: 12px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.verse:hover {
+  background: var(--bg-subtle);
+  border-color: var(--border-light);
+  box-shadow: none;
+  transform: none;
+}
+
+.app.dark-mode .verse {
+  background: transparent;
+  border-color: rgba(148, 163, 184, 0.12);
+  box-shadow: none;
+}
+
+.app.dark-mode .verse:hover {
+  background: rgba(148, 163, 184, 0.06);
+  border-color: rgba(148, 163, 184, 0.2);
+  box-shadow: none;
+}
+
+/* Hébreu : le protagoniste — plus grand, sans boîte */
+.verse .hebrew-text,
+.app.dark-mode .hebrew-text {
+  background: transparent;
+  border: none;
+  border-right: 3px solid var(--primary);
+  font-size: calc(var(--text-torah) + 0.15rem);
+  line-height: calc(var(--leading-hebrew) - 0.25);
+  padding: 4px 16px 4px 0;
+  letter-spacing: 0.01em;
+}
+
+/* Traductions : texte complice, pas des encarts colorés */
+.verse .english-translation,
+.app.dark-mode .english-translation {
+  background: transparent;
+  border: none;
+  border-left: 2px solid var(--border);
+  color: var(--text-secondary);
+  padding: 2px 0 2px 14px;
+  margin-top: 10px;
+  font-size: 1.02rem;
+  line-height: 1.65;
+}
+
+.verse .french-translation,
+.app.dark-mode .french-translation {
+  background: transparent;
+  border: none;
+  border-left: 2px solid var(--border);
+  color: var(--text-secondary);
+  padding: 2px 0 2px 14px;
+  margin-top: 8px;
+}
+
+/* Numéro de verset : sobre, ancré */
+.verse .verse-number {
+  box-shadow: none;
+  opacity: 0.85;
+}
+
+/* Commentaires : cartes conservées mais resserrées et distinctes du verset */
+.verse .verse-commentaries {
+  margin-top: 12px;
+}
