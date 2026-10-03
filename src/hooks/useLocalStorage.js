@@ -5,13 +5,16 @@ const QUOTA_EXCEEDED_ERRORS = ['QuotaExceededError', 'NS_ERROR_DOM_QUOTA_REACHED
 
 /**
  * Check if error is a quota exceeded error
+ * Identification par nom/code uniquement : `instanceof DOMException` est
+ * non fiable selon l'environnement (la classe DOMException du test peut
+ * différer de celle du contexte jsdom — faux négatif en CI Node 22).
  */
 const isQuotaExceeded = (error) => {
+  if (!error) return false;
   return (
-    error instanceof DOMException &&
-    (QUOTA_EXCEEDED_ERRORS.includes(error.name) ||
-      error.code === 22 ||
-      error.code === 1014)
+    QUOTA_EXCEEDED_ERRORS.includes(error.name) ||
+    error.code === 22 ||
+    error.code === 1014
   );
 };
 
