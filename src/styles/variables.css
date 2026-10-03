@@ -9,6 +9,14 @@
   /* -------------------------------------------------------------------------
      Brand Colors
      ------------------------------------------------------------------------- */
+  /* Aliases legacy (03/10/2026) : une partie des composants (étude, dictionnaire)
+     consomme un autre vocabulaire. Sans ces définitions, les fallbacks
+     white/#e5e7eb gagnaient — champs et cartes blancs sur le thème sombre. */
+  --bg-primary: var(--bg-elevated);
+  --border-color: var(--border);
+  --primary-color: var(--primary);
+  --surface: var(--bg-elevated);
+
   --primary: #5b4cdb;
   --primary-hover: #4c3fc7;
   --primary-light: #f0eeff;
