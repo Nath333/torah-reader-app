@@ -18,7 +18,7 @@ const AI_FEATURES = [
 
 // Setup steps data
 const SETUP_STEPS = [
-  { num: 1, text: 'Visit', link: 'https://console.groq.com/keys', linkText: 'console.groq.com', hint: 'Free account, no credit card needed' },
+  { num: 1, text: 'Visit', link: 'https://openrouter.ai/keys', linkText: 'openrouter.ai/keys', hint: 'Free account, no credit card needed' },
   { num: 2, text: 'Create an API key', hint: 'Click "Create API Key" button' },
   { num: 3, text: 'Paste your key below', hint: 'Starts with gsk_...' },
 ];
@@ -106,7 +106,7 @@ const APIKeySetup = ({ onKeySet }) => {
         </div>
         <div className="setup-title-group">
           <h3>AI Study Assistant</h3>
-          <span className="setup-subtitle">Powered by Groq</span>
+          <span className="setup-subtitle">Powered by OpenRouter · GLM Flash</span>
         </div>
       </div>
 

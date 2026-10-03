@@ -12,7 +12,8 @@ import {
   setGroqApiKey,
   removeGroqApiKey,
   hasApiKey,
-  checkConnection as checkGroqConnection
+  checkConnection as checkGroqConnection,
+  DEFAULT_MODEL
 } from './groqApi';
 import { buildRAGContext, formatRAGContextForPrompt } from './ai/ragService';
 import { getModePrompt, MODE_DESCRIPTIONS } from './prompts/modePrompts';
@@ -275,7 +276,7 @@ export const analyzeCommentary = async (
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'llama-3.3-70b-versatile',
+          model: DEFAULT_MODEL,
           messages: [
             { role: 'system', content: getSystemPrompt(mode, source, options) },
             { role: 'user', content: userPromptWithRAG }
@@ -466,7 +467,7 @@ Please answer based on the sources provided, with proper citations.`;
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
+        model: DEFAULT_MODEL,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }

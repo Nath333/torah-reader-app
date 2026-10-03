@@ -19,7 +19,7 @@
  * - AIChazaraMode: Quiz/review with AI (questions, scoring, feedback)
  *
  * PROVIDERS:
- * - Groq (cloud): Fast inference with llama-3.3-70b
+ * - OpenRouter (cloud): z-ai/glm-5.3-flash
  * - Ollama (local): Privacy-first local models
  * - Auto: Prefers local, falls back to cloud
  *
@@ -314,7 +314,7 @@ const AIAnalysisTab = ({
     } else if (currentProvider === AI_PROVIDERS.AUTO) {
       return { icon: '⚡', name: 'Auto', model: ollamaStatus?.connected ? 'Local' : 'Cloud' };
     }
-    return { icon: '☁️', name: 'Groq', model: 'llama-3.3-70b' };
+    return { icon: '☁️', name: 'OpenRouter', model: 'glm-5.3-flash' };
   };
 
   const providerInfo = getProviderDisplay();

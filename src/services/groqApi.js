@@ -7,8 +7,10 @@
 import { AIError as BaseAIError, ERROR_TYPES as BaseErrorTypes } from '../utils/errors';
 import { safeStorage } from '../utils/safeHtml';
 
-export const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
-export const DEFAULT_MODEL = 'llama-3.3-70b-versatile';
+// Fournisseur IA : OpenRouter (compatible API OpenAI). Bascule 04/10/2026
+// depuis Groq — modèle unique demandé par l'utilisateur.
+export const GROQ_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+export const DEFAULT_MODEL = 'z-ai/glm-5.3-flash';
 
 // =============================================================================
 // API Key Management
@@ -77,7 +79,9 @@ export const callGroqAPI = async (messages, options = {}) => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`
+      'Authorization': `Bearer ${apiKey}`,
+      'HTTP-Referer': window.location.origin,
+      'X-Title': 'Limud — Torah Reader'
     },
     body: JSON.stringify({
       model,

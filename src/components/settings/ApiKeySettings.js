@@ -79,7 +79,7 @@ const ApiKeySettings = ({ onClose, onSave }) => {
             <strong>Get your free Groq API key:</strong>
           </p>
           <ol>
-            <li>Visit <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer">console.groq.com/keys</a></li>
+            <li>Visit <a href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer">openrouter.ai/keys</a></li>
             <li>Sign up for a free account</li>
             <li>Create a new API key</li>
             <li>Paste it below</li>
