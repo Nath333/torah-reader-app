@@ -1,0 +1,115 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""pre-commit : anti « commit avalé » entre sessions partageant ce clone.
+
+Contexte : 3 sessions ZCode travaillent le même clone ; un `git add -A` +
+`git commit` d'une session emporte le travail stagé des autres (constaté
+2× le 03/10/2026). Ce hook refuse un commit dont les chemins sont couverts
+par un claim pilotage actif d'une AUTRE session identifiée.
+
+Identité : env PILOTAGE_SESSION (ou CLAUDE_SESSION_ID).
+Chemin du commit : env PILOTAGE_COMMIT_PATHS (liste séparée par espaces,
+posée par scripts/commit-mien.sh) sinon tout l'index.
+Bypass explicite : env PILOTAGE_FORCE_COMMIT=1.
+Fail-open absolu : toute erreur → commit autorisé (comme garde-hook.py).
+Installé par : git config core.hooksPath scripts/hooks
+"""
+import fnmatch
+import os
+import re
+import subprocess
+import sys
+
+PILOTAGE_DIR = r"D:\_DEV-CAO\_PILOTAGE"
+FALLBACK_RE = re.compile(r"^\d{8}-\d{4}-\d{5}$")
+
+
+def nrm(p):
+    """Normalisation compatible pilotage.norm_fichier : absolu, minuscule, \\"""
+    if not os.path.isabs(p):
+        p = os.path.join(REPO_ROOT, p)
+    return os.path.normpath(p).replace("/", "\\").lower()
+
+
+def chemins_du_commit():
+    decl = os.environ.get("PILOTAGE_COMMIT_PATHS", "").strip()
+    if decl:
+        return [p for p in decl.split() if p]
+    out = subprocess.run(
+        ["git", "diff", "--cached", "--name-only", "-z"],
+        capture_output=True, text=True, cwd=REPO_ROOT
+    ).stdout
+    return [p for p in out.split("\0") if p]
+
+
+REPO_ROOT = subprocess.run(
+    ["git", "rev-parse", "--show-toplevel"],
+    capture_output=True, text=True
+).stdout.strip()
+
+
+def main():
+    if os.environ.get("PILOTAGE_FORCE_COMMIT") == "1":
+        sys.stderr.write("commit : bypass anti-avalé explicite (PILOTAGE_FORCE_COMMIT=1)\n")
+        return 0
+
+    paths = chemins_du_commit()
+    if not paths:
+        return 0
+
+    moi = os.environ.get("PILOTAGE_SESSION") or os.environ.get("CLAUDE_SESSION_ID") or ""
+
+    sys.path.insert(0, PILOTAGE_DIR)
+    import pilotage  # noqa: E402
+
+    npaths = [nrm(p) for p in paths]
+    conflits, indicatifs = [], []
+
+    for c in pilotage.charge_claims(vivants_seulement=True):
+        patterns = [nrm(f) for f in (c.get("fichiers") or []) if f]
+        if not patterns:
+            continue
+        hits = [
+            p for p in npaths
+            if p in patterns or any(fnmatch.fnmatch(p, pat) for pat in patterns)
+        ]
+        if not hits:
+            continue
+        sess = str(c.get("session", ""))
+        if moi and sess == moi:
+            continue
+        ligne = "sujet=%s session=%s expire=%s fichiers=%s" % (
+            c.get("sujet"), sess, c.get("expire_le"), ", ".join(hits[:3]))
+        if FALLBACK_RE.match(sess):
+            indicatifs.append(ligne)
+        else:
+            conflits.append(ligne)
+
+    for l in indicatifs:
+        sys.stderr.write("commit : couvert par un claim INDICATIF (%s) — permis\n" % l)
+
+    if conflits:
+        sys.stderr.write(
+            "\nREFUS anti-avalé : des fichiers stagés sont réservés par une AUTRE session :\n"
+            + "\n".join("  - " + l for l in conflits)
+            + "\n\nRemèdes :\n"
+            "  1. Ne committer que TES chemins : scripts/commit-mien.sh \"message\" chemin1 [chemin2…]\n"
+            "     (équivalent : PILOTAGE_COMMIT_PATHS=\"chemin1 chemin2\" git commit …)\n"
+            "  2. Dégager le travail de l'autre du staging : git restore --staged <chemin>\n"
+            "  3. Forcer en connaissance de cause : PILOTAGE_FORCE_COMMIT=1 git commit …\n"
+        )
+        return 1
+
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        _code = main()
+    except Exception as _e:  # fail-open absolu
+        try:
+            sys.stderr.write("pre-commit fail-open : %r\n" % (_e,))
+        except Exception:
+            pass
+        _code = 0
+    sys.exit(_code)
