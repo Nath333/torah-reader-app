@@ -24,3 +24,6 @@
 *.ttf binary
 *.eot binary
 *.pdf binary
+
+# Scripts bash : LF obligatoire (executes cote homelab)
+*.sh text eol=lf
