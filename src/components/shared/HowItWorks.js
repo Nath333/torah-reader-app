@@ -88,7 +88,8 @@ const HowItWorks = () => {
               Tout est stocké dans <strong>ton navigateur</strong> — rien sur un serveur.
             </p>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

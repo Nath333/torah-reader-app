@@ -56,15 +56,15 @@ const ReaderControls = ({
     toggleCantillation
   } = useSettings();
   return (
-    <div className="reader-controls" role="toolbar" aria-label="Reading controls">
+    <div className="reader-controls" role="toolbar" aria-label="Contrôles de lecture">
       <div className="control-group">
         {/* Translation toggles - pill segment */}
-        <div className="control-segment" role="group" aria-label="Translation options">
+        <div className="control-segment" role="group" aria-label="Options de traduction">
           <button
             onClick={() => setShowTranslation(!showTranslation)}
             className={`control-button ${showTranslation ? 'active' : ''}`}
             aria-pressed={showTranslation}
-            title={showTranslation ? 'Hide English translation' : 'Show English translation'}
+            title={showTranslation ? 'Masquer la traduction anglaise' : 'Afficher la traduction anglaise (Sefaria)'}
           >
             EN
           </button>
@@ -74,7 +74,7 @@ const ReaderControls = ({
               onClick={onToggleFrench}
               className={`control-button ${showFrench ? 'active' : ''}`}
               aria-pressed={showFrench}
-              title={showFrench ? 'Hide French translation' : 'Show French translation'}
+              title={showFrench ? 'Masquer la traduction française' : 'Afficher la traduction française (IA)'}
             >
               FR
             </button>
@@ -84,12 +84,12 @@ const ReaderControls = ({
         <span className="control-divider" aria-hidden="true" />
 
         {/* Hebrew display options - pill segment */}
-        <div className="control-segment" role="group" aria-label="Hebrew text options">
+        <div className="control-segment" role="group" aria-label="Options du texte hébreu">
           <button
             onClick={toggleVowels}
             className={`control-button ${showVowels ? 'active' : ''}`}
             aria-pressed={showVowels}
-            title={showVowels ? 'Hide vowels (נקודות)' : 'Show vowels (נקודות)'}
+            title={showVowels ? 'Masquer les voyelles (נקודות)' : 'Afficher les voyelles (נקודות)'}
           >
             Vowels
           </button>
@@ -98,7 +98,7 @@ const ReaderControls = ({
             onClick={toggleCantillation}
             className={`control-button ${showCantillation ? 'active' : ''}`}
             aria-pressed={showCantillation}
-            title={showCantillation ? 'Hide trope (טעמים)' : 'Show trope (טעמים)'}
+            title={showCantillation ? 'Masquer les tropes (טעמים — cantillation)' : 'Afficher les tropes (טעמים — cantillation)'}
           >
             Trope
           </button>
@@ -111,7 +111,7 @@ const ReaderControls = ({
           onClick={() => setEnableClickableText(!enableClickableText)}
           className={`control-button ${enableClickableText ? 'active' : ''}`}
           aria-pressed={enableClickableText}
-          title={enableClickableText ? 'Disable word lookup' : 'Enable word lookup'}
+          title={enableClickableText ? 'Désactiver le clic-mot (dictionnaire au clic)' : 'Activer le clic-mot : chaque mot hébreu ouvre son dictionnaire'}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="button-icon">
             <path d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
@@ -130,8 +130,8 @@ const ReaderControls = ({
         <button
           onClick={onToggleStudyMode}
           className={`control-button study-btn ${studyPanelIsOpen ? 'active' : ''}`}
-          aria-label={selectedVersesCount > 0 ? `Study ${selectedVersesCount} selected verses` : `Study all ${verses.length} verses`}
-          title={`Study ${selectedVersesCount > 0 ? selectedVersesCount + ' selected' : 'all'} ${isTalmud ? 'passages' : 'verses'} (Ctrl+Shift+S)`}
+          aria-label={selectedVersesCount > 0 ? `Étudier les ${selectedVersesCount} versets sélectionnés` : `Étudier les ${verses.length} versets`}
+          title={`Ouvre les commentaires ${selectedVersesCount > 0 ? 'des ' + selectedVersesCount + ' versets sélectionnés' : 'du chapitre'} (Ctrl+Shift+S)`}
           aria-pressed={studyPanelIsOpen}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="button-icon" aria-hidden="true">
@@ -145,11 +145,11 @@ const ReaderControls = ({
         </button>
       </div>
 
-      <div className="font-controls" role="group" aria-label="Font size controls">
+      <div className="font-controls" role="group" aria-label="Taille du texte">
         <button
           onClick={() => setFontSize(s => Math.max(s - 2, 12))}
           className="control-button font-btn"
-          aria-label="Decrease font size"
+          aria-label="Réduire la taille du texte"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <path d="M20 12H4" />
@@ -159,7 +159,7 @@ const ReaderControls = ({
         <button
           onClick={() => setFontSize(s => Math.min(s + 2, 28))}
           className="control-button font-btn"
-          aria-label="Increase font size"
+          aria-label="Agrandir la taille du texte"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <path d="M12 4v16m8-8H4" />
