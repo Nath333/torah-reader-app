@@ -1,13 +1,15 @@
 /* eslint-disable no-restricted-globals */
 
-const CACHE_NAME = 'sefarim-reader-v1';
+const CACHE_NAME = 'sefarim-reader-v2';
 const API_CACHE_NAME = 'sefarim-api-v1';
 
 // Static assets to cache on install
+// Relatifs au scope du SW (/torah-reader-app/ sur GitHub Pages) : des chemins
+// absolus comme '/' pointerait hors du site et ferait échouer cache.addAll.
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json'
+  './',
+  './index.html',
+  './manifest.json'
 ];
 
 // API domains to cache
