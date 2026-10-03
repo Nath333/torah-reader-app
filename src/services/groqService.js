@@ -305,7 +305,17 @@ export const analyzeCommentary = async (
 
       if (!content) throw new Error('No response from AI');
 
-      const parsed = JSON.parse(content);
+      // Le modèle peut renvoyer du JSON tronqué ou non conforme : on échoue
+      // avec un message lisible au lieu d'une SyntaxError brute
+      let parsed;
+      try {
+        parsed = JSON.parse(content);
+      } catch {
+        throw new Error('AI returned an unreadable response. Try again.');
+      }
+      if (typeof parsed !== 'object' || parsed === null) {
+        throw new Error('AI returned an unexpected response format. Try again.');
+      }
       if (parsed.diagram) parsed.diagram = sanitizeMermaidDiagram(parsed.diagram);
 
       const result = {

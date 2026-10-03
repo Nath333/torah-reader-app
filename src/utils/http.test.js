@@ -79,3 +79,38 @@ describe('clearPendingRequests', () => {
     expect(getPendingRequestCount()).toBe(0);
   });
 });
+
+describe('fetchWithFallback — sans proxy tiers', () => {
+  beforeEach(() => {
+    fetch.mockReset();
+    clearPendingRequests();
+  });
+
+  test('échoue après un seul appel en cas d erreur réseau directe (pas de repli allorigins)', async () => {
+    fetch.mockRejectedValue(new TypeError('Failed to fetch'));
+
+    await expect(fetchWithFallback('https://api.example.com/fail')).rejects.toThrow('Failed to fetch');
+
+    // Exactement un appel : aucun second appel vers un proxy tiers
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch.mock.calls[0][0]).toBe('https://api.example.com/fail');
+  });
+
+  test('échoue sur HTTP 500 sans appel supplémentaire', async () => {
+    fetch.mockResolvedValue({ ok: false, status: 500 });
+
+    await expect(fetchWithFallback('https://api.example.com/err500')).rejects.toThrow('HTTP 500');
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  test('429 marque le domaine limité sans appel proxy', async () => {
+    fetch.mockResolvedValue({
+      ok: false,
+      status: 429,
+      headers: { get: () => '60' }
+    });
+
+    await expect(fetchWithFallback('https://api.example.com/limited')).rejects.toThrow();
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+});

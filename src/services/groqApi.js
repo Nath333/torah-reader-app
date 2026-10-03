@@ -21,12 +21,13 @@ const API_KEY_STORAGE = 'groq_api_key';
 export const getStoredApiKey = () => {
   const stored = safeStorage.getItem(API_KEY_STORAGE);
   if (stored) return stored;
-  // Migration : clé en clair posée par l'ancienne version (localStorage brut)
+  // Migration : clé en clair posée par l'ancienne version (localStorage brut).
+  // Purger le brut AVANT l'écriture safeStorage : même clé, sinon on l'efface.
   try {
     const legacy = localStorage.getItem(API_KEY_STORAGE);
     if (legacy) {
-      safeStorage.setItem(API_KEY_STORAGE, legacy);
       localStorage.removeItem(API_KEY_STORAGE);
+      safeStorage.setItem(API_KEY_STORAGE, legacy);
       return legacy;
     }
   } catch { /* localStorage indisponible */ }
