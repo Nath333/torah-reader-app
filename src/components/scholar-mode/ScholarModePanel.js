@@ -10,7 +10,7 @@
  * Talmud: Adds צורת הדף toggle for traditional page view
  */
 
-import { useState, useEffect, useCallback, useMemo, memo } from 'react';
+import { useState, useEffect, useCallback, useMemo, memo, lazy, Suspense } from 'react';
 import { MiniFlowBar } from '../visualization/SugyaFlowVisualization';
 import { getFlowDiagram } from '../../services/scholarly/discoursePatternService';
 import { getCompleteScholarlyAnalysis, addVocalization } from '../../services/scholarlyApiService';
@@ -20,18 +20,18 @@ import { NEVIIM_BOOKS, KETUVIM_BOOKS } from '../../constants/bookConstants';
 import { FEATURES } from '../../services/featureFlags';
 import './ScholarModePanel.css';
 
-// Import extracted components - 5 TAB STRUCTURE (with Talmud tools for Talmud mode)
-import {
-  TabButton,
-  LoadingState,
-  AIAnalysisTab,      // LEARN - AI analysis modes (includes Chavruta)
-  WordsTab,           // WORDS - Dictionary lookup
-  CommentaryTab,      // COMMENTARY - Commentaries view
-  NotebookTab,        // NOTEBOOK - Personal journal
-  TzuratHaDafTab,     // TZURAT HADAF - Traditional layout (toggle view for Talmud)
-  TalmudToolsTab,     // TALMUD - Iyun/Bekius/Chazara modes, abbreviations, sages (Talmud only)
-  ChavrutaTab         // CHAVRUTA - AI study partner (Quiz, Challenge, Compare, Chat)
-} from '.';
+// Utilitaires toujours nécessaires (barrel) ; les onglets sont chargés à la
+// demande (React.lazy) : ce sont les plus gros morceaux de l'app, inutiles au
+// premier rendu si l'onglet n'est pas ouvert.
+import { TabButton, LoadingState } from '.';
+
+const AIAnalysisTab = lazy(() => import('./AIAnalysisTab'));      // LEARN - AI analysis modes (includes Chavruta)
+const WordsTab = lazy(() => import('./WordsTab'));                 // WORDS - Dictionary lookup
+const CommentaryTab = lazy(() => import('./CommentaryTab'));      // COMMENTARY - Commentaries view
+const NotebookTab = lazy(() => import('./NotebookTab'));          // NOTEBOOK - Personal journal
+const TzuratHaDafTab = lazy(() => import('./TzuratHaDafTab'));     // TZURAT HADAF - Traditional layout (toggle view for Talmud)
+const TalmudToolsTab = lazy(() => import('./TalmudToolsTab'));     // TALMUD - Iyun/Bekius/Chazara modes, abbreviations, sages (Talmud only)
+const ChavrutaTab = lazy(() => import('./ChavrutaTab'));           // CHAVRUTA - AI study partner (Quiz, Challenge, Compare, Chat)
 
 // Connectivity indicator for online/offline status
 import ConnectivityIndicator from '../shared/ConnectivityIndicator';
@@ -980,7 +980,7 @@ const ScholarModePanel = ({
             subMessage="Fetching commentaries and references from Sefaria"
           />
         ) : (
-          <>
+          <Suspense fallback={<LoadingState message="Loading module…" />}>
             {/* LEARN Tab - AI Analysis modes (includes Chavruta features) */}
             {activeTab === 'learn' && !showTzuratHaDaf && (
               <AIAnalysisTab
@@ -1057,7 +1057,7 @@ const ScholarModePanel = ({
                 selectedVerse={selectedVerse || effectiveSelectedVerses[0]}
               />
             )}
-          </>
+          </Suspense>
         )}
       </div>
     </div>

@@ -124,6 +124,11 @@ vi.mock('./services/dictionaries/dictionaryLoader', () => {
     // Additional data getters for unifiedLookupService
     getCALAramaicData: vi.fn(() => calAramaicData),
     getJastrowAramaicData: vi.fn(() => jastrowAramaicData),
+    // Lexiques complets (accès sync au cache) — consommés par la chaîne WordsTab
+    getBDBLexiconData: vi.fn(() => ({ byWord: bdbData, byStrongs: strongsData.byNumber })),
+    getBDBAramaicData: vi.fn(() => jastrowAramaicData),
+    getJastrowLexiconData: vi.fn(() => jastrowData),
+    getStrongLexiconData: vi.fn(() => strongsData),
     // PRO SCHOLAR V15: Academic Sources (streamlined)
     getGeseniusLexiconData: vi.fn(() => geseniusData),
     // PRO SCHOLAR V16: Klein (added with the academic sources)
@@ -148,6 +153,7 @@ vi.mock('./services/dictionaries/dictionaryLoader', () => {
     // Utility functions
     isDictionaryLoaded: vi.fn(() => true),
     preloadAllDictionaries: vi.fn().mockResolvedValue(undefined),
+    preloadLexicons: vi.fn().mockResolvedValue(undefined),
     // Root meanings data for rootDatabase.js lazy proxy
     getRootMeaningsData: vi.fn(() => ({
       'מלך': { base: 'king', causative: 'make king', semantic_field: 'governance' },
