@@ -688,7 +688,18 @@ const GlossaryEntry = ({ word, data, expanded, onToggle }) => {
 
   return (
     <div className={`glossary-entry ${expanded ? 'expanded' : ''} ${hasMultiple ? 'clickable' : ''}`}>
-      <div className="gl-main" onClick={() => hasMultiple && onToggle()}>
+      <div
+        className="gl-main"
+        onClick={() => hasMultiple && onToggle()}
+        role={hasMultiple ? 'button' : undefined}
+        tabIndex={hasMultiple ? 0 : undefined}
+        onKeyDown={hasMultiple ? (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onToggle();
+          }
+        } : undefined}
+      >
         <span className="gl-word" dir="rtl">{word}</span>
 
         {/* PRO SCHOLAR V7: Type badges */}

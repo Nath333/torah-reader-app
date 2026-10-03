@@ -172,7 +172,10 @@ export const getCacheStats = () => {
         const parsed = JSON.parse(item);
         oldestTimestamp = Math.min(oldestTimestamp, parsed.timestamp);
         newestTimestamp = Math.max(newestTimestamp, parsed.timestamp);
-      } catch {}
+      } catch {
+        // Entrée corrompue (quota/partition navigateur) : on la compte dans
+        // la taille mais on l'ignore pour les bornes de dates
+      }
     });
 
     return {

@@ -122,8 +122,9 @@ const lookupHebrew = async (word, options = {}) => {
 
   try {
     const result = await lookupWord(word, {
-      contextType: 'biblical',
+      contextMode: 'biblical',
       reference,
+      includeOnline: true,
       includeV6: true,
       includeBinyan: true,
       includeDialect: true,
@@ -151,8 +152,9 @@ const lookupAramaic = async (word, options = {}) => {
 
   try {
     const result = await lookupWord(word, {
-      contextType: 'talmudic',
+      contextMode: 'talmudic',
       reference,
+      includeOnline: true,
       includeV6: true,
       includeBinyan: true,
       includeDialect: true,

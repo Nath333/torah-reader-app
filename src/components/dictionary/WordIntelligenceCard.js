@@ -10,8 +10,9 @@
 import React, { useState, useEffect, useMemo, memo, useRef } from 'react';
 import './WordIntelligenceCard.css';
 
-// FamilyTree component
-import FamilyTree from './FamilyTree';
+// FamilyTree component — même arbre que WordDefinitionCard (parité Pro Scholar)
+import RootFamilyTree from './panels/RootFamilyTree';
+import RootMeaningPanel from './panels/RootMeaningPanel';
 
 // PRO SCHOLAR v3 Features
 import { LearningInsightsPanel, CrossRefsMini } from './ProScholarFeatures';
@@ -472,12 +473,18 @@ function WordIntelligenceCard({
 
       {/* FAMILY TREE */}
       {showFamilyTree && FEATURES.FAMILY_TREE && !compact && root && (
-        <FamilyTree
+        <RootFamilyTree
           root={root}
           language={language}
-          onFormClick={onWordClick}
-          compact={false}
+          highlightWord={word}
+          onWordClick={onWordClick}
+          compact={true}
         />
+      )}
+
+      {/* PRO SCHOLAR V20: Root Meaning — sens du shoresh (parité avec WordDefinitionCard) */}
+      {showEtymology && !compact && root && (
+        <RootMeaningPanel root={root} word={word} compact={true} />
       )}
 
       {/* RELATED WORDS */}

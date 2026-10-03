@@ -41,6 +41,17 @@ const CACHE_VERSION = 8;
 const glossCache = new Map();
 let cacheVersion = 0;
 
+// Borne haute : sans elle, la Map grossit sans limite sur les longues sessions
+// (Map itère en ordre d'insertion → on évacue les entrées les plus anciennes)
+const GLOSS_CACHE_MAX = 800;
+const cacheGloss = (key, value) => {
+  if (glossCache.size >= GLOSS_CACHE_MAX) {
+    const oldest = glossCache.keys().next().value;
+    if (oldest !== undefined) glossCache.delete(oldest);
+  }
+  glossCache.set(key, value);
+};
+
 // Clear cache if version changed (new filtering logic deployed)
 const ensureFreshCache = () => {
   if (cacheVersion !== CACHE_VERSION) {
@@ -175,7 +186,7 @@ const getWordGloss = (word, showFrench = false, contextMode = null, reference = 
           preClassified: true,
           preClassType: preClassResult.type
         };
-        glossCache.set(cacheKey, glossData);
+        cacheGloss(cacheKey, glossData);
         return glossData;
       }
     }
@@ -236,20 +247,20 @@ const getWordGloss = (word, showFrench = false, contextMode = null, reference = 
       }
 
       // Cache the result
-      glossCache.set(cacheKey, glossData);
+      cacheGloss(cacheKey, glossData);
       return glossData;
     }
 
     // === PRO SCHOLAR V8: Use function word source as fallback ===
     // If dictionary lookup found nothing, use our curated translation
     if (functionWordSource) {
-      glossCache.set(cacheKey, functionWordSource);
+      cacheGloss(cacheKey, functionWordSource);
       return functionWordSource;
     }
   } catch (e) {
     // Ignore lookup errors - but still return function word if available
     if (functionWordSource) {
-      glossCache.set(cacheKey, functionWordSource);
+      cacheGloss(cacheKey, functionWordSource);
       return functionWordSource;
     }
   }
@@ -267,7 +278,7 @@ const getWordGloss = (word, showFrench = false, contextMode = null, reference = 
     grammar: null,
     confidence: null
   };
-  glossCache.set(cacheKey, emptyResult);
+  cacheGloss(cacheKey, emptyResult);
   return emptyResult;
 };
 

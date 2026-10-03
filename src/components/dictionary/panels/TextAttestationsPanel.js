@@ -155,7 +155,18 @@ const CategorySection = memo(function CategorySection({
 
   return (
     <div className="tap-category" style={{ '--category-color': config.color }}>
-      <div className="tap-category-header" onClick={onToggle}>
+      <div
+        className="tap-category-header"
+        onClick={onToggle}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onToggle();
+          }
+        }}
+      >
         <span className="tap-category-icon">{config.icon}</span>
         <span className="tap-category-name">{config.name}</span>
         <span className="tap-category-count">{refs.length}</span>

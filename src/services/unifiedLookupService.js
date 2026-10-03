@@ -748,8 +748,9 @@ export const lookupWord = async (word, options = {}) => {
   const effectiveContext = contextMode ||
     (reference ? getContextFromReference(reference) : null);
 
-  // Check cache
-  const cacheKey = `${cleaned}:${effectiveContext || 'default'}`;
+  // Check cache — le flag online est discriminant : un résultat enrichi
+  // Sefaria/CAL ne doit pas masquer la version locale (et inversement)
+  const cacheKey = `${cleaned}:${effectiveContext || 'default'}${includeOnline ? ':online' : ''}`;
 
   if (!skipCache) {
     const cached = lookupCache.get(cacheKey);
