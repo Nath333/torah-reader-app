@@ -31,12 +31,12 @@
 | `components/layout/FocusMode.js` | 1 242 | UI — sections | importé par App.js |
 | `components/scholar-mode/WordsTab/components/LookupTab.js` | 1 443 | UI — panneaux | |
 | `services/analysis/linguisticAnalysis.js` | 2 060 | par type d'analyse | données ? à cartographier |
-| `services/comparativeSemiticService.js` | 2 142 | par langue | |
+| ~~`services/comparativeSemiticService.js`~~ | **fait 03/10** | données `comparativeSemitic/cognateDatabase.js` (926) + façade 1 225 (loaders état conservés) + **fix latent : log() appelé comme fonction ×21 = fallbacks morts** + smoke test (5) | phase 2 : helpers/parsers vs API |
 | `services/dictionaries/dictionaryLoader.js` | 2 157 | par dictionnaire | **state.js partagé obligatoire** (cache + health) ; tests réels présents |
 | `services/analysis/preClassificationService.js` | 2 247 | par famille de marqueurs | |
 | `constants/morphology.js` (reste) | — | conjugaison/binyanim | peut rejoindre `morphology/verbPatterns.js` existant |
 | `services/unifiedLookupService.js` | 3 123 | par étage (pipeline, cache, traduction) | 300+ tests = filet solide ; state partagé |
-| `services/scholarly/discoursePatternService.js` | 3 056 | données vs analyse | |
+| `services/scholarly/discoursePatternService.js` | 2 363 (était 3 056) | **phase 1 faite 03/10** : données → `discourse/discourseData.js` (710) | phase 2 : familles TzuratHaDaf (1328-1790 orig.), Mishna, Gemara-QA |
 | `services/dictionaries/scholarlyLexiconService.js` | 4 102 | par lexique | |
 | `services/scholarly/talmudDiagramService.js` | 4 215 | générateurs par type de diagramme | les frères morts (Constants/Generators/Utils) ont été purgés — recréer proprement |
 
