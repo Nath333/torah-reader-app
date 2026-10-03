@@ -36,7 +36,6 @@
     "gh-pages": "^6.3.0",
     "jsdom": "^29.1.1",
     "knip": "^6.39.0",
-    "source-map-explorer": "^2.5.3",
     "vite": "^6.4.3",
     "vitest": "^3.2.7"
   }
