@@ -12,6 +12,27 @@ const BASE = '/torah-reader-app/';
 export default defineConfig(({ mode }) => ({
   base: BASE,
   plugins: [react()],
+  build: {
+    rollupOptions: {
+      output: {
+        // Sort réact-dom et react-router du bundle d'entrée : ces libs ne
+        // changent qu'avec les dépendances, donc leurs chunks restent en cache
+        // navigateur à travers les déploiements du code applicatif (qui lui
+        // sort plusieurs fois par jour), et se chargent en parallèle.
+        // Motifs avec séparateur final pour ne pas capter react-dom dans react.
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined;
+          if (id.includes('/react-dom/') || id.includes('\\react-dom\\') || id.includes('/scheduler/') || /[\\/]react[\\/]/.test(id)) {
+            return 'vendor-react';
+          }
+          if (id.includes('/react-router') || id.includes('\\react-router')) {
+            return 'vendor-router';
+          }
+          return undefined;
+        }
+      }
+    }
+  },
   define: {
     'process.env.NODE_ENV': JSON.stringify(
       mode === 'production' ? 'production' : mode === 'test' ? 'test' : 'development'
