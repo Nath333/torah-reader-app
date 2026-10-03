@@ -41,16 +41,50 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// Domains to skip - don't intercept third-party APIs
+const SKIP_DOMAINS = [
+  'translate.googleapis.com',  // Google Translate (French translation)
+  'fonts.gstatic.com',
+  'fonts.googleapis.com'
+];
+
+// Local ports to skip (local services like Ollama)
+const SKIP_LOCAL_PORTS = ['11434'];
+
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
   const { request } = event;
-  const url = new URL(request.url);
 
   // Skip non-GET requests
   if (request.method !== 'GET') return;
 
-  // Check if it's an API request
+  // Parse URL safely
+  let url;
+  try {
+    url = new URL(request.url);
+  } catch (e) {
+    return; // Invalid URL - skip
+  }
+
+  // Skip third-party APIs - don't intercept at all
+  // This prevents the "FetchEvent resulted in a network error" messages
+  if (SKIP_DOMAINS.some(domain => url.hostname === domain || url.hostname.endsWith('.' + domain))) {
+    return; // Let browser handle normally
+  }
+
+  // Skip local services (like Ollama on port 11434)
+  if ((url.hostname === 'localhost' || url.hostname === '127.0.0.1') &&
+      SKIP_LOCAL_PORTS.includes(url.port)) {
+    return; // Let browser handle normally
+  }
+
+  // Skip cross-origin requests that aren't from our allowed domains
+  const isOwnOrigin = url.origin === self.location.origin;
   const isApiRequest = API_DOMAINS.some(domain => url.hostname.includes(domain));
+
+  if (!isOwnOrigin && !isApiRequest) {
+    return; // Don't intercept third-party requests
+  }
 
   if (isApiRequest) {
     // Network first, fallback to cache for API requests
