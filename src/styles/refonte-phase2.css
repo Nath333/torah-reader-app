@@ -153,3 +153,32 @@
 .study-dashboard .daily-learning-item:hover {
   background: var(--primary-light);
 }
+
+/* ---------------------------------------------------------------------------
+   6. MOBILE — toolbar compacte (5 rangées → 2), plus de place au texte
+   --------------------------------------------------------------------------- */
+@media (max-width: 640px) {
+  /* spécificité renforcée : le CSS du composant charge après index.css */
+  .app-main .reader-controls {
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .app-main .reader-controls .control-group {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .app-main .reader-controls .control-group > * {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    min-height: 32px;
+  }
+
+  /* « Go to » secondaire sur mobile : la recherche couvre ce besoin */
+  .app-main .reader-controls .verse-jump-container {
+    display: none !important;
+  }
+}
