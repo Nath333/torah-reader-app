@@ -22,11 +22,11 @@ import {
 
 describe('createCache', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   describe('basic operations', () => {
@@ -138,7 +138,7 @@ describe('createCache', () => {
       cache.set('key1', 'value1');
 
       // Advance time by 500ms (half the TTL)
-      jest.advanceTimersByTime(500);
+      vi.advanceTimersByTime(500);
 
       expect(cache.get('key1')).toBe('value1');
     });
@@ -149,7 +149,7 @@ describe('createCache', () => {
       cache.set('key1', 'value1');
 
       // Advance time past TTL
-      jest.advanceTimersByTime(1001);
+      vi.advanceTimersByTime(1001);
 
       expect(cache.get('key1')).toBeNull();
     });
@@ -166,7 +166,7 @@ describe('createCache', () => {
 
       cache.set('key1', 'value1');
 
-      jest.advanceTimersByTime(1001);
+      vi.advanceTimersByTime(1001);
 
       // This access should delete the expired entry
       cache.get('key1');
@@ -263,11 +263,11 @@ describe('CACHE_PRESETS', () => {
 
 describe('createCachedFetcher', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should return fetch, clear, stats, and cache', () => {
-    const fetcher = jest.fn();
+    const fetcher = vi.fn();
     const result = createCachedFetcher(fetcher);
 
     expect(result.fetch).toBeInstanceOf(Function);
@@ -277,7 +277,7 @@ describe('createCachedFetcher', () => {
   });
 
   it('should call fetcher on first request', async () => {
-    const fetcher = jest.fn().mockResolvedValue('result');
+    const fetcher = vi.fn().mockResolvedValue('result');
     const { fetch } = createCachedFetcher(fetcher);
 
     const result = await fetch('arg1');
@@ -287,7 +287,7 @@ describe('createCachedFetcher', () => {
   });
 
   it('should return cached value on subsequent requests', async () => {
-    const fetcher = jest.fn().mockResolvedValue('result');
+    const fetcher = vi.fn().mockResolvedValue('result');
     const { fetch } = createCachedFetcher(fetcher);
 
     await fetch('arg1');
@@ -298,7 +298,7 @@ describe('createCachedFetcher', () => {
   });
 
   it('should track hits and misses in stats', async () => {
-    const fetcher = jest.fn().mockResolvedValue('result');
+    const fetcher = vi.fn().mockResolvedValue('result');
     const { fetch, stats } = createCachedFetcher(fetcher);
 
     await fetch('arg1'); // Miss
@@ -312,7 +312,7 @@ describe('createCachedFetcher', () => {
   });
 
   it('should use prefix for key generation', async () => {
-    const fetcher = jest.fn().mockResolvedValue('result');
+    const fetcher = vi.fn().mockResolvedValue('result');
     const { fetch } = createCachedFetcher(fetcher, { prefix: 'test' });
 
     await fetch('arg1');
@@ -323,7 +323,7 @@ describe('createCachedFetcher', () => {
   });
 
   it('should use custom key generator', async () => {
-    const fetcher = jest.fn().mockResolvedValue('result');
+    const fetcher = vi.fn().mockResolvedValue('result');
     const { fetch } = createCachedFetcher(fetcher, {
       keyGenerator: (obj) => obj.id
     });
@@ -336,7 +336,7 @@ describe('createCachedFetcher', () => {
   });
 
   it('should use preset configuration', async () => {
-    const fetcher = jest.fn().mockResolvedValue('result');
+    const fetcher = vi.fn().mockResolvedValue('result');
     const { stats } = createCachedFetcher(fetcher, { preset: 'standard' });
 
     const s = stats();
@@ -344,7 +344,7 @@ describe('createCachedFetcher', () => {
   });
 
   it('should clear cache and reset stats', async () => {
-    const fetcher = jest.fn().mockResolvedValue('result');
+    const fetcher = vi.fn().mockResolvedValue('result');
     const { fetch, clear, stats } = createCachedFetcher(fetcher);
 
     await fetch('arg1');
@@ -359,7 +359,7 @@ describe('createCachedFetcher', () => {
   });
 
   it('should handle multiple arguments', async () => {
-    const fetcher = jest.fn().mockResolvedValue('result');
+    const fetcher = vi.fn().mockResolvedValue('result');
     const { fetch } = createCachedFetcher(fetcher);
 
     await fetch('arg1', 'arg2', 'arg3');
@@ -370,7 +370,7 @@ describe('createCachedFetcher', () => {
   });
 
   it('should handle object arguments', async () => {
-    const fetcher = jest.fn().mockResolvedValue('result');
+    const fetcher = vi.fn().mockResolvedValue('result');
     const { fetch } = createCachedFetcher(fetcher);
 
     const obj = { book: 'Genesis', chapter: 1 };
@@ -381,7 +381,7 @@ describe('createCachedFetcher', () => {
   });
 
   it('should call fetcher with different args', async () => {
-    const fetcher = jest.fn().mockResolvedValue('result');
+    const fetcher = vi.fn().mockResolvedValue('result');
     const { fetch } = createCachedFetcher(fetcher);
 
     await fetch('arg1');
@@ -394,8 +394,8 @@ describe('createCachedFetcher', () => {
 describe('withCache', () => {
   it('should wrap specified methods with caching', async () => {
     const api = {
-      getData: jest.fn().mockResolvedValue('data'),
-      postData: jest.fn().mockResolvedValue('posted')
+      getData: vi.fn().mockResolvedValue('data'),
+      postData: vi.fn().mockResolvedValue('posted')
     };
 
     const cachedApi = withCache(api, ['getData']);
@@ -408,8 +408,8 @@ describe('withCache', () => {
 
   it('should not wrap unspecified methods', async () => {
     const api = {
-      getData: jest.fn().mockResolvedValue('data'),
-      postData: jest.fn().mockResolvedValue('posted')
+      getData: vi.fn().mockResolvedValue('data'),
+      postData: vi.fn().mockResolvedValue('posted')
     };
 
     const cachedApi = withCache(api, ['getData']);
@@ -422,7 +422,7 @@ describe('withCache', () => {
 
   it('should add _clearAllCaches method', () => {
     const api = {
-      getData: jest.fn().mockResolvedValue('data')
+      getData: vi.fn().mockResolvedValue('data')
     };
 
     const cachedApi = withCache(api, ['getData']);
@@ -432,7 +432,7 @@ describe('withCache', () => {
 
   it('should add _getStats method', async () => {
     const api = {
-      getData: jest.fn().mockResolvedValue('data')
+      getData: vi.fn().mockResolvedValue('data')
     };
 
     const cachedApi = withCache(api, ['getData']);
@@ -446,8 +446,8 @@ describe('withCache', () => {
 
   it('should clear all caches with _clearAllCaches', async () => {
     const api = {
-      getData: jest.fn().mockResolvedValue('data'),
-      getMore: jest.fn().mockResolvedValue('more')
+      getData: vi.fn().mockResolvedValue('data'),
+      getMore: vi.fn().mockResolvedValue('more')
     };
 
     const cachedApi = withCache(api, ['getData', 'getMore']);
@@ -466,7 +466,7 @@ describe('withCache', () => {
 
   it('should skip non-function properties', () => {
     const api = {
-      getData: jest.fn().mockResolvedValue('data'),
+      getData: vi.fn().mockResolvedValue('data'),
       value: 'static'
     };
 

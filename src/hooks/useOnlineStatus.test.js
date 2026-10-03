@@ -27,13 +27,13 @@ describe('useOnlineStatus', () => {
     eventListeners = {};
 
     // Mock addEventListener
-    window.addEventListener = jest.fn((event, handler) => {
+    window.addEventListener = vi.fn((event, handler) => {
       eventListeners[event] = eventListeners[event] || [];
       eventListeners[event].push(handler);
     });
 
     // Mock removeEventListener
-    window.removeEventListener = jest.fn((event, handler) => {
+    window.removeEventListener = vi.fn((event, handler) => {
       if (eventListeners[event]) {
         eventListeners[event] = eventListeners[event].filter(h => h !== handler);
       }
@@ -43,7 +43,7 @@ describe('useOnlineStatus', () => {
   afterEach(() => {
     window.addEventListener = originalAddEventListener;
     window.removeEventListener = originalRemoveEventListener;
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('initialization', () => {

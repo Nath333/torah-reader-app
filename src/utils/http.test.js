@@ -1,7 +1,7 @@
 import { fetchWithFallback, clearPendingRequests, getPendingRequestCount } from './http';
 
 // Mock fetch
-global.fetch = jest.fn();
+global.fetch = vi.fn();
 
 describe('fetchWithFallback', () => {
   beforeEach(() => {

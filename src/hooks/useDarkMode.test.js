@@ -15,8 +15,8 @@ import useDarkMode from './useDarkMode';
 // Mock matchMedia
 const mockMatchMedia = (matches) => ({
   matches,
-  addEventListener: jest.fn(),
-  removeEventListener: jest.fn(),
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
 });
 
 describe('useDarkMode', () => {
@@ -41,12 +41,12 @@ describe('useDarkMode', () => {
 
     // Mock matchMedia with light mode default
     mockMediaQuery = mockMatchMedia(false);
-    window.matchMedia = jest.fn().mockReturnValue(mockMediaQuery);
+    window.matchMedia = vi.fn().mockReturnValue(mockMediaQuery);
   });
 
   afterEach(() => {
     window.matchMedia = originalMatchMedia;
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('initialization', () => {
@@ -58,7 +58,7 @@ describe('useDarkMode', () => {
     });
 
     it('should initialize with dark mode from system preference', () => {
-      window.matchMedia = jest.fn().mockReturnValue(mockMatchMedia(true));
+      window.matchMedia = vi.fn().mockReturnValue(mockMatchMedia(true));
 
       const { result } = renderHook(() => useDarkMode());
 
@@ -86,7 +86,7 @@ describe('useDarkMode', () => {
 
     it('should initialize from localStorage "auto" value', () => {
       localStorage.setItem('darkMode', 'auto');
-      window.matchMedia = jest.fn().mockReturnValue(mockMatchMedia(true));
+      window.matchMedia = vi.fn().mockReturnValue(mockMatchMedia(true));
 
       const { result } = renderHook(() => useDarkMode());
 
@@ -249,10 +249,10 @@ describe('useDarkMode', () => {
     it('should register change listener when in auto mode', () => {
       const mockMQ = {
         matches: false,
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
       };
-      window.matchMedia = jest.fn().mockReturnValue(mockMQ);
+      window.matchMedia = vi.fn().mockReturnValue(mockMQ);
       localStorage.setItem('darkMode', 'auto');
 
       renderHook(() => useDarkMode());
@@ -263,10 +263,10 @@ describe('useDarkMode', () => {
     it('should not register change listener when in manual mode', () => {
       const mockMQ = {
         matches: false,
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
       };
-      window.matchMedia = jest.fn().mockReturnValue(mockMQ);
+      window.matchMedia = vi.fn().mockReturnValue(mockMQ);
       localStorage.setItem('darkMode', 'true');
 
       renderHook(() => useDarkMode());
@@ -278,7 +278,7 @@ describe('useDarkMode', () => {
 
   describe('cross-tab sync', () => {
     it('should listen for storage events', () => {
-      const addEventListenerSpy = jest.spyOn(window, 'addEventListener');
+      const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
       renderHook(() => useDarkMode());
 
       expect(addEventListenerSpy).toHaveBeenCalledWith('storage', expect.any(Function));
@@ -342,10 +342,10 @@ describe('useDarkMode', () => {
     it('should remove event listeners on unmount', () => {
       const mockMQ = {
         matches: false,
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
       };
-      window.matchMedia = jest.fn().mockReturnValue(mockMQ);
+      window.matchMedia = vi.fn().mockReturnValue(mockMQ);
       localStorage.setItem('darkMode', 'auto');
 
       const { unmount } = renderHook(() => useDarkMode());

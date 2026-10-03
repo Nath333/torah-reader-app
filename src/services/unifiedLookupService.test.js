@@ -4,10 +4,10 @@
  */
 
 // Mock groqService to avoid pdfjs-dist import chain issue
-jest.mock('./groqService', () => ({
-  translateToFrench: jest.fn().mockResolvedValue(null),
-  translateText: jest.fn().mockResolvedValue(null),
-  askGroq: jest.fn().mockResolvedValue(null)
+vi.mock('./groqService', () => ({
+  translateToFrench: vi.fn().mockResolvedValue(null),
+  translateText: vi.fn().mockResolvedValue(null),
+  askGroq: vi.fn().mockResolvedValue(null)
 }));
 
 import {
@@ -691,7 +691,7 @@ describe('unifiedLookupService', () => {
     });
 
     test('calls onSourceFound callback', async () => {
-      const onSourceFound = jest.fn();
+      const onSourceFound = vi.fn();
       const lookupFunctions = {
         'TestSource': () => Promise.resolve({ english: 'test' })
       };
@@ -735,7 +735,7 @@ describe('unifiedLookupService', () => {
     });
 
     test('marks result as incomplete when background fetch pending', () => {
-      const onEnhanced = jest.fn();
+      const onEnhanced = vi.fn();
       const result = progressiveLookup('גמרא', {
         onEnhanced,
         includeOnline: true
@@ -749,7 +749,7 @@ describe('unifiedLookupService', () => {
     test('marks high-quality results as complete without background fetch', () => {
       // Use a proper noun which typically has high quality results
       const result = progressiveLookup('משה', {
-        onEnhanced: jest.fn(),
+        onEnhanced: vi.fn(),
         includeOnline: true
       });
 
@@ -760,7 +760,7 @@ describe('unifiedLookupService', () => {
     });
 
     test('returns result without online fetch when includeOnline is false', () => {
-      const onEnhanced = jest.fn();
+      const onEnhanced = vi.fn();
       const result = progressiveLookup('תורה', {
         onEnhanced,
         includeOnline: false
@@ -773,7 +773,7 @@ describe('unifiedLookupService', () => {
 
     test('includes qualityScore in result', () => {
       const result = progressiveLookup('משה', {
-        onEnhanced: jest.fn()
+        onEnhanced: vi.fn()
       });
 
       expect(result).toHaveProperty('qualityScore');

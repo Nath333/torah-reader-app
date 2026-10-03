@@ -14,16 +14,16 @@ import { useThrottle, useThrottledValue } from './useThrottle';
 
 describe('useThrottle', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   describe('basic throttling', () => {
     it('should call callback immediately on first call (leading edge)', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result } = renderHook(() => useThrottle(callback, 100));
 
       act(() => {
@@ -35,7 +35,7 @@ describe('useThrottle', () => {
     });
 
     it('should not call callback again within throttle limit', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result } = renderHook(() => useThrottle(callback, 100));
 
       act(() => {
@@ -50,7 +50,7 @@ describe('useThrottle', () => {
     });
 
     it('should call with latest args on trailing edge', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result } = renderHook(() => useThrottle(callback, 100));
 
       act(() => {
@@ -61,7 +61,7 @@ describe('useThrottle', () => {
 
       // Fast-forward past throttle limit
       act(() => {
-        jest.advanceTimersByTime(100);
+        vi.advanceTimersByTime(100);
       });
 
       // Should have been called twice: leading with 'first', trailing with 'third'
@@ -70,7 +70,7 @@ describe('useThrottle', () => {
     });
 
     it('should allow call after throttle period expires', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result } = renderHook(() => useThrottle(callback, 100));
 
       act(() => {
@@ -79,7 +79,7 @@ describe('useThrottle', () => {
 
       // Wait for throttle period to expire
       act(() => {
-        jest.advanceTimersByTime(150);
+        vi.advanceTimersByTime(150);
       });
 
       act(() => {
@@ -91,7 +91,7 @@ describe('useThrottle', () => {
     });
 
     it('should use default limit of 100ms', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result } = renderHook(() => useThrottle(callback));
 
       act(() => {
@@ -101,14 +101,14 @@ describe('useThrottle', () => {
 
       // Wait 50ms - still within throttle
       act(() => {
-        jest.advanceTimersByTime(50);
+        vi.advanceTimersByTime(50);
       });
 
       expect(callback).toHaveBeenCalledTimes(1);
 
       // Wait another 50ms - trailing call should fire
       act(() => {
-        jest.advanceTimersByTime(50);
+        vi.advanceTimersByTime(50);
       });
 
       expect(callback).toHaveBeenCalledTimes(2);
@@ -117,7 +117,7 @@ describe('useThrottle', () => {
 
   describe('leading edge option', () => {
     it('should not call immediately when leading is false', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result } = renderHook(() =>
         useThrottle(callback, 100, { leading: false })
       );
@@ -130,7 +130,7 @@ describe('useThrottle', () => {
     });
 
     it('should call on trailing edge when leading is false', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result } = renderHook(() =>
         useThrottle(callback, 100, { leading: false })
       );
@@ -140,7 +140,7 @@ describe('useThrottle', () => {
       });
 
       act(() => {
-        jest.advanceTimersByTime(100);
+        vi.advanceTimersByTime(100);
       });
 
       expect(callback).toHaveBeenCalledTimes(1);
@@ -150,7 +150,7 @@ describe('useThrottle', () => {
 
   describe('trailing edge option', () => {
     it('should not call on trailing edge when trailing is false', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result } = renderHook(() =>
         useThrottle(callback, 100, { trailing: false })
       );
@@ -167,7 +167,7 @@ describe('useThrottle', () => {
 
       // Wait past throttle period
       act(() => {
-        jest.advanceTimersByTime(150);
+        vi.advanceTimersByTime(150);
       });
 
       // Still only 1 call - no trailing
@@ -175,7 +175,7 @@ describe('useThrottle', () => {
     });
 
     it('should work with both leading and trailing false', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result } = renderHook(() =>
         useThrottle(callback, 100, { leading: false, trailing: false })
       );
@@ -185,7 +185,7 @@ describe('useThrottle', () => {
       });
 
       act(() => {
-        jest.advanceTimersByTime(150);
+        vi.advanceTimersByTime(150);
       });
 
       // No calls at all
@@ -195,14 +195,14 @@ describe('useThrottle', () => {
 
   describe('cancel functionality', () => {
     it('should have cancel method', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result } = renderHook(() => useThrottle(callback, 100));
 
       expect(typeof result.current.cancel).toBe('function');
     });
 
     it('should cancel pending trailing call', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result } = renderHook(() => useThrottle(callback, 100));
 
       act(() => {
@@ -217,7 +217,7 @@ describe('useThrottle', () => {
       });
 
       act(() => {
-        jest.advanceTimersByTime(150);
+        vi.advanceTimersByTime(150);
       });
 
       // Trailing call should have been cancelled
@@ -227,14 +227,14 @@ describe('useThrottle', () => {
 
   describe('flush functionality', () => {
     it('should have flush method', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result } = renderHook(() => useThrottle(callback, 100));
 
       expect(typeof result.current.flush).toBe('function');
     });
 
     it('should immediately execute pending trailing call', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result } = renderHook(() => useThrottle(callback, 100));
 
       act(() => {
@@ -254,7 +254,7 @@ describe('useThrottle', () => {
     });
 
     it('should do nothing if no pending call', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result } = renderHook(() => useThrottle(callback, 100));
 
       act(() => {
@@ -263,7 +263,7 @@ describe('useThrottle', () => {
 
       // Wait for any trailing call to complete
       act(() => {
-        jest.advanceTimersByTime(150);
+        vi.advanceTimersByTime(150);
       });
 
       const callCount = callback.mock.calls.length;
@@ -279,8 +279,8 @@ describe('useThrottle', () => {
 
   describe('callback updates', () => {
     it('should use updated callback after rerender', () => {
-      const callback1 = jest.fn();
-      const callback2 = jest.fn();
+      const callback1 = vi.fn();
+      const callback2 = vi.fn();
 
       const { result, rerender } = renderHook(
         ({ cb }) => useThrottle(cb, 100),
@@ -298,7 +298,7 @@ describe('useThrottle', () => {
 
       // Wait for throttle to reset
       act(() => {
-        jest.advanceTimersByTime(150);
+        vi.advanceTimersByTime(150);
       });
 
       act(() => {
@@ -311,7 +311,7 @@ describe('useThrottle', () => {
 
   describe('cleanup on unmount', () => {
     it('should clear pending timeout on unmount', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result, unmount } = renderHook(() => useThrottle(callback, 100));
 
       act(() => {
@@ -324,7 +324,7 @@ describe('useThrottle', () => {
       unmount();
 
       act(() => {
-        jest.advanceTimersByTime(150);
+        vi.advanceTimersByTime(150);
       });
 
       // Trailing call should not have fired
@@ -334,7 +334,7 @@ describe('useThrottle', () => {
 
   describe('multiple arguments', () => {
     it('should pass all arguments to callback', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result } = renderHook(() => useThrottle(callback, 100));
 
       act(() => {
@@ -348,11 +348,11 @@ describe('useThrottle', () => {
 
 describe('useThrottledValue', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   describe('initial value', () => {
@@ -374,7 +374,7 @@ describe('useThrottledValue', () => {
 
       // Wait for throttle period to fully pass
       act(() => {
-        jest.advanceTimersByTime(150);
+        vi.advanceTimersByTime(150);
       });
 
       // Change value after throttle period
@@ -382,7 +382,7 @@ describe('useThrottledValue', () => {
 
       // Flush any pending effects/state updates
       act(() => {
-        jest.advanceTimersByTime(150);
+        vi.advanceTimersByTime(150);
       });
 
       expect(result.current).toBe('second');
@@ -402,14 +402,14 @@ describe('useThrottledValue', () => {
 
       // Wait partial time
       act(() => {
-        jest.advanceTimersByTime(50);
+        vi.advanceTimersByTime(50);
       });
 
       rerender({ value: 'third' });
 
       // Wait for remaining time plus a bit
       act(() => {
-        jest.advanceTimersByTime(60);
+        vi.advanceTimersByTime(60);
       });
 
       // Should have the latest value
@@ -430,7 +430,7 @@ describe('useThrottledValue', () => {
 
       // Wait for all throttled updates to complete
       act(() => {
-        jest.advanceTimersByTime(150);
+        vi.advanceTimersByTime(150);
       });
 
       expect(result.current).toBe(5);
@@ -447,14 +447,14 @@ describe('useThrottledValue', () => {
       expect(result.current).toBe(0);
 
       act(() => {
-        jest.advanceTimersByTime(150);
+        vi.advanceTimersByTime(150);
       });
 
       rerender({ value: 42 });
 
       // Wait for throttled update
       act(() => {
-        jest.advanceTimersByTime(150);
+        vi.advanceTimersByTime(150);
       });
 
       expect(result.current).toBe(42);
@@ -472,14 +472,14 @@ describe('useThrottledValue', () => {
       expect(result.current).toBe(obj1);
 
       act(() => {
-        jest.advanceTimersByTime(150);
+        vi.advanceTimersByTime(150);
       });
 
       rerender({ value: obj2 });
 
       // Wait for throttled update
       act(() => {
-        jest.advanceTimersByTime(150);
+        vi.advanceTimersByTime(150);
       });
 
       expect(result.current).toBe(obj2);
@@ -494,14 +494,14 @@ describe('useThrottledValue', () => {
       expect(result.current).toBeNull();
 
       act(() => {
-        jest.advanceTimersByTime(150);
+        vi.advanceTimersByTime(150);
       });
 
       rerender({ value: undefined });
 
       // Wait for throttled update
       act(() => {
-        jest.advanceTimersByTime(150);
+        vi.advanceTimersByTime(150);
       });
 
       expect(result.current).toBeUndefined();
@@ -523,7 +523,7 @@ describe('useThrottledValue', () => {
 
       // This should not throw
       act(() => {
-        jest.advanceTimersByTime(150);
+        vi.advanceTimersByTime(150);
       });
     });
 
@@ -539,7 +539,7 @@ describe('useThrottledValue', () => {
       rerender({ value: 'd' });
 
       act(() => {
-        jest.advanceTimersByTime(150);
+        vi.advanceTimersByTime(150);
       });
 
       // Should end up with final value
@@ -558,14 +558,14 @@ describe('useThrottledValue', () => {
 
       // Wait 50ms - should not have updated yet
       act(() => {
-        jest.advanceTimersByTime(50);
+        vi.advanceTimersByTime(50);
       });
 
       // May or may not have updated depending on timing
 
       // Wait another 60ms - should definitely have updated
       act(() => {
-        jest.advanceTimersByTime(60);
+        vi.advanceTimersByTime(60);
       });
 
       expect(result.current).toBe('second');
@@ -575,16 +575,16 @@ describe('useThrottledValue', () => {
 
 describe('useThrottle vs useThrottledValue comparison', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('useThrottle is for callbacks, useThrottledValue is for reactive values', () => {
     // useThrottle - imperative approach
-    const callback = jest.fn();
+    const callback = vi.fn();
     const { result: throttleResult } = renderHook(() => useThrottle(callback, 100));
 
     // useThrottledValue - declarative approach
@@ -606,7 +606,7 @@ describe('useThrottle vs useThrottledValue comparison', () => {
     rerender({ value: 3 });
 
     act(() => {
-      jest.advanceTimersByTime(150);
+      vi.advanceTimersByTime(150);
     });
 
     // Both approaches effectively throttle rapid changes

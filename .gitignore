@@ -31,3 +31,9 @@ nul
 .env
 node_modules/
 build/
+
+# build Vite (généré, déployé par gh-pages depuis dist/)
+/dist/
+
+# journaux locaux
+*.log

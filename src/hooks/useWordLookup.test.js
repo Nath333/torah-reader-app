@@ -10,23 +10,23 @@
 
 import { renderHook, act, waitFor } from '@testing-library/react';
 import useWordLookup from './useWordLookup';
+import * as mockOrchestrator from '../services/unifiedLookupService';
+import * as useWordLookupModule from './useWordLookup';
 
 // Mock the unified lookup service (previously wordLookupOrchestrator)
-jest.mock('../services/unifiedLookupService', () => ({
-  lookupWord: jest.fn(),
-  quickLookup: jest.fn(),
-  getFrenchTranslation: jest.fn(),
-  cleanHebrewWord: jest.fn((word) => word),
-  batchLookup: jest.fn(),
-  warmCache: jest.fn(),
-  isCached: jest.fn()
+vi.mock('../services/unifiedLookupService', () => ({
+  lookupWord: vi.fn(),
+  quickLookup: vi.fn(),
+  getFrenchTranslation: vi.fn(),
+  cleanHebrewWord: vi.fn((word) => word),
+  batchLookup: vi.fn(),
+  warmCache: vi.fn(),
+  isCached: vi.fn()
 }));
-
-const mockOrchestrator = require('../services/unifiedLookupService');
 
 describe('useWordLookup', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     // Default mock implementations
     mockOrchestrator.quickLookup.mockReturnValue({
@@ -244,7 +244,7 @@ describe('useWordLookup', () => {
 
 describe('CONFIDENCE constants', () => {
   it('should export confidence thresholds', () => {
-    const { CONFIDENCE } = require('./useWordLookup');
+    const { CONFIDENCE } = useWordLookupModule;
 
     expect(CONFIDENCE.VERY_HIGH).toBe(95);
     expect(CONFIDENCE.HIGH).toBe(85);

@@ -14,7 +14,7 @@ import { useAsyncOperation, useAsyncCallback } from './useAsyncOperation';
 describe('useAsyncOperation', () => {
   describe('initial state', () => {
     it('should have correct initial state', () => {
-      const asyncFn = jest.fn();
+      const asyncFn = vi.fn();
       const { result } = renderHook(() => useAsyncOperation(asyncFn));
 
       expect(result.current.data).toBeNull();
@@ -25,7 +25,7 @@ describe('useAsyncOperation', () => {
     });
 
     it('should use custom initialData', () => {
-      const asyncFn = jest.fn();
+      const asyncFn = vi.fn();
       const { result } = renderHook(() =>
         useAsyncOperation(asyncFn, { initialData: { foo: 'bar' } })
       );
@@ -36,7 +36,7 @@ describe('useAsyncOperation', () => {
 
   describe('execute', () => {
     it('should set loading state during execution', async () => {
-      const asyncFn = jest.fn(() => new Promise(resolve =>
+      const asyncFn = vi.fn(() => new Promise(resolve =>
         setTimeout(() => resolve('result'), 50)
       ));
 
@@ -54,7 +54,7 @@ describe('useAsyncOperation', () => {
     });
 
     it('should set data on success', async () => {
-      const asyncFn = jest.fn().mockResolvedValue('success data');
+      const asyncFn = vi.fn().mockResolvedValue('success data');
       const { result } = renderHook(() => useAsyncOperation(asyncFn));
 
       await act(async () => {
@@ -68,7 +68,7 @@ describe('useAsyncOperation', () => {
 
     it('should set error on failure', async () => {
       const error = new Error('Test error');
-      const asyncFn = jest.fn().mockRejectedValue(error);
+      const asyncFn = vi.fn().mockRejectedValue(error);
       const { result } = renderHook(() => useAsyncOperation(asyncFn));
 
       await act(async () => {
@@ -85,7 +85,7 @@ describe('useAsyncOperation', () => {
     });
 
     it('should pass arguments to async function', async () => {
-      const asyncFn = jest.fn().mockResolvedValue('result');
+      const asyncFn = vi.fn().mockResolvedValue('result');
       const { result } = renderHook(() => useAsyncOperation(asyncFn));
 
       await act(async () => {
@@ -98,7 +98,7 @@ describe('useAsyncOperation', () => {
     });
 
     it('should pass abort signal to async function', async () => {
-      const asyncFn = jest.fn().mockResolvedValue('result');
+      const asyncFn = vi.fn().mockResolvedValue('result');
       const { result } = renderHook(() => useAsyncOperation(asyncFn));
 
       await act(async () => {
@@ -113,8 +113,8 @@ describe('useAsyncOperation', () => {
 
   describe('callbacks', () => {
     it('should call onSuccess callback', async () => {
-      const onSuccess = jest.fn();
-      const asyncFn = jest.fn().mockResolvedValue('data');
+      const onSuccess = vi.fn();
+      const asyncFn = vi.fn().mockResolvedValue('data');
 
       const { result } = renderHook(() =>
         useAsyncOperation(asyncFn, { onSuccess })
@@ -128,9 +128,9 @@ describe('useAsyncOperation', () => {
     });
 
     it('should call onError callback', async () => {
-      const onError = jest.fn();
+      const onError = vi.fn();
       const error = new Error('Test');
-      const asyncFn = jest.fn().mockRejectedValue(error);
+      const asyncFn = vi.fn().mockRejectedValue(error);
 
       const { result } = renderHook(() =>
         useAsyncOperation(asyncFn, { onError })
@@ -151,7 +151,7 @@ describe('useAsyncOperation', () => {
   describe('abort handling', () => {
     it('should abort previous request when new one starts', async () => {
       let resolveFirst;
-      const slowFn = jest.fn()
+      const slowFn = vi.fn()
         .mockImplementationOnce(() => new Promise(resolve => {
           resolveFirst = resolve;
         }))
@@ -179,7 +179,7 @@ describe('useAsyncOperation', () => {
       const abortError = new Error('Aborted');
       abortError.name = 'AbortError';
 
-      const asyncFn = jest.fn().mockRejectedValue(abortError);
+      const asyncFn = vi.fn().mockRejectedValue(abortError);
       const { result } = renderHook(() => useAsyncOperation(asyncFn));
 
       await act(async () => {
@@ -197,7 +197,7 @@ describe('useAsyncOperation', () => {
 
   describe('reset', () => {
     it('should reset to initial state', async () => {
-      const asyncFn = jest.fn().mockResolvedValue('data');
+      const asyncFn = vi.fn().mockResolvedValue('data');
       const { result } = renderHook(() =>
         useAsyncOperation(asyncFn, { initialData: 'initial' })
       );
@@ -220,7 +220,7 @@ describe('useAsyncOperation', () => {
 
   describe('setData', () => {
     it('should allow manual data updates', () => {
-      const asyncFn = jest.fn();
+      const asyncFn = vi.fn();
       const { result } = renderHook(() => useAsyncOperation(asyncFn));
 
       act(() => {
@@ -231,7 +231,7 @@ describe('useAsyncOperation', () => {
     });
 
     it('should support updater function', () => {
-      const asyncFn = jest.fn();
+      const asyncFn = vi.fn();
       const { result } = renderHook(() =>
         useAsyncOperation(asyncFn, { initialData: { count: 0 } })
       );
@@ -246,7 +246,7 @@ describe('useAsyncOperation', () => {
 
   describe('immediate execution', () => {
     it('should execute immediately when configured', async () => {
-      const asyncFn = jest.fn().mockResolvedValue('immediate result');
+      const asyncFn = vi.fn().mockResolvedValue('immediate result');
 
       renderHook(() =>
         useAsyncOperation(asyncFn, { immediate: true })
@@ -258,7 +258,7 @@ describe('useAsyncOperation', () => {
     });
 
     it('should pass args for immediate execution', async () => {
-      const asyncFn = jest.fn().mockResolvedValue('result');
+      const asyncFn = vi.fn().mockResolvedValue('result');
 
       renderHook(() =>
         useAsyncOperation(asyncFn, { immediate: true, args: ['arg1'] })
@@ -273,7 +273,7 @@ describe('useAsyncOperation', () => {
 
 describe('useAsyncCallback', () => {
   it('should return callback and loading state', () => {
-    const asyncFn = jest.fn();
+    const asyncFn = vi.fn();
     const { result } = renderHook(() => useAsyncCallback(asyncFn));
 
     expect(typeof result.current[0]).toBe('function');
@@ -282,7 +282,7 @@ describe('useAsyncCallback', () => {
   });
 
   it('should set loading during execution', async () => {
-    const asyncFn = jest.fn(() => new Promise(resolve =>
+    const asyncFn = vi.fn(() => new Promise(resolve =>
       setTimeout(() => resolve('result'), 50)
     ));
 
@@ -301,7 +301,7 @@ describe('useAsyncCallback', () => {
 
   it('should capture errors', async () => {
     const error = new Error('Callback error');
-    const asyncFn = jest.fn().mockRejectedValue(error);
+    const asyncFn = vi.fn().mockRejectedValue(error);
 
     const { result } = renderHook(() => useAsyncCallback(asyncFn));
 

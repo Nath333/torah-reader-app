@@ -5,7 +5,7 @@ describe('useLocalStorage', () => {
   beforeEach(() => {
     // Clear localStorage before each test
     localStorage.clear();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test('returns initial value when localStorage is empty', () => {
@@ -64,22 +64,24 @@ describe('useLocalStorage', () => {
 
   test('returns error state on quota exceeded', () => {
     // Mock localStorage.setItem to throw quota error
-    const originalSetItem = Storage.prototype.setItem;
-    Storage.prototype.setItem = jest.fn(() => {
+    // (espion de l'instance : fonctionne quel que soit l'environnement jsdom/shim)
+    const setItemSpy = vi.spyOn(localStorage, 'setItem').mockImplementation(() => {
       const error = new DOMException('Quota exceeded', 'QuotaExceededError');
       throw error;
     });
 
-    const { result } = renderHook(() => useLocalStorage('quotaKey', 'initial'));
+    try {
+      const { result } = renderHook(() => useLocalStorage('quotaKey', 'initial'));
 
-    act(() => {
-      result.current[1]('newValue');
-    });
+      act(() => {
+        result.current[1]('newValue');
+      });
 
-    // Should return error info
-    expect(result.current[2].isQuotaExceeded).toBe(true);
-
-    // Restore original
-    Storage.prototype.setItem = originalSetItem;
+      // Should return error info
+      expect(result.current[2].isQuotaExceeded).toBe(true);
+    } finally {
+      // Restore original
+      setItemSpy.mockRestore();
+    }
   });
 });

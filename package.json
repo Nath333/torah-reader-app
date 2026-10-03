@@ -14,47 +14,30 @@
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-router-dom": "^7.13.1",
-    "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "vite",
     "prebuild": "node scripts/verifyDictionaryQuality.js",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "verify:dicts": "node scripts/verifyDictionaryQuality.js",
-    "minify:dicts": "node scripts/minifyDictionaries.js",
-    "minify:dicts:write": "node scripts/minifyDictionaries.js --write",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "knip": "knip",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
-    "knip": "knip"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "deploy": "gh-pages -d dist"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "@testing-library/user-event": "^13.5.0",
+    "@vitejs/plugin-react": "^4.7.0",
     "gh-pages": "^6.3.0",
+    "jsdom": "^29.1.1",
     "knip": "^6.39.0",
-    "source-map-explorer": "^2.5.3"
+    "source-map-explorer": "^2.5.3",
+    "vite": "^6.4.3",
+    "vitest": "^3.2.7"
   }
 }

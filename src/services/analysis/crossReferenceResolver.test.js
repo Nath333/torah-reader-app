@@ -124,7 +124,7 @@ describe('crossReferenceResolver', () => {
 
   describe('resolveCanonical', () => {
     test('follows a consensus redirect via the provided lookupFn', () => {
-      const lookupFn = jest.fn((word) => {
+      const lookupFn = vi.fn((word) => {
         if (normalizeKey(word) === 'שנים') {
           return {
             allSources: [
@@ -160,7 +160,7 @@ describe('crossReferenceResolver', () => {
         'b': { allSources: [{ name: 'Jastrow', definition: 'B , v. C', headword: 'b', tier: 1 }] },
         'c': { allSources: [{ name: 'Jastrow', definition: 'C , v. A', headword: 'c', tier: 1 }] }
       };
-      const lookupFn = jest.fn((word) => fakeEntries[normalizeKey(word)] || null);
+      const lookupFn = vi.fn((word) => fakeEntries[normalizeKey(word)] || null);
 
       const result = resolveCanonical(
         [{ name: 'Jastrow', definition: 'A , v. B', headword: 'a', tier: 1 }],
@@ -171,14 +171,14 @@ describe('crossReferenceResolver', () => {
     });
 
     test('returns empty result when input sources are empty', () => {
-      const lookupFn = jest.fn();
+      const lookupFn = vi.fn();
       const result = resolveCanonical([], lookupFn);
       expect(result.resolved).toBe(false);
       expect(lookupFn).not.toHaveBeenCalled();
     });
 
     test('does NOT report resolved when the target lookup returns nothing', () => {
-      const lookupFn = jest.fn(() => ({ allSources: [] }));
+      const lookupFn = vi.fn(() => ({ allSources: [] }));
       const sources = [
         { name: 'Jastrow', definition: 'שְׁתַּיִם , v. שְׁנַיִם', headword: 'שְׁתַּיִם', tier: 1 }
       ];

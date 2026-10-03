@@ -13,24 +13,24 @@ import { useDebounce, useDebouncedValue } from './useDebounce';
 
 describe('useDebounce', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
-    jest.clearAllMocks();
+    vi.useRealTimers();
+    vi.clearAllMocks();
   });
 
   describe('useDebounce (callback)', () => {
     it('should return a debounced function', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result } = renderHook(() => useDebounce(callback, 300));
 
       expect(typeof result.current).toBe('function');
     });
 
     it('should not call callback immediately', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result } = renderHook(() => useDebounce(callback, 300));
 
       act(() => {
@@ -41,7 +41,7 @@ describe('useDebounce', () => {
     });
 
     it('should call callback after delay', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result } = renderHook(() => useDebounce(callback, 300));
 
       act(() => {
@@ -51,7 +51,7 @@ describe('useDebounce', () => {
       expect(callback).not.toHaveBeenCalled();
 
       act(() => {
-        jest.advanceTimersByTime(300);
+        vi.advanceTimersByTime(300);
       });
 
       expect(callback).toHaveBeenCalledWith('test');
@@ -59,21 +59,21 @@ describe('useDebounce', () => {
     });
 
     it('should reset timer on rapid calls', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result } = renderHook(() => useDebounce(callback, 300));
 
       act(() => {
         result.current('first');
-        jest.advanceTimersByTime(100);
+        vi.advanceTimersByTime(100);
         result.current('second');
-        jest.advanceTimersByTime(100);
+        vi.advanceTimersByTime(100);
         result.current('third');
       });
 
       expect(callback).not.toHaveBeenCalled();
 
       act(() => {
-        jest.advanceTimersByTime(300);
+        vi.advanceTimersByTime(300);
       });
 
       expect(callback).toHaveBeenCalledWith('third');
@@ -81,7 +81,7 @@ describe('useDebounce', () => {
     });
 
     it('should pass multiple arguments to callback', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result } = renderHook(() => useDebounce(callback, 300));
 
       act(() => {
@@ -89,14 +89,14 @@ describe('useDebounce', () => {
       });
 
       act(() => {
-        jest.advanceTimersByTime(300);
+        vi.advanceTimersByTime(300);
       });
 
       expect(callback).toHaveBeenCalledWith('arg1', 'arg2', 'arg3');
     });
 
     it('should use default delay of 300ms', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result } = renderHook(() => useDebounce(callback));
 
       act(() => {
@@ -104,20 +104,20 @@ describe('useDebounce', () => {
       });
 
       act(() => {
-        jest.advanceTimersByTime(299);
+        vi.advanceTimersByTime(299);
       });
 
       expect(callback).not.toHaveBeenCalled();
 
       act(() => {
-        jest.advanceTimersByTime(1);
+        vi.advanceTimersByTime(1);
       });
 
       expect(callback).toHaveBeenCalled();
     });
 
     it('should use custom delay', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result } = renderHook(() => useDebounce(callback, 500));
 
       act(() => {
@@ -125,20 +125,20 @@ describe('useDebounce', () => {
       });
 
       act(() => {
-        jest.advanceTimersByTime(499);
+        vi.advanceTimersByTime(499);
       });
 
       expect(callback).not.toHaveBeenCalled();
 
       act(() => {
-        jest.advanceTimersByTime(1);
+        vi.advanceTimersByTime(1);
       });
 
       expect(callback).toHaveBeenCalled();
     });
 
     it('should cleanup timeout on unmount', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result, unmount } = renderHook(() => useDebounce(callback, 300));
 
       act(() => {
@@ -148,15 +148,15 @@ describe('useDebounce', () => {
       unmount();
 
       act(() => {
-        jest.advanceTimersByTime(300);
+        vi.advanceTimersByTime(300);
       });
 
       expect(callback).not.toHaveBeenCalled();
     });
 
     it('should update callback reference when callback changes', () => {
-      const callback1 = jest.fn();
-      const callback2 = jest.fn();
+      const callback1 = vi.fn();
+      const callback2 = vi.fn();
 
       const { result, rerender } = renderHook(
         ({ cb }) => useDebounce(cb, 300),
@@ -171,7 +171,7 @@ describe('useDebounce', () => {
       rerender({ cb: callback2 });
 
       act(() => {
-        jest.advanceTimersByTime(300);
+        vi.advanceTimersByTime(300);
       });
 
       expect(callback1).not.toHaveBeenCalled();
@@ -179,7 +179,7 @@ describe('useDebounce', () => {
     });
 
     it('should allow multiple separate debounced calls after delay', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       const { result } = renderHook(() => useDebounce(callback, 300));
 
       // First call
@@ -188,7 +188,7 @@ describe('useDebounce', () => {
       });
 
       act(() => {
-        jest.advanceTimersByTime(300);
+        vi.advanceTimersByTime(300);
       });
 
       expect(callback).toHaveBeenCalledWith('first');
@@ -200,7 +200,7 @@ describe('useDebounce', () => {
       });
 
       act(() => {
-        jest.advanceTimersByTime(300);
+        vi.advanceTimersByTime(300);
       });
 
       expect(callback).toHaveBeenCalledWith('second');
@@ -235,7 +235,7 @@ describe('useDebounce', () => {
       rerender({ value: 'updated' });
 
       act(() => {
-        jest.advanceTimersByTime(300);
+        vi.advanceTimersByTime(300);
       });
 
       expect(result.current).toBe('updated');
@@ -248,19 +248,19 @@ describe('useDebounce', () => {
       );
 
       rerender({ value: 'first' });
-      act(() => jest.advanceTimersByTime(100));
+      act(() => vi.advanceTimersByTime(100));
 
       rerender({ value: 'second' });
-      act(() => jest.advanceTimersByTime(100));
+      act(() => vi.advanceTimersByTime(100));
 
       rerender({ value: 'third' });
-      act(() => jest.advanceTimersByTime(100));
+      act(() => vi.advanceTimersByTime(100));
 
       // Still shows initial because no 300ms has passed without change
       expect(result.current).toBe('initial');
 
       act(() => {
-        jest.advanceTimersByTime(200);
+        vi.advanceTimersByTime(200);
       });
 
       expect(result.current).toBe('third');
@@ -280,7 +280,7 @@ describe('useDebounce', () => {
       rerender({ value: updated });
 
       act(() => {
-        jest.advanceTimersByTime(300);
+        vi.advanceTimersByTime(300);
       });
 
       expect(result.current).toEqual(updated);
@@ -295,7 +295,7 @@ describe('useDebounce', () => {
       rerender({ value: null });
 
       act(() => {
-        jest.advanceTimersByTime(300);
+        vi.advanceTimersByTime(300);
       });
 
       expect(result.current).toBeNull();
@@ -303,7 +303,7 @@ describe('useDebounce', () => {
       rerender({ value: undefined });
 
       act(() => {
-        jest.advanceTimersByTime(300);
+        vi.advanceTimersByTime(300);
       });
 
       expect(result.current).toBeUndefined();
@@ -320,7 +320,7 @@ describe('useDebounce', () => {
       rerender({ value: 42 });
 
       act(() => {
-        jest.advanceTimersByTime(300);
+        vi.advanceTimersByTime(300);
       });
 
       expect(result.current).toBe(42);
@@ -335,13 +335,13 @@ describe('useDebounce', () => {
       rerender({ value: 'updated' });
 
       act(() => {
-        jest.advanceTimersByTime(299);
+        vi.advanceTimersByTime(299);
       });
 
       expect(result.current).toBe('initial');
 
       act(() => {
-        jest.advanceTimersByTime(1);
+        vi.advanceTimersByTime(1);
       });
 
       expect(result.current).toBe('updated');
@@ -360,7 +360,7 @@ describe('useDebounce', () => {
 
       // This should not throw
       act(() => {
-        jest.advanceTimersByTime(300);
+        vi.advanceTimersByTime(300);
       });
     });
   });

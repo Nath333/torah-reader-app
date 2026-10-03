@@ -16,20 +16,20 @@
 export function createLocalStorageMock() {
   let store = {};
   return {
-    getItem: jest.fn((key) => store[key] ?? null),
-    setItem: jest.fn((key, value) => {
+    getItem: vi.fn((key) => store[key] ?? null),
+    setItem: vi.fn((key, value) => {
       store[key] = String(value);
     }),
-    removeItem: jest.fn((key) => {
+    removeItem: vi.fn((key) => {
       delete store[key];
     }),
-    clear: jest.fn(() => {
+    clear: vi.fn(() => {
       store = {};
     }),
     get length() {
       return Object.keys(store).length;
     },
-    key: jest.fn((index) => Object.keys(store)[index] ?? null),
+    key: vi.fn((index) => Object.keys(store)[index] ?? null),
     // Helper to inspect store contents
     __getStore: () => ({ ...store }),
     __setStore: (newStore) => {
@@ -58,15 +58,15 @@ export function setupLocalStorageMock() {
  * @returns {Function} Mock matchMedia function
  */
 export function createMatchMediaMock(matches = false) {
-  return jest.fn((query) => ({
+  return vi.fn((query) => ({
     matches,
     media: query,
     onchange: null,
-    addListener: jest.fn(),
-    removeListener: jest.fn(),
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn()
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn()
   }));
 }
 
@@ -90,10 +90,10 @@ export function setupMatchMediaMock(matches = false) {
  * @returns {Function} Cleanup function to restore real timers
  */
 export function setupTimers() {
-  jest.useFakeTimers();
+  vi.useFakeTimers();
   return () => {
-    jest.runOnlyPendingTimers();
-    jest.useRealTimers();
+    vi.runOnlyPendingTimers();
+    vi.useRealTimers();
   };
 }
 
@@ -102,7 +102,7 @@ export function setupTimers() {
  * @param {number} ms - Milliseconds to advance
  */
 export async function advanceTimersAndFlush(ms) {
-  jest.advanceTimersByTime(ms);
+  vi.advanceTimersByTime(ms);
   // Flush microtasks
   await Promise.resolve();
 }
@@ -119,7 +119,7 @@ export async function advanceTimersAndFlush(ms) {
  */
 export function createFetchMock(data, options = {}) {
   const { status = 200, ok = true } = options;
-  return jest.fn(() =>
+  return vi.fn(() =>
     Promise.resolve({
       ok,
       status,
@@ -149,11 +149,11 @@ export function setupFetchMock(data) {
  * @returns {Function} Mock constructor
  */
 export function createIntersectionObserverMock() {
-  return jest.fn(() => ({
-    observe: jest.fn(),
-    unobserve: jest.fn(),
-    disconnect: jest.fn(),
-    takeRecords: jest.fn(() => [])
+  return vi.fn(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+    takeRecords: vi.fn(() => [])
   }));
 }
 
@@ -175,10 +175,10 @@ export function setupIntersectionObserverMock() {
  * @returns {Function} Mock constructor
  */
 export function createResizeObserverMock() {
-  return jest.fn(() => ({
-    observe: jest.fn(),
-    unobserve: jest.fn(),
-    disconnect: jest.fn()
+  return vi.fn(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn()
   }));
 }
 
@@ -201,11 +201,11 @@ export function setupResizeObserverMock() {
  */
 export function createSpeechSynthesisMock() {
   return {
-    speak: jest.fn(),
-    cancel: jest.fn(),
-    pause: jest.fn(),
-    resume: jest.fn(),
-    getVoices: jest.fn(() => [
+    speak: vi.fn(),
+    cancel: vi.fn(),
+    pause: vi.fn(),
+    resume: vi.fn(),
+    getVoices: vi.fn(() => [
       { lang: 'he-IL', name: 'Hebrew Voice', default: true },
       { lang: 'en-US', name: 'English Voice', default: false }
     ]),
@@ -222,7 +222,7 @@ export function createSpeechSynthesisMock() {
 export function setupSpeechSynthesisMock() {
   const mock = createSpeechSynthesisMock();
   window.speechSynthesis = mock;
-  window.SpeechSynthesisUtterance = jest.fn().mockImplementation((text) => ({
+  window.SpeechSynthesisUtterance = vi.fn().mockImplementation((text) => ({
     text,
     voice: null,
     rate: 1,
@@ -262,9 +262,9 @@ export async function flushPromises() {
  * Reset all mocks and clear timers
  */
 export function cleanupAll() {
-  jest.clearAllMocks();
-  jest.clearAllTimers();
-  if (jest.isMockFunction(global.fetch)) {
+  vi.clearAllMocks();
+  vi.clearAllTimers();
+  if (vi.isMockFunction(global.fetch)) {
     global.fetch.mockClear();
   }
 }

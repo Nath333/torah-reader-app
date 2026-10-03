@@ -17,15 +17,15 @@ import userEvent from '@testing-library/user-event';
 import TzuratHaDaf from './TzuratHaDaf';
 
 // Mock the sefariaApi service
-jest.mock('../../services/sefariaApi', () => ({
-  getRashiOnTalmud: jest.fn(),
-  getTosafotForDaf: jest.fn(),
-  getMaharshaForDaf: jest.fn(),
+vi.mock('../../services/sefariaApi', () => ({
+  getRashiOnTalmud: vi.fn(),
+  getTosafotForDaf: vi.fn(),
+  getMaharshaForDaf: vi.fn(),
 }));
 
 // Mock the discourse pattern service
-jest.mock('../../services/scholarly/discoursePatternService', () => ({
-  detectStructuralMarkers: jest.fn(() => []),
+vi.mock('../../services/scholarly/discoursePatternService', () => ({
+  detectStructuralMarkers: vi.fn(() => []),
   TALMUDIC_PATTERNS: {
     question: { icon: '❓', label: 'Question', color: '#3b82f6' },
     answer: { icon: '💡', label: 'Answer', color: '#10b981' },
@@ -37,19 +37,19 @@ jest.mock('../../services/scholarly/discoursePatternService', () => ({
 }));
 
 // Mock the abbreviations service
-jest.mock('../../services/textual/talmudicAbbreviationsService', () => ({
-  findAbbreviations: jest.fn(() => []),
+vi.mock('../../services/textual/talmudicAbbreviationsService', () => ({
+  findAbbreviations: vi.fn(() => []),
 }));
 
 // Mock the hebrewUtils
-jest.mock('../../utils/hebrewUtils', () => ({
-  processHebrewText: jest.fn((text) => text),
-  getDisplayModeLabel: jest.fn(() => 'Full'),
+vi.mock('../../utils/hebrewUtils', () => ({
+  processHebrewText: vi.fn((text) => text),
+  getDisplayModeLabel: vi.fn(() => 'Full'),
 }));
 
 // Mock the useLocalStorage hook
-const mockSetLocalStorage = jest.fn();
-jest.mock('../../hooks/useLocalStorage', () => ({
+const mockSetLocalStorage = vi.fn();
+vi.mock('../../hooks/useLocalStorage', () => ({
   useLocalStorage: (key, defaultValue) => {
     const values = {
       'daf-zoom': 100,
@@ -66,19 +66,20 @@ jest.mock('../../hooks/useLocalStorage', () => ({
 }));
 
 // Mock the sanitize utility
-jest.mock('../../utils/sanitize', () => ({
-  removeHtmlTags: jest.fn((text) => text),
+vi.mock('../../utils/sanitize', () => ({
+  removeHtmlTags: vi.fn((text) => text),
 }));
 
 // Mock the ClickableText component
-jest.mock('../core/ClickableText', () => {
-  return function MockClickableText({ text, className }) {
+vi.mock('../core/ClickableText', () => ({
+  default: function MockClickableText({ text, className }) {
     return <span className={className} data-testid="clickable-text">{text}</span>;
-  };
-});
+  }
+}));
 
 // Import mocked services for assertions
-const { getRashiOnTalmud, getTosafotForDaf, getMaharshaForDaf } = require('../../services/sefariaApi');
+// services sefariaApi mocké plus haut : l'import statique récupère le mock
+import { getRashiOnTalmud, getTosafotForDaf, getMaharshaForDaf } from '../../services/sefariaApi';
 
 describe('TzuratHaDaf', () => {
   const defaultProps = {
@@ -94,10 +95,10 @@ describe('TzuratHaDaf', () => {
   const originalConsoleError = console.error;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     localStorage.clear();
     // Suppress expected console.error calls during tests
-    console.error = jest.fn();
+    console.error = vi.fn();
 
     // Setup default mock responses
     getRashiOnTalmud.mockResolvedValue({
@@ -328,7 +329,7 @@ describe('TzuratHaDaf', () => {
 
   describe('navigation', () => {
     it('should render prev navigation button when callback provided', async () => {
-      const onPrevChapter = jest.fn();
+      const onPrevChapter = vi.fn();
       render(<TzuratHaDaf {...defaultProps} onPrevChapter={onPrevChapter} />);
 
       await waitFor(() => {
@@ -337,7 +338,7 @@ describe('TzuratHaDaf', () => {
     });
 
     it('should render next navigation button when callback provided', async () => {
-      const onNextChapter = jest.fn();
+      const onNextChapter = vi.fn();
       render(<TzuratHaDaf {...defaultProps} onNextChapter={onNextChapter} />);
 
       await waitFor(() => {
@@ -346,7 +347,7 @@ describe('TzuratHaDaf', () => {
     });
 
     it('should call onPrevChapter when prev button clicked', async () => {
-      const onPrevChapter = jest.fn();
+      const onPrevChapter = vi.fn();
       render(<TzuratHaDaf {...defaultProps} onPrevChapter={onPrevChapter} />);
 
       await waitFor(() => {
@@ -357,7 +358,7 @@ describe('TzuratHaDaf', () => {
     });
 
     it('should call onNextChapter when next button clicked', async () => {
-      const onNextChapter = jest.fn();
+      const onNextChapter = vi.fn();
       render(<TzuratHaDaf {...defaultProps} onNextChapter={onNextChapter} />);
 
       await waitFor(() => {
@@ -368,7 +369,7 @@ describe('TzuratHaDaf', () => {
     });
 
     it('should disable prev button when hasPrevChapter is false', async () => {
-      const onPrevChapter = jest.fn();
+      const onPrevChapter = vi.fn();
       render(<TzuratHaDaf {...defaultProps} onPrevChapter={onPrevChapter} hasPrevChapter={false} />);
 
       await waitFor(() => {
@@ -378,7 +379,7 @@ describe('TzuratHaDaf', () => {
     });
 
     it('should disable next button when hasNextChapter is false', async () => {
-      const onNextChapter = jest.fn();
+      const onNextChapter = vi.fn();
       render(<TzuratHaDaf {...defaultProps} onNextChapter={onNextChapter} hasNextChapter={false} />);
 
       await waitFor(() => {
@@ -390,7 +391,7 @@ describe('TzuratHaDaf', () => {
 
   describe('close button', () => {
     it('should render close button when onClose provided', async () => {
-      const onClose = jest.fn();
+      const onClose = vi.fn();
       render(<TzuratHaDaf {...defaultProps} onClose={onClose} />);
 
       await waitFor(() => {
@@ -399,7 +400,7 @@ describe('TzuratHaDaf', () => {
     });
 
     it('should call onClose when close button clicked', async () => {
-      const onClose = jest.fn();
+      const onClose = vi.fn();
       render(<TzuratHaDaf {...defaultProps} onClose={onClose} />);
 
       await waitFor(() => {

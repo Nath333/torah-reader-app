@@ -230,11 +230,11 @@ describe('Telemetry', () => {
 
   describe('getPerformanceMetrics', () => {
     beforeEach(() => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
     });
 
     afterEach(() => {
-      jest.useRealTimers();
+      vi.useRealTimers();
     });
 
     it('should return metrics for time window', () => {
@@ -465,11 +465,11 @@ describe('CACHE_CONFIGS', () => {
 
 describe('WordLookupCache', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   describe('basic operations', () => {
@@ -541,7 +541,7 @@ describe('WordLookupCache', () => {
 
       cache.set('key1', 'value1');
 
-      jest.advanceTimersByTime(500);
+      vi.advanceTimersByTime(500);
 
       expect(cache.get('key1')).toBe('value1');
     });
@@ -551,7 +551,7 @@ describe('WordLookupCache', () => {
 
       cache.set('key1', 'value1');
 
-      jest.advanceTimersByTime(1001);
+      vi.advanceTimersByTime(1001);
 
       expect(cache.get('key1')).toBeNull();
     });
@@ -561,7 +561,7 @@ describe('WordLookupCache', () => {
 
       cache.set('key1', 'value1');
 
-      jest.advanceTimersByTime(1001);
+      vi.advanceTimersByTime(1001);
 
       expect(cache.has('key1')).toBe(false);
     });
@@ -571,7 +571,7 @@ describe('WordLookupCache', () => {
 
       cache.set('key1', 'value1');
 
-      jest.advanceTimersByTime(1001);
+      vi.advanceTimersByTime(1001);
       cache.get('key1'); // Triggers expiration
 
       expect(cache.stats().expirations).toBe(1);
@@ -609,16 +609,16 @@ describe('WordLookupCache', () => {
 
       cache.set('key1', 'value1');
 
-      jest.advanceTimersByTime(100);
+      vi.advanceTimersByTime(100);
 
       cache.set('key2', 'value2');
 
-      jest.advanceTimersByTime(100);
+      vi.advanceTimersByTime(100);
 
       // Access key1 to update its lastAccess
       cache.get('key1');
 
-      jest.advanceTimersByTime(100);
+      vi.advanceTimersByTime(100);
 
       cache.set('key3', 'value3');
 
@@ -715,7 +715,7 @@ describe('WordLookupCache', () => {
       cache.set('key1', 'value1');
       cache.set('key2', 'value2');
 
-      jest.advanceTimersByTime(1001);
+      vi.advanceTimersByTime(1001);
 
       const removed = cache.cleanup();
 
@@ -728,11 +728,11 @@ describe('WordLookupCache', () => {
 
       cache.set('key1', 'value1');
 
-      jest.advanceTimersByTime(500);
+      vi.advanceTimersByTime(500);
 
       cache.set('key2', 'value2');
 
-      jest.advanceTimersByTime(600); // key1 expired, key2 still valid
+      vi.advanceTimersByTime(600); // key1 expired, key2 still valid
 
       const removed = cache.cleanup();
 

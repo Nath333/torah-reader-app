@@ -21,62 +21,62 @@ import CommentaryViewer, {
 } from './CommentaryViewer';
 
 // Mock the sefariaApi service
-jest.mock('../../services/sefariaApi', () => ({
-  getCommentary: jest.fn(),
+vi.mock('../../services/sefariaApi', () => ({
+  getCommentary: vi.fn(),
 }));
 
 // Mock the groqService
-jest.mock('../../services/groqService', () => ({
-  getStoredApiKey: jest.fn(() => null),
+vi.mock('../../services/groqService', () => ({
+  getStoredApiKey: vi.fn(() => null),
 }));
 
 // Mock the ClickableText component
-jest.mock('../core/ClickableText', () => {
-  return function MockClickableText({ text, className }) {
+vi.mock('../core/ClickableText', () => ({
+  default: function MockClickableText({ text, className }) {
     return <span className={className} data-testid="clickable-text">{text}</span>;
-  };
-});
+  }
+}));
 
 // Mock the CommentarySummary component
-jest.mock('./CommentarySummary', () => {
-  return function MockCommentarySummary({ onClose }) {
+vi.mock('./CommentarySummary', () => ({
+  default: function MockCommentarySummary({ onClose }) {
     return (
       <div data-testid="commentary-summary">
         AI Summary
         <button onClick={onClose}>Close Summary</button>
       </div>
     );
-  };
-});
+  }
+}));
 
 // Mock the shared SourceBadge component
-jest.mock('../shared/SourceBadge', () => ({
+vi.mock('../shared/SourceBadge', () => ({
   SourceBadge: ({ source, accuracy }) => (
     <span data-testid="source-badge">{source}</span>
   ),
 }));
 
 // Mock the textEnhancer
-jest.mock('../../utils/textEnhancer', () => ({
+vi.mock('../../utils/textEnhancer', () => ({
   EnhancedText: ({ text }) => <span>{text}</span>,
 }));
 
 // Mock sanitize utility - handles both (text) and (text, tags) signatures
-jest.mock('../../utils/sanitize', () => ({
-  removeHtmlTags: jest.fn((text, tagsToRemove) => {
+vi.mock('../../utils/sanitize', () => ({
+  removeHtmlTags: vi.fn((text, tagsToRemove) => {
     if (!text || typeof text !== 'string') return '';
     return text;
   }),
 }));
 
-// Import mocked services
-const { getCommentary } = require('../../services/sefariaApi');
-const { getStoredApiKey } = require('../../services/groqService');
+// Services mockés (vi.mock plus haut) : imports statiques = versions mockées
+import { getCommentary } from '../../services/sefariaApi';
+import { getStoredApiKey } from '../../services/groqService';
 
 describe('CommentaryViewer', () => {
   const defaultProps = {
     isOpen: true,
-    onClose: jest.fn(),
+    onClose: vi.fn(),
     verse: { verse: 1, hebrewText: 'בראשית ברא אלהים' },
     verseText: 'בראשית ברא אלהים',
     selectedBook: 'Genesis',
@@ -84,7 +84,7 @@ describe('CommentaryViewer', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     // Default mock response for commentary
     getCommentary.mockResolvedValue([
@@ -373,7 +373,7 @@ describe('CommentaryChip', () => {
   });
 
   it('should call onClick when clicked', () => {
-    const onClick = jest.fn();
+    const onClick = vi.fn();
     render(
       <CommentaryChip
         source="Rashi"
@@ -388,7 +388,7 @@ describe('CommentaryChip', () => {
   });
 
   it('should not call onClick when disabled', () => {
-    const onClick = jest.fn();
+    const onClick = vi.fn();
     render(
       <CommentaryChip
         source="Rashi"
@@ -485,7 +485,7 @@ describe('accessibility', () => {
   it('should have proper aria attributes on view toggle', () => {
     render(<CommentaryViewer {...{
       isOpen: true,
-      onClose: jest.fn(),
+      onClose: vi.fn(),
       verse: 1,
       verseText: 'test',
       selectedBook: 'Genesis',
@@ -499,7 +499,7 @@ describe('accessibility', () => {
   it('should have proper aria attributes on translation toggle', () => {
     render(<CommentaryViewer {...{
       isOpen: true,
-      onClose: jest.fn(),
+      onClose: vi.fn(),
       verse: 1,
       verseText: 'test',
       selectedBook: 'Genesis',
@@ -514,7 +514,7 @@ describe('accessibility', () => {
   it('should have aria-label on close button', () => {
     render(<CommentaryViewer {...{
       isOpen: true,
-      onClose: jest.fn(),
+      onClose: vi.fn(),
       verse: 1,
       verseText: 'test',
       selectedBook: 'Genesis',

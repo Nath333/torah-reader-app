@@ -4,7 +4,7 @@
     "src/index.js",
     "src/App.js",
     "src/setupTests.js",
-    "src/setupProxy.js",
+    "vite.config.js",
     "public/sw.js",
     "scripts/**/*.js"
   ],
