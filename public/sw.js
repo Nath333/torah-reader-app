@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-globals */
 
-const CACHE_NAME = 'sefarim-reader-v2';
+const CACHE_NAME = 'sefarim-reader-v3';
 const API_CACHE_NAME = 'sefarim-api-v1';
 
 // Static assets to cache on install
