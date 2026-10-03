@@ -9,8 +9,9 @@
 
 import { stripAllDiacritics, normalizeFinals } from '../../utils/hebrewUtils';
 
-// DRY: stripNikud consolidated → use stripAllDiacritics from hebrewUtils.js directly
-export const stripNikud = stripAllDiacritics;
+// DRY: logique déléguée à stripAllDiacritics (hebrewUtils.js), mais l'ancien contrat
+// de stripNikud veut '' pour entrée vide/null (stripAllDiacritics transmet tel quel)
+export const stripNikud = (text) => stripAllDiacritics(text) ?? '';
 
 /**
  * Normalize Hebrew text for pattern matching.

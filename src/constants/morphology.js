@@ -2284,6 +2284,15 @@ export const FUNCTION_WORDS = {
   'מדאורייתא': 'by Torah law',
   'מדרבנן': 'by Rabbinic law',
 
+  // === COMMON TALMUDIC ABBREVIATIONS (bare form, no geresh) ===
+  // Must match before prefix analysis strips the leading ו (see וגו → גו "inside")
+  'וגו': 'etc. (וגומר)',
+  'וכו': 'etc. (וכולי)',
+  'וגומר': 'etc.',
+  'וכולי': 'etc.',
+  'חז"ל': 'Sages of blessed memory',
+  'שליט"א': 'may his honor be protected',
+
   // === CHAPTER/SECTION REFERENCES ===
   'ובפ\'': 'and in chapter',      // Common abbreviation
   'בפ\'': 'in chapter',

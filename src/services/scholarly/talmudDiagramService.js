@@ -39,8 +39,9 @@ import { getWordRelationships, SEMANTIC_FIELDS } from './wordRelationshipService
 // PRO SCHOLAR UTILITIES - Enhanced helper functions
 // =============================================================================
 
-// DRY: stripNikud consolidated → use stripAllDiacritics from hebrewUtils.js directly
-export const stripNikud = stripAllDiacritics;
+// DRY: logique déléguée à stripAllDiacritics (hebrewUtils.js), mais l'ancien contrat
+// de stripNikud veut '' pour entrée vide/null (stripAllDiacritics transmet tel quel)
+export const stripNikud = (text) => stripAllDiacritics(text) ?? '';
 
 /**
  * PRO SCHOLAR - Normalize Hebrew text for pattern matching
