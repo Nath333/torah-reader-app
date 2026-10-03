@@ -78,6 +78,12 @@ describe('useLocalStorage', () => {
         result.current[1]('newValue');
       });
 
+      // DIAGNOSTIC CI — à retirer une fois la divergence expliquée
+      console.log('[quota-diag] spy calls =', setItemSpy.mock.calls.length,
+        '| error =', result.current[2].error && result.current[2].error.name,
+        '| isQuotaExceeded =', result.current[2].isQuotaExceeded,
+        '| same object =', window.localStorage === localStorage);
+
       // Should return error info
       expect(result.current[2].isQuotaExceeded).toBe(true);
     } finally {

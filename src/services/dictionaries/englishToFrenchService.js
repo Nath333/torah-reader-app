@@ -163,31 +163,32 @@ const translate = async (text) => {
     return null;
   }
 
-  // Production: try mirrors with CORS proxy
+  // Production : miroirs Lingva, en DIRECT d'abord (lingva.ml envoie
+  // Access-Control-Allow-Origin: *, vérifié le 03/10/2026) — le proxy
+  // allorigins n'est qu'un ultime recours pour un miroir sans CORS.
+  const fetchTranslation = async (url) => {
+    const r = await fetch(url, { signal: AbortSignal.timeout(CONFIG.TIMEOUT) });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return r.json();
+  };
+
   for (let i = 0; i < LINGVA_MIRRORS.length; i++) {
     const idx = (apiState.currentMirror + i) % LINGVA_MIRRORS.length;
     const mirror = LINGVA_MIRRORS[idx];
-
-    // Use allorigins as CORS proxy
     const apiUrl = `${mirror}/api/v1/en/fr/${encodeURIComponent(text)}`;
-    const corsUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`;
 
-    try {
-      const r = await fetch(corsUrl, {
-        signal: AbortSignal.timeout(CONFIG.TIMEOUT)
-      });
-
-      if (r.ok) {
-        const d = await r.json();
+    for (const url of [apiUrl, `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`]) {
+      try {
+        const d = await fetchTranslation(url);
         if (d.translation && isValid(text, d.translation)) {
           apiState.fails = 0;
           apiState.currentMirror = idx;
-          log.verbose(`Translated via ${mirror}:`, text.slice(0, 30));
+          log.verbose(`Translated via ${mirror}${url === apiUrl ? '' : ' (proxy)'}:`, text.slice(0, 30));
           return { translation: fix(d.translation.trim()), source: 'Lingva', accuracy: 'high' };
         }
+      } catch (e) {
+        log.verbose(`Mirror ${mirror}${url === apiUrl ? '' : ' (proxy)'} failed:`, e.message);
       }
-    } catch (e) {
-      log.verbose(`Mirror ${mirror} failed:`, e.message);
     }
   }
 
