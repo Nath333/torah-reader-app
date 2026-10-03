@@ -11,6 +11,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import useStudySession from '../../hooks/useStudySession';
+import { getTodayStats, getLevelProgress, STATS_EVENT } from '../../services/studyTracker';
 import { getDailyLearning, getRandomInspiration } from '../../services/scholarlyApiService';
 // 2026 Smart Features - Learning Recommendations
 import {
@@ -256,6 +257,18 @@ const StudyDashboard = ({
   const [recommendations, setRecommendations] = useState([]);
   const [progressSummary, setProgressSummary] = useState(null);
 
+  // Refonte learning : versets lus + niveau en DIRECT (studyTracker, événement)
+  const [liveStats, setLiveStats] = useState(getTodayStats);
+  const [levelProgress, setLevelProgress] = useState(getLevelProgress);
+  useEffect(() => {
+    const refresh = () => {
+      setLiveStats(getTodayStats());
+      setLevelProgress(getLevelProgress());
+    };
+    window.addEventListener(STATS_EVENT, refresh);
+    return () => window.removeEventListener(STATS_EVENT, refresh);
+  }, []);
+
   // Fetch daily learning and recommendations on mount
   useEffect(() => {
     const fetchDaily = async () => {
@@ -379,11 +392,11 @@ const StudyDashboard = ({
             </div>
           </div>
 
-          <div className="progress-item">
-            <ProgressRing progress={todayProgress.progress.verses} color="#10B981" />
+          <div className="progress-item" title="Versets uniques lus aujourd'hui (1,5 s de lecture)">
+            <ProgressRing progress={liveStats.progress} color="#10B981" />
             <div className="progress-details">
               <span className="progress-value">
-                {todayProgress.versesRead} / {todayProgress.goals.dailyVerses}
+                {liveStats.versesRead} / 20
               </span>
               <span className="progress-label">Verses</span>
             </div>
@@ -428,13 +441,11 @@ const StudyDashboard = ({
         </div>
       )}
 
-      {/* Learning Level Badge - 2026 Smart Feature */}
-      {progressSummary && (
-        <LevelBadge
-          level={progressSummary.level}
-          progress={progressSummary}
-        />
-      )}
+      {/* Learning Level Badge — progression cumulée réelle (studyTracker) */}
+      <LevelBadge
+        level={levelProgress.level}
+        progress={levelProgress}
+      />
 
       {/* Personalized Recommendations - 2026 Smart Feature */}
       <RecommendationsPanel

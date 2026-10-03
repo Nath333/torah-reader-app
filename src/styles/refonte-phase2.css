@@ -306,3 +306,62 @@
 .app.dark-mode .main-content {
   background: var(--bg);
 }
+
+/* ---------------------------------------------------------------------------
+   7. LEVEL BADGE — le badge de niveau n'avait AUCUN style (texte collé) :
+   mise en forme propre, progression lisible
+   --------------------------------------------------------------------------- */
+.study-dashboard .level-badge {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  flex-wrap: wrap;
+}
+
+.study-dashboard .level-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.study-dashboard .level-name {
+  font-weight: 650;
+  color: var(--text-primary);
+}
+
+.study-dashboard .level-hebrew {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.study-dashboard .level-progress {
+  flex: 1;
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.study-dashboard .level-progress-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--border-light);
+  overflow: hidden;
+}
+
+.study-dashboard .level-progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--primary);
+  transition: width 0.4s ease;
+}
+
+.study-dashboard .level-progress-text {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}

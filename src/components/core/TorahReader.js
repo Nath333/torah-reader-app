@@ -15,6 +15,7 @@ import { useSettings } from '../../context';
 import LoadingSkeleton from '../shared/LoadingSkeleton';
 import ScholarModePanel from '../scholar-mode/ScholarModePanel';
 import ReaderControls from './ReaderControls';
+import { registerVerseRead } from '../../services/studyTracker';
 import VerseRow from './VerseRow';
 import EnhancedVerseDisplay from './EnhancedVerseDisplay';
 import NoteEditor from '../shared/NoteEditor';
@@ -101,6 +102,7 @@ const TorahReader = ({
 
   // Refs
   const versesContainerRef = useRef(null);
+  const visibleSinceRef = useRef(new Map());
 
   // Speech hook
   const { speak, stop, speaking, supported: speechSupported, hebrewVoiceAvailable } = useSpeech();
@@ -222,6 +224,40 @@ const TorahReader = ({
       });
     }
   }, [studyPanelState.isOpen, selection, verses, selectedBook, selectedChapter]);
+
+  // Refonte learning : un verset visible ≥ 1,5 s compte comme lu
+  // (anneau du jour + niveau cumulatif — services/studyTracker.js)
+  const readTimersRef = useRef(new Map());
+  useEffect(() => {
+    const container = versesContainerRef.current;
+    if (!container || !verses?.length || typeof IntersectionObserver === 'undefined') return undefined;
+
+    visibleSinceRef.current.clear();
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        const num = entry.target.getAttribute('data-verse');
+        if (!num) return;
+        const ref = `${selectedBook}.${selectedChapter}:${num}`;
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.55) {
+          if (visibleSinceRef.current.has(ref)) return;
+          const t = setTimeout(() => {
+            registerVerseRead(ref);
+            visibleSinceRef.current.delete(ref);
+          }, 1500);
+          visibleSinceRef.current.set(ref, t);
+        } else {
+          const t = visibleSinceRef.current.get(ref);
+          if (t) { clearTimeout(t); visibleSinceRef.current.delete(ref); }
+        }
+      });
+    }, { threshold: [0, 0.55, 1] });
+
+    container.querySelectorAll('[data-verse]').forEach((el) => io.observe(el));
+    return () => {
+      io.disconnect();
+      visibleSinceRef.current.forEach((t) => clearTimeout(t));
+    };
+  }, [verses, selectedBook, selectedChapter]);
 
   // Verse actions
   const copyVerse = useCallback(async (verse) => {
