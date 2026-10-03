@@ -1,0 +1,89 @@
+/* Carte d'onboarding premier lancement — tokens de la refonte sobre */
+
+.firstrun {
+  margin: 0 auto 1rem;
+  max-width: 720px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg, 12px);
+  padding: 0.9rem 1rem;
+  animation: firstrun-in 0.25s ease-out;
+}
+
+.firstrun.closing {
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+@keyframes firstrun-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.firstrun-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.firstrun-head h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.firstrun-done {
+  border: 1px solid var(--border);
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm, 8px);
+  padding: 0.3rem 0.7rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.firstrun-done:hover {
+  border-color: var(--primary, var(--border));
+}
+
+.firstrun-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.firstrun-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.firstrun-list kbd {
+  flex: 0 0 auto;
+  font-size: 0.78rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm, 6px);
+  padding: 0.1rem 0.45rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .firstrun-list li {
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+}

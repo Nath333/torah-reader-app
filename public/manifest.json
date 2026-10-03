@@ -1,6 +1,17 @@
 {
+  "id": "/torah-reader-app/",
   "short_name": "Limud",
   "name": "Limud - Torah & Talmud Study",
+  "description": "Interactive Torah, Tanach, Talmud, and Mishnah reader with a scholarly multi-source dictionary, AI analysis, and offline support.",
+  "lang": "en",
+  "dir": "ltr",
+  "start_url": "/torah-reader-app/",
+  "scope": "/torah-reader-app/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#0b0e14",
+  "background_color": "#0b0e14",
+  "categories": ["education", "books", "reference"],
   "icons": [
     {
       "src": "favicon.ico",
@@ -10,16 +21,43 @@
     {
       "src": "logo192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any"
     },
     {
       "src": "logo512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
     }
   ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "shortcuts": [
+    {
+      "name": "Smart Search",
+      "short_name": "Search",
+      "url": "/torah-reader-app/"
+    },
+    {
+      "name": "Bookmarks",
+      "short_name": "Favoris",
+      "url": "/torah-reader-app/bookmarks"
+    },
+    {
+      "name": "Vocabulary",
+      "short_name": "Vocabulaire",
+      "url": "/torah-reader-app/vocabulary"
+    }
+  ]
 }

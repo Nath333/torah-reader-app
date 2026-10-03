@@ -5,7 +5,7 @@
  * error boundaries, and optimized performance.
  */
 
-import { useCallback, useMemo, useEffect, lazy, Suspense, memo } from 'react';
+import { useState, useCallback, useMemo, useEffect, lazy, Suspense, memo } from 'react';
 import './App.css';
 
 // Services - PRO SCHOLAR V8: Use dictionaryLoader (consolidated from dictionaryPreloader)
@@ -40,6 +40,7 @@ import { MenuIcon, SearchIcon, GridIcon, FocusIcon, SunIcon, MoonIcon, OfflineIc
 import HeaderGreeting from './components/shared/HeaderGreeting';
 import ConnectivityIndicator from './components/shared/ConnectivityIndicator';
 import FriendlyError from './components/shared/FriendlyError';
+import FirstRunTips, { shouldShowFirstRunTips } from './components/shared/FirstRunTips';
 
 // Components - Navigation (loaded immediately)
 import Sidebar from './components/navigation/Sidebar';
@@ -80,6 +81,7 @@ const ReadingProgressBar = lazy(() => import('./components/study/ReadingProgress
 
 // Dictionary modals - loaded on demand
 const WordIntelligenceModal = lazy(() => import('./components/dictionary/WordIntelligenceModal'));
+const CommandPalette = lazy(() => import('./components/shared/CommandPalette'));
 
 // =============================================================================
 // Loading Fallbacks for Lazy Components
@@ -116,6 +118,10 @@ function App() {
   const { modals, handlers } = useModals();
   const { view, setView, goToReader, toggleView } = useViewRouting(torah.book, torah.chapter);
   const { getShareLink } = useUrlState(torah.book, torah.chapter, torah.goTo);
+
+  // Palette de commandes (Ctrl+P) + onboarding premier lancement
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [showTips, setShowTips] = useState(shouldShowFirstRunTips);
 
   // Initialize dictionary preloading AFTER initial render (deferred for fast startup).
   // Scoped to the current book's category so we don't pull ~78MB of lexicons
@@ -207,6 +213,7 @@ function App() {
     { key: 'ArrowRight', ctrl: true, handler: () => torah.nextChapter?.() },
     { key: '?', ctrl: false, shift: true, handler: handlers.help.toggle },
     { key: 'k', ctrl: true, handler: handlers.smartSearch.toggle },
+    { key: 'p', ctrl: true, handler: () => setPaletteOpen((o) => !o) },
     {
       key: 'Escape',
       ctrl: false,
@@ -444,6 +451,11 @@ function App() {
 
       {/* Main Content */}
       <main id="main-content" className="app-main" role="main">
+        {/* Onboarding premier lancement */}
+        {view === 'reader' && showTips && (
+          <FirstRunTips onDone={() => setShowTips(false)} />
+        )}
+
         {/* Progress Bar */}
         {view === 'reader' && (
           <Suspense fallback={null}>
@@ -569,6 +581,23 @@ function App() {
         onBookmark={() => toggleView('bookmarks')}
         isVisible={view === 'reader'}
       />
+
+      {/* Command Palette (Ctrl+P) */}
+      {paletteOpen && (
+        <Suspense fallback={null}>
+          <ErrorBoundary name="CommandPalette">
+            <CommandPalette
+              open={paletteOpen}
+              onClose={() => setPaletteOpen(false)}
+              onGoToBook={(book) => { torah.setBook(book); goToReader(); }}
+              onToggleView={toggleView}
+              onToggleDark={() => settings.toggleDarkMode?.()}
+              onOpenFocus={handlers.focus.open}
+              onOpenSmartSearch={handlers.smartSearch.open}
+            />
+          </ErrorBoundary>
+        </Suspense>
+      )}
 
       {/* Modals - Lazy loaded for performance */}
       {modals.help && (
