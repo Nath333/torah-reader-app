@@ -63,12 +63,24 @@ describe('useLocalStorage', () => {
   });
 
   test('returns error state on quota exceeded', () => {
-    // Mock localStorage.setItem to throw quota error
-    // Espion sur window.localStorage : la référence exacte qu'appelle le hook
-    // (le global localStorage peut désigner un autre objet selon l'env CI)
-    const setItemSpy = vi.spyOn(window.localStorage, 'setItem').mockImplementation(() => {
-      const error = new DOMException('Quota exceeded', 'QuotaExceededError');
-      throw error;
+    // On REMPLIT la propriété window.localStorage (configurable) par un storage
+    // factice : espionner setItem sur l'objet storage est avalé en silence par
+    // certains environnements (jsdom sous Node 22/Linux — assignment sans effet).
+    const fakeStorage = {
+      getItem: () => null,
+      setItem: () => {
+        throw new DOMException('Quota exceeded', 'QuotaExceededError');
+      },
+      removeItem: () => {},
+      clear: () => {},
+      key: () => null,
+      length: 0,
+    };
+    const originalDesc = Object.getOwnPropertyDescriptor(window, 'localStorage');
+    Object.defineProperty(window, 'localStorage', {
+      configurable: true,
+      enumerable: true,
+      get: () => fakeStorage,
     });
 
     try {
@@ -78,17 +90,12 @@ describe('useLocalStorage', () => {
         result.current[1]('newValue');
       });
 
-      // DIAGNOSTIC CI — à retirer une fois la divergence expliquée
-      console.log('[quota-diag] spy calls =', setItemSpy.mock.calls.length,
-        '| error =', result.current[2].error && result.current[2].error.name,
-        '| isQuotaExceeded =', result.current[2].isQuotaExceeded,
-        '| same object =', window.localStorage === localStorage);
-
       // Should return error info
       expect(result.current[2].isQuotaExceeded).toBe(true);
     } finally {
-      // Restore original
-      setItemSpy.mockRestore();
+      // Restore original descriptor
+      Object.defineProperty(window, 'localStorage', originalDesc);
     }
   });
+
 });
