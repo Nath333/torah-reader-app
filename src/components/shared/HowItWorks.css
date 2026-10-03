@@ -1,0 +1,103 @@
+.hiw-btn {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.hiw-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  background: rgba(2, 6, 23, 0.55);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 72px 16px 16px;
+  overflow-y: auto;
+}
+
+.hiw-panel {
+  width: min(560px, 100%);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px 26px;
+  box-shadow: var(--shadow-2xl);
+}
+
+.hiw-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.hiw-head h3 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.hiw-close {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.hiw-close:hover {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.hiw-panel section {
+  margin-top: 14px;
+}
+
+.hiw-panel h4 {
+  margin: 0 0 6px;
+  font-size: 0.98rem;
+  color: var(--primary);
+}
+
+.hiw-panel p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-size: 0.92rem;
+}
+
+.hiw-panel ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.hiw-shortcuts {
+  list-style: none;
+  padding-left: 0 !important;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hiw-panel kbd {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 1px 6px;
+  font-size: 0.8rem;
+  font-family: inherit;
+  color: var(--text-primary);
+}
+
+.hiw-foot {
+  margin-top: 16px !important;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-light);
+  font-size: 0.85rem !important;
+}
