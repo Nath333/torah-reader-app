@@ -20,6 +20,7 @@ import { HEBREW_PREFIXES_ORDERED } from '../../constants/morphology';
 import { SOURCE_CONFIG } from '../../constants/sourceConfig';
 // Book classifiers for context-aware preload gating
 import { isTorahBook, isTalmudBook, isMishnahBook } from '../sefariaApi';
+import { getSefariaBase } from '../sefariaBase';
 // IndexedDB persistence for parsed dictionary JSON
 import { getCached, putCached } from './dictionaryCache';
 
@@ -1271,9 +1272,7 @@ export async function getTextAttestationsAsync(word) {
 async function fetchSefariaLexiconLive(word) {
   if (!word || word.length < 2) return [];
 
-  const SEFARIA_BASE = process.env.NODE_ENV === 'development'
-    ? '/sefaria-api'
-    : 'https://www.sefaria.org/api';
+  const SEFARIA_BASE = getSefariaBase();
 
   try {
     const cleaned = stripAllDiacritics(word);

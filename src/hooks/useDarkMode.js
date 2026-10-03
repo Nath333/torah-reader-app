@@ -4,7 +4,14 @@ const KEY = 'darkMode';
 const DARK = 'dark-mode';
 const TRANSITION = 'theme-transition';
 const query = () => window.matchMedia('(prefers-color-scheme: dark)');
-const stored = () => localStorage.getItem(KEY);
+// Navigation privée / quota : localStorage peut lever — le thème doit
+// quand même s'initialiser (valeurs système) et l'écriture est muette.
+const stored = () => {
+  try { return localStorage.getItem(KEY); } catch { return null; }
+};
+const persist = (value) => {
+  try { localStorage.setItem(KEY, value); } catch { /* noop */ }
+};
 const meta = () => document.querySelector('meta[name="color-scheme"]')
   || Object.assign(document.createElement('meta'), { name: 'color-scheme' });
 
@@ -37,7 +44,7 @@ const useDarkMode = () => {
     m.content = dark ? 'dark' : 'light';
     if (!m.parentNode) document.head.appendChild(m);
 
-    localStorage.setItem(KEY, auto ? 'auto' : dark);
+    persist(auto ? 'auto' : dark);
 
     const id = setTimeout(() => body.classList.remove(TRANSITION), 300);
     return () => clearTimeout(id);

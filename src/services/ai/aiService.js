@@ -101,13 +101,17 @@ const callAPI = async (messages, options = {}) => {
 // =============================================================================
 // Mode Configuration (Kollel-Style Modes)
 // =============================================================================
+// Aligné sur groqService.getModeConfig (source de vérité) : un même mode
+// doit se comporter pareil depuis la Chavruta ou depuis l'analyse classique —
+// les anciennes valeurs divergeaient silencieusement (SUMMARY 0.3/1024 vs
+// 0.25/2000, IYUN 0.25/2048 vs 0.2/4000…).
 const MODE_CONFIG = {
-  [ANALYSIS_MODES.SUMMARY]: { maxTokens: 1024, temperature: 0.3 },
-  [ANALYSIS_MODES.IYUN]: { maxTokens: 2048, temperature: 0.25 },
-  [ANALYSIS_MODES.MUSSAR]: { maxTokens: 1500, temperature: 0.35 },
-  [ANALYSIS_MODES.MACHLOKET]: { maxTokens: 2048, temperature: 0.2 },
-  [ANALYSIS_MODES.MAREI_MEKOMOT]: { maxTokens: 2200, temperature: 0.25 },
-  [ANALYSIS_MODES.HALACHA]: { maxTokens: 1800, temperature: 0.2 },
+  [ANALYSIS_MODES.SUMMARY]: { maxTokens: 2000, temperature: 0.25 },
+  [ANALYSIS_MODES.IYUN]: { maxTokens: 4000, temperature: 0.2 },
+  [ANALYSIS_MODES.MUSSAR]: { maxTokens: 2500, temperature: 0.3 },
+  [ANALYSIS_MODES.MACHLOKET]: { maxTokens: 3500, temperature: 0.15 },
+  [ANALYSIS_MODES.MAREI_MEKOMOT]: { maxTokens: 3000, temperature: 0.2 },
+  [ANALYSIS_MODES.HALACHA]: { maxTokens: 2500, temperature: 0.15 },
 };
 
 // =============================================================================

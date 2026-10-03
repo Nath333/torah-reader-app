@@ -501,17 +501,19 @@ const ScholarModePanel = ({
   // 5 tabs for Talmud, 4 for Torah/other
   const tabs = useMemo(() => {
     // Core 4 tabs - cleaner interface with Hebrew + English format
+    // (pas d'emojis ni de badges fictifs : le seul badge est le compte réel
+    // de commentaires, le reste du chrome reste typographique)
     const coreTabs = [
-      { id: 'learn', label: 'לימוד Learn', icon: '📚', badge: 0 },
-      { id: 'words', label: 'מילים Words', icon: '📖', badge: 0 },
-      { id: 'commentary', label: 'פירושים Commentary', icon: '💬', badge: scholarlyData?.summary?.commentaryCount || 0 },
-      { id: 'notebook', label: 'מחברת Notebook', icon: '📝', badge: 0 },
-      { id: 'chavruta', label: 'חברותא Chavruta', icon: '🎓', badge: 0 }
+      { id: 'learn', label: 'לימוד Learn' },
+      { id: 'words', label: 'מילים Words' },
+      { id: 'commentary', label: 'פירושים Commentary', badge: scholarlyData?.summary?.commentaryCount || 0 },
+      { id: 'notebook', label: 'מחברת Notebook' },
+      { id: 'chavruta', label: 'חברותא Chavruta' }
     ];
 
     // Add Guemara tab for Talmud texts
     if (isTalmud) {
-      coreTabs.splice(1, 0, { id: 'talmud', label: 'גמרא Guemara', icon: '📜', badge: 0 });
+      coreTabs.splice(1, 0, { id: 'talmud', label: 'גמרא Guemara' });
     }
 
     return coreTabs;
@@ -627,7 +629,6 @@ const ScholarModePanel = ({
               className={`mode-tab ${!browseMode ? 'active' : ''}`}
               onClick={() => setBrowseMode(false)}
             >
-              <span className="mode-tab-icon">📄</span>
               Current Page
               <span className="mode-tab-count">{allVerses.length}</span>
             </button>
@@ -635,7 +636,6 @@ const ScholarModePanel = ({
               className={`mode-tab ${browseMode ? 'active' : ''}`}
               onClick={toggleBrowseMode}
             >
-              <span className="mode-tab-icon">📚</span>
               Browse Other Pages
             </button>
           </div>

@@ -8,10 +8,9 @@ import { createCache } from '../utils/cache';
 import { cleanHtml } from '../utils/sanitize';
 import { fetchWithFallback } from '../utils/http';
 
-// Use local proxy in development to avoid CORS issues
-const SEFARIA_BASE = process.env.NODE_ENV === 'development'
-  ? '/sefaria-api'
-  : 'https://www.sefaria.org/api';
+// Base Sefaria unique (dev : proxy Vite ; prod : limud-proxy si configuré)
+import { getSefariaBase } from './sefariaBase';
+const SEFARIA_BASE = getSefariaBase();
 const DICTA_NAKDAN_BASE = 'https://nakdan-4-0.loadbalancer.dicta.org.il';
 
 // Cache for scholarly data (longer TTL for reference data)

@@ -11,6 +11,7 @@ import { fetchWithFallback } from '../../utils/http';
 import { cleanHebrewWord, normalizeFinals, stripVowels } from '../../utils/hebrewUtils';
 import { analyzeWord as analyzeGrammar, extractRoot as extractGrammarRoot } from '../analysis/grammarAnalysisService';
 import { createLogger, IS_DEV } from '../../utils/debug';
+import { getSefariaBase } from '../sefariaBase';
 // Import halachic overrides for context-specific translations
 import { HALACHIC_OVERRIDE } from '../../utils/commentaryUtils';
 // Import shared morphology constants for prefix/suffix handling
@@ -662,10 +663,8 @@ const lookupAllLocalDictionaries = async (word) => {
   return results;
 };
 
-// Use local proxy in development to avoid CORS issues
-const SEFARIA_BASE = IS_DEV
-  ? '/sefaria-api'
-  : 'https://www.sefaria.org/api';
+// Base Sefaria unique (dev : proxy Vite ; prod : limud-proxy si configuré)
+const SEFARIA_BASE = getSefariaBase();
 
 // CAL (Comprehensive Aramaic Lexicon) configuration
 // Development: local proxy | Production: CORS proxy via allorigins.win

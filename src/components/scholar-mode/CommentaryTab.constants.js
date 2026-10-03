@@ -8,6 +8,7 @@
 import { safeGet, safeSet } from '../../utils/safeLocalStorage';
 import { fetchWithFallback } from '../../utils/http';
 import { createLogger } from '../../utils/debug';
+import { getSefariaBase } from '../../services/sefariaBase';
 import {
   COMMENTATORS as REGISTRY_COMMENTATORS,
   ERAS,
@@ -16,10 +17,8 @@ import {
 
 export const log = createLogger('Commentary');
 
-// Use local proxy in development
-export const SEFARIA_BASE = process.env.NODE_ENV === 'development'
-  ? '/sefaria-api'
-  : 'https://www.sefaria.org/api';
+// Base Sefaria unique (dev : proxy Vite ; prod : limud-proxy si configuré)
+export const SEFARIA_BASE = getSefariaBase();
 
 // =============================================================================
 // COMMENTARY TEXT CACHE

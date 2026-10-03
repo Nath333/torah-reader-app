@@ -8,6 +8,7 @@
 import { createManagedCache } from '../cacheOrchestrator';
 import { stripAllDiacritics } from '../../utils/hebrewUtils';
 import { createLogger } from '../../utils/debug';
+import { hasApiKey } from '../groqApi';
 const log = createLogger('smartDataService');
 
 // =============================================================================
@@ -126,7 +127,9 @@ export const checkConnectivity = async (force = false) => {
   const [sefariaResult, groqResult] = await Promise.all([
     pingApi('https://www.sefaria.org/api/texts/Genesis.1.1', 'sefaria'),
     // For Groq, we just check if we have a key (actual check happens on use)
-    Promise.resolve({ available: !!localStorage.getItem('groq_api_key'), latency: null })
+    // via l'accesseur canonique : la clé vit dans safeStorage depuis la
+    // migration — une lecture localStorage brut la déclare à tort absente.
+    Promise.resolve({ available: hasApiKey(), latency: null })
   ]);
 
   connectivityState.apiStatus.sefaria = { ...sefariaResult, lastCheck: now };
