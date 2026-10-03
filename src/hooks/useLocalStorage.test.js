@@ -64,8 +64,9 @@ describe('useLocalStorage', () => {
 
   test('returns error state on quota exceeded', () => {
     // Mock localStorage.setItem to throw quota error
-    // (espion de l'instance : fonctionne quel que soit l'environnement jsdom/shim)
-    const setItemSpy = vi.spyOn(localStorage, 'setItem').mockImplementation(() => {
+    // Espion sur window.localStorage : la référence exacte qu'appelle le hook
+    // (le global localStorage peut désigner un autre objet selon l'env CI)
+    const setItemSpy = vi.spyOn(window.localStorage, 'setItem').mockImplementation(() => {
       const error = new DOMException('Quota exceeded', 'QuotaExceededError');
       throw error;
     });
