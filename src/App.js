@@ -41,6 +41,8 @@ import HeaderGreeting from './components/shared/HeaderGreeting';
 import ConnectivityIndicator from './components/shared/ConnectivityIndicator';
 import FriendlyError from './components/shared/FriendlyError';
 import FirstRunTips, { shouldShowFirstRunTips } from './components/shared/FirstRunTips';
+import HowItWorks from './components/shared/HowItWorks';
+import './components/shared/HowItWorks.css';
 
 // Components - Navigation (loaded immediately)
 import Sidebar from './components/navigation/Sidebar';
@@ -451,11 +453,6 @@ function App() {
 
       {/* Main Content */}
       <main id="main-content" className="app-main" role="main">
-        {/* Onboarding premier lancement */}
-        {view === 'reader' && showTips && (
-          <FirstRunTips onDone={() => setShowTips(false)} />
-        )}
-
         {/* Progress Bar */}
         {view === 'reader' && (
           <Suspense fallback={null}>
@@ -545,6 +542,10 @@ function App() {
 
             <div className="toolbar-divider" />
 
+            <HowItWorks />
+
+            <div className="toolbar-divider" />
+
             <button
               onClick={settings.toggleDarkMode}
               className="toolbar-btn icon-only theme-toggle"
@@ -571,6 +572,12 @@ function App() {
           </div>
         )}
 
+        {/* Onboarding premier lancement — APRÈS le header sticky, sinon il
+            le pousse vers le bas et masque les boutons du header au chargement */}
+        {view === 'reader' && showTips && (
+          <FirstRunTips onDone={() => setShowTips(false)} />
+        )}
+
         {/* Content */}
         <div className="main-content">{content}</div>
       </main>
@@ -589,7 +596,12 @@ function App() {
             <CommandPalette
               open={paletteOpen}
               onClose={() => setPaletteOpen(false)}
-              onGoToBook={(book) => { torah.setBook(book); goToReader(); }}
+              onGoToBook={(book) => {
+                // goTo traverse les catégories (Tanach, Gemara, Mishnah) ;
+                // setBook, lui, ne connaît que la catégorie courante.
+                torah.goTo(book, 1);
+                goToReader();
+              }}
               onToggleView={toggleView}
               onToggleDark={() => settings.toggleDarkMode?.()}
               onOpenFocus={handlers.focus.open}
