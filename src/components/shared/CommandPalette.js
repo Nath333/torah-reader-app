@@ -126,7 +126,8 @@ const CommandPalette = ({
   onToggleDark,
   onOpenFocus,
   onOpenSmartSearch,
-  resumeRef
+  resumeRef,
+  dailyStudy = []
 }) => {
   const [query, setQuery] = useState('');
   const [active, setActive] = useState(0);
@@ -163,8 +164,22 @@ const CommandPalette = ({
       });
     }
 
+    // 3. Les études du jour (Daf Yomi, Mishna, Rambam) — liste à vide
+    if (!query) {
+      for (const item of dailyStudy) {
+        extras.push({
+          id: item.id,
+          type: item.type,
+          label: item.label,
+          run: 'book',
+          value: item.book,
+          chapter: item.chapter
+        });
+      }
+    }
+
     const q = normalize(query);
-    if (!q) return [...extras, ...commands.slice(0, 14 - extras.length)];
+    if (!q) return [...extras, ...commands.slice(0, Math.max(4, 14 - extras.length))];
     const scored = [];
     for (const c of commands) {
       const idx = c.search.indexOf(q);
@@ -173,7 +188,7 @@ const CommandPalette = ({
     }
     scored.sort((a, b) => a.score - b.score);
     return [...extras, ...scored.slice(0, 14 - extras.length).map((s) => s.c)];
-  }, [commands, query, resumeRef]);
+  }, [commands, query, resumeRef, dailyStudy]);
 
   useEffect(() => {
     if (open) {
@@ -311,7 +326,16 @@ CommandPalette.propTypes = {
   onToggleDark: PropTypes.func.isRequired,
   onOpenFocus: PropTypes.func.isRequired,
   onOpenSmartSearch: PropTypes.func.isRequired,
-  resumeRef: PropTypes.shape({ book: PropTypes.string, chapter: PropTypes.number })
+  resumeRef: PropTypes.shape({ book: PropTypes.string, chapter: PropTypes.number }),
+  dailyStudy: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string,
+      type: PropTypes.string,
+      label: PropTypes.string,
+      book: PropTypes.string,
+      chapter: PropTypes.number
+    })
+  )
 };
 
 export default CommandPalette;

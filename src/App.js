@@ -41,6 +41,7 @@ import HeaderGreeting from './components/shared/HeaderGreeting';
 import ConnectivityIndicator from './components/shared/ConnectivityIndicator';
 import FriendlyError from './components/shared/FriendlyError';
 import FirstRunTips, { shouldShowFirstRunTips } from './components/shared/FirstRunTips';
+import { getDailyStudy } from './services/studyCycleService';
 import HowItWorks from './components/shared/HowItWorks';
 import './components/shared/HowItWorks.css';
 
@@ -124,6 +125,21 @@ function App() {
   // Palette de commandes (Ctrl+P) + onboarding premier lancement
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [showTips, setShowTips] = useState(shouldShowFirstRunTips);
+  const [dailyStudy, setDailyStudy] = useState([]);
+
+  // Les études du jour (Daf Yomi, Mishna, Rambam) pour la palette —
+  // différé en idle : l'API Sefaria ne doit pas retarder le premier rendu.
+  useEffect(() => {
+    const schedule = window.requestIdleCallback || ((cb) => setTimeout(cb, 800));
+    const id = schedule(() => {
+      getDailyStudy().then(setDailyStudy).catch(() => {
+        /* [] : l'item disparaît simplement de la palette */
+      });
+    }, { timeout: 5000 });
+    return () => {
+      if (window.cancelIdleCallback) window.cancelIdleCallback(id);
+    };
+  }, []);
 
   // Initialize dictionary preloading AFTER initial render (deferred for fast startup).
   // Scoped to the current book's category so we don't pull ~78MB of lexicons
@@ -614,6 +630,7 @@ function App() {
                     }
                   : { book: torah.book, chapter: torah.chapter }
               }
+              dailyStudy={dailyStudy}
             />
           </ErrorBoundary>
         </Suspense>
