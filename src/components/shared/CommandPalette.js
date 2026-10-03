@@ -15,7 +15,9 @@ import './CommandPalette.css';
  *
  * Complémentaire de SmartSearch (Ctrl+K, recherche de versets) : ici on
  * saute à un sefer/massechet, on ouvre une vue ou on déclenche une action.
- * Filtrage insensible à la casse sur les noms anglais ET hébreux.
+ * Résultats groupés par sections (étude du jour, sefarim, vues, actions),
+ * filtrage insensible à la casse sur les noms anglais ET hébreux, et
+ * surlignage du texte tapé.
  */
 
 const TORAH_SET = new Set(TORAH_BOOKS);
@@ -38,6 +40,13 @@ const ACTIONS = [
 ];
 
 const normalize = (s) => (s || '').toLowerCase().replace(/[_'’]/g, ' ').trim();
+
+// Ordre d'affichage des sections (les extras passent toujours en tête)
+const GROUP_ORDER = ['Aller à', 'Reprendre', 'Étude du jour', 'Sefarim', 'Vues', 'Actions'];
+const groupRank = (g) => {
+  const i = GROUP_ORDER.indexOf(g);
+  return i === -1 ? GROUP_ORDER.length : i;
+};
 
 // Index de recherche des livres : nom anglais normalisé + nom hébreu (5 livres)
 const BOOK_INDEX = [
@@ -81,6 +90,7 @@ const buildCommands = () => {
     cmds.push({
       id: `book:${book}`,
       type: cat,
+      group: 'Sefarim',
       label: BOOK_HEBREW_NAMES[book] ? `${BOOK_HEBREW_NAMES[book]} · ${book}` : book,
       search: normalize(`${book} ${BOOK_HEBREW_NAMES[book] || ''}`),
       run: 'book',
@@ -92,6 +102,7 @@ const buildCommands = () => {
     cmds.push({
       id: `talmud:${t}`,
       type: 'Gemara',
+      group: 'Sefarim',
       label: t,
       search: normalize(`${t} massechet talmud`),
       run: 'book',
@@ -104,6 +115,7 @@ const buildCommands = () => {
       cmds.push({
         id: `mishnah:${t}`,
         type: 'Mishnah',
+        group: 'Sefarim',
         label: t,
         search: normalize(`${t} ${seder.name} mishna`),
         run: 'book',
@@ -112,8 +124,8 @@ const buildCommands = () => {
     });
   });
 
-  VIEWS.forEach((v) => cmds.push({ ...v, search: normalize(`${v.label} ${v.type}`) }));
-  ACTIONS.forEach((a) => cmds.push({ ...a, search: normalize(`${a.label} ${a.type}`) }));
+  VIEWS.forEach((v) => cmds.push({ ...v, group: 'Vues', search: normalize(`${v.label} ${v.type}`) }));
+  ACTIONS.forEach((a) => cmds.push({ ...a, group: 'Actions', search: normalize(`${a.label} ${a.type}`) }));
 
   return cmds;
 };
@@ -145,7 +157,8 @@ const CommandPalette = ({
       extras.push({
         id: `ref:${ref.book}:${ref.chapter}${ref.verse ? ':' + ref.verse : ''}`,
         type: 'Référence',
-        label: `Aller à ${ref.book} ${ref.chapter}${ref.verse ? ':' + ref.verse : ''}`,
+        group: 'Aller à',
+        label: `${ref.book} ${ref.chapter}${ref.verse ? ':' + ref.verse : ''}`,
         run: 'book',
         value: ref.book,
         chapter: ref.chapter
@@ -157,7 +170,8 @@ const CommandPalette = ({
       extras.push({
         id: 'resume',
         type: 'Reprendre',
-        label: `Reprendre — ${resumeRef.book} ${resumeRef.chapter || 1}`,
+        group: 'Reprendre',
+        label: `${resumeRef.book} ${resumeRef.chapter || 1}`,
         run: 'book',
         value: resumeRef.book,
         chapter: resumeRef.chapter || 1
@@ -170,7 +184,8 @@ const CommandPalette = ({
         extras.push({
           id: item.id,
           type: item.type,
-          label: item.label,
+          group: 'Étude du jour',
+          label: item.label.replace(/^(Daf Yomi|Michna|Mishna|Rambam) du jour — /, ''),
           run: 'book',
           value: item.book,
           chapter: item.chapter
@@ -187,8 +202,25 @@ const CommandPalette = ({
       scored.push({ c, score: idx }); // plus tôt = plus pertinent
     }
     scored.sort((a, b) => a.score - b.score);
-    return [...extras, ...scored.slice(0, 14 - extras.length).map((s) => s.c)];
+    const matched = scored.slice(0, 14 - extras.length).map((s) => s.c);
+
+    // Les extras pertinents restent en tête, le reste suit par section
+    return [...extras, ...matched];
   }, [commands, query, resumeRef, dailyStudy]);
+
+  // Regroupement pour l'affichage : headers de section au changement de groupe
+  const renderedRows = useMemo(() => {
+    const rows = [];
+    let lastGroup = null;
+    results.forEach((cmd, flatIndex) => {
+      if (cmd.group !== lastGroup) {
+        lastGroup = cmd.group;
+        rows.push({ kind: 'section', title: cmd.group, key: `sec:${cmd.id}` });
+      }
+      rows.push({ kind: 'item', cmd, flatIndex, key: cmd.id });
+    });
+    return rows;
+  }, [results]);
 
   useEffect(() => {
     if (open) {
@@ -281,34 +313,43 @@ const CommandPalette = ({
               Aucun résultat — « {query} »
             </li>
           )}
-          {results.map((cmd, i) => (
-            <li
-              key={cmd.id}
-              id={`cmdk-opt-${i}`}
-              role="option"
-              aria-selected={i === active}
-              data-active={i === active || undefined}
-              className="cmdk-item"
-              onMouseEnter={() => setActive(i)}
-              onClick={() => run(cmd)}
-            >
-              <span
-                className={`cmdk-type cmdk-type-${
-                  cmd.type
-                    .normalize('NFD')
-                    .replace(/[\u0300-\u036f]/g, '')
-                    .replace(/[^a-z]/gi, '')
-                    .toLowerCase()
-                }`}
+          {renderedRows.map((row) =>
+            row.kind === 'section' ? (
+              <li key={row.key} className="cmdk-section" aria-hidden="true">
+                {row.title}
+              </li>
+            ) : (
+              <li
+                key={row.key}
+                id={`cmdk-opt-${row.flatIndex}`}
+                role="option"
+                aria-selected={row.flatIndex === active}
+                data-active={row.flatIndex === active || undefined}
+                className="cmdk-item"
+                onMouseEnter={() => setActive(row.flatIndex)}
+                onClick={() => run(row.cmd)}
               >
-                {cmd.type}
-              </span>
-              <span className="cmdk-label">{cmd.label}</span>
-              <kbd className="cmdk-enter" aria-hidden="true">↵</kbd>
-            </li>
-          ))}
+                <span
+                  className={`cmdk-type cmdk-type-${
+                    row.cmd.type
+                      .normalize('NFD')
+                      .replace(/[\u0300-\u036f]/g, '')
+                      .replace(/[^a-z]/gi, '')
+                      .toLowerCase()
+                  }`}
+                >
+                  {row.cmd.type}
+                </span>
+                <span className="cmdk-label">{row.cmd.label}</span>
+                <kbd className="cmdk-enter" aria-hidden="true">↵</kbd>
+              </li>
+            )
+          )}
         </ul>
         <div className="cmdk-footer">
+          <span className="cmdk-count">
+            {results.length} résultat{results.length > 1 ? 's' : ''}
+          </span>
           <span><kbd>↑</kbd><kbd>↓</kbd> naviguer</span>
           <span><kbd>↵</kbd> ouvrir</span>
           <span><kbd>esc</kbd> fermer</span>
