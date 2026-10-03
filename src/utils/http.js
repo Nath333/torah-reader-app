@@ -1,9 +1,7 @@
 // =============================================================================
 // HTTP Utility
-// Provides fetch with timeout, proxy fallback, and request deduplication
+// Provides fetch with timeout and request deduplication
 // =============================================================================
-
-const PROXY_URL = 'https://api.allorigins.win/get?url=';
 
 // Request deduplication - prevents duplicate concurrent requests to the same URL
 const pendingRequests = new Map();
@@ -122,12 +120,11 @@ export const fetchWithTimeout = async (url, options = {}, timeoutMs = 10000, ext
 };
 
 /**
- * Internal fetch implementation with proxy fallback and rate limit handling
+ * Internal fetch implementation with rate limit handling
  */
 const fetchWithFallbackInternal = async (url, options = {}) => {
   const {
     timeout = 10000,
-    proxyTimeout = 15000,
     headers = {},
     signal = null,
     responseType = 'json' // 'json' or 'text'
@@ -145,7 +142,6 @@ const fetchWithFallbackInternal = async (url, options = {}) => {
     throw err;
   }
 
-  // Try direct fetch first
   try {
     const response = await fetchWithTimeout(url, {
       method: 'GET',
@@ -170,69 +166,19 @@ const fetchWithFallbackInternal = async (url, options = {}) => {
 
     return responseType === 'text' ? await response.text() : await response.json();
   } catch (directError) {
-    // Don't fall back to proxy if request was aborted
     if (directError.name === 'AbortError') {
       throw directError;
     }
-
-    // Don't fall back to proxy if rate limited
-    if (directError.isRateLimited) {
-      throw directError;
-    }
-
-    // Fall back to proxy (only for JSON - proxy doesn't work well with HTML)
-    if (responseType === 'text') {
-      throw directError;
-    }
-
-    // Don't use external proxy for local paths (they're already proxied)
-    if (url.startsWith('/')) {
-      throw directError;
-    }
-
-    try {
-      const proxyUrl = `${PROXY_URL}${encodeURIComponent(url)}`;
-      const response = await fetchWithTimeout(proxyUrl, {}, proxyTimeout, signal);
-
-      // Handle rate limiting from proxy too
-      if (response.status === 429) {
-        const retryAfter = parseInt(response.headers.get('Retry-After') || '60', 10);
-        markRateLimited(url, retryAfter);
-        const err = new Error(`Proxy rate limited (429)`);
-        err.isRateLimited = true;
-        throw err;
-      }
-
-      if (!response.ok) {
-        throw new Error(`Proxy HTTP ${response.status}`);
-      }
-
-      const data = await response.json();
-      return JSON.parse(data.contents);
-    } catch (proxyError) {
-      // If proxy was aborted, throw abort error
-      if (proxyError.name === 'AbortError') {
-        throw proxyError;
-      }
-      // If rate limited, propagate that error
-      if (proxyError.isRateLimited) {
-        throw proxyError;
-      }
-      // Both failed - throw combined error
-      throw new Error(
-        `Direct: ${directError.message}, Proxy: ${proxyError.message}`
-      );
-    }
+    throw directError;
   }
 };
 
 /**
- * Fetch with automatic proxy fallback and request deduplication
+ * Fetch with request deduplication and rate-limit handling
  * Prevents duplicate concurrent requests to the same URL
  * @param {string} url - URL to fetch
  * @param {Object} options - Configuration options
  * @param {number} options.timeout - Timeout in ms (default: 10000)
- * @param {number} options.proxyTimeout - Proxy timeout in ms (default: 15000)
  * @param {Object} options.headers - Additional headers
  * @param {boolean} options.dedupe - Enable request deduplication (default: true)
  * @param {AbortSignal} options.signal - AbortSignal for cancellation

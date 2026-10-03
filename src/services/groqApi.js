@@ -5,19 +5,40 @@
  */
 
 import { AIError as BaseAIError, ERROR_TYPES as BaseErrorTypes } from '../utils/errors';
+import { safeStorage } from '../utils/safeHtml';
 
 export const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 export const DEFAULT_MODEL = 'llama-3.3-70b-versatile';
 
 // =============================================================================
 // API Key Management
+// La clé ne provient QUE de la saisie utilisateur (Réglages) : une variable
+// REACT_APP_* serait inlinée en clair dans le bundle public.
 // =============================================================================
-export const getStoredApiKey = () =>
-  process.env.REACT_APP_GROQ_API_KEY || localStorage.getItem('groq_api_key') || null;
+
+const API_KEY_STORAGE = 'groq_api_key';
+
+export const getStoredApiKey = () => {
+  const stored = safeStorage.getItem(API_KEY_STORAGE);
+  if (stored) return stored;
+  // Migration : clé en clair posée par l'ancienne version (localStorage brut)
+  try {
+    const legacy = localStorage.getItem(API_KEY_STORAGE);
+    if (legacy) {
+      safeStorage.setItem(API_KEY_STORAGE, legacy);
+      localStorage.removeItem(API_KEY_STORAGE);
+      return legacy;
+    }
+  } catch { /* localStorage indisponible */ }
+  return null;
+};
 
 export const hasApiKey = () => !!getStoredApiKey();
-export const setGroqApiKey = (key) => localStorage.setItem('groq_api_key', key);
-export const removeGroqApiKey = () => localStorage.removeItem('groq_api_key');
+export const setGroqApiKey = (key) => safeStorage.setItem(API_KEY_STORAGE, key);
+export const removeGroqApiKey = () => {
+  safeStorage.removeItem(API_KEY_STORAGE);
+  try { localStorage.removeItem(API_KEY_STORAGE); } catch { /* noop */ }
+};
 
 // =============================================================================
 // Error Handling - Re-export from centralized module for backward compat
