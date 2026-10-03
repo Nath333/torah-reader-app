@@ -8,7 +8,7 @@ on:
 
 jobs:
   test-and-build:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, windows-xps]
     steps:
       - uses: actions/checkout@v4
 
