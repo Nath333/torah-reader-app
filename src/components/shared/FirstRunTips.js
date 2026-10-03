@@ -1,11 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './FirstRunTips.css';
 
 /**
  * FirstRunTips — carte d'accueil premier lancement (repliable).
  *
  * Trois gestes à connaître ; le drapeau localStorage évite de re-montrer.
- * Sobre : une carte, trois lignes, un bouton.
+ * Si le navigateur permet l'installation PWA (beforeinstallprompt), un
+ * bouton « Installer » est proposé — une PWA qu'on n'installe pas est un
+ * onglet qu'on perd.
+ * Sobre : une carte, trois lignes, un ou deux boutons.
  */
 
 const STORAGE_KEY = 'limud_tips_done_v1';
@@ -29,21 +32,63 @@ const TIPS = [
   },
   {
     keys: 'Ctrl + P',
-    text: 'palette de commandes : sauter à un sefer, une massechet, ouvrir une vue, basculer le thème.'
+    text: 'palette : « genesis 12 », « shab », reprendre la lecture, vues et actions.'
   }
 ];
 
 const FirstRunTips = ({ onDone }) => {
   const [closing, setClosing] = useState(false);
+  const [installPrompt, setInstallPrompt] = useState(null);
+  const [installed, setInstalled] = useState(false);
 
-  const finish = () => {
-    setClosing(true);
+  useEffect(() => {
+    // Déjà installée (affichée comme application) : ne pas proposer
     try {
-      localStorage.setItem(STORAGE_KEY, String(Date.now()));
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        setInstalled(true);
+        return undefined;
+      }
     } catch {
-      /* le repli silencieux suffit */
+      /* matchMedia indisponible : continuer */
+    }
+
+    const onPrompt = (e) => {
+      e.preventDefault(); // empêche le mini-infobar du navigateur
+      setInstallPrompt(e);
+    };
+    const onInstalled = () => {
+      setInstallPrompt(null);
+      setInstalled(true);
+    };
+    window.addEventListener('beforeinstallprompt', onPrompt);
+    window.addEventListener('appinstalled', onInstalled);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', onPrompt);
+      window.removeEventListener('appinstalled', onInstalled);
+    };
+  }, []);
+
+  const finish = (closeOnly = false) => {
+    setClosing(true);
+    if (!closeOnly) {
+      try {
+        localStorage.setItem(STORAGE_KEY, String(Date.now()));
+      } catch {
+        /* le repli silencieux suffit */
+      }
     }
     setTimeout(() => onDone?.(), 250);
+  };
+
+  const handleInstall = async () => {
+    if (!installPrompt) return;
+    installPrompt.prompt(); // natif : le navigateur demande confirmation
+    const choice = await installPrompt.userChoice.catch(() => null);
+    if (choice?.outcome === 'accepted') {
+      localStorage.setItem(STORAGE_KEY, String(Date.now()));
+    }
+    setInstallPrompt(null);
+    finish();
   };
 
   return (
@@ -53,9 +98,16 @@ const FirstRunTips = ({ onDone }) => {
     >
       <div className="firstrun-head">
         <h2>Bienvenue dans l’étude</h2>
-        <button type="button" className="firstrun-done" onClick={finish}>
-          C’est parti
-        </button>
+        <div className="firstrun-actions">
+          {installPrompt && !installed && (
+            <button type="button" className="firstrun-install" onClick={handleInstall}>
+              Installer l’application
+            </button>
+          )}
+          <button type="button" className="firstrun-done" onClick={() => finish()}>
+            C’est parti
+          </button>
+        </div>
       </div>
       <ul className="firstrun-list">
         {TIPS.map((tip) => (

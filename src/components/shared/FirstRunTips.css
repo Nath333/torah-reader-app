@@ -42,6 +42,26 @@
   color: var(--text-primary);
 }
 
+.firstrun-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.firstrun-install {
+  border: 1px solid var(--primary, var(--border));
+  background: var(--primary, var(--bg-subtle));
+  color: #fff;
+  border-radius: var(--radius-sm, 8px);
+  padding: 0.3rem 0.7rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.firstrun-install:hover {
+  filter: brightness(1.08);
+}
+
 .firstrun-done {
   border: 1px solid var(--border);
   background: var(--bg-subtle);

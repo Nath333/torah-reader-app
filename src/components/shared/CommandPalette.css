@@ -75,6 +75,14 @@
   opacity: 0.75;
 }
 
+/* Les entrées de tête (référence parsée, reprise) se détachent */
+.cmdk-type-reference,
+.cmdk-type-reprendre {
+  border-color: var(--primary, var(--border-light));
+  color: var(--primary, var(--text-primary));
+  opacity: 1;
+}
+
 .cmdk-label {
   flex: 1 1 auto;
   min-width: 0;

@@ -596,16 +596,24 @@ function App() {
             <CommandPalette
               open={paletteOpen}
               onClose={() => setPaletteOpen(false)}
-              onGoToBook={(book) => {
+              onGoToBook={(book, chapter) => {
                 // goTo traverse les catégories (Tanach, Gemara, Mishnah) ;
                 // setBook, lui, ne connaît que la catégorie courante.
-                torah.goTo(book, 1);
+                torah.goTo(book, chapter || 1);
                 goToReader();
               }}
               onToggleView={toggleView}
               onToggleDark={() => settings.toggleDarkMode?.()}
               onOpenFocus={handlers.focus.open}
               onOpenSmartSearch={handlers.smartSearch.open}
+              resumeRef={
+                study.history?.[0]
+                  ? {
+                      book: study.history[0].book,
+                      chapter: Number(study.history[0].chapter) || 1
+                    }
+                  : { book: torah.book, chapter: torah.chapter }
+              }
             />
           </ErrorBoundary>
         </Suspense>

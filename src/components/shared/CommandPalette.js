@@ -39,6 +39,40 @@ const ACTIONS = [
 
 const normalize = (s) => (s || '').toLowerCase().replace(/[_'’]/g, ' ').trim();
 
+// Index de recherche des livres : nom anglais normalisé + nom hébreu (5 livres)
+const BOOK_INDEX = [
+  ...TANACH_BOOKS.map((book) => ({ book, key: normalize(book), hebrew: BOOK_HEBREW_NAMES[book] || null })),
+  ...TALMUD_BAVLI.map((book) => ({ book, key: normalize(book), hebrew: null }))
+];
+
+/**
+ * Parse une référence « genesis 12 », « bava metzia 2 », « בראשית 12 »,
+ * « psaumes 23:5 » -> { book, chapter, verse } ou null.
+ * Le nom du livre peut être multi-mots ; match exact ou préfixe non ambigu.
+ */
+const parseReference = (rawQuery) => {
+  const q = normalize(rawQuery);
+  const match = q.match(/^(.+?)\s+(\d{1,3})(?::(\d{1,3}))?$/);
+  if (!match) return null;
+  const [, bookPart, chapterStr, verseStr] = match;
+  const trimmed = bookPart.trim();
+  if (!trimmed) return null;
+
+  const hits = BOOK_INDEX.filter((b) => b.key === trimmed || b.hebrew === trimmed);
+  let book = null;
+  if (hits.length === 1) {
+    book = hits[0].book;
+  } else if (hits.length === 0) {
+    // préfixe non ambigu (« gene 12 »)
+    const prefixes = BOOK_INDEX.filter((b) => b.key.startsWith(trimmed) || (b.hebrew && b.hebrew.startsWith(trimmed)));
+    if (prefixes.length === 1) book = prefixes[0].book;
+  }
+  if (!book) return null;
+  const chapter = parseInt(chapterStr, 10);
+  const verse = verseStr ? parseInt(verseStr, 10) : null;
+  return { book, chapter, verse };
+};
+
 const buildCommands = () => {
   const cmds = [];
 
@@ -91,7 +125,8 @@ const CommandPalette = ({
   onToggleView,
   onToggleDark,
   onOpenFocus,
-  onOpenSmartSearch
+  onOpenSmartSearch,
+  resumeRef
 }) => {
   const [query, setQuery] = useState('');
   const [active, setActive] = useState(0);
@@ -101,8 +136,35 @@ const CommandPalette = ({
   const commands = useMemo(buildCommands, []);
 
   const results = useMemo(() => {
+    const extras = [];
+
+    // 1. Référence complète en tête (« genesis 12 », « בראשית 12:3 »)
+    const ref = parseReference(query);
+    if (ref) {
+      extras.push({
+        id: `ref:${ref.book}:${ref.chapter}${ref.verse ? ':' + ref.verse : ''}`,
+        type: 'Référence',
+        label: `Aller à ${ref.book} ${ref.chapter}${ref.verse ? ':' + ref.verse : ''}`,
+        run: 'book',
+        value: ref.book,
+        chapter: ref.chapter
+      });
+    }
+
+    // 2. Reprendre la lecture (liste à vide)
+    if (!query && resumeRef?.book) {
+      extras.push({
+        id: 'resume',
+        type: 'Reprendre',
+        label: `Reprendre — ${resumeRef.book} ${resumeRef.chapter || 1}`,
+        run: 'book',
+        value: resumeRef.book,
+        chapter: resumeRef.chapter || 1
+      });
+    }
+
     const q = normalize(query);
-    if (!q) return commands.slice(0, 14);
+    if (!q) return [...extras, ...commands.slice(0, 14 - extras.length)];
     const scored = [];
     for (const c of commands) {
       const idx = c.search.indexOf(q);
@@ -110,8 +172,8 @@ const CommandPalette = ({
       scored.push({ c, score: idx }); // plus tôt = plus pertinent
     }
     scored.sort((a, b) => a.score - b.score);
-    return scored.slice(0, 14).map((s) => s.c);
-  }, [commands, query]);
+    return [...extras, ...scored.slice(0, 14 - extras.length).map((s) => s.c)];
+  }, [commands, query, resumeRef]);
 
   useEffect(() => {
     if (open) {
@@ -131,7 +193,7 @@ const CommandPalette = ({
     onClose();
     switch (cmd.run) {
       case 'book':
-        onGoToBook(cmd.value);
+        onGoToBook(cmd.value, cmd.chapter || 1);
         break;
       case 'view':
         onToggleView(cmd.value);
@@ -215,7 +277,15 @@ const CommandPalette = ({
               onMouseEnter={() => setActive(i)}
               onClick={() => run(cmd)}
             >
-              <span className={`cmdk-type cmdk-type-${cmd.type.replace(/[^a-z]/gi, '').toLowerCase()}`}>
+              <span
+                className={`cmdk-type cmdk-type-${
+                  cmd.type
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '')
+                    .replace(/[^a-z]/gi, '')
+                    .toLowerCase()
+                }`}
+              >
                 {cmd.type}
               </span>
               <span className="cmdk-label">{cmd.label}</span>
@@ -240,7 +310,8 @@ CommandPalette.propTypes = {
   onToggleView: PropTypes.func.isRequired,
   onToggleDark: PropTypes.func.isRequired,
   onOpenFocus: PropTypes.func.isRequired,
-  onOpenSmartSearch: PropTypes.func.isRequired
+  onOpenSmartSearch: PropTypes.func.isRequired,
+  resumeRef: PropTypes.shape({ book: PropTypes.string, chapter: PropTypes.number })
 };
 
 export default CommandPalette;
