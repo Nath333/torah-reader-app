@@ -27,7 +27,10 @@ import {
 
 import { STOP_WORDS } from '../constants/morphology';
 
-// Re-export from modular utils for backward compatibility
+// Re-exports from modular utils (migration Vite : le require() CJS plantait
+// en ESM navigateur — ReferenceError non interceptée = page blanche)
+import { analyzeVerbGrammar, formatVerbGrammar } from './morphology/verbGrammar';
+import { calculateConfidence } from './morphology/confidence';
 export { calculateConfidence, CONFIDENCE_FACTORS } from './morphology/confidence';
 export { analyzeVerbGrammar, formatVerbGrammar, getBinyanInfo } from './morphology/verbGrammar';
 
@@ -222,9 +225,9 @@ const morphologyAnalyzer = {
   formatMorphologyBreakdown,
   getSimpleBreakdown,
   // Re-exports from modular utils
-  analyzeVerbGrammar: require('./morphology/verbGrammar').analyzeVerbGrammar,
-  formatVerbGrammar: require('./morphology/verbGrammar').formatVerbGrammar,
-  calculateConfidence: require('./morphology/confidence').calculateConfidence,
+  analyzeVerbGrammar,
+  formatVerbGrammar,
+  calculateConfidence,
   // Constants
   PREFIX_MEANINGS: HEBREW_PREFIX_MEANINGS,
   SUFFIX_MEANINGS: HEBREW_SUFFIX_MEANINGS,
