@@ -312,6 +312,26 @@ let wordGraph = {
 
 const STORAGE_KEY = 'word-relationship-graph';
 
+import { createPersistedStore } from '../../utils/persistedStore';
+const wordGraphPersist = createPersistedStore(STORAGE_KEY, wordGraph, {
+  name: 'word graph',
+  deserialize: (raw) => {
+    const data = JSON.parse(raw);
+    return {
+      nodes: new Map(data.nodes || []),
+      edges: data.edges || [],
+      userLearned: new Set(data.userLearned || []),
+      metadata: data.metadata || { created: Date.now(), lastUpdated: Date.now() },
+    };
+  },
+  serialize: (g) => ({
+    nodes: Array.from(g.nodes.entries()),
+    edges: g.edges,
+    userLearned: Array.from(g.userLearned),
+    metadata: g.metadata,
+  }),
+});
+
 // =============================================================================
 // INITIALIZATION
 // =============================================================================
@@ -320,18 +340,7 @@ const STORAGE_KEY = 'word-relationship-graph';
  * Initialize the word graph from storage
  */
 export function initializeWordGraph() {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const data = JSON.parse(stored);
-      wordGraph.nodes = new Map(data.nodes || []);
-      wordGraph.edges = data.edges || [];
-      wordGraph.userLearned = new Set(data.userLearned || []);
-      wordGraph.metadata = data.metadata || { created: Date.now(), lastUpdated: Date.now() };
-    }
-  } catch (err) {
-    console.warn('Failed to load word graph:', err);
-  }
+  wordGraph = wordGraphPersist.load();
 
   // Pre-populate with known relationships
   populateBuiltInRelationships();
@@ -343,17 +352,7 @@ export function initializeWordGraph() {
  * Persist word graph to storage
  */
 function persistWordGraph() {
-  try {
-    const data = {
-      nodes: Array.from(wordGraph.nodes.entries()),
-      edges: wordGraph.edges,
-      userLearned: Array.from(wordGraph.userLearned),
-      metadata: wordGraph.metadata,
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch (err) {
-    console.warn('Failed to persist word graph:', err);
-  }
+  wordGraph = wordGraphPersist.save(wordGraph);
 }
 
 /**

@@ -11,6 +11,8 @@
 
 const STORAGE_KEY = 'srs-data';
 
+import { createPersistedStore } from '../utils/persistedStore';
+
 // SM-2 algorithm constants
 const MIN_EASE_FACTOR = 1.3;
 const DEFAULT_EASE_FACTOR = 2.5;
@@ -88,18 +90,15 @@ let srsStore = {
   }
 };
 
+// Persistance via le helper commun (l'ancien couple initialize/persist était
+// copié-collé à l'identique dans 4 services d'apprentissage).
+const srsPersist = createPersistedStore(STORAGE_KEY, srsStore, { name: 'SRS' });
+
 /**
  * Initialize SRS store from localStorage
  */
 export function initializeSRS() {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      srsStore = JSON.parse(stored);
-    }
-  } catch (err) {
-    console.warn('Failed to load SRS data:', err);
-  }
+  srsStore = srsPersist.load();
   return srsStore;
 }
 
@@ -107,11 +106,7 @@ export function initializeSRS() {
  * Save SRS store to localStorage
  */
 function persistSRS() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(srsStore));
-  } catch (err) {
-    console.warn('Failed to persist SRS data:', err);
-  }
+  srsStore = srsPersist.save(srsStore);
 }
 
 /**

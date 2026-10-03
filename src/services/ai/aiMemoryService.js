@@ -32,18 +32,14 @@ let memoryStore = {
   }
 };
 
+import { createPersistedStore } from '../../utils/persistedStore';
+const memoryPersist = createPersistedStore(STORAGE_KEY, memoryStore, { name: 'AI memory' });
+
 /**
  * Initialize memory from localStorage
  */
 export function initializeMemory() {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      memoryStore = JSON.parse(stored);
-    }
-  } catch (err) {
-    console.warn('Failed to load AI memory:', err);
-  }
+  memoryStore = memoryPersist.load();
 
   // Start new session if none exists or last one is old
   if (!memoryStore.currentSession || isSessionExpired(memoryStore.currentSession)) {
@@ -66,11 +62,7 @@ function isSessionExpired(session) {
  * Save memory to localStorage
  */
 function persistMemory() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(memoryStore));
-  } catch (err) {
-    console.warn('Failed to persist AI memory:', err);
-  }
+  memoryStore = memoryPersist.save(memoryStore);
 }
 
 /**

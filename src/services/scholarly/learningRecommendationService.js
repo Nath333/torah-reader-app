@@ -128,18 +128,14 @@ let recommendationStore = {
   lastUpdated: null
 };
 
+import { createPersistedStore } from '../../utils/persistedStore';
+const recommendationPersist = createPersistedStore(STORAGE_KEY, recommendationStore, { name: 'recommendations' });
+
 /**
  * Initialize recommendation service
  */
 export function initializeRecommendations() {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      recommendationStore = JSON.parse(stored);
-    }
-  } catch (err) {
-    console.warn('Failed to load recommendations:', err);
-  }
+  recommendationStore = recommendationPersist.load();
   return recommendationStore;
 }
 
@@ -147,11 +143,7 @@ export function initializeRecommendations() {
  * Save recommendations to localStorage
  */
 function persistRecommendations() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(recommendationStore));
-  } catch (err) {
-    console.warn('Failed to persist recommendations:', err);
-  }
+  recommendationStore = recommendationPersist.save(recommendationStore);
 }
 
 /**

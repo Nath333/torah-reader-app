@@ -14,12 +14,20 @@ export const AI_PROVIDERS = {
 };
 
 // Settings
-export const getSelectedProvider = () =>
-  localStorage.getItem('ai_provider') || AI_PROVIDERS.GROQ;
+// Navigation privée / quota : localStorage peut lever — retour au défaut.
+export const getSelectedProvider = () => {
+  try {
+    return localStorage.getItem('ai_provider') || AI_PROVIDERS.GROQ;
+  } catch {
+    return AI_PROVIDERS.GROQ;
+  }
+};
 
 export const setSelectedProvider = (provider) => {
   if (Object.values(AI_PROVIDERS).includes(provider)) {
-    localStorage.setItem('ai_provider', provider);
+    try {
+      localStorage.setItem('ai_provider', provider);
+    } catch { /* noop */ }
   }
 };
 
