@@ -36,13 +36,13 @@
 | ~~`services/analysis/preClassificationService.js`~~ | **fait 03/10** | `preClassificationData.js` (1 067, 14 bases pures) + façade 1 232 (helpers + preClassify) | ✅ |
 | `constants/morphology.js` (reste) | — | conjugaison/binyanim | peut rejoindre `morphology/verbPatterns.js` existant |
 | `services/unifiedLookupService.js` | 3 123 | par étage (pipeline, cache, traduction) | 300+ tests = filet solide ; state partagé |
-| `services/scholarly/discoursePatternService.js` | 2 363 (était 3 056) | **phase 1 faite 03/10** : données → `discourse/discourseData.js` (710) | phase 2 : familles TzuratHaDaf (1328-1790 orig.), Mishna, Gemara-QA |
+| ~~`services/scholarly/discoursePatternService.js`~~ | **fait 03/10 (2 phases)** | `discourse/` 7 modules : discourseData 710, detection 540, gemaraQA 560, tzuratHavad 468, mishna 285, svara 257, layers 157 + façade 203 (composite + default, 33 noms ré-exportés) | ✅ |
 | `services/dictionaries/scholarlyLexiconService.js` | 4 102 | par lexique | |
 | `services/scholarly/talmudDiagramService.js` | 4 215 | générateurs par type de diagramme | les frères morts (Constants/Generators/Utils) ont été purgés — recréer proprement |
 
 ## Règles de conduite
 
-- **Un split = un commit** (revert trivial si régression). **Leçon du 03/10** : vérifier les chemins de la file AVANT de foncer — commentaryServiceFactory était sous `services/commentary/` depuis le 07/09 (31ea6c0), pas à la racine services/.
+- **Un split = un commit** (revert trivial si régression). **Leçons du 03/10** : le build rollup est PLUS STRICT que vitest (alias `as` perdus dans les imports générés = erreur « not exported », ré-exports doublonnés) — toujours builder après chaque split ; vérifier les chemins de la file AVANT de foncer — commentaryServiceFactory était sous `services/commentary/` depuis le 07/09 (31ea6c0), pas à la racine services/.
 - Ne JAMAIS couper pendant qu'une autre session travaille le même fichier
   (vérifier `git log --oneline -5` avant).
 - ARAMAIC_BINYANIM existe en **deux modèles de données différents** (constat
