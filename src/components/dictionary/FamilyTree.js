@@ -12,17 +12,7 @@
 
 import React, { useState, useEffect, useCallback, memo, useRef } from 'react';
 import './FamilyTree.css';
-
-// Service imports with fallbacks
-let getRootFamilyTree, generateRootForms;
-try {
-  const service = require('../../services/rootFormsService');
-  getRootFamilyTree = service.getRootFamilyTree;
-  generateRootForms = service.generateRootForms;
-} catch (e) {
-  getRootFamilyTree = async () => ({ categories: {}, totalForms: 0 });
-  generateRootForms = () => ({ categories: {}, totalForms: 0 });
-}
+import { getRootFamilyTree, generateRootForms } from '../../services/rootFormsService';
 
 // =============================================================================
 // SUB-COMPONENTS

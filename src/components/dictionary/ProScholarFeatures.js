@@ -4,21 +4,8 @@
 // =============================================================================
 
 import React, { useState, useCallback } from 'react';
+import { getMasteryLevel } from '../../services/srsService';
 
-// Safe SRS import
-let getMasteryLevel;
-try {
-  getMasteryLevel = require('../../services/srsService').getMasteryLevel;
-} catch (e) {
-  getMasteryLevel = (card) => {
-    if (!card) return { level: 'new', icon: '✨' };
-    const { interval = 0, repetitions = 0 } = card;
-    if (interval >= 21 && repetitions >= 5) return { level: 'mastered', icon: '⭐' };
-    if (repetitions >= 3) return { level: 'learning', icon: '📚' };
-    if (repetitions >= 1) return { level: 'started', icon: '🌱' };
-    return { level: 'new', icon: '✨' };
-  };
-}
 
 // =============================================================================
 // Quick SRS Review Buttons
