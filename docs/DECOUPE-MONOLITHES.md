@@ -25,7 +25,7 @@
 | Fichier | Lignes | Seam | Remarque |
 |---|---|---|---|
 | `constants/morphology.js` | 1 912 (était 2 696) | ✅ fait | `functionWords.js` extrait ; reste STOP/binyanim/analyse |
-| `services/commentaryServiceFactory.js` | 1 151 | par famille de commentaires | vérifier les caches module-level |
+| ~~`services/commentary/commentaryServiceFactory.js`~~ | **fait 03/10** | façade 263 l. + `factory/` (core 371, Rashi 151, Ramban 129, TosafotMaharsha 57, Sephardi 265) + smoke test (5) | ✅ |
 | `components/scholar-mode/NotebookTab.js` | 1 163 | UI — sous-onglets | nécessite tests d'abord |
 | `components/scholar-mode/ProScholarV29RichAnalysis.panels.js` | 1 186 | UI — un fichier par panneau | |
 | `components/layout/FocusMode.js` | 1 242 | UI — sections | importé par App.js |
@@ -42,7 +42,7 @@
 
 ## Règles de conduite
 
-- **Un split = un commit** (revert trivial si régression).
+- **Un split = un commit** (revert trivial si régression). **Leçon du 03/10** : vérifier les chemins de la file AVANT de foncer — commentaryServiceFactory était sous `services/commentary/` depuis le 07/09 (31ea6c0), pas à la racine services/.
 - Ne JAMAIS couper pendant qu'une autre session travaille le même fichier
   (vérifier `git log --oneline -5` avant).
 - ARAMAIC_BINYANIM existe en **deux modèles de données différents** (constat
