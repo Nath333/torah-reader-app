@@ -6,6 +6,7 @@
 
 import { createCache } from '../../utils/cache';
 import { createLogger } from '../../utils/debug';
+import { viaProxy } from '../proxyConfig';
 const log = createLogger('soncinoService');
 
 // PDF.js is lazy-loaded only when needed for PDF parsing
@@ -103,12 +104,12 @@ const getBaseUrl = (tractate) => {
   const urlPath = getTractateUrlPath(tractate);
   if (!urlPath) return null;
 
-  // In development, use the proxy; in production, try direct or fallback
+  // In development, use the proxy; in production, prefer the self-hosted
+  // serveur d'étude (limud-proxy) puis, à défaut, le CORS proxy tiers.
   if (process.env.NODE_ENV === 'development') {
     return `/halakhah-api/${urlPath}`;
   }
-  // For production (GitHub Pages), use a CORS proxy
-  return `https://corsproxy.io/?https://halakhah.com/${urlPath}`;
+  return viaProxy(`/halakhah/${urlPath}`, `https://corsproxy.io/?https://halakhah.com/${urlPath}`);
 };
 
 const soncinoCache = createCache({ ttl: 60 * 60 * 1000, maxSize: 200 }); // 1 hour cache
@@ -338,7 +339,10 @@ const getPdfUrl = (tractate, pageNum) => {
   if (process.env.NODE_ENV === 'development') {
     return `/halakhah-api/${urlPath}/pdf/${urlPath}_${paddedStart}-${paddedEnd}.pdf`;
   }
-  return `https://corsproxy.io/?https://halakhah.com/${urlPath}/pdf/${urlPath}_${paddedStart}-${paddedEnd}.pdf`;
+  return viaProxy(
+    `/halakhah/${urlPath}/pdf/${urlPath}_${paddedStart}-${paddedEnd}.pdf`,
+    `https://corsproxy.io/?https://halakhah.com/${urlPath}/pdf/${urlPath}_${paddedStart}-${paddedEnd}.pdf`
+  );
 };
 
 /**

@@ -1,0 +1,13 @@
+services:
+  limud-proxy:
+    build: .
+    image: limud-proxy:1.0.0
+    container_name: limud-proxy
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8791:8791"   # NPM proxifie ; pas d'exposition directe au LAN
+    environment:
+      PORT: "8791"
+      ALLOW_ORIGIN: "*"          # l'app est servie depuis GitHub Pages ; resserrer si besoin
+      UPSTREAM_TIMEOUT_MS: "12000"
+      CACHE_MAX_ENTRIES: "800"

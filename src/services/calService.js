@@ -13,6 +13,7 @@
 
 import { createLogger } from '../utils/debug';
 import { stripAllDiacritics } from '../utils/hebrewUtils';
+import { viaProxy } from './proxyConfig';
 const log = createLogger('CAL');
 
 // CAL API endpoints
@@ -156,8 +157,12 @@ export const lookupCAL = async (word) => {
 
   // Online lookup (use sparingly due to rate limits)
   try {
-    // CAL search URL format
-    const searchUrl = `${CAL_SEARCH_URL}?lemma=${encodeURIComponent(cleanWord)}&cits=no`;
+    // CAL search URL format — via le serveur d'étude si configuré (CAL n'a
+    // pas de CORS : sans proxy, l'appel direct n'aboutit qu'en dev)
+    const searchUrl = viaProxy(
+      `/cal/oneentry?lemma=${encodeURIComponent(cleanWord)}&cits=no`,
+      `${CAL_SEARCH_URL}?lemma=${encodeURIComponent(cleanWord)}&cits=no`
+    );
 
     const response = await fetch(searchUrl, {
       method: 'GET',

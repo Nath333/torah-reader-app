@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { setGroqApiKey, getStoredApiKey, removeGroqApiKey, checkGroqConnection } from '../../services/groqService';
+import { getProxyBase, setProxyBase } from '../../services/proxyConfig';
 import './ApiKeySettings.css';
 
 /**
@@ -11,6 +12,8 @@ const ApiKeySettings = ({ onClose, onSave }) => {
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState(null);
   const [saved, setSaved] = useState(false);
+  const [proxyUrl, setProxyUrl] = useState('');
+  const [proxySaved, setProxySaved] = useState(false);
 
   useEffect(() => {
     const storedKey = getStoredApiKey();
@@ -18,6 +21,7 @@ const ApiKeySettings = ({ onClose, onSave }) => {
       setApiKey(storedKey);
       setSaved(true);
     }
+    setProxyUrl(getProxyBase());
   }, []);
 
   const handleSave = () => {
@@ -142,6 +146,42 @@ const ApiKeySettings = ({ onClose, onSave }) => {
 
       <div className="settings-footer">
         <p>Your API key is stored locally in your browser and never sent to our servers.</p>
+      </div>
+
+      {/* Serveur d'étude auto-hébergé (limud-proxy) — optionnel */}
+      <div className="settings-content" style={{ borderTop: '1px solid var(--border-light, #ddd)', marginTop: '0.5rem', paddingTop: '0.75rem' }}>
+        <div className="input-group">
+          <label htmlFor="study-proxy-url">Serveur d'étude (optionnel)</label>
+          <div className="input-wrapper">
+            <input
+              id="study-proxy-url"
+              type="url"
+              value={proxyUrl}
+              onChange={(e) => {
+                setProxyUrl(e.target.value);
+                setProxySaved(false);
+              }}
+              placeholder="https://limud.homelab.local"
+              autoComplete="off"
+              spellCheck="false"
+            />
+          </div>
+          <p style={{ fontSize: '0.78rem', opacity: 0.65, margin: '0.3rem 0 0.45rem' }}>
+            Proxy auto-hébergé (cache Sefaria, CAL, halakhah sans proxys tiers).
+            Vide = sources directes. Appliqué au rechargement de la page.
+          </p>
+          <div className="button-group">
+            <button
+              className="save-btn"
+              onClick={() => {
+                setProxyBase(proxyUrl);
+                setProxySaved(true);
+              }}
+            >
+              {proxySaved ? '✓ Saved' : '💾 Save Server'}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

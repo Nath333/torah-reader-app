@@ -36,12 +36,16 @@ import {
   TALMUD_BAVLI
 } from '../constants/bookConstants';
 import { createLogger } from '../utils/debug';
+import { viaProxy } from './proxyConfig';
 const log = createLogger('sefariaApi');
 
-// Use local proxy in development to avoid CORS issues
+// Use local proxy in development to avoid CORS issues.
+// En production, si un serveur d'étude (limud-proxy) est configuré, il sert
+// les réponses avec cache ; sinon Sefaria direct. Défini au chargement du
+// module : changer le proxy dans les réglages se applique au rechargement.
 const BASE_URL = process.env.NODE_ENV === 'development'
   ? '/sefaria-api'
-  : 'https://www.sefaria.org/api';
+  : viaProxy('/sefaria/api', 'https://www.sefaria.org/api');
 
 // PRO SCHOLAR V6.2: Create managed cache instances with CacheOrchestrator
 const textCache = createManagedCache('api', { ttl: 10 * 60 * 1000, maxSize: 500 }); // 10 min
@@ -1306,7 +1310,10 @@ export const getTalmudDaf = async (tractate, daf) => {
 
   // Strategy 3: Direct Sefaria fetch (bypass proxy issues)
   try {
-    const directUrl = `https://www.sefaria.org/api/texts/${formattedTractate}.${daf}?context=0`;
+    const directUrl = viaProxy(
+      `/sefaria/api/texts/${formattedTractate}.${daf}`,
+      `https://www.sefaria.org/api/texts/${formattedTractate}.${daf}`
+    ) + '?context=0';
 
     // Use AbortController for timeout (compatible with older browsers)
     const controller = new AbortController();
