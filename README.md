@@ -55,7 +55,7 @@ Tabbed interface that adapts to the book being read:
 ## Technical Stack
 
 - **React 19** — hooks-based architecture, 8 contexts (Torah, Settings, Study, Commentary…)
-- **Vite** — dev server and production build (rolldown); **Vitest** for the test suite
+- **Vite 6** — dev server and production build (esbuild/rollup); **Vitest 3** for the test suite (19 suites, 746+ tests)
 - **Sefaria API** — authentic Jewish text data, with caching layers
 - **Groq AI** (Llama 3.3 70B) — analysis, summaries and translations
 - **CSS Variables** theming; **LocalStorage** persistence
@@ -85,11 +85,13 @@ src/
 
 Dictionary data is served from `public/data/` and lazy-loaded per source.
 
+Copyrighted scans (Koren Talmud Bavli / Steinsaltz PDFs, historical Talmud prints) are **not** part of the repository — they were purged from the git history on 2026-10-03 and must stay outside git. Texts are read from the Sefaria API instead.
+
 ## Getting Started
 
 1. Clone the repository
 2. Install dependencies: `npm install`
-3. Start the development server: `npm start` (Vite, http://localhost:5173)
+3. Start the development server: `npm start` (Vite, http://localhost:3000/torah-reader-app/)
 4. Run the tests: `npm test` (Vitest)
 5. Production build: `npm run build` → `dist/`
 
@@ -98,7 +100,12 @@ Dictionary data is served from `public/data/` and lazy-loaded per source.
 ### Groq AI (optional)
 AI features need a free [Groq](https://console.groq.com/) API key.
 
-**Enter it in the app (Réglages / AI settings panel).** The key is stored in the browser via encrypted storage and is **not** bundled in the application — the old `.env` / `REACT_APP_GROQ_API_KEY` mechanism was removed for security (a build-time key ends up in plain text in the public JS bundle).
+**Enter it in the app (Réglages / AI settings panel).** The key lives in the browser only, via `safeStorage` (XSS-sanitized localStorage wrapper) — it is **never** bundled in the application. The old `.env` / `REACT_APP_GROQ_API_KEY` mechanism was removed for security (a build-time key ends up in plain text in the public JS bundle); a key left by an older version is migrated automatically on first use.
+
+Other security notes:
+- No third-party CORS proxy: Sefaria calls go direct (`api.allorigins.win` fallback was removed).
+- CI (`.github/workflows/ci.yml`): npm ci → dictionary quality → vitest → production build.
+- `npm run knip` reports dead code (false positives possible — use as a report, not an auto-delete list).
 
 ## Deployment
 
