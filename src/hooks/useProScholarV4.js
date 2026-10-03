@@ -17,20 +17,8 @@
 
 import { useState, useCallback, useEffect, useMemo } from 'react';
 
-// Lazy import to avoid circular dependencies
-// PRO SCHOLAR V8: Renamed from proScholarV4 to featureFlags
-let FeatureFlags = null;
-const getProScholar = () => {
-  if (!FeatureFlags) {
-    try {
-      FeatureFlags = require('../services/featureFlags');
-    } catch (e) {
-      console.warn('[useProScholarV4] Failed to load featureFlags:', e.message);
-      FeatureFlags = { default: null };
-    }
-  }
-  return FeatureFlags.default || FeatureFlags;
-};
+import * as FeatureFlags from '../services/featureFlags';
+const getProScholar = () => FeatureFlags.default || FeatureFlags;
 
 /**
  * Hook for Pro Scholar v4 features

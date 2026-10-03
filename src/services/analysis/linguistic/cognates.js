@@ -400,4 +400,5 @@ export function getCognates(root) {
       hasCognates: true
     };
   }
-
+  return null;
+}

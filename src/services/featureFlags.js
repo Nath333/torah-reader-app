@@ -28,6 +28,17 @@ import {
 // PRO SCHOLAR V5: Single source of truth for Aramaic particles
 import { ARAMAIC_PARTICLES } from './analysis/preClassificationService';
 import { stripAllDiacritics } from '../utils/hebrewUtils';
+import * as _svc_cantillation from './textual/cantillationService';
+import * as _svc_constructChain from './constructChainService';
+import * as _svc_manuscriptVariants from './textual/manuscriptVariantsService';
+import * as _svc_knowledgeGraph from './scholarly/knowledgeGraphService';
+import * as _svc_rag from './ai/ragService';
+import * as _svc_srs from './srsService';
+import * as _svc_wordLookup from './unifiedLookupService';
+import * as _svc_grammarAnalysis from './analysis/grammarAnalysisService';
+import * as _svc_semanticField from './scholarly/semanticFieldService';
+import * as _svc_hebrewDictionary from './dictionaries/hebrewDictionary';
+import * as _svc_calDictionary from './dictionaries/calDictionaryService';
 
 // =============================================================================
 // FEATURE FLAGS
@@ -90,53 +101,28 @@ export const getService = (serviceName) => {
   if (_serviceCache[serviceName]) {
     return _serviceCache[serviceName];
   }
-
-  try {
-    switch (serviceName) {
-      case 'cantillation':
-        _serviceCache.cantillation = require('./textual/cantillationService');
-        break;
-      case 'constructChain':
-        _serviceCache.constructChain = require('./constructChainService');
-        break;
-      case 'manuscriptVariants':
-        _serviceCache.manuscriptVariants = require('./textual/manuscriptVariantsService');
-        break;
-      case 'knowledgeGraph':
-        _serviceCache.knowledgeGraph = require('./scholarly/knowledgeGraphService');
-        break;
-      case 'rag':
-        _serviceCache.rag = require('./ai/ragService');
-        break;
-      case 'srs':
-        _serviceCache.srs = require('./srsService');
-        break;
-      case 'wordLookup':
-        // PRO SCHOLAR V10: Use unifiedLookupService (consolidated from wordLookupOrchestrator)
-        _serviceCache.wordLookup = require('./unifiedLookupService');
-        break;
-      case 'grammarAnalysis':
-        _serviceCache.grammarAnalysis = require('./analysis/grammarAnalysisService');
-        break;
-      case 'semanticField':
-        _serviceCache.semanticField = require('./scholarly/semanticFieldService');
-        break;
-      case 'hebrewDictionary':
-        _serviceCache.hebrewDictionary = require('./dictionaries/hebrewDictionary');
-        break;
-      case 'calDictionary':
-        _serviceCache.calDictionary = require('./dictionaries/calDictionaryService');
-        break;
-      default:
-        console.warn(`[ProScholarV4] Unknown service: ${serviceName}`);
-        return null;
-    }
-  } catch (e) {
-    console.warn(`[ProScholarV4] Failed to load service ${serviceName}:`, e.message);
+  // Split 03/10 : les requires CJS paresseux (héritage CRA) plantent sous Vite
+  // (« require is not defined ») — les modules sont importés statiquement et
+  // mis en cache ici ; le « lazy » n'avait plus de sens hors webpack.
+  const svc = {
+    cantillation: _svc_cantillation,
+    constructChain: _svc_constructChain,
+    manuscriptVariants: _svc_manuscriptVariants,
+    knowledgeGraph: _svc_knowledgeGraph,
+    rag: _svc_rag,
+    srs: _svc_srs,
+    wordLookup: _svc_wordLookup,
+    grammarAnalysis: _svc_grammarAnalysis,
+    semanticField: _svc_semanticField,
+    hebrewDictionary: _svc_hebrewDictionary,
+    calDictionary: _svc_calDictionary
+  }[serviceName];
+  if (!svc) {
+    console.warn(`[ProScholarV4] Unknown service: ${serviceName}`);
     return null;
   }
-
-  return _serviceCache[serviceName];
+  _serviceCache[serviceName] = svc;
+  return svc;
 };
 
 // =============================================================================

@@ -22,30 +22,14 @@ import './HistoricalLayerPanel.css';
 // =============================================================================
 
 // Renamed from proScholarV6 to linguisticAnalysis
-let HISTORICAL_LAYERS, HISTORICAL_EVOLUTION, detectHistoricalLayer;
-try {
-  const linguisticAnalysis = require('../../../services/analysis/linguisticAnalysis');
-  HISTORICAL_LAYERS = linguisticAnalysis.HISTORICAL_LAYERS;
-  HISTORICAL_EVOLUTION = linguisticAnalysis.HISTORICAL_EVOLUTION;
-  detectHistoricalLayer = linguisticAnalysis.detectHistoricalLayer;
-} catch (e) {
-  console.debug('[HistoricalLayerPanel] linguisticAnalysis not available:', e.message);
-  HISTORICAL_LAYERS = {};
-  HISTORICAL_EVOLUTION = {};
-  detectHistoricalLayer = () => null;
-}
+import {
+  HISTORICAL_LAYERS,
+  HISTORICAL_EVOLUTION,
+  detectHistoricalLayer
+} from '../../../services/analysis/linguisticAnalysis';
 
 // Dictionary imports for fallback
-let lookupBDBByWord, lookupJastrowByWord;
-try {
-  const dictionaryLoader = require('../../../services/dictionaries/dictionaryLoader');
-  lookupBDBByWord = dictionaryLoader.lookupBDBByWord;
-  lookupJastrowByWord = dictionaryLoader.lookupJastrowByWord;
-} catch (e) {
-  console.debug('[HistoricalLayerPanel] dictionaryLoader not available:', e.message);
-  lookupBDBByWord = () => Promise.resolve(null);
-  lookupJastrowByWord = () => Promise.resolve(null);
-}
+import { lookupBDBByWord, lookupJastrowByWord } from '../../../services/dictionaries/dictionaryLoader';
 
 // =============================================================================
 // CONFIGURATION

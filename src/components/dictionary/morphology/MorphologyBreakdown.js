@@ -20,16 +20,12 @@ import './MorphologyBreakdown.css';
 // Unified Root Service Integration
 // =============================================================================
 // Renamed from unifiedRootService to rootExtraction
-let extractRootsEnhanced, detectDialect, getSemanticField;
-try {
-  const rootExtraction = require('../../../services/analysis/rootExtraction');
-  extractRootsEnhanced = rootExtraction.extractRootsEnhanced;
-  detectDialect = rootExtraction.detectDialect;
-  getSemanticField = rootExtraction.getSemanticField;
-} catch (e) {
-  extractRootsEnhanced = () => null;
-  detectDialect = () => null;
-  getSemanticField = () => null;
+import {
+  extractRootsEnhanced,
+  detectDialect,
+  getSemanticField
+} from '../../../services/analysis/rootExtraction';
+if (false) {
 }
 
 /** Dialect display configuration */

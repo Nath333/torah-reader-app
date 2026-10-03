@@ -26,14 +26,7 @@ import './RootMeaningPanel.css';
 // SAFE IMPORTS
 // =============================================================================
 
-let getRootMeaningAsync;
-try {
-  const dictionaryLoader = require('../../../services/dictionaries/dictionaryLoader');
-  getRootMeaningAsync = dictionaryLoader.getRootMeaningAsync;
-} catch (e) {
-  console.debug('[RootMeaningPanel] dictionaryLoader not available:', e.message);
-  getRootMeaningAsync = async () => null;
-}
+import { getRootMeaningAsync } from '../../../services/dictionaries/dictionaryLoader';
 
 // =============================================================================
 // CONFIGURATION

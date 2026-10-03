@@ -11,21 +11,9 @@
 
 import { BINYANIM, ARAMAIC_BINYANIM } from '../constants/morphology/verbPatterns';
 
-// Try to import root database
-let ROOT_MEANINGS = {};
-try {
-  ROOT_MEANINGS = require('../data/rootDatabase').ROOT_MEANINGS;
-} catch (e) {
-  // Root database not available
-}
+import { ROOT_MEANINGS } from '../data/rootDatabase';
 
-// Try to import frequency service
-let getWordFrequency;
-try {
-  getWordFrequency = require('./wordFrequencyService').getWordFrequency;
-} catch (e) {
-  getWordFrequency = () => null;
-}
+import { getWordFrequency } from './wordFrequencyService';
 
 // =============================================================================
 // FORM GENERATION PATTERNS

@@ -26,20 +26,10 @@ import { WEAK_VERB_DISPLAY } from '../constants/morphologyPatterns';
 // =============================================================================
 
 // PRO SCHOLAR: Root extraction service
-let UnifiedRootService = null;
-try {
-  UnifiedRootService = require('../services/analysis/rootExtraction');
-} catch (e) {
-  console.warn('[useProScholarV6] rootExtraction not available');
-}
+import * as UnifiedRootService from '../services/analysis/rootExtraction';
 
 // PRO SCHOLAR V6.2: Import TelemetryService for unified telemetry
-let TelemetryService = null;
-try {
-  TelemetryService = require('../services/telemetryService');
-} catch (e) {
-  console.debug('[useProScholarV6] TelemetryService not available, using local telemetry');
-}
+import * as TelemetryService from '../services/telemetryService';
 
 // Destructure V6 functions with safe fallbacks
 const {

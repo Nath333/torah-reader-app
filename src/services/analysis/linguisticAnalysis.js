@@ -26,8 +26,6 @@ const log = createLogger('ProScholarV6');
 
 export const PRO_SCHOLAR_V6_VERSION = '6.0.0';
 
-import { stripVowels } from '../../utils/hebrewUtils';
-import { ARAMAIC_PARTICLES } from './preClassificationService';
 import {
   BINYAN_ANALYSIS, analyzeBinyan
 } from './linguistic/binyan';
@@ -140,9 +138,6 @@ export function analyzeWordV6(word, options = {}) {
 /**
  * Historical period definitions for Hebrew/Aramaic vocabulary
  */
-
-  return null;
-}
 
 // =============================================================================
 // 12. ENHANCED analyzeWordV6 - Include new features

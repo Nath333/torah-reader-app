@@ -36,6 +36,7 @@ import { lookupJastrowByWord, lookupBDBByWord, lookupStrongsByWord } from '../di
 import { SOURCE_CONFIG } from '../../constants/sourceConfig';
 // Centralized Hebrew text utilities (single source of truth)
 import { normalizeFinals, stripVowels } from '../../utils/hebrewUtils';
+import * as _linguisticModule from './linguisticAnalysis';
 
 const log = createLogger('UnifiedRoot');
 
@@ -1260,16 +1261,8 @@ export function getTopRoots(word, n = 3, lookupFn) {
 
 // Lazy-load V6 to avoid circular dependencies
 // Renamed from proScholarV6 to linguisticAnalysis
-let _linguisticModule = null;
+// (split 03/10 : require CJS paresseux → import statique ; sens unique, pas de cycle)
 const getV6 = () => {
-  if (!_linguisticModule) {
-    try {
-      _linguisticModule = require('./linguisticAnalysis');
-    } catch (e) {
-      if (DEBUG) log.debug('[V6] linguisticAnalysis not available:', e.message);
-      _linguisticModule = null;
-    }
-  }
   return _linguisticModule;
 };
 

@@ -30,14 +30,7 @@ import './TextAttestationsPanel.css';
 // SAFE IMPORTS
 // =============================================================================
 
-let getTextAttestationsAsync;
-try {
-  const dictionaryLoader = require('../../../services/dictionaries/dictionaryLoader');
-  getTextAttestationsAsync = dictionaryLoader.getTextAttestationsAsync;
-} catch (e) {
-  console.debug('[TextAttestationsPanel] dictionaryLoader not available:', e.message);
-  getTextAttestationsAsync = async () => null;
-}
+import { getTextAttestationsAsync } from '../../../services/dictionaries/dictionaryLoader';
 
 // =============================================================================
 // CONFIGURATION

@@ -30,36 +30,13 @@ import './CognateLanguagesPanel.css';
 // SAFE IMPORTS - Use new comparativeSemiticService
 // =============================================================================
 
-let getCognates, getCognatesAsync;
-try {
-  const comparativeSemitic = require('../../../services/comparativeSemiticService');
-  getCognates = comparativeSemitic.getCognates;
-  getCognatesAsync = comparativeSemitic.getCognatesAsync;
-} catch (e) {
-  console.debug('[CognateLanguagesPanel] comparativeSemiticService not available:', e.message);
-  getCognates = () => null;
-  getCognatesAsync = async () => null;
-}
+import { getCognates, getCognatesAsync } from '../../../services/comparativeSemiticService';
 
 // PRO SCHOLAR: Wiktionary fallback for cognates
-let fetchWiktionaryEtymology;
-try {
-  const wiktionaryService = require('../../../services/dictionaries/wiktionaryService');
-  fetchWiktionaryEtymology = wiktionaryService.fetchWiktionaryEtymology;
-} catch (e) {
-  console.debug('[CognateLanguagesPanel] wiktionaryService not available:', e.message);
-  fetchWiktionaryEtymology = async () => null;
-}
+import { fetchWiktionaryEtymology } from '../../../services/dictionaries/wiktionaryService';
 
 // PRO SCHOLAR V12: Comprehensive etymology from ALL databases (78,000+ entries)
-let getComprehensiveEtymology;
-try {
-  const etymologyService = require('../../../services/dictionaries/etymologyEnrichmentService');
-  getComprehensiveEtymology = etymologyService.getComprehensiveEtymology;
-} catch (e) {
-  console.debug('[CognateLanguagesPanel] etymologyEnrichmentService not available:', e.message);
-  getComprehensiveEtymology = async () => null;
-}
+import { getComprehensiveEtymology } from '../../../services/dictionaries/etymologyEnrichmentService';
 
 // =============================================================================
 // CONFIGURATION

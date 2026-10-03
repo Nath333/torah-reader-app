@@ -7,32 +7,15 @@ import { useCallback, useMemo, useState, useRef, useEffect } from 'react';
 import useWordLookup from './useWordLookup';
 import { useVocabulary } from './useVocabulary';
 import { stripAllDiacritics } from '../utils/hebrewUtils';
+import * as srsService from '../services/srsService';
+import * as semanticFieldService from '../services/scholarly/semanticFieldService';
+import * as knowledgeGraphService from '../services/scholarly/knowledgeGraphService';
 
 // =============================================================================
 // SAFE SERVICE IMPORTS
 // =============================================================================
 
-let srsService = null;
-let semanticFieldService = null;
-let knowledgeGraphService = null;
-
-try {
-  srsService = require('../services/srsService');
-} catch (e) {
-  console.debug('[useWordIntelligence] srsService not available');
-}
-
-try {
-  semanticFieldService = require('../services/scholarly/semanticFieldService');
-} catch (e) {
-  console.debug('[useWordIntelligence] semanticFieldService not available');
-}
-
-try {
-  knowledgeGraphService = require('../services/scholarly/knowledgeGraphService');
-} catch (e) {
-  console.debug('[useWordIntelligence] knowledgeGraphService not available');
-}
+// (split 03/10 : requires CJS → imports statiques en tête)
 
 // =============================================================================
 // LRU CACHE - High-performance word lookup caching
