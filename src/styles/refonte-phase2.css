@@ -182,3 +182,127 @@
     display: none !important;
   }
 }
+
+/* =============================================================================
+   REFONTE SOBRIÉTÉ (03/10/2026) — « l'UI est moche, on ne comprend rien »
+   Une seule surface (plus de cartes dans des cartes), une barre de contrôle
+   translucide et uniforme, le texte avant les contrôles.
+   ============================================================================= */
+
+/* Le lecteur : plus une carte — la page EST la surface */
+.app-main .torah-reader {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0 4px;
+  box-shadow: none;
+}
+
+.app.dark-mode .app-main .torah-reader {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* Barre de contrôle : une rangée fine, translucide, sans cadre */
+.app-main .reader-controls {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 12px;
+  padding: 6px 10px;
+  gap: 10px;
+  position: sticky;
+  top: calc(var(--header-height) + 4px);
+  z-index: 5;
+  backdrop-filter: blur(10px);
+}
+
+.app.dark-mode .app-main .reader-controls {
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.app:not(.dark-mode) .app-main .reader-controls {
+  background: rgba(255, 255, 255, 0.65);
+}
+
+/* Pilules : uniformes, muettes ; l'état actif parle seul */
+.app-main .reader-controls button {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 5px 10px;
+  min-height: 30px;
+  box-shadow: none;
+}
+
+.app-main .reader-controls button:hover {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+  border-color: transparent;
+  box-shadow: none;
+  transform: none;
+}
+
+.app-main .reader-controls button[aria-pressed="true"],
+.app-main .reader-controls button.active {
+  background: var(--primary-glow);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.app.dark-mode .app-main .reader-controls button[aria-pressed="true"],
+.app.dark-mode .app-main .reader-controls button.active {
+  background: rgba(91, 76, 219, 0.2);
+  color: #c7c2f5;
+}
+
+/* Contrôle police : aligné sur les pilules */
+.app-main .reader-controls .font-controls button {
+  min-width: 30px;
+}
+
+/* Fil d'ariane : muet */
+.app-main .breadcrumb {
+  opacity: 0.75;
+  font-size: 0.85rem;
+}
+
+/* Barre de statut : plus fine, moins criarde */
+.app-main .reading-stats-bar,
+.app-main [class*="stats-bar"] {
+  padding: 4px 12px;
+  opacity: 0.85;
+}
+
+/* Chrome cohérent en mode sombre : sidebar et header suivent le thème
+   (des règles codées en dur les laissaient blancs sur fond de contenu sombre) */
+.app.dark-mode .sidebar,
+.app.dark-mode .sidebar .sidebar-header,
+.app.dark-mode .sidebar input,
+.app.dark-mode .sidebar select {
+  background: var(--bg-elevated) !important;
+  color: var(--text-primary) !important;
+}
+
+.app.dark-mode .sidebar .book-tile,
+.app.dark-mode .sidebar .parsha-item,
+.app.dark-mode .sidebar button {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+.app.dark-mode .app-header {
+  color: var(--text-primary);
+  border-bottom-color: var(--border);
+}
+
+/* Fond du contenu : plus de bande claire en mode sombre */
+.app.dark-mode .app-main,
+.app.dark-mode .main-content {
+  background: var(--bg);
+}
