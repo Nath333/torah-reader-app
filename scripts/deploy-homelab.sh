@@ -11,22 +11,36 @@ set -euo pipefail
 REPO="D:/7-App-Perso/torah-reader-app"
 HOTE="nat@192.168.2.100"
 STACK="~/stacks/torah-reader"
-WT="${TEMP:-/tmp}/tr-deploy-homelab"
+# Chemin WINDOWS absolu : mklink (junction node_modules) n'accepte ni /tmp
+# ni les slashes — vécu : junction silencieusement raté, vite introuvable.
+WT="C:\\Users\\natha\\AppData\\Local\\Temp\\tr-deploy-homelab"
 
 cd "$REPO"
 git fetch origin -q
 REF=$(git rev-parse origin/master)
 echo "Deploy de origin/master ($REF) vers $HOTE:$STACK"
 
-git worktree remove --force "$WT" 2>/dev/null || true
-git worktree add --detach "$WT" "$REF" >/dev/null
-trap 'git worktree remove --force "$WT" 2>/dev/null || true' EXIT
+# Nettoyage complet d'un run precedent : la junction node_modules empeche
+# `git worktree remove` de partir — la demonter d'abord.
+demonter() {
+  cmd //c "rmdir ${WT}\\node_modules" >/dev/null 2>&1 || true
+  git worktree remove --force "$WT" 2>/dev/null || rm -rf "$WT"
+  git worktree prune
+}
+trap 'demonter' EXIT
+demonter
 
-cmd //c "mklink /J ${WT}\\node_modules ${REPO}\\node_modules" >/dev/null 2>&1 || true
+git worktree add --detach "$WT" "$REF" >/dev/null
+
+# NB : mklink via `cmd` depuis un script Git Bash echoue en silence (conversion
+# MSYS des arguments) — la junction se cree par PowerShell, puis on verifie.
+powershell -NoProfile -Command "New-Item -ItemType Junction -Path '${WT}\\node_modules' -Target '${REPO}\\node_modules' | Out-Null"
+[ -e "${WT}/node_modules/.bin/vite" ] || { echo "ERREUR : junction node_modules absente"; exit 1; }
 cd "$WT"
 npm run build
 
 echo "Envoi du dist..."
 scp -o BatchMode=yes -r "$WT/dist/." "$HOTE:$STACK/dist/"
 
+cd "$REPO" # le trap demontera le worktree : ne plus se tenir dedans
 echo "Termine : http://192.168.2.100:8095/torah-reader-app/"
