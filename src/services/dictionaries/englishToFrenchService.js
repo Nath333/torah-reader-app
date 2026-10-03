@@ -69,13 +69,10 @@ if (typeof window !== 'undefined') {
   load();
   const _saveInterval = setInterval(save, 120000);
   window.addEventListener('beforeunload', save);
-  // Cleanup on HMR to prevent duplicate listeners in development
-  if (module.hot) {
-    module.hot.dispose(() => {
-      clearInterval(_saveInterval);
-      window.removeEventListener('beforeunload', save);
-    });
-  }
+  // (Migration Vite) L'ancien cleanup webpack `module.hot.dispose` référençait
+  // `module`, inexistant en ESM navigateur → ReferenceError au boot = page
+  // blanche. Vite recharge la page entière hors acceptation HMR : rien à
+  // nettoyer ici.
 }
 
 // Helpers
