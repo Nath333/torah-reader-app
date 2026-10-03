@@ -15,7 +15,7 @@ import { useSettings } from '../../context';
 import LoadingSkeleton from '../shared/LoadingSkeleton';
 import ScholarModePanel from '../scholar-mode/ScholarModePanel';
 import ReaderControls from './ReaderControls';
-import { registerVerseRead } from '../../services/studyTracker';
+import { registerVerseRead, beginAutoTime, endAutoTime } from '../../services/studyTracker';
 import VerseRow from './VerseRow';
 import EnhancedVerseDisplay from './EnhancedVerseDisplay';
 import NoteEditor from '../shared/NoteEditor';
@@ -224,6 +224,13 @@ const TorahReader = ({
       });
     }
   }, [studyPanelState.isOpen, selection, verses, selectedBook, selectedChapter]);
+
+  // Refonte learning : le temps passé sur le lecteur compte automatiquement
+  // (visible uniquement — onglet en arrière-plan ignoré)
+  useEffect(() => {
+    beginAutoTime();
+    return () => endAutoTime();
+  }, []);
 
   // Refonte learning : un verset visible ≥ 1,5 s compte comme lu
   // (anneau du jour + niveau cumulatif — services/studyTracker.js)

@@ -203,7 +203,7 @@ const RecommendationsPanel = ({ recommendations, onSelect }) => {
     <div className="recommendations-panel">
       <h4>
         <span className="rec-icon">✨</span>
-        Recommended for You
+        Suggestions pour toi
       </h4>
       <div className="recommendations-list">
         {recommendations.slice(0, 3).map((rec, i) => (
@@ -265,6 +265,7 @@ const StudyDashboard = ({
       setLiveStats(getTodayStats());
       setLevelProgress(getLevelProgress());
     };
+    refresh();
     window.addEventListener(STATS_EVENT, refresh);
     return () => window.removeEventListener(STATS_EVENT, refresh);
   }, []);
@@ -309,6 +310,13 @@ const StudyDashboard = ({
   }, []);
 
   const todayProgress = getTodayProgress();
+  // Minutes totales du jour : lecture automatique (tracker) + sessions chronométrées
+  const minutesTotal = {
+    value: (liveStats.minutesAuto || 0) + (todayProgress.minutesStudied || 0),
+    progress: Math.min(100, Math.round(
+      (((liveStats.minutesAuto || 0) + (todayProgress.minutesStudied || 0)) / (todayProgress.goals.dailyMinutes || 30)) * 100
+    ))
+  };
 
   const handleEndSession = useCallback(() => {
     endSession();
@@ -343,11 +351,11 @@ const StudyDashboard = ({
           </div>
           <div className="progress-item" title={`${todayProgress.versesRead} / ${todayProgress.goals.dailyVerses} verses`}>
             <ProgressRing progress={todayProgress.progress.verses} size={40} strokeWidth={4} color="#10B981" />
-            <span className="progress-label">Verses</span>
+            <span className="progress-label">Versets</span>
           </div>
           <div className="progress-item" title={`${todayProgress.wordsLearned} / ${todayProgress.goals.dailyVocabulary} words`}>
             <ProgressRing progress={todayProgress.progress.vocabulary} size={40} strokeWidth={4} color="#F59E0B" />
-            <span className="progress-label">Words</span>
+            <span className="progress-label">Mots</span>
           </div>
         </div>
       </div>
@@ -380,13 +388,13 @@ const StudyDashboard = ({
 
       {/* Progress towards daily goals */}
       <div className="daily-progress">
-        <h4>Today's Progress</h4>
+        <h4>Progrès du jour</h4>
         <div className="progress-grid">
-          <div className="progress-item">
-            <ProgressRing progress={todayProgress.progress.minutes} />
+          <div className="progress-item" title="Temps d'étude : lecture + sessions chronométrées">
+            <ProgressRing progress={minutesTotal.progress} />
             <div className="progress-details">
               <span className="progress-value">
-                {todayProgress.minutesStudied} / {todayProgress.goals.dailyMinutes}
+                {minutesTotal.value} / {todayProgress.goals.dailyMinutes}
               </span>
               <span className="progress-label">Minutes</span>
             </div>
@@ -417,7 +425,7 @@ const StudyDashboard = ({
       {/* Daily Learning Schedule */}
       {dailyLearning && (
         <div className="daily-learning">
-          <h4>Daily Learning</h4>
+          <h4>Programme du jour</h4>
           <div className="daily-items">
             {dailyLearning.parashat && (
               <DailyLearningItem
@@ -455,8 +463,8 @@ const StudyDashboard = ({
 
       {/* Quick Actions */}
       <div className="quick-actions">
-        <QuickAction icon="📚" label="Vocabulary" onClick={onOpenVocabulary} />
-        <QuickAction icon="🔖" label="Bookmarks" onClick={onOpenBookmarks} />
+        <QuickAction icon="📚" label="Vocabulaire" onClick={onOpenVocabulary} />
+        <QuickAction icon="🔖" label="Favoris" onClick={onOpenBookmarks} />
         <QuickAction icon="📝" label="Notes" onClick={onOpenNotes} />
         <QuickAction icon="✨" label="Inspiration" onClick={refreshInspiration} />
       </div>

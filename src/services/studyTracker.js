@@ -40,8 +40,8 @@ let notifiedToday = new Set();
 /* ------------------------------- journalier ------------------------------ */
 
 const dayData = () => {
-  const d = read(DAY_KEY, { date: today(), versesRead: 0, verseIds: [] });
-  if (d.date !== today()) return { date: today(), versesRead: 0, verseIds: [] };
+  const d = read(DAY_KEY, { date: today(), versesRead: 0, verseIds: [], minutesAuto: 0 });
+  if (d.date !== today()) return { date: today(), versesRead: 0, verseIds: [], minutesAuto: 0 };
   return d;
 };
 
@@ -50,8 +50,40 @@ export function getTodayStats() {
   const goal = 20; // == goals.dailyVerses du dashboard
   return {
     versesRead: d.versesRead,
+    minutesAuto: d.minutesAuto || 0,
     progress: Math.min(100, Math.round((d.versesRead / goal) * 100))
   };
+}
+
+// --------------------------- temps automatique ----------------------------
+// Le temps passé sur le lecteur compte sans appuyer sur ▶ : accumulateur
+// en secondes, arrondi à la minute pour les anneaux. Uniquement quand
+// l'onglet est visible.
+let autoPendingSeconds = 0;
+let autoTimer = null;
+
+function flushAutoMinutes() {
+  if (autoPendingSeconds >= 60) {
+    const minutes = Math.floor(autoPendingSeconds / 60);
+    autoPendingSeconds -= minutes * 60;
+    const d = dayData();
+    d.minutesAuto = (d.minutesAuto || 0) + minutes;
+    write(DAY_KEY, d);
+  }
+}
+
+export function beginAutoTime() {
+  if (autoTimer) return;
+  autoTimer = setInterval(() => {
+    if (document.visibilityState !== 'visible') return;
+    autoPendingSeconds += 15;
+    if (autoPendingSeconds >= 60) flushAutoMinutes();
+  }, 15000);
+}
+
+export function endAutoTime() {
+  flushAutoMinutes();
+  if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
 }
 
 /* ------------------------------- cumulatif ------------------------------- */
