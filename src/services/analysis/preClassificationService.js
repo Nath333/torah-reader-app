@@ -1736,11 +1736,11 @@ export const preClassify = (word, context = {}) => {
     const debugTargets = ['והכנסה', 'ברישיה', 'משה', 'הכנסה', 'הוצאה', 'ויעבירו'];
     const isDebugTarget = debugTargets.some(t => normalized.includes(t) || cleaned.includes(t));
     if (isDebugTarget) {
-      console.log('[PreClassify ENTRY] Input word:', JSON.stringify(word), 'length:', word.length);
-      console.log('[PreClassify ENTRY] Normalized:', JSON.stringify(normalized), 'length:', normalized.length);
-      console.log('[PreClassify ENTRY] Cleaned:', JSON.stringify(cleaned), 'length:', cleaned.length);
-      console.log('[PreClassify ENTRY] Word codepoints:', [...word].map(c => c.charCodeAt(0).toString(16)).join(' '));
-      console.log('[PreClassify ENTRY] Cleaned codepoints:', [...cleaned].map(c => c.charCodeAt(0).toString(16)).join(' '));
+      log.debug('[PreClassify ENTRY] Input word:', JSON.stringify(word), 'length:', word.length);
+      log.debug('[PreClassify ENTRY] Normalized:', JSON.stringify(normalized), 'length:', normalized.length);
+      log.debug('[PreClassify ENTRY] Cleaned:', JSON.stringify(cleaned), 'length:', cleaned.length);
+      log.debug('[PreClassify ENTRY] Word codepoints:', [...word].map(c => c.charCodeAt(0).toString(16)).join(' '));
+      log.debug('[PreClassify ENTRY] Cleaned codepoints:', [...cleaned].map(c => c.charCodeAt(0).toString(16)).join(' '));
     }
   }
 
@@ -1788,7 +1788,7 @@ export const preClassify = (word, context = {}) => {
     const wordLen = localNoBrackets.replace(/[:.]/g, '').length;
     if (pageNum >= 2 && pageNum <= 200 && wordLen <= 3) {
       if (DEBUG) {
-        console.log(`[PreClassify] DAF DETECTED: ${word} → page ${pageNum}${isAmudBet ? 'b' : 'a'}`);
+        log.debug(`[PreClassify] DAF DETECTED: ${word} → page ${pageNum}${isAmudBet ? 'b' : 'a'}`);
       }
       return {
         type: 'reference',
@@ -1930,10 +1930,10 @@ export const preClassify = (word, context = {}) => {
 
   // DEBUG: Log lookups for משה (only in development)
   if (DEBUG && (cleaned === 'משה' || word === 'משה' || normalizeHebrewWord(word) === 'משה')) {
-    console.log('[PreClassify DEBUG] Checking משה - cleaned:', cleaned, 'word:', word);
-    console.log('[PreClassify DEBUG] coreNames[cleaned]:', coreNames[cleaned]);
-    console.log('[PreClassify DEBUG] normalizedLookup result:', normalizedLookup(coreNames, word));
-    console.log('[PreClassify DEBUG] coreNames keys:', Object.keys(coreNames));
+    log.debug('[PreClassify DEBUG] Checking משה - cleaned:', cleaned, 'word:', word);
+    log.debug('[PreClassify DEBUG] coreNames[cleaned]:', coreNames[cleaned]);
+    log.debug('[PreClassify DEBUG] normalizedLookup result:', normalizedLookup(coreNames, word));
+    log.debug('[PreClassify DEBUG] coreNames keys:', Object.keys(coreNames));
   }
 
   // Use normalizedLookup for robust Unicode handling

@@ -7,6 +7,8 @@
 // PRO SCHOLAR V6.2: Use CacheOrchestrator for unified cache management
 import { createManagedCache } from '../cacheOrchestrator';
 import { stripAllDiacritics } from '../../utils/hebrewUtils';
+import { createLogger } from '../../utils/debug';
+const log = createLogger('smartDataService');
 
 // =============================================================================
 // Connectivity Detection & Management
@@ -470,7 +472,7 @@ export const smartRAG = async ({
   // 3. Check connectivity
   const connectivity = getConnectivityStatus();
   if (!connectivity.isOnline || !connectivity.sefaria) {
-    console.log('[SmartRAG] Offline - no RAG available');
+    log.debug('[SmartRAG] Offline - no RAG available');
     return null;
   }
 

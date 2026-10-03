@@ -16,6 +16,8 @@ import {
 } from './groqApi';
 import { buildRAGContext, formatRAGContextForPrompt } from './ai/ragService';
 import { getModePrompt, MODE_DESCRIPTIONS } from './prompts/modePrompts';
+import { createLogger } from '../utils/debug';
+const log = createLogger('groqService');
 
 const MAX_TEXT_CHARS = 8000;
 
@@ -209,7 +211,7 @@ export const analyzeCommentary = async (
 
   if (useRAG) {
     try {
-      console.log(`[RAG] Fetching context for ${options.book} ${options.chapter}:${options.verseNum || ''} (mode: ${mode})`);
+      log.debug(`[RAG] Fetching context for ${options.book} ${options.chapter}:${options.verseNum || ''} (mode: ${mode})`);
 
       const ragContext = await buildRAGContext({
         book: options.book,
@@ -246,7 +248,7 @@ export const analyzeCommentary = async (
           // Users can see and verify the actual texts AI used
           sources: ragContext.sources
         };
-        console.log(`[RAG] Retrieved ${ragContext.totalSources} source groups for ${ragContext.reference}`);
+        log.debug(`[RAG] Retrieved ${ragContext.totalSources} source groups for ${ragContext.reference}`);
       }
     } catch (ragError) {
       console.warn('[RAG] Error fetching context (continuing without RAG):', ragError.message);
@@ -290,7 +292,7 @@ export const analyzeCommentary = async (
           // Rate limit - retry with exponential backoff
           if (attempt < MAX_RETRIES - 1) {
             const waitTime = Math.pow(2, attempt + 1) * 1000; // 2s, 4s, 8s
-            console.log(`Rate limited, retrying in ${waitTime / 1000}s...`);
+            log.debug(`Rate limited, retrying in ${waitTime / 1000}s...`);
             await delay(waitTime);
             continue;
           }
@@ -408,7 +410,7 @@ export const askWithRAG = async ({
         hebrewText,
         mode: 'iyun' // Fetch comprehensive sources for Q&A (chavrusa-style deep study)
       });
-      console.log(`[Q&A RAG] Fetched ${context?.totalSources || 0} sources for ${reference}`);
+      log.debug(`[Q&A RAG] Fetched ${context?.totalSources || 0} sources for ${reference}`);
     }
 
     // Format RAG context for prompt - this gives the AI real source texts

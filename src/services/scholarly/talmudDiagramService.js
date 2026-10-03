@@ -34,6 +34,8 @@ import {
 import { DISCOURSE_PATTERNS, DISCOURSE_TYPES } from './discoursePatternService';
 import { RABBI_DATABASE, detectEntities } from './namedEntityService';
 import { getWordRelationships, SEMANTIC_FIELDS } from './wordRelationshipService';
+import { createLogger } from '../../utils/debug';
+const log = createLogger('talmudDiagramService');
 
 // =============================================================================
 // PRO SCHOLAR UTILITIES - Enhanced helper functions
@@ -2267,7 +2269,7 @@ async function generateSummaryDiagram(tractate, daf, options = {}) {
 
   // Use preloaded text if provided (avoids duplicate API calls)
   if (preloadedText && typeof preloadedText === 'string' && preloadedText.trim().length > 0) {
-    console.log(`[Summary:${tractate}.${daf}] Using preloaded text (${preloadedText.length} chars)`);
+    log.debug(`[Summary:${tractate}.${daf}] Using preloaded text (${preloadedText.length} chars)`);
     dafContent = {
       ref: `${tractate}.${daf}`,
       segments: [{ index: 1, hebrew: preloadedText }]
@@ -2276,7 +2278,7 @@ async function generateSummaryDiagram(tractate, daf, options = {}) {
     // Fetch from API
     try {
       dafContent = await getTalmudDaf(tractate, daf);
-      console.log(`[Summary:${tractate}.${daf}] Fetched ${dafContent?.segments?.length || 0} segments`);
+      log.debug(`[Summary:${tractate}.${daf}] Fetched ${dafContent?.segments?.length || 0} segments`);
     } catch (err) {
       fetchError = err;
       console.warn(`[Summary:${tractate}.${daf}] Primary API failed:`, err.message);
@@ -2303,7 +2305,7 @@ async function generateSummaryDiagram(tractate, daf, options = {}) {
                 hebrew: typeof text === 'string' ? text : ''
               }))
             };
-            console.log(`[Summary:${tractate}.${daf}] Fallback API succeeded: ${hebrewTexts.length} segments`);
+            log.debug(`[Summary:${tractate}.${daf}] Fallback API succeeded: ${hebrewTexts.length} segments`);
           }
         }
       } catch (fallbackErr) {
@@ -2381,7 +2383,7 @@ async function generateSummaryDiagram(tractate, daf, options = {}) {
 
   // Debug: Log text length for troubleshooting empty diagrams
   if (process.env.NODE_ENV === 'development') {
-    console.log(`[talmudDiagramService:summary] ${tractate} ${daf} - Text length: ${fullText.length} chars`);
+    log.debug(`[talmudDiagramService:summary] ${tractate} ${daf} - Text length: ${fullText.length} chars`);
   }
 
   // Handle empty text case

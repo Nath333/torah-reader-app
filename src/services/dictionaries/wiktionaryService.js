@@ -8,6 +8,8 @@
 // =============================================================================
 
 import { stripAllDiacritics, normalizeFinals } from '../../utils/hebrewUtils';
+import { createLogger } from '../../utils/debug';
+const log = createLogger('wiktionaryService');
 
 const DEBUG = false;
 
@@ -52,10 +54,10 @@ async function loadCachedEtymology() {
       const data = await response.json();
       cachedEtymologyData = data.entries || {};
       cachedEtymologyLoaded = true;
-      if (DEBUG) console.log(`[Wiktionary] Loaded ${Object.keys(cachedEtymologyData).length} cached etymology entries`);
+      if (DEBUG) log.debug(`[Wiktionary] Loaded ${Object.keys(cachedEtymologyData).length} cached etymology entries`);
     }
   } catch (err) {
-    if (DEBUG) console.log('[Wiktionary] Could not load cached etymology:', err.message);
+    if (DEBUG) log.debug('[Wiktionary] Could not load cached etymology:', err.message);
     cachedEtymologyData = {};
     cachedEtymologyLoaded = true;
   }
@@ -127,7 +129,7 @@ export async function lookupWiktionary(word) {
   // Check cache first
   const cached = wiktionaryCache.get(cleanWord);
   if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-    if (DEBUG) console.log('[Wiktionary] Cache hit for:', cleanWord);
+    if (DEBUG) log.debug('[Wiktionary] Cache hit for:', cleanWord);
     return cached.data;
   }
 
@@ -159,11 +161,11 @@ export async function lookupWiktionary(word) {
     // Cache the result
     wiktionaryCache.set(cleanWord, { data: result, timestamp: Date.now() });
 
-    if (DEBUG) console.log('[Wiktionary] Found:', cleanWord, result);
+    if (DEBUG) log.debug('[Wiktionary] Found:', cleanWord, result);
     return result;
 
   } catch (err) {
-    if (DEBUG) console.log('[Wiktionary] Error:', err.message);
+    if (DEBUG) log.debug('[Wiktionary] Error:', err.message);
     // Don't cache errors - allow retry
     return null;
   }
@@ -289,7 +291,7 @@ export async function fetchWiktionaryEtymology(word) {
     return parseWiktionaryEtymology(html, cleanWord);
 
   } catch (err) {
-    if (DEBUG) console.log('[Wiktionary] Etymology fetch error:', err.message);
+    if (DEBUG) log.debug('[Wiktionary] Etymology fetch error:', err.message);
     return null;
   }
 }

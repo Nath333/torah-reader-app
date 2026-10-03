@@ -3,7 +3,8 @@
 #
 # Usage : scripts/commit-mien.sh "message" chemin1 [chemin2 ...]
 #
-# Ajoute puis committe UNIQUEMENT les chemins listés (même non-suivis),
+# Ajoute puis committe UNIQUEMENT les chemins listés (suivis, modifiés,
+# supprimés ou non-suivis),
 # sans toucher à ce que d'autres sessions ont déjà stagé dans le clone ;
 # le hook scripts/hooks/pre-commit vérifie au passage que ces chemins ne
 # sont pas réservés par un claim pilotage d'une autre session.
@@ -13,5 +14,5 @@
 }
 msg=$1
 shift
-git add -- "$@" || exit 1
+git add -A -- "$@" || exit 1
 PILOTAGE_COMMIT_PATHS="$*" exec git commit -m "$msg" -- "$@"

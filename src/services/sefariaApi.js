@@ -35,6 +35,8 @@ import {
   KETUVIM_BOOKS,
   TALMUD_BAVLI
 } from '../constants/bookConstants';
+import { createLogger } from '../utils/debug';
+const log = createLogger('sefariaApi');
 
 // Use local proxy in development to avoid CORS issues
 const BASE_URL = process.env.NODE_ENV === 'development'
@@ -1257,13 +1259,13 @@ export const getTalmudDaf = async (tractate, daf) => {
     if (heTexts.length > 0 || enTexts.length > 0) {
       const segmentData = buildSegments(heTexts, enTexts);
       if (segmentData.segments.length > 0) {
-        console.log(`${logPrefix} v2 API: ${segmentData.segments.length} segments`);
+        log.debug(`${logPrefix} v2 API: ${segmentData.segments.length} segments`);
         const result = createResult(v2Data.ref, v2Data.heRef, segmentData);
         textCache.set(cacheKey, result);
         return result;
       }
     }
-    console.log(`${logPrefix} v2 empty, trying v3...`);
+    log.debug(`${logPrefix} v2 empty, trying v3...`);
   } catch (v2Err) {
     console.warn(`${logPrefix} v2 failed:`, v2Err.message);
   }
@@ -1292,7 +1294,7 @@ export const getTalmudDaf = async (tractate, daf) => {
     if (heTexts.length > 0 || enTexts.length > 0) {
       const segmentData = buildSegments(heTexts, enTexts);
       if (segmentData.segments.length > 0) {
-        console.log(`${logPrefix} v3 API: ${segmentData.segments.length} segments`);
+        log.debug(`${logPrefix} v3 API: ${segmentData.segments.length} segments`);
         const result = createResult(v3Data.ref, v3Data.heRef, segmentData);
         textCache.set(cacheKey, result);
         return result;
@@ -1324,7 +1326,7 @@ export const getTalmudDaf = async (tractate, daf) => {
       if (heTexts.length > 0 || enTexts.length > 0) {
         const segmentData = buildSegments(heTexts, enTexts);
         if (segmentData.segments.length > 0) {
-          console.log(`${logPrefix} Direct fetch: ${segmentData.segments.length} segments`);
+          log.debug(`${logPrefix} Direct fetch: ${segmentData.segments.length} segments`);
           const result = createResult(data.ref, data.heRef, segmentData);
           textCache.set(cacheKey, result);
           return result;
@@ -1386,7 +1388,7 @@ export const getFullSugya = async (tractate, startDaf, pageCount = 4) => {
     }
   }
 
-  console.log(`[Sugya] Fetching ${tractate} pages: ${pagesToFetch.join(', ')}`);
+  log.debug(`[Sugya] Fetching ${tractate} pages: ${pagesToFetch.join(', ')}`);
 
   // Fetch all pages in parallel
   const pagePromises = pagesToFetch.map(daf =>
@@ -1464,7 +1466,7 @@ export const getFullSugya = async (tractate, startDaf, pageCount = 4) => {
   };
 
   textCache.set(cacheKey, result);
-  console.log(`[Sugya] Loaded ${validPages.length} pages, ${combinedSegments.length} total segments`);
+  log.debug(`[Sugya] Loaded ${validPages.length} pages, ${combinedSegments.length} total segments`);
   return result;
 };
 
@@ -1616,7 +1618,7 @@ export const getFullSugyaUntilResolution = async (tractate, startDaf, maxPages =
   const cached = textCache.get(cacheKey);
   if (cached) return cached;
 
-  console.log(`[Sugya V22] Loading ${tractate} ${startDaf} until resolution (max ${maxPages} pages)`);
+  log.debug(`[Sugya V22] Loading ${tractate} ${startDaf} until resolution (max ${maxPages} pages)`);
 
   // Parse starting daf
   const dafMatch = startDaf.match(/^(\d+)([ab])$/);
@@ -1687,7 +1689,7 @@ export const getFullSugyaUntilResolution = async (tractate, startDaf, maxPages =
           const cleanText = hebrew.replace(/<[^>]*>/g, '').trim();
 
           if (isNewMishna(cleanText)) {
-            console.log(`[Sugya V22] Found new Mishna at ${currentDaf} segment ${i}`);
+            log.debug(`[Sugya V22] Found new Mishna at ${currentDaf} segment ${i}`);
             foundNextMishna = true;
             // Remove this segment and any after it (it's the new Mishna)
             combinedSegments.pop();
@@ -1697,7 +1699,7 @@ export const getFullSugyaUntilResolution = async (tractate, startDaf, maxPages =
           }
 
           if (hasResolution(cleanText) && combinedSegments.length > 10) {
-            console.log(`[Sugya V22] Found resolution at ${currentDaf} segment ${i}: ${cleanText.slice(0, 50)}`);
+            log.debug(`[Sugya V22] Found resolution at ${currentDaf} segment ${i}: ${cleanText.slice(0, 50)}`);
             foundResolution = true;
             // Continue a few more segments for follow-up, then stop
             const remainingInPage = Math.min(3, segments.length - i - 1);
@@ -1765,7 +1767,7 @@ export const getFullSugyaUntilResolution = async (tractate, startDaf, maxPages =
   };
 
   textCache.set(cacheKey, result);
-  console.log(`[Sugya V22] Loaded ${pagesLoaded} pages, ${combinedSegments.length} segments, status: ${result.status}`);
+  log.debug(`[Sugya V22] Loaded ${pagesLoaded} pages, ${combinedSegments.length} segments, status: ${result.status}`);
   return result;
 };
 

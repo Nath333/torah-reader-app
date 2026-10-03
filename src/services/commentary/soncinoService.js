@@ -5,6 +5,8 @@
 // =============================================================================
 
 import { createCache } from '../../utils/cache';
+import { createLogger } from '../../utils/debug';
+const log = createLogger('soncinoService');
 
 // PDF.js is lazy-loaded only when needed for PDF parsing
 // This saves ~500KB from the initial bundle
@@ -424,7 +426,7 @@ const fetchAndParsePdf = async (tractate, daf) => {
   const pdfUrl = getPdfUrl(tractate, parsed.pageNum);
   if (!pdfUrl) throw new Error(`No PDF URL for ${tractate}`);
 
-  console.log(`[Soncino] Fetching PDF from: ${pdfUrl}`);
+  log.debug(`[Soncino] Fetching PDF from: ${pdfUrl}`);
 
   try {
     // Lazy-load PDF.js only when needed
@@ -440,7 +442,7 @@ const fetchAndParsePdf = async (tractate, daf) => {
 
     // Load PDF with pdf.js
     const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
-    console.log(`[Soncino] PDF loaded: ${pdf.numPages} pages`);
+    log.debug(`[Soncino] PDF loaded: ${pdf.numPages} pages`);
 
     // Calculate which page in the PDF corresponds to our daf
     // PDFs bundle ~20 dapim, each daf is roughly 1 page
@@ -542,7 +544,7 @@ export const getSoncinoTractate = async (tractate, daf) => {
 
   // Fall back to PDF parsing
   try {
-    console.log(`[Soncino] Attempting PDF fetch for ${tractate} ${daf}`);
+    log.debug(`[Soncino] Attempting PDF fetch for ${tractate} ${daf}`);
     const pdfResult = await fetchAndParsePdf(tractate, daf);
     soncinoCache.set(cacheKey, pdfResult);
     return pdfResult;

@@ -29,6 +29,8 @@ import {
   lookupAllEtymology
 } from './dictionaryLoader';
 import { stripAllDiacritics } from '../../utils/hebrewUtils';
+import { createLogger } from '../../utils/debug';
+const log = createLogger('etymologyEnrichmentService');
 
 // Lazy-loaded data cache
 let enrichedData = null;
@@ -67,7 +69,7 @@ async function loadEnrichedData() {
         if (data?.entries && Object.keys(data.entries).length > 0) {
           enrichedData = data;
           dataSource = name;
-          console.log(`[EtymologyService] Loaded ${name}:`, {
+          log.debug(`[EtymologyService] Loaded ${name}:`, {
             totalEntries: Object.keys(data.entries).length,
             version: data._meta?.version,
             sources: data._meta?.sources?.length || 'N/A'

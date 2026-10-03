@@ -45,7 +45,10 @@
 - **Un split = un commit** (revert trivial si régression).
 - Ne JAMAIS couper pendant qu'une autre session travaille le même fichier
   (vérifier `git log --oneline -5` avant).
-- Les données dupliquées fichier ↔ dossier `morphology/` (ARAMAIC_BINYANIM
-  existe en 2 versions : `morphology.js` et `verbPatterns.js`) doivent être
-  **réconciliées** lors du prochain passage sur verbPatterns — source de
-  divergence silencieuse.
+- ARAMAIC_BINYANIM existe en **deux modèles de données différents** (constat
+  03/10) : clés minuscules + hebrewEquivalent/markers dans `morphology.js`
+  (≈671) vs clés MAJUSCULES + key/prefix dans `morphologyPatterns.js` (≈341,
+  ré-exporté par `verbPatterns.js`). Ce ne sont pas des copies : unifier est
+  un choix de modèle à trancher lors du split verbPatterns (consommateurs :
+  grammarAnalysisService/GRAMMAR_CONSTANTS côté fichier, détection de binyan
+  interne côté patterns).
