@@ -113,5 +113,45 @@ export const unregister = () => {
   }
 };
 
-const serviceWorkerUtils = { register, unregister };
+// =============================================================================
+// Pré-cache du kit dictionnaire hors-ligne
+// =============================================================================
+// Le SW met en cache les lexiques AU FIL des consultations ; ce pré-cache
+// télécharge en arrière-plan le kit tier-1 (BDB + Jastrow + Strong's) pour
+// que l'offline soit complet dès le premier voyage, sans avoir cliqué sur
+// chaque mot. Une fois par semaine, jamais en connexion limitée.
+
+const PRECACHE_FLAG = 'limud_precache_data_at';
+const PRECACHE_TTL = 7 * 24 * 60 * 60 * 1000; // 7 jours
+
+const connexionAcceptable = () => {
+  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  if (!conn) return true; // pas d'info : on tente (la plupart des desktops)
+  if (conn.saveData) return false; // l'utilisateur a activé l'économiseur
+  const t = (conn.effectiveType || '').toLowerCase();
+  return t !== '2g' && t !== 'slow-2g';
+};
+
+export const precacheData = (urls) => {
+  if (!('serviceWorker' in navigator) || !navigator.serviceWorker.controller) {
+    return false; // pas de SW actif : le cache-on-demand du SW prendra le relais
+  }
+  try {
+    const last = Number(localStorage.getItem(PRECACHE_FLAG) || 0);
+    if (Date.now() - last < PRECACHE_TTL) return false; // déjà fait cette semaine
+    if (!connexionAcceptable()) return false;
+  } catch {
+    return false;
+  }
+
+  navigator.serviceWorker.controller.postMessage({ type: 'PRECACHE_DATA', urls });
+  try {
+    localStorage.setItem(PRECACHE_FLAG, String(Date.now()));
+  } catch {
+    /* peu importe : on retentera */
+  }
+  return true;
+};
+
+const serviceWorkerUtils = { register, unregister, precacheData };
 export default serviceWorkerUtils;

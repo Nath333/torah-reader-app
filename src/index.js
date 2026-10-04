@@ -141,3 +141,18 @@ serviceWorker.register({
   onSuccess: () => console.log('[App] Offline support enabled'),
   onUpdate: () => console.log('[App] New version available')
 });
+
+// Pré-cache hors-ligne du kit dictionnaire tier-1 (BDB + Jastrow + Strong's,
+// ~34 Mo) en arrière-plan : une fois par semaine, en idle, jamais en
+// connexion limitée. Le reste des lexiques se met en cache à la consultation.
+window.addEventListener('load', () => {
+  const schedule = window.requestIdleCallback || ((cb) => setTimeout(cb, 20000));
+  schedule(() => {
+    const base = process.env.PUBLIC_URL || '';
+    serviceWorker.precacheData([
+      `${base}/data/bdbComplete.json`,
+      `${base}/data/jastrowComplete.json`,
+      `${base}/data/strongsComplete.json`
+    ]);
+  });
+});
