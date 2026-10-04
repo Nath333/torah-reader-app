@@ -21,19 +21,46 @@ node limud-proxy.js
 # puis : curl -s localhost:8791/sefaria/api/texts/Genesis.1 | head -c 300
 ```
 
-## Déployer sur le homelab (Docker + NPM)
+## Déployer sur le homelab (Docker + TLS direct — FAIT le 04/10)
+
+La stack embarque son propre frontal TLS (`limud-tls`, nginx:alpine) :
+**pas besoin de NPM**. Le certificat est signé par le CA homelab
+(`/home/nat/certs/homelab-ca.*`, racine installée sur le PC), SAN
+`limud.homelab.local` + `IP:192.168.2.100` — donc joignable par IP même
+sans entrée DNS.
 
 ```bash
-cd server/
-docker compose up -d --build
-curl -s http://127.0.0.1:8791/health
+# émettre le cert serveur (une fois, sur le homelab)
+cd ~/certs && openssl req -new -newkey rsa:2048 -nodes   -keyout limud.key -out limud.csr -subj '/CN=limud.homelab.local/O=Homelab'
+printf 'subjectAltName=DNS:limud.homelab.local,IP:192.168.2.100
+extendedKeyUsage=serverAuth
+' > limud.ext
+openssl x509 -req -in limud.csr -CA homelab-ca.crt -CAkey homelab-ca.key   -CAcreateserial -out limud.crt -days 825 -sha256 -extfile limud.ext
+cp limud.key limud.crt ~/stacks/limud-proxy/
+
+# lancer la stack (proxy + TLS)
+cd ~/stacks/limud-proxy && docker compose up -d --build
+curl -s https://192.168.2.100:8443/health
 ```
 
-Dans **Nginx Proxy Manager** : nouveau Proxy Host
-- Domaine : `limud.homelab.local`
-- Forward : `http` → `127.0.0.1:8791` (ou IP docker du conteneur)
-- SSL : selon l'usage (le certificat homelab Root existe déjà)
-- Réservation DHCP/DNS : entrée `limud` vers l'IP du homelab
+⚠ `limud.key` ne part JAMAIS dans le dépôt (gitignoré).
+
+## Brancher l'app (côté client)
+
+```js
+localStorage.setItem('limud_proxy_url', 'https://192.168.2.100:8443');
+```
+
+(ou Réglages → « Serveur d'étude »). Vérifié de bout en bout le 04/10 :
+l'app GitHub Pages fetch le proxy en HTTPS, cache HIT visible côté serveur.
+Sans proxy configuré, l'app garde son comportement direct — le proxy est
+un enrichissement, jamais une dépendance.
+
+### Ancienne voie NPM (remplacée, conservée pour mémoire)
+
+Proxy Host NPM `limud.homelab.local` → `127.0.0.1:8791` : inutile depuis
+le frontal TLS direct (et le mixed-content HTTPS→HTTP interdisait de
+toute façon l'appel direct hors NPM).
 
 ## Brancher l'app (côté client)
 

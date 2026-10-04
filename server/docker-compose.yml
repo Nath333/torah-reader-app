@@ -5,9 +5,26 @@ services:
     container_name: limud-proxy
     restart: unless-stopped
     ports:
-      - "127.0.0.1:8791:8791"   # NPM proxifie ; pas d'exposition directe au LAN
+      - "127.0.0.1:8791:8791"   # interne : le frontal TLS du dessous proxifie
     environment:
       PORT: "8791"
       ALLOW_ORIGIN: "*"          # l'app est servie depuis GitHub Pages ; resserrer si besoin
       UPSTREAM_TIMEOUT_MS: "12000"
       CACHE_MAX_ENTRIES: "800"
+
+  # Frontal TLS : évite Nginx Proxy Manager (pas de creds UI à partager).
+  # Certificat émis par le CA homelab (~/certs/homelab-ca.*) — SAN
+  # DNS:limud.homelab.local + IP:192.168.2.100, racine installée sur le PC.
+  # Les fichiers limud.crt / limud.key ne sont PAS dans le dépôt.
+  limud-tls:
+    image: nginx:alpine
+    container_name: limud-tls
+    restart: unless-stopped
+    depends_on:
+      - limud-proxy
+    ports:
+      - "192.168.2.100:8443:443"
+    volumes:
+      - ./nginx-tls.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./limud.crt:/etc/nginx/certs/limud.crt:ro
+      - ./limud.key:/etc/nginx/certs/limud.key:ro

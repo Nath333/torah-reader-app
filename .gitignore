@@ -21,3 +21,8 @@ nul
 
 # --- caches outil ---
 .pnp.js
+
+# certificats du serveur d etude (jamais dans le depot)
+server/limud.key
+server/limud.crt
+server/*.srl
