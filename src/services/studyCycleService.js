@@ -10,7 +10,7 @@
 
 import { viaProxy } from './proxyConfig';
 
-const CACHE_KEY = 'limud_daily_study_v1';
+const CACHE_KEY = 'limud_daily_study_v2'; // v2 : labels nus + parasha navigable
 const CACHE_TTL = 6 * 60 * 60 * 1000; // 6 h : l'item du jour ne change pas sous nos pieds
 
 /**
@@ -66,6 +66,7 @@ export const getDailyStudy = async () => {
 
     const wanted = [
       { title: 'Daf Yomi', type: 'Daf Yomi', id: 'daily:daf' },
+      { title: 'Parashat Hashavua', type: 'Parasha', id: 'daily:parasha' },
       { title: 'Daily Mishnah', type: 'Mishna', id: 'daily:mishna' },
       { title: 'Daily Rambam', type: 'Rambam', id: 'daily:rambam' }
     ];
@@ -76,13 +77,17 @@ export const getDailyStudy = async () => {
         (ci) => ci?.title?.en === want.title && ci?.displayValue?.en
       );
       if (!entry) continue;
-      const ref = entry.displayValue.en;
-      const target = parseStudyRef(ref);
+      // La parasha se navigate via son champ ref (« Genesis 1:1-6:8 » ->
+      // début de parasha) ; displayValue seul (« Shmini Atzeret ») serait
+      // une fête que goTo ne sait pas ouvrir.
+      const navRef = want.type === 'Parasha' ? entry.ref : entry.displayValue.en;
+      const target = parseStudyRef(navRef);
       if (!target) continue;
+      const place = want.type === 'Parasha' ? ` (${target.book} ${target.chapter})` : '';
       items.push({
         id: want.id,
         type: want.type,
-        label: `${want.type} du jour — ${ref}`,
+        label: `${entry.displayValue.en}${place}`,
         book: target.book,
         chapter: target.chapter
       });

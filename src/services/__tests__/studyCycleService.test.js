@@ -16,6 +16,10 @@ describe('parseStudyRef', () => {
     expect(parseStudyRef('Mishnah Oholot 7:5-6')).toEqual({ book: 'Mishnah Oholot', chapter: 7 });
   });
 
+  test('ref parasha complète de Sefaria : « Genesis 1:1-6:8 » -> début de parasha', () => {
+    expect(parseStudyRef('Genesis 1:1-6:8')).toEqual({ book: 'Genesis', chapter: 1 });
+  });
+
   test('rambam multi-mots : « Damages to Property 3-5 »', () => {
     expect(parseStudyRef('Damages to Property 3-5')).toEqual({ book: 'Damages to Property', chapter: 3 });
   });
