@@ -10,6 +10,9 @@ import {
   getStoredApiKey,
   setGroqApiKey,
   removeGroqApiKey,
+  hasApiKey as hasAnyAiAccess,
+  ensureAiAvailability,
+  aiProxyChat,
   AIError,
   ERROR_TYPES,
   readStream,
@@ -57,26 +60,31 @@ export const isRequestActive = () => activeController !== null;
 // =============================================================================
 const callAPI = async (messages, options = {}) => {
   const apiKey = getStoredApiKey();
-  if (!apiKey) throw new AIError('API key not configured.', ERROR_TYPES.NO_API_KEY, false);
+  // Sans clé locale : relais par le serveur d'étude s'il porte la clé.
+  if (!apiKey) await ensureAiAvailability();
 
   if (activeController) activeController.abort();
   activeController = new AbortController();
 
   const { temperature = 0.4, maxTokens = 1024, stream = false, onChunk } = options;
 
-  const response = await fetch(GROQ_API_URL, {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: CONFIG.defaultModel,
-      messages,
-      temperature,
-      max_tokens: maxTokens,
-      response_format: { type: 'json_object' },
-      stream
-    }),
-    signal: activeController.signal
-  });
+  const payload = {
+    model: CONFIG.defaultModel,
+    messages,
+    temperature,
+    max_tokens: maxTokens,
+    response_format: { type: 'json_object' },
+    stream
+  };
+
+  const response = apiKey
+    ? await fetch(GROQ_API_URL, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: activeController.signal
+      })
+    : await aiProxyChat(payload, activeController.signal);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -241,7 +249,9 @@ export const askQuestion = async (text, question, source = 'Torah', onChunk = nu
 // =============================================================================
 // Utility
 // =============================================================================
-export const hasApiKey = () => !!getStoredApiKey();
+/** Accès IA = clé locale OU serveur d'étude porteur de clé (voir groqApi). */
+export const hasApiKey = () => hasAnyAiAccess();
+export const ensureKeyOrProxy = () => ensureAiAvailability();
 export const getCacheStats = () => ({ info: 'Cache managed by groqService' });
 
 // =============================================================================
