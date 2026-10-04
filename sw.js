@@ -170,5 +170,36 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('message', (event) => {
   if (event.data === 'skipWaiting') {
     self.skipWaiting();
+    return;
+  }
+
+  // Pré-cache du kit dictionnaire hors-ligne (déclenché par l'app en idle).
+  // Résilient par fichier : un lexique qui échoue n'annule pas les autres.
+  if (event.data && event.data.type === 'PRECACHE_DATA' && Array.isArray(event.data.urls)) {
+    const urls = event.data.urls.filter((u) => typeof u === 'string');
+    event.waitUntil(
+      (async () => {
+        const cache = await caches.open(CACHE_NAME);
+        let done = 0;
+        for (const url of urls) {
+          try {
+            const cached = await cache.match(url);
+            if (cached) {
+              done += 1;
+              continue;
+            }
+            const response = await fetch(url, { cache: 'no-cache' });
+            if (response.ok) {
+              await cache.put(url, response.clone());
+              done += 1;
+            }
+          } catch (e) {
+            // lexique suivant : le kit est partiel mais utile
+            console.warn('[SW] Precache échec:', url);
+          }
+        }
+        console.log('[SW] Kit dictionnaire hors-ligne :', done + '/' + urls.length, 'lexiques en cache');
+      })()
+    );
   }
 });
