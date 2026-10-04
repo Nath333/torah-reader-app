@@ -132,9 +132,9 @@ const connexionAcceptable = () => {
   return t !== '2g' && t !== 'slow-2g';
 };
 
-export const precacheData = (urls) => {
-  if (!('serviceWorker' in navigator) || !navigator.serviceWorker.controller) {
-    return false; // pas de SW actif : le cache-on-demand du SW prendra le relais
+export const precacheData = async (urls) => {
+  if (!('serviceWorker' in navigator)) {
+    return false; // pas de SW : le cache-on-demand du SW prendra le relais
   }
   try {
     const last = Number(localStorage.getItem(PRECACHE_FLAG) || 0);
@@ -144,7 +144,15 @@ export const precacheData = (urls) => {
     return false;
   }
 
-  navigator.serviceWorker.controller.postMessage({ type: 'PRECACHE_DATA', urls });
+  // ⚠ Au premier chargement après (ré)installation, `controller` est encore
+  // null : le SW ne contrôle la page qu'après activation + clients.claim.
+  // `ready` résout exactement ça — sans lui, le pré-cache ne part jamais
+  // et ne retente jamais (constaté en prod, 05/10).
+  const registration = await navigator.serviceWorker.ready;
+  const worker = navigator.serviceWorker.controller || registration.active || registration.waiting;
+  if (!worker) return false;
+
+  worker.postMessage({ type: 'PRECACHE_DATA', urls });
   try {
     localStorage.setItem(PRECACHE_FLAG, String(Date.now()));
   } catch {
