@@ -6,6 +6,8 @@
 
 import { AIError as BaseAIError, ERROR_TYPES as BaseErrorTypes } from '../utils/errors';
 import { safeStorage } from '../utils/safeHtml';
+import { fetchWithTimeout } from '../utils/http';
+import { checkAiProxy, aiProxyChat, resetAiProxyCache } from './aiProxy';
 
 // Fournisseur IA : OpenRouter (compatible API OpenAI). Bascule 04/10/2026
 // depuis Groq — modèle unique demandé par l'utilisateur.
@@ -14,11 +16,43 @@ export const DEFAULT_MODEL = 'z-ai/glm-5.3-flash';
 
 // =============================================================================
 // API Key Management
-// La clé ne provient QUE de la saisie utilisateur (Réglages) : une variable
-// REACT_APP_* serait inlinée en clair dans le bundle public.
+// Deux sources d'accès IA, par ordre de priorité :
+//   1. la clé saisie par l'utilisateur (Réglages → API, localStorage via
+//      safeStorage) — appel DIRECT OpenRouter ;
+//   2. le serveur d'étude (limud-proxy) quand il porte OPENROUTER_API_KEY —
+//      appel relayé POST {proxy}/ai/chat, Authorization injectée côté
+//      serveur : plus AUCUNE clé à saisir dans le navigateur.
+// La détection (2) est lancée au chargement du module ; hasApiKey() devient
+// true pour TOUS les écrans dès qu'une source est disponible.
 // =============================================================================
 
 const API_KEY_STORAGE = 'groq_api_key';
+
+let proxyAiAvailable = false;
+let proxyAiChecked = false;
+let availabilityPromise = null;
+
+/** (Re)détecte l'IA serveur — résout le booléen d'accès final. */
+export const refreshProxyAi = async () => {
+  try {
+    const status = await checkAiProxy();
+    proxyAiAvailable = status.available;
+  } catch {
+    proxyAiAvailable = false;
+  } finally {
+    proxyAiChecked = true;
+  }
+  return hasApiKey();
+};
+
+/** Accès IA garanti-résolu (clé locale, ou serveur une fois détecté). */
+export const ensureAiAvailability = () => {
+  if (proxyAiChecked) return Promise.resolve(hasApiKey());
+  if (!availabilityPromise) {
+    availabilityPromise = refreshProxyAi();
+  }
+  return availabilityPromise;
+};
 
 export const getStoredApiKey = () => {
   const stored = safeStorage.getItem(API_KEY_STORAGE);
@@ -36,11 +70,19 @@ export const getStoredApiKey = () => {
   return null;
 };
 
-export const hasApiKey = () => !!getStoredApiKey();
-export const setGroqApiKey = (key) => safeStorage.setItem(API_KEY_STORAGE, key);
+export const hasApiKey = () => !!getStoredApiKey() || proxyAiAvailable;
+export const setGroqApiKey = (key) => {
+  safeStorage.setItem(API_KEY_STORAGE, key);
+  // Une clé locale prime sur le proxy (contrôle fin par l'utilisateur).
+  proxyAiAvailable = false;
+};
 export const removeGroqApiKey = () => {
   safeStorage.removeItem(API_KEY_STORAGE);
   try { localStorage.removeItem(API_KEY_STORAGE); } catch { /* noop */ }
+  // Sans clé locale, la disponibilité redepend du serveur : re-détecter.
+  resetAiProxyCache();
+  proxyAiChecked = false;
+  refreshProxyAi();
 };
 
 // =============================================================================
@@ -62,9 +104,6 @@ export const ERROR_TYPES = {
 // =============================================================================
 export const callGroqAPI = async (messages, options = {}) => {
   const apiKey = getStoredApiKey();
-  if (!apiKey) {
-    throw new AIError('No API key configured. Add your OpenRouter API key in settings.', ERROR_TYPES.NO_API_KEY);
-  }
 
   const {
     model = DEFAULT_MODEL,
@@ -74,6 +113,28 @@ export const callGroqAPI = async (messages, options = {}) => {
     signal,
     jsonResponse = false
   } = options;
+
+  // Sans clé locale → LEVIER SERVEUR : relayé par limud-proxy (Authorization
+  // server-side). Dernière chance : re-détection une fois (le check au
+  // chargement peut n'avoir pas abouti hors ligne).
+  if (!apiKey) {
+    if (!proxyAiAvailable) proxyAiAvailable = await refreshProxyAi();
+    if (!proxyAiAvailable) {
+      throw new AIError('No API key configured. Add your OpenRouter API key in settings.', ERROR_TYPES.NO_API_KEY);
+    }
+    const response = await aiProxyChat({
+      model,
+      messages,
+      temperature,
+      max_tokens: maxTokens,
+      stream,
+      ...(jsonResponse && { response_format: { type: 'json_object' } })
+    }, signal);
+    if (!response.ok) await handleErrorResponse(response);
+    if (stream) return response;
+    const data = await response.json();
+    return data.choices[0]?.message?.content || '';
+  }
 
   const response = await fetch(GROQ_API_URL, {
     method: 'POST',
@@ -215,10 +276,26 @@ export const withRetry = async (fn, maxRetries = 3, baseDelay = 1000) => {
 // =============================================================================
 export const checkConnection = async () => {
   const apiKey = getStoredApiKey();
-  if (!apiKey) return { connected: false, error: 'No API key' };
+
+  // Sans clé locale : la connexion passe par le serveur d'étude s'il porte
+  // la clé — le voyant vert doit refléter l'accès réel, pas la saisie.
+  if (!apiKey) {
+    if (!proxyAiChecked) await refreshProxyAi();
+    if (!proxyAiAvailable) return { connected: false, error: 'No API key' };
+    try {
+      const response = await aiProxyChat({
+        model: DEFAULT_MODEL,
+        messages: [{ role: 'user', content: 'Say "connected"' }],
+        max_tokens: 5
+      });
+      return response.ok ? { connected: true } : { connected: false, error: (await response.json().catch(() => ({}))).error?.message };
+    } catch (error) {
+      return { connected: false, error: error.message };
+    }
+  }
 
   try {
-    const response = await fetch(GROQ_API_URL, {
+    const response = await fetchWithTimeout(GROQ_API_URL, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
