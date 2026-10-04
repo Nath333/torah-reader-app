@@ -233,3 +233,75 @@
   color: #111827;
   text-shadow: none;
 }
+
+/* ---------------------------------------------------------------------------
+   8. CONTRASTE DARK (04/10) — « plus visible » : séparateurs et voix
+   secondaires lisibles, hover perceptible, hébreu lumineux
+   --------------------------------------------------------------------------- */
+.app.dark-mode .app-main .verse {
+  border-bottom-color: rgba(148, 163, 184, 0.22);
+}
+
+.app.dark-mode .app-main .verse:hover {
+  background: rgba(99, 102, 241, 0.09);
+  border-bottom-color: rgba(129, 140, 248, 0.45);
+}
+
+.app.dark-mode .app-main .verse .hebrew-text {
+  color: #ffffff;
+  border-right-color: #818cf8;
+}
+
+.app.dark-mode .app-main .verse .english-translation {
+  color: #cbd5e1;
+  border-left-color: rgba(148, 163, 184, 0.4);
+}
+
+.app.dark-mode .app-main .verse-commentaries > * {
+  background: rgba(15, 23, 42, 0.65);
+  border-left-color: rgba(129, 140, 248, 0.55);
+}
+
+.app.dark-mode .sidebar .book-list {
+  border-color: rgba(148, 163, 184, 0.2) !important;
+}
+
+.app.dark-mode .app-header {
+  border-bottom-color: rgba(148, 163, 184, 0.22);
+}
+
+/* ---------------------------------------------------------------------------
+   8. CONTRASTE DARK (04/10) — « plus visible » : séparateurs et voix
+   secondaires lisibles, hover perceptible, hébreu lumineux
+   --------------------------------------------------------------------------- */
+.app.dark-mode .app-main .verse {
+  border-bottom-color: rgba(148, 163, 184, 0.22);
+}
+
+.app.dark-mode .app-main .verse:hover {
+  background: rgba(99, 102, 241, 0.09);
+  border-bottom-color: rgba(129, 140, 248, 0.45);
+}
+
+.app.dark-mode .app-main .verse .hebrew-text {
+  color: #ffffff;
+  border-right-color: #818cf8;
+}
+
+.app.dark-mode .app-main .verse .english-translation {
+  color: #cbd5e1;
+  border-left-color: rgba(148, 163, 184, 0.4);
+}
+
+.app.dark-mode .app-main .verse-commentaries > * {
+  background: rgba(15, 23, 42, 0.65);
+  border-left-color: rgba(129, 140, 248, 0.55);
+}
+
+.app.dark-mode .sidebar .book-list {
+  border-color: rgba(148, 163, 184, 0.2) !important;
+}
+
+.app.dark-mode .app-header {
+  border-bottom-color: rgba(148, 163, 184, 0.22);
+}

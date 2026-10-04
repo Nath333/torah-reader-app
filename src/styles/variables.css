@@ -424,13 +424,13 @@
   --bg-subtle: #1e293b;
 
   /* Text */
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
 
   /* Borders */
-  --border: #334155;
-  --border-light: #1e293b;
+  --border: #475569;
+  --border-light: #334155;
 
   /* Brand colors adjusted for dark */
   --primary: #818cf8;
