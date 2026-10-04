@@ -1,6 +1,7 @@
 /* Import shared styles */
 @import './styles/modal.css';
 @import './styles/refonte-phase2.css';
+@import './styles/refonte-modern.css';
 @import './styles/shared-ui.css';
 
 /* Smooth scrolling (respects user preferences) */

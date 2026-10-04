@@ -16,6 +16,7 @@
   --border-color: var(--border);
   --primary-color: var(--primary);
   --surface: var(--bg-elevated);
+  --bg-secondary: var(--bg-subtle);
 
   --primary: #5b4cdb;
   --primary-hover: #4c3fc7;

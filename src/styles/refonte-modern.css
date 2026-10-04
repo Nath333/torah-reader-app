@@ -1,0 +1,235 @@
+/* =============================================================================
+   REFONTE MODERNE / PRO (04/10/2026) — couche de polish au-dessus de tout
+   Principes : une seule surface par écran, de la profondeur par ombres douces
+   (pas par bordures), un accent unique discipliné, des transitions courtes,
+   des rayons cohérents, la typographie qui mène.
+   Chargée EN DERNIER (après refonte-phase2.css) : elle raffine, elle ne
+   structure pas. Tout est réversible en retirant l'import de index.css.
+   ============================================================================= */
+
+/* ---------------------------------------------------------------------------
+   0. Socle : rayons, transitions, sélection, focus
+   --------------------------------------------------------------------------- */
+:root {
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* {
+  scrollbar-width: thin;
+}
+
+::selection {
+  background: rgba(99, 102, 241, 0.28);
+  color: inherit;
+}
+
+*:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px rgba(99, 102, 241, 0.55);
+  border-radius: var(--r-sm);
+}
+
+/* ---------------------------------------------------------------------------
+   1. HEADER — verre fin, titre serré
+   --------------------------------------------------------------------------- */
+.app-header {
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+  box-shadow: 0 1px 24px rgba(0, 0, 0, 0.18);
+}
+
+.app-header .header-brand {
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+/* ---------------------------------------------------------------------------
+   2. LECTEUR — la page est la surface ; les contrôles flottent en verre
+   --------------------------------------------------------------------------- */
+.app-main .reader-controls {
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 14px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
+}
+
+.app.dark-mode .app-main .reader-controls {
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.app:not(.dark-mode) .app-main .reader-controls {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* Pilules : fantômes calmes ; l'actif porte l'accent avec un halo */
+.app-main .reader-controls button {
+  border-radius: 9px;
+  transition: background 0.18s var(--ease), color 0.18s var(--ease),
+    border-color 0.18s var(--ease);
+}
+
+.app-main .reader-controls button:hover {
+  transform: none;
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--text-primary);
+}
+
+.app-main .reader-controls button[aria-pressed="true"],
+.app-main .reader-controls button.active {
+  background: rgba(99, 102, 241, 0.16);
+  border-color: rgba(99, 102, 241, 0.45);
+  color: var(--primary);
+  box-shadow: 0 0 14px rgba(99, 102, 241, 0.18);
+}
+
+.app.dark-mode .app-main .reader-controls button[aria-pressed="true"],
+.app.dark-mode .app-main .reader-controls button.active {
+  color: #c7c9f8;
+}
+
+/* ---------------------------------------------------------------------------
+   3. VERSETS — hiérarchie typographique, numéro en médaillon discret
+   --------------------------------------------------------------------------- */
+.app-main .verse {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  padding: 22px 12px;
+}
+
+.app-main .verse:hover {
+  background: rgba(99, 102, 241, 0.045);
+  border-bottom-color: rgba(99, 102, 241, 0.22);
+}
+
+.app-main .verse .verse-number {
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.78rem;
+  box-shadow: none;
+}
+
+.app.dark-mode .app-main .verse .verse-number {
+  background: rgba(99, 102, 241, 0.16);
+  color: #a5b4fc;
+}
+
+/* Hébreu : serif d'étude, légèrement plus présent */
+.app-main .verse .hebrew-text,
+.app.dark-mode .app-main .verse .hebrew-text {
+  font-family: 'Frank Ruhl Libre', 'Times New Roman', serif;
+  font-size: calc(var(--text-torah) + 0.25rem);
+  line-height: 1.9;
+  border-right: 3px solid rgba(99, 102, 241, 0.55);
+  padding-right: 16px;
+}
+
+/* Traductions : voix secondaire serine */
+.app-main .verse .english-translation,
+.app.dark-mode .app-main .verse .english-translation {
+  color: var(--text-secondary);
+  font-size: 1.04rem;
+  line-height: 1.7;
+}
+
+/* Commentaires : cartes à accent gauche, jamais de cadre complet */
+.app-main .verse-commentaries > * {
+  border: none;
+  border-left: 3px solid rgba(99, 102, 241, 0.4);
+  border-radius: 10px;
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.app.dark-mode .app-main .verse-commentaries > * {
+  background: rgba(99, 102, 241, 0.07);
+}
+
+/* ---------------------------------------------------------------------------
+   4. SIDEBAR — rangées calmes, actif en pill accent
+   --------------------------------------------------------------------------- */
+.sidebar button {
+  border-radius: 10px;
+  transition: background 0.16s var(--ease), color 0.16s var(--ease);
+}
+
+/* ---------------------------------------------------------------------------
+   5. STUDY — cartes douces, anneau de niveau valorisé
+   --------------------------------------------------------------------------- */
+.study-dashboard {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.study-dashboard .daily-learning-item,
+.study-dashboard .recommendation-item {
+  transition: transform 0.18s var(--ease), border-color 0.18s var(--ease),
+    background 0.18s var(--ease);
+}
+
+.study-dashboard .daily-learning-item:hover,
+.study-dashboard .recommendation-item:hover {
+  transform: translateY(-1px);
+  border-color: rgba(99, 102, 241, 0.5);
+}
+
+.study-dashboard .level-progress-bar {
+  height: 6px;
+}
+
+.study-dashboard .level-progress-fill {
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+}
+
+/* ---------------------------------------------------------------------------
+   6. MODE CLAIR — accents ajustés (le bleu-nuit pur est trop dur)
+   --------------------------------------------------------------------------- */
+.app:not(.dark-mode) .app-main .verse .hebrew-text {
+  border-right-color: rgba(91, 76, 219, 0.5);
+}
+
+.app:not(.dark-mode) .app-main .verse-commentaries > * {
+  border-left-color: rgba(91, 76, 219, 0.35);
+  background: rgba(91, 76, 219, 0.04);
+}
+
+/* ---------------------------------------------------------------------------
+   7. SCROLLBARS — discrètes et modernes (WebKit)
+   --------------------------------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.45);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Chrome sidebar : la liste des livres restait blanche en dark
+   (règle héritée plus spécifique — on force le thème) */
+.app.dark-mode .sidebar .book-list {
+  background: var(--bg-elevated) !important;
+  border-color: var(--border) !important;
+}
+
+.app.dark-mode .sidebar .book-list * {
+  color: var(--text-primary);
+}
+
+/* Hébreu en thème clair : encre quasi noire (l'hébreu pâle était illisible) */
+.app:not(.dark-mode) .app-main .verse .hebrew-text {
+  color: #111827;
+  text-shadow: none;
+}
