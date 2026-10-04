@@ -35,6 +35,11 @@ export default function useTranslationLoading({
   const verseTranslatingRef = useRef(new Set());
   const onkelosTranslatingRef = useRef(new Set());
 
+  // Échecs définitifs (toutes sources épuisées) — l'UI affiche
+  // « traduction indisponible » au lieu d'un Chargement éternel.
+  const [verseFailed, setVerseFailed] = useState({});
+  const [onkelosFailed, setOnkelosFailed] = useState({});
+
   // Load French translations for Onkelos (parallel loading)
   useEffect(() => {
     if (!showFrench || !showOnkelos || onkelos.length === 0) return;
@@ -68,12 +73,17 @@ export default function useTranslationLoading({
       if (cancelled) return;
 
       const frenchTranslations = {};
-      results.filter(Boolean).forEach(({ verse, french }) => {
-        frenchTranslations[verse] = french;
+      const failed = {};
+      results.forEach((r, i) => {
+        if (r) frenchTranslations[r.verse] = r.french;
+        else failed[toTranslate[i].verse] = true;
       });
 
       if (Object.keys(frenchTranslations).length > 0) {
         setOnkelosFrench(prev => ({ ...prev, ...frenchTranslations }));
+      }
+      if (Object.keys(failed).length > 0) {
+        setOnkelosFailed(prev => ({ ...prev, ...failed }));
       }
     };
 
@@ -120,12 +130,18 @@ export default function useTranslationLoading({
       if (cancelled) return;
 
       const frenchTranslations = {};
-      results.filter(Boolean).forEach(({ cacheKey, result }) => {
-        frenchTranslations[cacheKey] = result;
+      const failed = {};
+      results.forEach((r, i) => {
+        const key = itemKeys[i];
+        if (r) frenchTranslations[key] = r.result;
+        else failed[key] = true;
       });
 
       if (Object.keys(frenchTranslations).length > 0) {
         setVerseFrench(prev => ({ ...prev, ...frenchTranslations }));
+      }
+      if (Object.keys(failed).length > 0) {
+        setVerseFailed(prev => ({ ...prev, ...failed }));
       }
     };
 
@@ -141,12 +157,16 @@ export default function useTranslationLoading({
   useEffect(() => {
     setOnkelosFrench({});
     setVerseFrench({});
+    setOnkelosFailed({});
+    setVerseFailed({});
     onkelosTranslatingRef.current.clear();
     verseTranslatingRef.current.clear();
   }, [selectedBook, selectedChapter]);
 
   return {
     verseFrench,
-    onkelosFrench
+    onkelosFrench,
+    verseFailed,
+    onkelosFailed
   };
 }

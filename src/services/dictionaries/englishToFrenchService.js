@@ -8,6 +8,8 @@
 import { createCache } from '../../utils/cache';
 import { registerCache, CACHE_CONFIGS } from '../cacheOrchestrator';
 import { createLogger, IS_DEV as isDev } from '../../utils/debug';
+import { getProxyBase } from '../proxyConfig';
+import { checkAiProxy, aiProxyChat } from '../groqApi';
 
 const log = createLogger('FrenchTranslation');
 
@@ -160,14 +162,34 @@ const translate = async (text) => {
     return null;
   }
 
-  // Production : miroirs Lingva, en DIRECT d'abord (lingva.ml envoie
-  // Access-Control-Allow-Origin: *, vérifié le 03/10/2026) — le proxy
-  // allorigins n'est qu'un ultime recours pour un miroir sans CORS.
+  // Production : 1) relais Lingva par le serveur d'étude (limud-proxy,
+  // route /lingva/ sans CORS ni blocage réseau côté client) — 2) miroirs en
+  // direct (lingva.ml envoie Access-Control-Allow-Origin: *, vérifié le
+  // 03/10/2026) — 3) allorigins en ultime recours.
   const fetchTranslation = async (url) => {
     const r = await fetch(url, { signal: AbortSignal.timeout(CONFIG.TIMEOUT) });
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     return r.json();
   };
+
+  const proxyBase = getProxyBase();
+  if (proxyBase) {
+    try {
+      const r = await fetch(`${proxyBase}/lingva/api/v1/en/fr/${encodeURIComponent(text)}`, {
+        signal: AbortSignal.timeout(CONFIG.TIMEOUT)
+      });
+      if (r.ok) {
+        const d = await r.json();
+        if (d.translation && isValid(text, d.translation)) {
+          apiState.fails = 0;
+          log.verbose('Translated via serveur (lingva):', text.slice(0, 30));
+          return { translation: fix(d.translation.trim()), source: 'Lingva', accuracy: 'high' };
+        }
+      }
+    } catch (e) {
+      log.verbose('Relais serveur lingva failed:', e.message);
+    }
+  }
 
   for (let i = 0; i < LINGVA_MIRRORS.length; i++) {
     const idx = (apiState.currentMirror + i) % LINGVA_MIRRORS.length;
@@ -186,6 +208,36 @@ const translate = async (text) => {
       } catch (e) {
         log.verbose(`Mirror ${mirror}${url === apiUrl ? '' : ' (proxy)'} failed:`, e.message);
       }
+    }
+  }
+
+  // Dernier recours : l'IA du serveur d'étude (GLM via OpenRouter, clé
+  // server-side) traduit EN→FR en une ligne. Marquée accuracy 'medium'.
+  if (proxyBase) {
+    try {
+      const available = await checkAiProxy();
+      if (available.available) {
+        const response = await aiProxyChat({
+          messages: [
+            { role: 'system', content: 'Tu es un traducteur. Traduis le texte anglais en français naturel. Réponds UNIQUEMENT par la traduction, sans guillemets, sans commentaire.' },
+            { role: 'user', content: text }
+          ],
+          temperature: 0.2,
+          max_tokens: Math.min(800, Math.ceil(text.length * 1.5) + 100)
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const t = data.choices?.[0]?.message?.content?.trim();
+          if (t && isValid(text, fix(t))) {
+            apiState.fails = 0;
+            apiState.currentMirror = 0;
+            log.verbose('Translated via IA:', text.slice(0, 30));
+            return { translation: fix(t), source: 'IA', accuracy: 'medium' };
+          }
+        }
+      }
+    } catch (e) {
+      log.verbose('Fallback IA failed:', e.message);
     }
   }
 

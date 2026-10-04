@@ -146,6 +146,7 @@ const VerseRow = ({
   // Get French translation for this verse
   const verseFrenchData = translationData.verseFrench?.[verseKey];
   const onkelosFrenchData = translationData.onkelosFrench?.[verse.verse];
+  const onkelosFrenchFailed = !!translationData.onkelosFailed?.[verse.verse];
 
   // Process Hebrew text
   const processedHebrewText = processHebrewText(verse.hebrewText, { showVowels, showCantillation });
@@ -406,7 +407,14 @@ const VerseRow = ({
                 )}
                 {showFrench && !onkelosFrenchData && onkelosItem.english && (
                   <div className="onkelos-french onkelos-loading-french" lang="fr">
-                    <span className="translation-label">FR:</span> <span className="loading-text">Chargement...</span>
+                    <span className="translation-label">FR:</span>{' '}
+                    {onkelosFrenchFailed ? (
+                      <span className="loading-text" style={{ opacity: 0.55 }}>
+                        Traduction indisponible
+                      </span>
+                    ) : (
+                      <span className="loading-text">Chargement...</span>
+                    )}
                   </div>
                 )}
               </div>
