@@ -88,6 +88,9 @@ export const removeGroqApiKey = () => {
 // =============================================================================
 // Error Handling - Re-export from centralized module for backward compat
 // =============================================================================
+// Ré-export : aiService consomme aiProxyChat via groqApi (historique).
+export { aiProxyChat };
+
 export const AIError = BaseAIError;
 
 export const ERROR_TYPES = {
