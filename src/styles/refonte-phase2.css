@@ -365,3 +365,25 @@
   font-size: 0.8rem;
   color: var(--text-secondary);
 }
+
+/* ---------------------------------------------------------------------------
+   8. TOOLBAR MOBILE — collapse : bouton ⋯ replie les contrôles secondaires
+   (desktop inchangé : le bouton ⋯ n'apparaît qu'≤ 640px)
+   --------------------------------------------------------------------------- */
+.app-main .reader-controls .ctrl-toggle {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .app-main .reader-controls .ctrl-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    min-width: 34px;
+  }
+
+  .app-main .reader-controls:not(.ctrl-expanded) .ctrl-hide {
+    display: none !important;
+  }
+}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import VerseJump from '../navigation/VerseJump';
 import CommentaryToggleDropdown from '../commentary/CommentaryToggleDropdown';
@@ -55,8 +55,12 @@ const ReaderControls = ({
     showCantillation,
     toggleCantillation
   } = useSettings();
+
+  // Mobile : les contrôles secondaires se replient derrière le bouton ⋯
+  const [moreOpen, setMoreOpen] = useState(false);
+
   return (
-    <div className="reader-controls" role="toolbar" aria-label="Contrôles de lecture">
+    <div className={`reader-controls ${moreOpen ? 'ctrl-expanded' : ''}`} role="toolbar" aria-label="Contrôles de lecture">
       <div className="control-group">
         {/* Translation toggles - pill segment */}
         <div className="control-segment" role="group" aria-label="Options de traduction">
@@ -84,7 +88,7 @@ const ReaderControls = ({
         <span className="control-divider" aria-hidden="true" />
 
         {/* Hebrew display options - pill segment */}
-        <div className="control-segment" role="group" aria-label="Options du texte hébreu">
+        <div className="control-segment ctrl-hide" role="group" aria-label="Options du texte hébreu">
           <button
             onClick={toggleVowels}
             className={`control-button ${showVowels ? 'active' : ''}`}
@@ -109,7 +113,7 @@ const ReaderControls = ({
         {/* Word lookup */}
         <button
           onClick={() => setEnableClickableText(!enableClickableText)}
-          className={`control-button ${enableClickableText ? 'active' : ''}`}
+          className={`control-button ctrl-hide ${enableClickableText ? 'active' : ''}`}
           aria-pressed={enableClickableText}
           title={enableClickableText ? 'Désactiver le clic-mot (dictionnaire au clic)' : 'Activer le clic-mot : chaque mot hébreu ouvre son dictionnaire'}
         >
@@ -120,16 +124,19 @@ const ReaderControls = ({
         </button>
 
         {/* Commentaries dropdown - PRO SCHOLAR V8: Uses useSettings() directly */}
+        <div className="ctrl-hide">
         <CommentaryToggleDropdown
           hasSoncinoAvailable={hasSoncinoAvailable}
           isTorahBook={isTorahBook}
           isTalmud={isTalmud}
         />
 
-        {/* Unified Study Button */}
+        </div>
+
+        {/* Unified Study Button — secondaire sur mobile */}
         <button
           onClick={onToggleStudyMode}
-          className={`control-button study-btn ${studyPanelIsOpen ? 'active' : ''}`}
+          className={`control-button ctrl-hide study-btn ${studyPanelIsOpen ? 'active' : ''}`}
           aria-label={selectedVersesCount > 0 ? `Étudier les ${selectedVersesCount} versets sélectionnés` : `Étudier les ${verses.length} versets`}
           title={`Ouvre les commentaires ${selectedVersesCount > 0 ? 'des ' + selectedVersesCount + ' versets sélectionnés' : 'du chapitre'} (Ctrl+Shift+S)`}
           aria-pressed={studyPanelIsOpen}
@@ -143,9 +150,20 @@ const ReaderControls = ({
             <span className="badge study-badge">{selectedVersesCount}</span>
           )}
         </button>
+
+        {/* Bascule mobile : replie/déplie les contrôles secondaires */}
+        <button
+          onClick={() => setMoreOpen(o => !o)}
+          className="control-button ctrl-toggle"
+          aria-expanded={moreOpen}
+          aria-label={moreOpen ? 'Réduire les contrôles' : 'Plus de contrôles'}
+          title={moreOpen ? 'Réduire les contrôles' : 'Plus de contrôles'}
+        >
+          ⋯
+        </button>
       </div>
 
-      <div className="font-controls" role="group" aria-label="Taille du texte">
+      <div className="font-controls ctrl-hide" role="group" aria-label="Taille du texte">
         <button
           onClick={() => setFontSize(s => Math.max(s - 2, 12))}
           className="control-button font-btn"

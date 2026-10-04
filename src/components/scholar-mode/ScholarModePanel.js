@@ -504,10 +504,10 @@ const ScholarModePanel = ({
     // (pas d'emojis ni de badges fictifs : le seul badge est le compte réel
     // de commentaires, le reste du chrome reste typographique)
     const coreTabs = [
-      { id: 'learn', label: 'לימוד Learn' },
-      { id: 'words', label: 'מילים Words' },
-      { id: 'commentary', label: 'פירושים Commentary', badge: scholarlyData?.summary?.commentaryCount || 0 },
-      { id: 'notebook', label: 'מחברת Notebook' },
+      { id: 'learn', label: 'לימוד Apprendre' },
+      { id: 'words', label: 'מילים Mots' },
+      { id: 'commentary', label: 'פירושים Commentaires', badge: scholarlyData?.summary?.commentaryCount || 0 },
+      { id: 'notebook', label: 'מחברת Carnet' },
       { id: 'chavruta', label: 'חברותא Chavruta' }
     ];
 
