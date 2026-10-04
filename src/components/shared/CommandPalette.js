@@ -130,6 +130,24 @@ const buildCommands = () => {
   return cmds;
 };
 
+/**
+ * Surligne la portion du label qui correspond à la requête (insensible à
+ * la casse). Sans match, renvoie le label tel quel.
+ */
+const Highlighted = ({ label, query }) => {
+  const q = (query || '').trim();
+  if (!q) return label;
+  const idx = label.toLowerCase().indexOf(q.toLowerCase());
+  if (idx === -1) return label;
+  return (
+    <>
+      {label.slice(0, idx)}
+      <mark className="cmdk-mark">{label.slice(idx, idx + q.length)}</mark>
+      {label.slice(idx + q.length)}
+    </>
+  );
+};
+
 const CommandPalette = ({
   open,
   onClose,
@@ -269,6 +287,10 @@ const CommandPalette = ({
     } else if (e.key === 'Enter') {
       e.preventDefault();
       run(results[active]);
+    } else if (/^[1-9]$/.test(e.key)) {
+      // Raccourcis 1-9 : lancer le n-ième résultat
+      e.preventDefault();
+      run(results[parseInt(e.key, 10) - 1]);
     } else if (e.key === 'Escape') {
       e.preventDefault();
       onClose();
@@ -308,9 +330,12 @@ const CommandPalette = ({
           spellCheck="false"
         />
         <ul className="cmdk-list" id="cmdk-list" ref={listRef} role="listbox">
-          {results.length === 0 && (
+          {results.length === 0 && query && (
             <li className="cmdk-empty" role="option" aria-selected="false">
-              Aucun résultat — « {query} »
+              Aucun résultat pour « {query} »
+              <span className="cmdk-hint">
+                Essayez <kbd>genesis 12</kbd> <kbd>shabbat</kbd> <kbd>bookmarks</kbd> — ou Ctrl+K pour chercher dans les versets
+              </span>
             </li>
           )}
           {renderedRows.map((row) =>
@@ -340,8 +365,14 @@ const CommandPalette = ({
                 >
                   {row.cmd.type}
                 </span>
-                <span className="cmdk-label">{row.cmd.label}</span>
-                <kbd className="cmdk-enter" aria-hidden="true">↵</kbd>
+                <span className="cmdk-label">
+                  <Highlighted label={row.cmd.label} query={query} />
+                </span>
+                {row.flatIndex < 9 ? (
+                  <kbd className="cmdk-num" aria-hidden="true">{row.flatIndex + 1}</kbd>
+                ) : (
+                  <kbd className="cmdk-enter" aria-hidden="true">↵</kbd>
+                )}
               </li>
             )
           )}
@@ -351,6 +382,7 @@ const CommandPalette = ({
             {results.length} résultat{results.length > 1 ? 's' : ''}
           </span>
           <span><kbd>↑</kbd><kbd>↓</kbd> naviguer</span>
+          <span><kbd>1-9</kbd> direct</span>
           <span><kbd>↵</kbd> ouvrir</span>
           <span><kbd>esc</kbd> fermer</span>
         </div>

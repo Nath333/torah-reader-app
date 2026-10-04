@@ -143,10 +143,48 @@
 }
 
 .cmdk-empty {
-  padding: 1rem;
+  padding: 0.9rem 1rem;
   text-align: center;
-  opacity: 0.6;
   color: var(--text-primary);
+}
+
+.cmdk-empty .cmdk-hint {
+  display: block;
+  margin-top: 0.45rem;
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+.cmdk-empty .cmdk-hint kbd {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm, 6px);
+  padding: 0.05rem 0.35rem;
+  margin: 0 0.15rem;
+  font-size: 0.72rem;
+}
+
+/* Portion de label correspondant à la requête */
+.cmdk-mark {
+  background: var(--primary-light, rgb(99 102 241 / 0.25));
+  color: inherit;
+  border-radius: 3px;
+  padding: 0 1px;
+  font-weight: 600;
+}
+
+/* Raccourcis chiffres 1-9 sur les premiers résultats */
+.cmdk-num {
+  flex: 0 0 auto;
+  font-size: 0.7rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm, 6px);
+  padding: 0.05rem 0.35rem;
+  opacity: 0.5;
+}
+
+.cmdk-item[data-active='true'] .cmdk-num {
+  opacity: 1;
+  border-color: var(--primary, var(--border-light));
 }
 
 .cmdk-footer {
