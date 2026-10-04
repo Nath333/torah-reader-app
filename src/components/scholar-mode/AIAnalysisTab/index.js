@@ -32,6 +32,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { safeGet, safeSet } from '../../../utils/safeLocalStorage';
 import { hasApiKey as checkHasApiKey } from '../../../services/groqService';
+import { ensureAiAvailability } from '../../../services/groqApi';
 import {
   AI_PROVIDERS,
   getSelectedProvider,
@@ -212,7 +213,13 @@ const AIAnalysisTab = ({
 
     const checkProviders = async () => {
       const provider = getSelectedProvider();
-      const hasGroqKey = checkHasApiKey();
+      let hasGroqKey = checkHasApiKey();
+
+      // Sans clé locale : le serveur d'étude porte peut-être la clé
+      // (limud-proxy /ai/chat) — attendre la détection avant l'écran de clé.
+      if (!hasGroqKey) {
+        hasGroqKey = await ensureAiAvailability();
+      }
 
       let ollamaResult = null;
       if (provider === AI_PROVIDERS.OLLAMA || provider === AI_PROVIDERS.AUTO) {
