@@ -500,7 +500,7 @@ function App() {
             >
               <MenuIcon />
             </button>
-            <h1>Sefarim Reader</h1>
+            <h1>Limud <span className="header-brand-sub">· Sefarim Reader</span></h1>
           </div>
 
           <div className="header-spacer" />

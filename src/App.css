@@ -1953,3 +1953,11 @@ img {
     transparent 100%
   );
 }
+
+/* Marque du header : Limud principal, ancien nom en sous-titre discret */
+.header-brand-sub {
+  font-size: 0.55em;
+  font-weight: 400;
+  opacity: 0.45;
+  letter-spacing: 0.02em;
+}
