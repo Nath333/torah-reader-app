@@ -201,7 +201,7 @@ export function detectCitationPatterns(text) {
 /**
  * Common root transformations for family expansion
  */
-const ROOT_TRANSFORMATIONS = {
+export const ROOT_TRANSFORMATIONS = {
   // Noun patterns from roots
   nounPatterns: [
     { pattern: 'מ_ְ__', name: 'mishkal', example: 'מלך (king)' },
