@@ -423,6 +423,7 @@ export async function addVocalization(text, genre = 'rabbinic') {
     // Dicta Nakdan 4.0 API endpoint
     const response = await fetch(`${DICTA_NAKDAN_BASE}/api/nakdan`, {
       method: 'POST',
+      signal: AbortSignal.timeout(15000),
       headers: {
         'Content-Type': 'application/json'
       },

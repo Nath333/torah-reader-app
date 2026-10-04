@@ -8,6 +8,7 @@
  */
 
 import { createManagedCache } from './cacheOrchestrator';
+import { fetchWithTimeout } from '../utils/http';
 import { stripVowels } from '../utils/hebrewUtils';
 
 // Frequency bands for pedagogical purposes
@@ -444,8 +445,9 @@ export const getRootOccurrences = async (root) => {
   if (cached) return cached;
 
   try {
-    // Search Sefaria for the root
-    const response = await fetch(
+    // Search Sefaria for the root (fetchWithTimeout : un appel sans borne
+    // bloquait le panneau de fréquence indefiniment hors-ligne)
+    const response = await fetchWithTimeout(
       `https://www.sefaria.org/api/search-wrapper?query=${encodeURIComponent(root)}&type=text&field=naive_lemmatizer&slop=0&size=100&filters[0]=Tanakh`,
       { headers: { 'Accept': 'application/json' } }
     );

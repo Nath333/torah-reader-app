@@ -6,6 +6,7 @@
  */
 import React, { useState, useEffect, useMemo } from 'react';
 import './HebrewCalendarWidget.css';
+import { fetchWithTimeout } from '../../utils/http';
 
 // Hebcal API endpoint
 const HEBCAL_API = 'https://www.hebcal.com/shabbat';
@@ -87,7 +88,7 @@ const HebrewCalendarWidget = ({
           b: '18', // Candle lighting minutes before sunset
         });
 
-        const response = await fetch(`${HEBCAL_API}?${params}`);
+        const response = await fetchWithTimeout(`${HEBCAL_API}?${params}`);
         if (!response.ok) throw new Error('Failed to fetch calendar data');
 
         const result = await response.json();

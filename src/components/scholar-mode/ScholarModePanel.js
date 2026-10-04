@@ -586,7 +586,7 @@ const ScholarModePanel = ({
               onClick={() => setShowTzuratHaDaf(!showTzuratHaDaf)}
               title="Toggle traditional page layout (צורת הדף)"
             >
-              <span className="toggle-icon">📜</span>
+              <span className="toggle-icon toggle-icon-text">דף</span>
             </button>
           )}
 
@@ -832,7 +832,6 @@ const ScholarModePanel = ({
         const layerConfig = {
           main: {
             text: effectiveSelectedVerses.map(v => v.hebrewText).join(' '),
-            icon: isTalmud ? '📜' : '📖',
             label: isTalmud ? 'Gemara' : 'Torah',
             language: isTalmud ? 'aramaic' : 'hebrew',
             textSource: isTalmud ? 'gemara' : 'torah',
@@ -840,7 +839,6 @@ const ScholarModePanel = ({
           },
           rashi: {
             text: aggregatedRashiText,
-            icon: '🔍',
             label: 'Rashi',
             language: 'hebrew',
             textSource: 'rashi',
@@ -848,7 +846,6 @@ const ScholarModePanel = ({
           },
           onkelos: {
             text: aggregatedOnkelosText,
-            icon: '🏛️',
             label: 'Onkelos',
             language: 'aramaic',
             textSource: 'targum',
@@ -856,7 +853,6 @@ const ScholarModePanel = ({
           },
           ramban: {
             text: aggregatedRambanText,
-            icon: '📚',
             label: 'Ramban',
             language: 'hebrew',
             textSource: 'rashi',
@@ -872,7 +868,6 @@ const ScholarModePanel = ({
             <div className="glossed-text-header">
               <div className="glossed-header-top">
                 <span className="glossed-label">
-                  <span className="layer-icon">{currentLayer.icon}</span>
                   {currentLayer.label}
                 </span>
                 <span className="glossed-ref">{multiVerseReference || reference}</span>
@@ -885,7 +880,6 @@ const ScholarModePanel = ({
                   onClick={() => setGlossedTextLayer('main')}
                   title={isTalmud ? 'Gemara text' : 'Torah text'}
                 >
-                  {isTalmud ? '📜' : '📖'}
                   <span className="toggle-label">{isTalmud ? 'גמרא' : 'תורה'}</span>
                 </button>
                 {aggregatedRashiText && (
@@ -894,7 +888,6 @@ const ScholarModePanel = ({
                     onClick={() => setGlossedTextLayer('rashi')}
                     title="Rashi commentary"
                   >
-                    🔍
                     <span className="toggle-label">רש״י</span>
                   </button>
                 )}
@@ -904,7 +897,6 @@ const ScholarModePanel = ({
                     onClick={() => setGlossedTextLayer('onkelos')}
                     title="Targum Onkelos"
                   >
-                    🏛️
                     <span className="toggle-label">תרגום</span>
                   </button>
                 )}
@@ -914,12 +906,11 @@ const ScholarModePanel = ({
                     onClick={() => setGlossedTextLayer('ramban')}
                     title="Ramban commentary"
                   >
-                    📚
                     <span className="toggle-label">רמב״ן</span>
                   </button>
                 )}
 
-                <span className="glossed-hint">👆 Click word to lookup</span>
+                <span className="glossed-hint">Click word to lookup</span>
               </div>
             </div>
 
