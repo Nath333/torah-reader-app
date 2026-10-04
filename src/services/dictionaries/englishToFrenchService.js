@@ -124,55 +124,10 @@ const fix = (t) => {
 
 // Main translation function with mirror rotation
 const translate = async (text) => {
-  if (!canUse()) {
-    log.verbose('API blocked, waiting...');
-    return null;
-  }
-
-  await wait();
-  apiState.last = Date.now();
-
-  // In dev mode, use proxy
-  if (isDev) {
-    const url = `/lingva-api/en/fr/${encodeURIComponent(text)}`;
-    try {
-      const r = await fetch(url, {
-        headers: { 'Accept': 'application/json' },
-        signal: AbortSignal.timeout(CONFIG.TIMEOUT)
-      });
-
-      if (r.status === 429) {
-        apiState.blocked = Date.now() + CONFIG.COOLDOWN;
-        apiState.fails++;
-        return null;
-      }
-
-      if (r.ok) {
-        const d = await r.json();
-        if (d.translation && isValid(text, d.translation)) {
-          apiState.fails = 0;
-          log.verbose('Translated via proxy:', text.slice(0, 30));
-          return { translation: fix(d.translation.trim()), source: 'Lingva', accuracy: 'high' };
-        }
-      }
-    } catch (e) {
-      log.verbose('Proxy failed:', e.message);
-      apiState.fails++;
-    }
-    return null;
-  }
-
-  // Production : 1) relais Lingva par le serveur d'étude (limud-proxy,
-  // route /lingva/ sans CORS ni blocage réseau côté client) — 2) miroirs en
-  // direct (lingva.ml envoie Access-Control-Allow-Origin: *, vérifié le
-  // 03/10/2026) — 3) allorigins en ultime recours.
-  const fetchTranslation = async (url) => {
-    const r = await fetch(url, { signal: AbortSignal.timeout(CONFIG.TIMEOUT) });
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    return r.json();
-  };
-
   const proxyBase = getProxyBase();
+
+  // ── Relais Lingva par le serveur d'étude — rapide, sans CORS, tenté à
+  // chaque appel (échoue vite si le miroir renvoie l'anglais à l'identique).
   if (proxyBase) {
     try {
       const r = await fetch(`${proxyBase}/lingva/api/v1/en/fr/${encodeURIComponent(text)}`, {
@@ -191,28 +146,64 @@ const translate = async (text) => {
     }
   }
 
-  for (let i = 0; i < LINGVA_MIRRORS.length; i++) {
-    const idx = (apiState.currentMirror + i) % LINGVA_MIRRORS.length;
-    const mirror = LINGVA_MIRRORS[idx];
-    const apiUrl = `${mirror}/api/v1/en/fr/${encodeURIComponent(text)}`;
-
-    for (const url of [apiUrl, `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`]) {
-      try {
-        const d = await fetchTranslation(url);
+  // ── Miroirs Lingva en DIRECT — bridés par le rate-limit ET sautés dès que
+  // les échecs s'accumulent (miroirs morts : chaque essai coûte jusqu'à
+  // 30 s de timeouts → aller directement à l'IA). En dev, le proxy Vite
+  // joue le rôle du serveur.
+  if (isDev) {
+    try {
+      const r = await fetch(`/lingva-api/en/fr/${encodeURIComponent(text)}`, {
+        headers: { 'Accept': 'application/json' },
+        signal: AbortSignal.timeout(CONFIG.TIMEOUT)
+      });
+      if (r.status === 429) {
+        apiState.blocked = Date.now() + CONFIG.COOLDOWN;
+        apiState.fails++;
+      } else if (r.ok) {
+        const d = await r.json();
         if (d.translation && isValid(text, d.translation)) {
           apiState.fails = 0;
-          apiState.currentMirror = idx;
-          log.verbose(`Translated via ${mirror}${url === apiUrl ? '' : ' (proxy)'}:`, text.slice(0, 30));
           return { translation: fix(d.translation.trim()), source: 'Lingva', accuracy: 'high' };
         }
-      } catch (e) {
-        log.verbose(`Mirror ${mirror}${url === apiUrl ? '' : ' (proxy)'} failed:`, e.message);
+      }
+    } catch (e) {
+      log.verbose('Proxy dev failed:', e.message);
+    }
+  } else if (canUse() && apiState.fails < 6) {
+    await wait();
+    apiState.last = Date.now();
+
+    const fetchTranslation = async (url) => {
+      const r = await fetch(url, { signal: AbortSignal.timeout(CONFIG.TIMEOUT) });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.json();
+    };
+
+    for (let i = 0; i < LINGVA_MIRRORS.length; i++) {
+      const idx = (apiState.currentMirror + i) % LINGVA_MIRRORS.length;
+      const mirror = LINGVA_MIRRORS[idx];
+      const apiUrl = `${mirror}/api/v1/en/fr/${encodeURIComponent(text)}`;
+
+      for (const url of [apiUrl, `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`]) {
+        try {
+          const d = await fetchTranslation(url);
+          if (d.translation && isValid(text, d.translation)) {
+            apiState.fails = 0;
+            apiState.currentMirror = idx;
+            log.verbose(`Translated via ${mirror}${url === apiUrl ? '' : ' (proxy)'}:`, text.slice(0, 30));
+            return { translation: fix(d.translation.trim()), source: 'Lingva', accuracy: 'high' };
+          }
+        } catch (e) {
+          log.verbose(`Mirror ${mirror}${url === apiUrl ? '' : ' (proxy)'} failed:`, e.message);
+        }
       }
     }
+    apiState.fails++;
   }
 
-  // Dernier recours : l'IA du serveur d'étude (GLM via OpenRouter, clé
-  // server-side) traduit EN→FR en une ligne. Marquée accuracy 'medium'.
+  // ── IA du serveur d'étude (GLM via OpenRouter, clé server-side) — TOUJOURS
+  // tentée : ce n'est pas un miroir public, le rate-limit Lingva ne
+  // s'applique pas. Marquée accuracy 'medium'.
   if (proxyBase) {
     try {
       const available = await checkAiProxy();
@@ -230,7 +221,6 @@ const translate = async (text) => {
           const t = data.choices?.[0]?.message?.content?.trim();
           if (t && isValid(text, fix(t))) {
             apiState.fails = 0;
-            apiState.currentMirror = 0;
             log.verbose('Translated via IA:', text.slice(0, 30));
             return { translation: fix(t), source: 'IA', accuracy: 'medium' };
           }
