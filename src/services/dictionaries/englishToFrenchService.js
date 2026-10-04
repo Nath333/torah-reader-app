@@ -214,7 +214,10 @@ const translate = async (text) => {
             { role: 'user', content: text }
           ],
           temperature: 0.2,
-          max_tokens: Math.min(800, Math.ceil(text.length * 1.5) + 100)
+          // Plancher 2048 : GLM-5.3-flash est un modèle à RAISONNEMENT —
+          // sous ce seuil, tout part en reasoning_tokens et content revient
+          // null (piège documenté depuis la bascule OpenRouter).
+          max_tokens: Math.max(2048, Math.ceil(text.length * 1.5) + 100)
         });
         if (response.ok) {
           const data = await response.json();
