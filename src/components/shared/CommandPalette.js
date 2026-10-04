@@ -48,15 +48,57 @@ const groupRank = (g) => {
   return i === -1 ? GROUP_ORDER.length : i;
 };
 
+// Alias FR courants + formes numériques (les gens tapent « exode »,
+// « psaumes », « 1 samuel » — pas forcément les noms anglais/I romain)
+const BOOK_ALIASES = {
+  genese: 'Genesis', exode: 'Exodus', levitique: 'Leviticus',
+  nombres: 'Numbers', deuteronome: 'Deuteronomy',
+  psaume: 'Psalms', psaumes: 'Psalms', proverbes: 'Proverbs',
+  ecclesiaste: 'Ecclesiastes', qohelet: 'Ecclesiastes',
+  'cantique des cantiques': 'Song of Songs',
+  josue: 'Joshua', juges: 'Judges', rois: 'Kings',
+  isaie: 'Isaiah', jeremie: 'Jeremiah', ezechie: 'Ezekiel', ezechiel: 'Ezekiel',
+  osee: 'Hosea', joel: 'Joel', amos: 'Amos', jonas: 'Jonah',
+  michee: 'Micah', nahum: 'Nahum', habakuk: 'Habakkuk',
+  sofonie: 'Zephaniah', aggee: 'Haggai', zacharie: 'Zechariah', malachie: 'Malachi',
+  esdras: 'Ezra', nehemie: 'Nehemiah', nehemias: 'Nehemiah',
+  '1 samuel': 'I Samuel', '2 samuel': 'II Samuel',
+  '1 rois': 'I Kings', '2 rois': 'II Kings',
+  '1 chroniques': 'I Chronicles', '2 chroniques': 'II Chronicles',
+  '1 sam': 'I Samuel', '2 sam': 'II Samuel',
+  '1 ch': 'I Chronicles', '2 ch': 'II Chronicles'
+};
+
 // Index de recherche des livres : nom anglais normalisé + nom hébreu (5 livres)
+// + alias FR/numériques
 const BOOK_INDEX = [
-  ...TANACH_BOOKS.map((book) => ({ book, key: normalize(book), hebrew: BOOK_HEBREW_NAMES[book] || null })),
-  ...TALMUD_BAVLI.map((book) => ({ book, key: normalize(book), hebrew: null }))
+  ...TANACH_BOOKS.map((book) => {
+    const aliases = Object.entries(BOOK_ALIASES)
+      .filter(([, target]) => target === book)
+      .map(([alias]) => alias);
+    return { book, key: normalize(book), hebrew: BOOK_HEBREW_NAMES[book] || null, aliases };
+  }),
+  ...TALMUD_BAVLI.map((book) => ({ book, key: normalize(book), hebrew: null, aliases: [] }))
 ];
+
+const findBook = (normalized) => {
+  // livre officiel (clé ou hébreu) + alias FR/numériques, dans une seule liste
+  const all = BOOK_INDEX.flatMap((b) => {
+    const variants = [{ book: b.book, key: b.key }];
+    if (b.hebrew) variants.push({ book: b.book, key: normalize(b.hebrew) });
+    for (const a of b.aliases) variants.push({ book: b.book, key: a });
+    return variants;
+  });
+  const exact = all.filter((v) => v.key === normalized);
+  if (exact.length === 1) return exact[0].book;
+  if (exact.length > 1) return null; // ambigu (non attendu)
+  const prefixes = all.filter((v) => v.key.startsWith(normalized));
+  return prefixes.length === 1 ? prefixes[0].book : null;
+};
 
 /**
  * Parse une référence « genesis 12 », « bava metzia 2 », « בראשית 12 »,
- * « psaumes 23:5 » -> { book, chapter, verse } ou null.
+ * « psaumes 23:5 », « 1 samuel 3 » -> { book, chapter, verse } ou null.
  * Le nom du livre peut être multi-mots ; match exact ou préfixe non ambigu.
  */
 const parseReference = (rawQuery) => {
@@ -67,15 +109,7 @@ const parseReference = (rawQuery) => {
   const trimmed = bookPart.trim();
   if (!trimmed) return null;
 
-  const hits = BOOK_INDEX.filter((b) => b.key === trimmed || b.hebrew === trimmed);
-  let book = null;
-  if (hits.length === 1) {
-    book = hits[0].book;
-  } else if (hits.length === 0) {
-    // préfixe non ambigu (« gene 12 »)
-    const prefixes = BOOK_INDEX.filter((b) => b.key.startsWith(trimmed) || (b.hebrew && b.hebrew.startsWith(trimmed)));
-    if (prefixes.length === 1) book = prefixes[0].book;
-  }
+  const book = findBook(trimmed);
   if (!book) return null;
   const chapter = parseInt(chapterStr, 10);
   const verse = verseStr ? parseInt(verseStr, 10) : null;
@@ -87,12 +121,15 @@ const buildCommands = () => {
 
   TANACH_BOOKS.forEach((book) => {
     const cat = TORAH_SET.has(book) ? 'Torah' : NEVIIM_SET.has(book) ? 'Navi' : 'Ketuvim';
+    const aliases = Object.entries(BOOK_ALIASES)
+      .filter(([, target]) => target === book)
+      .map(([alias]) => alias);
     cmds.push({
       id: `book:${book}`,
       type: cat,
       group: 'Sefarim',
       label: BOOK_HEBREW_NAMES[book] ? `${BOOK_HEBREW_NAMES[book]} · ${book}` : book,
-      search: normalize(`${book} ${BOOK_HEBREW_NAMES[book] || ''}`),
+      search: normalize(`${book} ${BOOK_HEBREW_NAMES[book] || ''} ${aliases.join(' ')}`),
       run: 'book',
       value: book
     });
@@ -287,8 +324,10 @@ const CommandPalette = ({
     } else if (e.key === 'Enter') {
       e.preventDefault();
       run(results[active]);
-    } else if (/^[1-9]$/.test(e.key)) {
-      // Raccourcis 1-9 : lancer le n-ième résultat
+    } else if (/^[1-9]$/.test(e.key) && query.trim() === '') {
+      // Raccourcis 1-9 : uniquement liste à vide. Dès que l'utilisateur
+      // tape du texte, un chiffre fait partie de la recherche (« 1 samuel »,
+      // « psaumes 23 ») — l'intercepter le rendrait inatteignable.
       e.preventDefault();
       run(results[parseInt(e.key, 10) - 1]);
     } else if (e.key === 'Escape') {
