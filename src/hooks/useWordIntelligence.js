@@ -8,8 +8,11 @@ import useWordLookup from './useWordLookup';
 import { useVocabulary } from './useVocabulary';
 import { stripAllDiacritics } from '../utils/hebrewUtils';
 import * as srsService from '../services/srsService';
-import * as semanticFieldService from '../services/scholarly/semanticFieldService';
-import * as knowledgeGraphService from '../services/scholarly/knowledgeGraphService';
+// (split 04/10) getSemanticField/getWordsFromRoot/getRelatedConcepts n'ont
+// jamais existé dans ces services : les branches ci-dessous étaient des
+// no-ops silencieux (try/catch). À câbler vers de vrais exports quand les
+// panneaux WIC évoluent — semanticFieldService.getWordSemantics est le
+// candidat naturel pour le champ sémantique.
 
 // =============================================================================
 // SAFE SERVICE IMPORTS
@@ -221,32 +224,10 @@ const getCrossReferences = async (data) => {
     relatedConcepts: [],
   };
 
-  // Get words with same root
-  if (data.root && knowledgeGraphService?.getWordsFromRoot) {
-    try {
-      refs.sameRoot = await knowledgeGraphService.getWordsFromRoot(data.root);
-    } catch (e) {
-      console.debug('[CrossRefs] Root lookup failed:', e);
-    }
-  }
-
-  // Get semantic field
-  if (data.word && semanticFieldService?.getSemanticField) {
-    try {
-      refs.semanticField = await semanticFieldService.getSemanticField(data.word);
-    } catch (e) {
-      console.debug('[CrossRefs] Semantic field lookup failed:', e);
-    }
-  }
-
-  // Get related concepts from knowledge graph
-  if (data.word && knowledgeGraphService?.getRelatedConcepts) {
-    try {
-      refs.relatedConcepts = await knowledgeGraphService.getRelatedConcepts(data.word);
-    } catch (e) {
-      console.debug('[CrossRefs] Related concepts lookup failed:', e);
-    }
-  }
+  // (04/10) Branches sameRoot/semanticField/relatedConcepts neutralisées :
+  // les fonctions appelées n'ont jamais existé dans les services cibles
+  // (no-ops silencieux depuis l'origine) — à câbler vers de vrais exports
+  // quand les panneaux WIC évoluent (getWordSemantics est le candidat naturel).
 
   return refs;
 };
