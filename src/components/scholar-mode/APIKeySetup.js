@@ -1,5 +1,5 @@
 /**
- * APIKeySetup - Groq API key configuration component
+ * APIKeySetup - OpenRouter API key configuration component
  * Beautiful card for setting up AI-powered Torah study features
  */
 import { useState, useCallback, useEffect, useRef } from 'react';
@@ -20,7 +20,7 @@ const AI_FEATURES = [
 const SETUP_STEPS = [
   { num: 1, text: 'Visit', link: 'https://openrouter.ai/keys', linkText: 'openrouter.ai/keys', hint: 'Free account, no credit card needed' },
   { num: 2, text: 'Create an API key', hint: 'Click "Create API Key" button' },
-  { num: 3, text: 'Paste your key below', hint: 'Starts with gsk_...' },
+  { num: 3, text: 'Paste your key below', hint: 'Starts with sk-or-...' },
 ];
 
 const APIKeySetup = ({ onKeySet }) => {
@@ -53,8 +53,8 @@ const APIKeySetup = ({ onKeySet }) => {
       return;
     }
 
-    if (!trimmedKey.startsWith('gsk_')) {
-      setError('Invalid key format. Groq keys start with "gsk_"');
+    if (!trimmedKey.startsWith('sk-or-')) {
+      setError('Invalid key format. OpenRouter keys start with "sk-or-" (openrouter.ai/keys)');
       return;
     }
 
@@ -167,11 +167,11 @@ const APIKeySetup = ({ onKeySet }) => {
             value={apiKey}
             onChange={handleKeyChange}
             onKeyDown={handleKeyDown}
-            placeholder="gsk_xxxxxxxxxxxx..."
+            placeholder="sk-or-xxxxxxxxxxxx..."
             disabled={testing || success}
             autoComplete="off"
             spellCheck="false"
-            aria-label="Groq API key"
+            aria-label="OpenRouter API key"
             aria-describedby={error ? 'api-key-error' : undefined}
           />
           {apiKey && !testing && !success && (

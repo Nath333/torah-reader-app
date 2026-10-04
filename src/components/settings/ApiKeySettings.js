@@ -4,7 +4,7 @@ import { getProxyBase, setProxyBase } from '../../services/proxyConfig';
 import './ApiKeySettings.css';
 
 /**
- * Component for managing Groq API key settings
+ * Component for managing OpenRouter API key settings
  */
 const ApiKeySettings = ({ onClose, onSave }) => {
   const [apiKey, setApiKey] = useState('');
@@ -76,7 +76,7 @@ const ApiKeySettings = ({ onClose, onSave }) => {
       <div className="settings-content">
         <div className="info-box">
           <p>
-            <strong>Get your free Groq API key:</strong>
+            <strong>Get your free OpenRouter API key:</strong>
           </p>
           <ol>
             <li>Visit <a href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer">openrouter.ai/keys</a></li>
@@ -85,12 +85,12 @@ const ApiKeySettings = ({ onClose, onSave }) => {
             <li>Paste it below</li>
           </ol>
           <p className="free-note">
-            ✨ Groq offers generous free tier: ~30 requests/minute
+            ✨ OpenRouter : many models have a free tier — see pricing per model on the site
           </p>
         </div>
 
         <div className="input-group">
-          <label htmlFor="groq-api-key">Groq API Key</label>
+          <label htmlFor="groq-api-key">OpenRouter API Key</label>
           <div className="input-wrapper">
             <input
               id="groq-api-key"
@@ -101,7 +101,7 @@ const ApiKeySettings = ({ onClose, onSave }) => {
                 setSaved(false);
                 setTestResult(null);
               }}
-              placeholder="gsk_..."
+              placeholder="sk-or-..."
               className={saved ? 'saved' : ''}
               autoComplete="off"
             />

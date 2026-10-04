@@ -54,6 +54,13 @@ export function detectDiscoursePatterns(text) {
 
 /**
  * Detect Rabbi attributions in text
+ *
+ * CONTRAT DIFFÉRENT de namedEntityService.detectRabbis : celle-ci est
+ * structurelle (patternKey/type/position, pour le flux du discours via
+ * analyzeDiscourseStructure) ; celle de namedEntityService est enrichie
+ * (RABBI_DATABASE : english/period/generation/location — pour
+ * UnifiedSugyaAnalysis et TalmudBrowsers). Deux usages, pas un doublon.
+ *
  * @param {string} text - The text to analyze
  * @returns {Array} Array of detected rabbi mentions
  */

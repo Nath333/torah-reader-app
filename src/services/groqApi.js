@@ -63,7 +63,7 @@ export const ERROR_TYPES = {
 export const callGroqAPI = async (messages, options = {}) => {
   const apiKey = getStoredApiKey();
   if (!apiKey) {
-    throw new AIError('No API key configured. Add your Groq API key in settings.', ERROR_TYPES.NO_API_KEY);
+    throw new AIError('No API key configured. Add your OpenRouter API key in settings.', ERROR_TYPES.NO_API_KEY);
   }
 
   const {

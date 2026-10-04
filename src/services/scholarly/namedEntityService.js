@@ -830,6 +830,13 @@ export function detectEntities(text) {
 
 /**
  * PRO SCHOLAR V30: Detect rabbi mentions in text with nikud support
+ *
+ * CONTRAT DIFFÉRENT de discourse/detection.detectRabbis : celle-ci est
+ * enrichie (RABBI_DATABASE : english/period/generation/location, base
+ * tannaim+amoraim — pour UnifiedSugyaAnalysis et TalmudBrowsers) ; celle de
+ * discourse/detection est structurelle (patternKey/type/position, pour le
+ * flux du discours). Deux usages, pas un doublon.
+ *
  * @param {string} text
  * @returns {Array}
  */

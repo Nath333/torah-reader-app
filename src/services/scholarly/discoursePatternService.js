@@ -4,10 +4,6 @@
 // objections, proofs, resolutions, and speaker attributions
 // =============================================================================
 
-// PRO SCHOLAR V12: Use centralized Hebrew utilities (DRY - single source of truth)
-import { stripAllDiacritics, stripAllDiacritics as stripNikudLocal } from '../../utils/hebrewUtils';
-
-
 // Ré-exports : l'original exposait ces 5 noms (TzuratHaDaf, TalmudToolsTab,
 // talmudDiagramService… en dépendent)
 export { DISCOURSE_TYPES, DISCOURSE_PATTERNS, RABBI_PATTERNS, TALMUDIC_PATTERNS, MISHNA_STRUCTURE_PATTERNS };
@@ -70,26 +66,21 @@ import {
 
 // Ré-exports : les 5 noms de données le sont déjà plus haut (phase 1) ;
 // ce bloc ajoute les fonctions (phase 2)
+// Nommés réellement consommés (audit 04/10 : les 11 autres ré-exports de la
+// phase 2 — getHighlightedText, hasTalmudicStructure, getPatternSummary,
+// getPatternTypes, getPatternConfig, generateDiscourseFlowVisualization,
+// getDiscourseLayerStyles, generateTzuratHaDafAscii/Styles/Props,
+// renderTzuratHaDafHtml — n'avaient aucun importeur ; les implémentations
+// restent disponibles dans discourse/ et via l'export par défaut ci-dessous).
 export {
   detectStructuralMarkers,
   detectDiscoursePatterns,
   detectRabbis,
   analyzeDiscourseStructure,
-  getHighlightedText,
   getFlowDiagram,
-  hasTalmudicStructure,
-  getPatternSummary,
-  getPatternTypes,
-  getPatternConfig,
-  generateDiscourseFlowVisualization,
-  getDiscourseLayerStyles,
   applyLayerColoring,
   segmentIntoSugyaUnits,
   generateTzuratHaDaf,
-  generateTzuratHaDafAscii,
-  getTzuratHaDafStyles,
-  getTzuratHaDafProps,
-  renderTzuratHaDafHtml,
   analyzeMishnaStructure,
   generateMishnaSummary,
   extractGemaraQA,
