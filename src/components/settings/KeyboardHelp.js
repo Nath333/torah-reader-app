@@ -4,6 +4,7 @@ import './KeyboardHelp.css';
 const shortcuts = [
   // Navigation
   { keys: ['Ctrl', 'K'], description: 'Focus search', category: 'Navigation' },
+  { keys: ['Ctrl', 'P'], description: 'Command palette — jump to a sefer, view, or daily study', category: 'Navigation' },
   { keys: ['Ctrl', '←'], description: 'Previous chapter', category: 'Navigation' },
   { keys: ['Ctrl', '→'], description: 'Next chapter', category: 'Navigation' },
   { keys: ['Esc'], description: 'Return to reader / Clear selection', category: 'Navigation' },

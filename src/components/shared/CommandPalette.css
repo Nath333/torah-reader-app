@@ -59,6 +59,13 @@
   opacity: 0.55;
 }
 
+/* iOS Safari zoome au focus sous 16 px — seuil anti-zoom */
+@media (max-width: 640px) {
+  .cmdk-input {
+    font-size: 16px;
+  }
+}
+
 .cmdk-list {
   list-style: none;
   margin: 0;
