@@ -4,7 +4,9 @@
   position: fixed;
   inset: 0;
   z-index: 1200;
-  background: color-mix(in srgb, var(--bg-primary, #000) 55%, transparent);
+  /* Voile sombre fixe : en clair, var(--bg-primary) donnerait un voile blanc
+     sur fond blanc et le panel se fondrait dans la page */
+  background: rgb(15 23 42 / 0.45);
   backdrop-filter: blur(2px);
   display: flex;
   justify-content: center;
