@@ -853,10 +853,10 @@ const TodaySection = ({ currentBook, currentChapter }) => {
 
   const getDayGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return { text: 'בוקר טוב', english: 'Good Morning' };
-    if (hour < 17) return { text: 'צהריים טובים', english: 'Good Afternoon' };
-    if (hour < 21) return { text: 'ערב טוב', english: 'Good Evening' };
-    return { text: 'לילה טוב', english: 'Good Night' };
+    if (hour < 12) return { text: 'בוקר טוב', english: 'Bonjour' };
+    if (hour < 17) return { text: 'צהריים טובים', english: 'Bon après-midi' };
+    if (hour < 21) return { text: 'ערב טוב', english: 'Bonne soirée' };
+    return { text: 'לילה טוב', english: 'Bonne nuit' };
   };
 
   const greeting = getDayGreeting();

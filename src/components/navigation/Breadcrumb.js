@@ -20,7 +20,7 @@ const Breadcrumb = ({
     if (isTalmud && typeof ch === 'string') {
       return ch; // e.g., "2a", "2b"
     }
-    return `Chapter ${ch}`;
+    return `Chapitre ${ch}`;
   };
 
   // Get Hebrew name for category

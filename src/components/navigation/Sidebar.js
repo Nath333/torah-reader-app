@@ -173,18 +173,18 @@ function Sidebar({
           </svg>
         </button>
         <nav className="collapsed-nav">
-          <button onClick={() => { setActiveTab('browse'); onToggleCollapse(); }} title="Browse">
+          <button onClick={() => { setActiveTab('browse'); onToggleCollapse(); }} title="Parcourir">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M4 19.5A2.5 2.5 0 016.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
             </svg>
           </button>
-          <button onClick={() => { setActiveTab('saved'); onToggleCollapse(); }} title="Saved">
+          <button onClick={() => { setActiveTab('saved'); onToggleCollapse(); }} title="Favoris">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" />
             </svg>
             {savedCount > 0 && <span className="badge">{savedCount}</span>}
           </button>
-          <button onClick={() => { setActiveTab('progress'); onToggleCollapse(); }} title="Progress">
+          <button onClick={() => { setActiveTab('progress'); onToggleCollapse(); }} title="Progrès">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
@@ -212,20 +212,20 @@ function Sidebar({
           className={activeTab === 'browse' ? 'active' : ''}
           onClick={() => setActiveTab('browse')}
         >
-          Browse
+          Parcourir
         </button>
         <button
           className={activeTab === 'saved' ? 'active' : ''}
           onClick={() => setActiveTab('saved')}
         >
-          Saved
+          Favoris
           {savedCount > 0 && <span className="count">{savedCount}</span>}
         </button>
         <button
           className={activeTab === 'progress' ? 'active' : ''}
           onClick={() => setActiveTab('progress')}
         >
-          Progress
+          Progrès
         </button>
       </nav>
 

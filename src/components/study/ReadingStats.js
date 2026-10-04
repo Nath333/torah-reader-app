@@ -74,12 +74,12 @@ const ReadingStats = ({
       {/* Quick stats */}
       <div className="stat-chip">
         <span className="chip-value">{verseCount}</span>
-        <span className="chip-label">verses</span>
+        <span className="chip-label">versets</span>
       </div>
 
       <div className="stat-chip">
         <span className="chip-value">{readingTime}m</span>
-        <span className="chip-label">read</span>
+        <span className="chip-label">lues</span>
       </div>
 
       <div className="stat-chip">

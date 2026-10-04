@@ -116,7 +116,7 @@ const ReaderControls = ({
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="button-icon">
             <path d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
           </svg>
-          Lookup
+          Dico
         </button>
 
         {/* Commentaries dropdown - PRO SCHOLAR V8: Uses useSettings() directly */}
@@ -138,7 +138,7 @@ const ReaderControls = ({
             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
             <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
           </svg>
-          Study
+          Étude
           {selectedVersesCount > 0 && (
             <span className="badge study-badge">{selectedVersesCount}</span>
           )}

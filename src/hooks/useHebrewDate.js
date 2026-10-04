@@ -24,10 +24,10 @@ const toHebrewNumeral = (num) => {
 // Get time-based greeting
 export const getGreeting = () => {
   const hour = new Date().getHours();
-  if (hour < 12) return { en: 'Good Morning', he: 'בוקר טוב' };
-  if (hour < 17) return { en: 'Good Afternoon', he: 'צהריים טובים' };
-  if (hour < 21) return { en: 'Good Evening', he: 'ערב טוב' };
-  return { en: 'Good Night', he: 'לילה טוב' };
+  if (hour < 12) return { en: 'Bonjour', he: 'בוקר טוב' };
+  if (hour < 17) return { en: 'Bon après-midi', he: 'צהריים טובים' };
+  if (hour < 21) return { en: 'Bonne soirée', he: 'ערב טוב' };
+  return { en: 'Bonne nuit', he: 'לילה טוב' };
 };
 
 // Shared hook for Hebrew date
