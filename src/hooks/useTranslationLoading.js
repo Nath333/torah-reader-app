@@ -45,26 +45,29 @@ export default function useTranslationLoading({
   const [verseFailed, setVerseFailed] = useState({});
   const [onkelosFailed, setOnkelosFailed] = useState({});
 
-  // Réessai manuel : réarme les disjoncteurs réseau et rejoue les items en
-  // échec (retryTick est dans les deps des effets de chargement).
+  // Réessai manuel : réarme les disjoncteurs réseau, DRAINE la file (des
+  // items gelés ne doivent pas survivre au Réessayer) et rejoue les items
+  // en échec (retryTick est dans les deps des effets de chargement).
   const [retryTick, setRetryTick] = useState(0);
   const retryFrench = useCallback(() => {
     resetApiState();
     setVerseFailed({});
     setOnkelosFailed({});
+    verseTranslatingRef.current.clear();
+    onkelosTranslatingRef.current.clear();
     setRetryTick(t => t + 1);
   }, []);
 
-  // Garde de montage uniquement : les traductions obtenues doivent être
-  // appliquées même si les deps de l'effet ont changé entre-temps (re-rendus
-  // fréquents du lecteur). Annuler à chaque changement de deps jetait des
-  // résultats pourtant résolus — les versets restaient bloqués sur
-  // « Chargement... » sans jamais être rejoués.
-  const mountedRef = useRef(true);
-  useEffect(() => {
-    mountedRef.current = true;
-    return () => { mountedRef.current = false; };
-  }, []);
+  // Pas de garde mountedRef ici : appeler setState après démontage est un
+  // no-op sans danger en React 18+, alors une garde mal placée avale des
+  // résultats résolus en silence (versets bloqués à jamais). Chaque item
+  // est néanmoins borné par une course contre un timer : un gel quelconque
+  // de la file devient un échec VISIBLE au bout de ITEM_TIMEOUT.
+  const ITEM_TIMEOUT = 90 * 1000;
+  const withTimeout = (p) => Promise.race([
+    p,
+    new Promise(res => setTimeout(() => res(null), ITEM_TIMEOUT)),
+  ]);
 
   // Load French translations for Onkelos (parallel loading)
   useEffect(() => {
@@ -89,11 +92,10 @@ export default function useTranslationLoading({
       (async () => {
         let french = null;
         try {
-          french = await translateEnglishToFrench(item.english);
+          french = await withTimeout(translateEnglishToFrench(item.english));
         } catch (error) {
           log.warn('Failed to translate Onkelos to French:', error);
         }
-        if (!mountedRef.current) return;
         if (french) {
           onkelosDoneRef.current.add(item.verse);
           setOnkelosFrench(prev => ({ ...prev, [item.verse]: french }));
@@ -134,11 +136,10 @@ export default function useTranslationLoading({
       (async () => {
         let result = null;
         try {
-          result = await translateWithSource(verse.englishText);
+          result = await withTimeout(translateWithSource(verse.englishText));
         } catch (error) {
           log.warn('Failed to translate verse to French:', error);
         }
-        if (!mountedRef.current) return;
         if (result?.translation) {
           verseDoneRef.current.add(cacheKey);
           setVerseFrench(prev => ({ ...prev, [cacheKey]: result }));

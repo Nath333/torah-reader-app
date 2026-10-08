@@ -320,7 +320,7 @@ const processNext = () => {
     const c = cache.get(key);
     if (c?.translation) {
       stats.hits++;
-      activeCount--;
+      activeCount = Math.max(0, activeCount - 1);
       processNext();
       return resolve(c);
     }
@@ -337,7 +337,7 @@ const processNext = () => {
       resolve(null);
     }
 
-    activeCount--;
+    activeCount = Math.max(0, activeCount - 1);
     processNext();
   })();
 };
@@ -363,7 +363,7 @@ const enqueue = (text) => {
   });
 
   pending.set(key, p);
-  p.finally(() => pending.delete(key));
+  p.finally(() => pending.delete(key)).catch(() => { /* p ne rejette jamais */ });
   return p;
 };
 
@@ -434,6 +434,12 @@ export const resetApiState = () => {
   proxyHealth.fails = 0;
   proxyHealth.deadUntil = 0;
   aiAvailableMemo = null; // le Réessayer re-sonde le serveur d'étude
+  // Drain complet de la file : des items bloqués (fetch fantôme, slot
+  // gelé) ne doivent pas survivre à un Réessayer — les promesses pending
+  // renvoyées par enqueue n'amorceraient plus jamais aucun fetch.
+  waitQueue.length = 0;
+  pending.clear();
+  activeCount = 0;
 };
 
 const englishToFrenchService = {
