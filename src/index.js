@@ -152,7 +152,10 @@ window.addEventListener('load', () => {
     serviceWorker.precacheData([
       `${base}/data/bdbComplete.json`,
       `${base}/data/jastrowComplete.json`,
-      `${base}/data/strongsComplete.json`
+      `${base}/data/strongsComplete.json`,
+      // Kit Torah hors-ligne (Sefaria-Export : texte + EN + Rashi + Onkelos,
+      // par chapitre au format API) — consommé par services/sefariaOfflineKit
+      `${base}/data/sefaria-kit-torah.json`
     ]);
   });
 });

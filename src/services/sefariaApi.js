@@ -37,6 +37,7 @@ import {
 } from '../constants/bookConstants';
 import { createLogger } from '../utils/debug';
 import { viaProxy } from './proxyConfig';
+import { getChapter as kitChapter } from './sefariaOfflineKit';
 const log = createLogger('sefariaApi');
 
 // Use local proxy in development to avoid CORS issues.
@@ -297,6 +298,28 @@ export const getVerses = async (bookName, chapterNumber) => {
     textCache.set(cacheKey, verses);
     return verses;
   } catch (error) {
+    // Hors-ligne : repli sur le kit Torah embarqué (Sefaria-Export par chapitre)
+    try {
+      const offline = await kitChapter(bookName, chapterNumber);
+      if (offline) {
+        const hebrewVerses = Array.isArray(offline.he) ? offline.he : [offline.he];
+        const englishVerses = Array.isArray(offline.text) ? offline.text : [offline.text];
+        const maxLength = Math.max(hebrewVerses.length, englishVerses.length);
+        const verses = [];
+        for (let i = 0; i < maxLength; i++) {
+          verses.push({
+            verse: i + 1,
+            hebrewText: hebrewVerses[i] || '',
+            englishText: cleanHtml(englishVerses[i] || ''),
+            rawEnglishHtml: englishVerses[i] || ''
+          });
+        }
+        textCache.set(cacheKey, verses);
+        return verses;
+      }
+    } catch (kitErr) {
+      console.debug('[OfflineKit] verses unavailable:', kitErr?.message);
+    }
     console.error('Error fetching verses:', error);
     throw new Error(`Failed to load ${bookName} ${chapterNumber}`);
   }
@@ -482,6 +505,23 @@ export const getOnkelos = async (bookName, chapterNumber) => {
     textCache.set(cacheKey, result);
     return result;
   } catch (error) {
+    // Hors-ligne : repli kit (Onkelos_{Book} est dans le kit Torah)
+    try {
+      const offline = await kitChapter(`Onkelos_${bookName}`, chapterNumber);
+      if (offline) {
+        const aramaic = Array.isArray(offline.he) ? offline.he : [offline.he];
+        const english = Array.isArray(offline.text) ? offline.text : [offline.text];
+        const result = aramaic.map((ar, i) => ({
+          verse: i + 1,
+          aramaic: cleanHtml(ar || ''),
+          english: cleanHtml(english[i] || '')
+        }));
+        textCache.set(cacheKey, result);
+        return result;
+      }
+    } catch (kitErr) {
+      console.debug('[OfflineKit] onkelos unavailable:', kitErr?.message);
+    }
     console.warn('Failed to fetch Onkelos:', error.message);
     return [];
   }
