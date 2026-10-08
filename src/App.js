@@ -513,7 +513,7 @@ function App() {
             title="Smart Search (Ctrl+K)"
           >
             <SearchIcon />
-            <span className="search-label">Search...</span>
+            <span className="search-label">Rechercher...</span>
             <kbd className="search-kbd">⌘K</kbd>
           </button>
 
@@ -565,8 +565,8 @@ function App() {
             <button
               onClick={settings.toggleDarkMode}
               className="toolbar-btn icon-only theme-toggle"
-              aria-label="Toggle dark mode"
-              title={settings.darkMode ? 'Light Mode (Ctrl+D)' : 'Dark Mode (Ctrl+D)'}
+              aria-label="Basculer le mode sombre"
+              title={settings.darkMode ? 'Mode clair (Ctrl+D)' : 'Mode sombre (Ctrl+D)'}
             >
               {settings.darkMode ? <SunIcon /> : <MoonIcon />}
             </button>

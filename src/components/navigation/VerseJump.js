@@ -79,7 +79,7 @@ function VerseJump({ verses, onJumpToVerse, currentBook, currentChapter }) {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
         </svg>
-        <span className="trigger-label">Go to</span>
+        <span className="trigger-label">Aller à</span>
         <kbd className="shortcut-hint">G</kbd>
       </button>
 

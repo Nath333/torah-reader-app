@@ -473,11 +473,11 @@ const TzuratHaDaf = ({
 
   // Get loading stage message based on progress
   const getLoadingMessage = (progress) => {
-    if (progress < 10) return { hebrew: 'מתחבר לשרת...', english: 'Connecting...' };
-    if (progress < 20) return { hebrew: 'טוען את הגמרא...', english: 'Loading Gemara...' };
-    if (progress < 55) return { hebrew: 'טוען פירוש רש"י...', english: 'Loading Rashi...' };
-    if (progress < 85) return { hebrew: 'טוען תוספות ומהרש"א...', english: 'Loading Tosafot...' };
-    return { hebrew: 'מכין את הדף...', english: 'Preparing page...' };
+    if (progress < 10) return { hebrew: 'מתחבר לשרת...', english: 'Connexion...' };
+    if (progress < 20) return { hebrew: 'טוען את הגמרא...', english: 'Chargement de la Guemara...' };
+    if (progress < 55) return { hebrew: 'טוען פירוש רש"י...', english: 'Chargement de Rashi...' };
+    if (progress < 85) return { hebrew: 'טוען תוספות ומהרש"א...', english: 'Chargement des Tosafot...' };
+    return { hebrew: 'מכין את הדף...', english: 'Préparation du feuillet...' };
   };
 
   const loadingMsg = getLoadingMessage(loadingProgress);
@@ -500,7 +500,7 @@ const TzuratHaDaf = ({
             <span className="daf-loading-percent">{loadingProgress}%</span>
           </div>
           <div className="daf-loading-hint">
-            {loadingProgress < 50 ? loadingMsg.english : 'Almost ready...'}
+            {loadingProgress < 50 ? loadingMsg.english : 'Presque prêt...'}
           </div>
         </div>
       </div>

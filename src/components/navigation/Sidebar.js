@@ -198,8 +198,8 @@ function Sidebar({
     <aside className="sidebar" role="navigation">
       {/* Header */}
       <header className="sidebar-header">
-        <h2>Library</h2>
-        <button className="sidebar-toggle" onClick={onToggleCollapse} title="Collapse">
+        <h2>Bibliothèque</h2>
+        <button className="sidebar-toggle" onClick={onToggleCollapse} title="Réduire">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M15 18l-6-6 6-6" />
           </svg>
@@ -241,7 +241,7 @@ function Sidebar({
               </svg>
               <input
                 type="search"
-                placeholder="Search books..."
+                placeholder="Rechercher un livre..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -279,13 +279,13 @@ function Sidebar({
                                 className={viewMode === 'parsha' ? 'active' : ''}
                                 onClick={() => setViewMode('parsha')}
                               >
-                                By Parsha
+                                Par parasha
                               </button>
                               <button
                                 className={viewMode === 'chapters' ? 'active' : ''}
                                 onClick={() => setViewMode('chapters')}
                               >
-                                By Chapter
+                                Par chapitre
                               </button>
                             </div>
 

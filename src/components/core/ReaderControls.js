@@ -95,7 +95,7 @@ const ReaderControls = ({
             aria-pressed={showVowels}
             title={showVowels ? 'Masquer les voyelles (נקודות)' : 'Afficher les voyelles (נקודות)'}
           >
-            Vowels
+            Voyelles
           </button>
 
           <button

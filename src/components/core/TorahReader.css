@@ -1854,6 +1854,28 @@
   opacity: 0.7;
 }
 
+/* Traduction indisponible + bouton Réessayer (verset et Onkelos) */
+.retry-translation-btn {
+  margin-left: var(--space-2);
+  padding: 2px 10px;
+  font-size: 0.8em;
+  border-radius: 999px;
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  background: rgba(59, 130, 246, 0.08);
+  color: #2563eb;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.retry-translation-btn:hover {
+  background: rgba(59, 130, 246, 0.18);
+  border-color: #3b82f6;
+}
+
+.app.dark-mode .retry-translation-btn {
+  color: #93c5fd;
+}
+
 /* English Translation toggle button */
 .control-button.translation-btn {
   background: rgba(59, 130, 246, 0.1);

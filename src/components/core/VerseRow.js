@@ -145,8 +145,10 @@ const VerseRow = ({
 
   // Get French translation for this verse
   const verseFrenchData = translationData.verseFrench?.[verseKey];
+  const verseFrenchFailed = !!translationData.verseFailed?.[verseKey];
   const onkelosFrenchData = translationData.onkelosFrench?.[verse.verse];
   const onkelosFrenchFailed = !!translationData.onkelosFailed?.[verse.verse];
+  const retryFrench = translationData.retryFrench;
 
   // Process Hebrew text
   const processedHebrewText = processHebrewText(verse.hebrewText, { showVowels, showCantillation });
@@ -205,13 +207,13 @@ const VerseRow = ({
           />
         )}
 
-        <div className="verse-actions" role="toolbar" aria-label="Verse actions">
+        <div className="verse-actions" role="toolbar" aria-label="Actions du verset">
           <div className="compact-actions">
             <button
               className={`icon-btn ${copiedVerse === verse.verse ? 'success' : ''}`}
               onClick={() => onCopy(verse)}
-              aria-label={copiedVerse === verse.verse ? 'Copied!' : 'Copy verse'}
-              title="Copy verse"
+              aria-label={copiedVerse === verse.verse ? 'Copié !' : 'Copier le verset'}
+              title="Copier le verset"
             >
               {copiedVerse === verse.verse ? (
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 13l4 4L19 7" /></svg>
@@ -223,8 +225,8 @@ const VerseRow = ({
             <button
               className="icon-btn"
               onClick={() => onShare(verse)}
-              aria-label="Share verse"
-              title="Share verse"
+              aria-label="Partager le verset"
+              title="Partager le verset"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98" /></svg>
             </button>
@@ -233,8 +235,8 @@ const VerseRow = ({
               <button
                 className={`icon-btn ${speakingVerse === verse.verse && speaking ? 'active' : ''}`}
                 onClick={() => onSpeak(verse)}
-                aria-label={speakingVerse === verse.verse && speaking ? 'Stop reading' : 'Read aloud'}
-                title={hebrewVoiceAvailable ? 'Read verse aloud' : 'Read verse (fallback voice)'}
+                aria-label={speakingVerse === verse.verse && speaking ? 'Arrêter la lecture' : 'Lire à voix haute'}
+                title={hebrewVoiceAvailable ? 'Lire le verset à voix haute' : 'Lire le verset (voix de secours)'}
               >
                 {speakingVerse === verse.verse && speaking ? (
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="6" y="4" width="4" height="16" rx="1" /><rect x="14" y="4" width="4" height="16" rx="1" /></svg>
@@ -247,8 +249,8 @@ const VerseRow = ({
             <button
               className={`icon-btn ${hasNote ? 'has-note' : ''}`}
               onClick={() => setEditingNote(editingNote === verse.verse ? null : verse.verse)}
-              aria-label={hasNote ? 'Edit note' : 'Add note'}
-              title={hasNote ? 'Edit note' : 'Add note'}
+              aria-label={hasNote ? 'Modifier la note' : 'Ajouter une note'}
+              title={hasNote ? 'Modifier la note' : 'Ajouter une note'}
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
               {hasNote && <span className="note-indicator" />}
@@ -269,8 +271,8 @@ const VerseRow = ({
               <button
                 className="icon-btn"
                 onClick={() => onBookmark(verse)}
-                aria-label="Bookmark"
-                title="Bookmark verse"
+                aria-label="Favori"
+                title="Ajouter aux favoris"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>
               </button>
@@ -344,15 +346,29 @@ const VerseRow = ({
                   source={verseFrenchData?.source || 'Dictionary'}
                   method={verseFrenchData?.method || 'EN → FR'}
                   accuracy={verseFrenchData?.accuracy}
-                  isLoading={!verseFrenchData}
+                  isLoading={!verseFrenchData && !verseFrenchFailed}
                 />
               </div>
-              {verseFrenchData && (
+              {verseFrenchData ? (
                 <div className="translation-text">
                   {verseFrenchData.rawHtml && hasAnnotationMarkup(verseFrenchData.rawHtml) ? (
                     <AnnotatedTranslationInline text={verseFrenchData.rawHtml} language="fr" />
                   ) : (
                     <SafeText text={verseFrenchData.translation} lang="fr" />
+                  )}
+                </div>
+              ) : verseFrenchFailed && (
+                <div className="translation-text translation-failed">
+                  <span className="loading-text" style={{ opacity: 0.55 }}>Traduction indisponible</span>
+                  {retryFrench && (
+                    <button
+                      className="retry-translation-btn"
+                      onClick={(e) => { e.stopPropagation(); retryFrench(); }}
+                      aria-label="Réessayer la traduction française"
+                      title="Réessayer la traduction française"
+                    >
+                      Réessayer
+                    </button>
                   )}
                 </div>
               )}
@@ -397,7 +413,7 @@ const VerseRow = ({
                   </div>
                 ) : (
                   <div className="onkelos-english onkelos-no-translation" lang="en">
-                    <span className="translation-label">Translation not available</span>
+                    <span className="translation-label">Traduction indisponible</span>
                   </div>
                 )}
                 {showFrench && onkelosFrenchData && (
@@ -409,9 +425,21 @@ const VerseRow = ({
                   <div className="onkelos-french onkelos-loading-french" lang="fr">
                     <span className="translation-label">FR:</span>{' '}
                     {onkelosFrenchFailed ? (
-                      <span className="loading-text" style={{ opacity: 0.55 }}>
-                        Traduction indisponible
-                      </span>
+                      <>
+                        <span className="loading-text" style={{ opacity: 0.55 }}>
+                          Traduction indisponible
+                        </span>
+                        {retryFrench && (
+                          <button
+                            className="retry-translation-btn"
+                            onClick={(e) => { e.stopPropagation(); retryFrench(); }}
+                            aria-label="Réessayer la traduction française"
+                            title="Réessayer la traduction française"
+                          >
+                            Réessayer
+                          </button>
+                        )}
+                      </>
                     ) : (
                       <span className="loading-text">Chargement...</span>
                     )}
@@ -439,7 +467,7 @@ const VerseRow = ({
                     <svg className="loading-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <circle cx="12" cy="12" r="10" strokeDasharray="32" strokeLinecap="round" />
                     </svg>
-                    Loading Rashi...
+                    Chargement de Rashi...
                   </div>
                 ) : rashiComments.length > 0 ? (
                   rashiComments.map((comment, idx) => (

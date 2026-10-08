@@ -18,19 +18,25 @@ const CONFIG = {
   CACHE_SIZE: 5000,
   MIN_INTERVAL: 250,  // 250ms - fast
   COOLDOWN: 20000,
-  MAX_FAILS: 8,
   TIMEOUT: 5000,
   PERSIST_KEY: 'torah_fr_cache_v10',
   MAX_LEN: 400,
   MAX_CONCURRENT: 3   // Allow 3 parallel requests
 };
 
-// Lingva mirrors to try
+// Lingva mirrors to try — santé suivie PAR MIROIR : lunar.icu et
+// plausibility.cloud sont morts (erreur sur chaque appel, constaté 08/10),
+// lingva.ml vit mais rate-limite les rafales. Sans disjoncteur, chaque
+// verset payait 2 miroirs morts × (direct + proxy) ≈ 30 s avant d'échouer,
+// et le compteur d'échecs partagé finissait par désactiver le miroir sain.
 const LINGVA_MIRRORS = [
   'https://lingva.ml',
   'https://lingva.lunar.icu',
   'https://translate.plausibility.cloud'
 ];
+
+const MIRROR_POLICY = { HARD_FAILS: 2, DEAD_MS: 2 * 60 * 1000, RATE_MS: 30 * 1000 };
+const PROXY_POLICY = { HARD_FAILS: 2, DEAD_MS: 5 * 60 * 1000 }; // api.allorigins.win
 
 // State
 const cache = createCache({ ttl: CONFIG.CACHE_TTL, maxSize: CONFIG.CACHE_SIZE });
@@ -38,7 +44,9 @@ const cache = createCache({ ttl: CONFIG.CACHE_TTL, maxSize: CONFIG.CACHE_SIZE })
 // Register with orchestrator for unified telemetry
 registerCache('frenchTranslation', cache, CACHE_CONFIGS.frenchTranslation);
 
-const apiState = { last: 0, blocked: 0, fails: 0, currentMirror: 0 };
+const apiState = { last: 0, blocked: 0, currentMirror: 0 };
+const mirrorHealth = LINGVA_MIRRORS.map(() => ({ fails: 0, deadUntil: 0, lastOk: 0 }));
+const proxyHealth = { fails: 0, deadUntil: 0 };
 const stats = { hits: 0, calls: 0, ok: 0, fail: 0 };
 const pending = new Map();
 let activeCount = 0;
@@ -78,17 +86,40 @@ if (typeof window !== 'undefined') {
 }
 
 // Helpers
-const canUse = () => {
+const canUse = () => Date.now() >= apiState.blocked;
+
+// Disjoncteur d'un miroir : 429 = rate-limit bref ; échec dur répété =
+// miroir présumé mort, évincé 2 min (il repartera à l'expiration pour
+// détecter un éventuel retour).
+const markMirrorOk = (idx) => {
+  const h = mirrorHealth[idx];
+  h.fails = 0;
+  h.lastOk = Date.now();
+  apiState.currentMirror = idx;
+};
+
+const markMirrorFail = (idx, rateLimited) => {
+  const h = mirrorHealth[idx];
   const now = Date.now();
-  if (now < apiState.blocked) return false;
-  if (apiState.fails >= CONFIG.MAX_FAILS && now - apiState.last < CONFIG.COOLDOWN) {
-    return false;
+  if (rateLimited) {
+    h.deadUntil = now + MIRROR_POLICY.RATE_MS;
+    apiState.blocked = Math.max(apiState.blocked, now + CONFIG.COOLDOWN);
+    return;
   }
-  if (apiState.fails >= CONFIG.MAX_FAILS) {
-    apiState.fails = 0;
-    apiState.currentMirror = (apiState.currentMirror + 1) % LINGVA_MIRRORS.length;
+  h.fails++;
+  if (h.fails >= MIRROR_POLICY.HARD_FAILS) {
+    h.deadUntil = now + MIRROR_POLICY.DEAD_MS;
+    h.fails = 0;
   }
-  return true;
+};
+
+const markProxyOk = () => { proxyHealth.fails = 0; };
+const markProxyFail = () => {
+  proxyHealth.fails++;
+  if (proxyHealth.fails >= PROXY_POLICY.HARD_FAILS) {
+    proxyHealth.deadUntil = Date.now() + PROXY_POLICY.DEAD_MS;
+    proxyHealth.fails = 0;
+  }
 };
 
 const wait = () => {
@@ -136,7 +167,6 @@ const translate = async (text) => {
       if (r.ok) {
         const d = await r.json();
         if (d.translation && isValid(text, d.translation)) {
-          apiState.fails = 0;
           log.verbose('Translated via serveur (lingva):', text.slice(0, 30));
           return { translation: fix(d.translation.trim()), source: 'Lingva', accuracy: 'high' };
         }
@@ -146,10 +176,10 @@ const translate = async (text) => {
     }
   }
 
-  // ── Miroirs Lingva en DIRECT — bridés par le rate-limit ET sautés dès que
-  // les échecs s'accumulent (miroirs morts : chaque essai coûte jusqu'à
-  // 30 s de timeouts → aller directement à l'IA). En dev, le proxy Vite
-  // joue le rôle du serveur.
+  // ── Miroirs Lingva en DIRECT — ordre : dernier miroir connu vivant
+  // d'abord, miroirs évincés (disjoncteur) sautés. Pas de compteur global :
+  // des échecs sur un miroir mort ne doivent pas empêcher d'essayer le
+  // miroir sain. En dev, le proxy Vite joue le rôle du serveur.
   if (isDev) {
     try {
       const r = await fetch(`/lingva-api/en/fr/${encodeURIComponent(text)}`, {
@@ -158,47 +188,69 @@ const translate = async (text) => {
       });
       if (r.status === 429) {
         apiState.blocked = Date.now() + CONFIG.COOLDOWN;
-        apiState.fails++;
       } else if (r.ok) {
         const d = await r.json();
         if (d.translation && isValid(text, d.translation)) {
-          apiState.fails = 0;
           return { translation: fix(d.translation.trim()), source: 'Lingva', accuracy: 'high' };
         }
       }
     } catch (e) {
       log.verbose('Proxy dev failed:', e.message);
     }
-  } else if (canUse() && apiState.fails < 6) {
+  } else if (canUse()) {
     await wait();
     apiState.last = Date.now();
 
     const fetchTranslation = async (url) => {
       const r = await fetch(url, { signal: AbortSignal.timeout(CONFIG.TIMEOUT) });
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      if (!r.ok) {
+        const err = new Error(`HTTP ${r.status}`);
+        err.status = r.status;
+        throw err;
+      }
       return r.json();
     };
 
+    const now = Date.now();
+    const order = [];
     for (let i = 0; i < LINGVA_MIRRORS.length; i++) {
       const idx = (apiState.currentMirror + i) % LINGVA_MIRRORS.length;
+      if (mirrorHealth[idx].deadUntil > now) continue;
+      order.push(idx);
+    }
+    // Tous évincés ? On tente quand même le miroir préféré : un miroir
+    // guéri doit pouvoir revenir (son disjoncteur se ré-armera sinon).
+    if (order.length === 0) order.push(apiState.currentMirror);
+
+    for (const idx of order) {
       const mirror = LINGVA_MIRRORS[idx];
       const apiUrl = `${mirror}/api/v1/en/fr/${encodeURIComponent(text)}`;
+      const attempts = [apiUrl];
+      if (proxyHealth.deadUntil <= now) {
+        attempts.push(`https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`);
+      }
 
-      for (const url of [apiUrl, `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`]) {
+      let rateLimited = false;
+      let tried = false;
+      for (const url of attempts) {
         try {
+          tried = true;
           const d = await fetchTranslation(url);
           if (d.translation && isValid(text, d.translation)) {
-            apiState.fails = 0;
-            apiState.currentMirror = idx;
+            markMirrorOk(idx);
+            if (url !== apiUrl) markProxyOk();
             log.verbose(`Translated via ${mirror}${url === apiUrl ? '' : ' (proxy)'}:`, text.slice(0, 30));
             return { translation: fix(d.translation.trim()), source: 'Lingva', accuracy: 'high' };
           }
         } catch (e) {
+          if (e.status === 429) rateLimited = true;
           log.verbose(`Mirror ${mirror}${url === apiUrl ? '' : ' (proxy)'} failed:`, e.message);
         }
+        if (rateLimited) break; // inutile de marteler les autres URLs
       }
+      if (tried) markMirrorFail(idx, rateLimited);
+      if (rateLimited) break; // backoff global : stopper la tournée
     }
-    apiState.fails++;
   }
 
   // ── IA du serveur d'étude (GLM via OpenRouter, clé server-side) — TOUJOURS
@@ -223,7 +275,6 @@ const translate = async (text) => {
           const data = await response.json();
           const t = data.choices?.[0]?.message?.content?.trim();
           if (t && isValid(text, fix(t))) {
-            apiState.fails = 0;
             log.verbose('Translated via IA:', text.slice(0, 30));
             return { translation: fix(t), source: 'IA', accuracy: 'medium' };
           }
@@ -234,7 +285,6 @@ const translate = async (text) => {
     }
   }
 
-  apiState.fails++;
   return null;
 };
 
@@ -341,17 +391,28 @@ export const clearCache = () => {
 
 export const getStats = () => ({ ...stats });
 
-export const getApiStatus = () => ({
-  ...apiState,
-  available: canUse(),
-  currentMirror: LINGVA_MIRRORS[apiState.currentMirror]
-});
+export const getApiStatus = () => {
+  const now = Date.now();
+  return {
+    ...apiState,
+    available: canUse() && mirrorHealth.some(h => h.deadUntil <= now),
+    currentMirror: LINGVA_MIRRORS[apiState.currentMirror],
+    mirrors: LINGVA_MIRRORS.map((m, i) => ({
+      base: m,
+      alive: mirrorHealth[i].deadUntil <= now,
+      lastOk: mirrorHealth[i].lastOk
+    })),
+    proxyAlive: proxyHealth.deadUntil <= now
+  };
+};
 
 export const resetApiState = () => {
   apiState.last = 0;
   apiState.blocked = 0;
-  apiState.fails = 0;
   apiState.currentMirror = 0;
+  mirrorHealth.forEach(h => { h.fails = 0; h.deadUntil = 0; });
+  proxyHealth.fails = 0;
+  proxyHealth.deadUntil = 0;
 };
 
 const englishToFrenchService = {

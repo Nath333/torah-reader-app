@@ -1034,7 +1034,7 @@ const FocusMode = React.memo(function FocusMode({
                 title="Copy reference"
               >
                 <span className="qa-icon">{copyFeedback === 'ref' ? '✓' : '📋'}</span>
-                <span className="qa-label">{copyFeedback === 'ref' ? 'Copied!' : 'Copy Ref'}</span>
+                <span className="qa-label">{copyFeedback === 'ref' ? 'Copié !' : 'Copier la référence'}</span>
               </button>
               <button
                 className={`quick-action-btn ${copyFeedback === 'all' ? 'copied' : ''}`}
@@ -1044,10 +1044,10 @@ const FocusMode = React.memo(function FocusMode({
                   setCopyFeedback('all');
                   setTimeout(() => setCopyFeedback(null), 1500);
                 }}
-                title="Copy verse with translation"
+                title="Copier le verset avec sa traduction"
               >
                 <span className="qa-icon">{copyFeedback === 'all' ? '✓' : '📝'}</span>
-                <span className="qa-label">{copyFeedback === 'all' ? 'Copied!' : 'Copy All'}</span>
+                <span className="qa-label">{copyFeedback === 'all' ? 'Copié !' : 'Tout copier'}</span>
               </button>
               <button
                 className={`quick-action-btn ${showGematria ? 'active' : ''}`}

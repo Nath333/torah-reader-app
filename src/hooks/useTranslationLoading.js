@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { translateWithSource, translateEnglishToFrench } from '../services/dictionaries/englishToFrenchService';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { translateWithSource, translateEnglishToFrench, resetApiState } from '../services/dictionaries/englishToFrenchService';
 import { createLogger } from '../utils/debug';
 
 const log = createLogger('useTranslationLoading');
@@ -35,10 +35,25 @@ export default function useTranslationLoading({
   const verseTranslatingRef = useRef(new Set());
   const onkelosTranslatingRef = useRef(new Set());
 
+  // Items déjà traduits avec succès : un re-run (bouton Réessayer) ne doit
+  // pas repayer les traductions obtenues.
+  const verseDoneRef = useRef(new Set());
+  const onkelosDoneRef = useRef(new Set());
+
   // Échecs définitifs (toutes sources épuisées) — l'UI affiche
   // « traduction indisponible » au lieu d'un Chargement éternel.
   const [verseFailed, setVerseFailed] = useState({});
   const [onkelosFailed, setOnkelosFailed] = useState({});
+
+  // Réessai manuel : réarme les disjoncteurs réseau et rejoue les items en
+  // échec (retryTick est dans les deps des effets de chargement).
+  const [retryTick, setRetryTick] = useState(0);
+  const retryFrench = useCallback(() => {
+    resetApiState();
+    setVerseFailed({});
+    setOnkelosFailed({});
+    setRetryTick(t => t + 1);
+  }, []);
 
   // Load French translations for Onkelos (parallel loading)
   useEffect(() => {
@@ -46,7 +61,7 @@ export default function useTranslationLoading({
 
     // Filter items that need translation (not already translated or being translated)
     const toTranslate = onkelos.filter(item => {
-      return item.english && !onkelosTranslatingRef.current.has(item.verse);
+      return item.english && !onkelosTranslatingRef.current.has(item.verse) && !onkelosDoneRef.current.has(item.verse);
     });
 
     if (toTranslate.length === 0) return;
@@ -75,8 +90,10 @@ export default function useTranslationLoading({
       const frenchTranslations = {};
       const failed = {};
       results.forEach((r, i) => {
-        if (r) frenchTranslations[r.verse] = r.french;
-        else failed[toTranslate[i].verse] = true;
+        if (r) {
+          frenchTranslations[r.verse] = r.french;
+          onkelosDoneRef.current.add(r.verse);
+        } else failed[toTranslate[i].verse] = true;
       });
 
       if (Object.keys(frenchTranslations).length > 0) {
@@ -93,7 +110,7 @@ export default function useTranslationLoading({
       // Remove in-flight items from tracking ref so they can be retried
       itemKeys.forEach(k => onkelosTranslatingRef.current.delete(k));
     };
-  }, [showFrench, showOnkelos, onkelos]);
+  }, [showFrench, showOnkelos, onkelos, retryTick]);
 
   // Load French translations for main verses (parallel loading)
   useEffect(() => {
@@ -102,7 +119,7 @@ export default function useTranslationLoading({
     // Filter verses that need translation (not already being translated)
     const toTranslate = verses.filter(verse => {
       const cacheKey = `${selectedBook}:${selectedChapter}:${verse.verse}`;
-      return verse.englishText && !verseTranslatingRef.current.has(cacheKey);
+      return verse.englishText && !verseTranslatingRef.current.has(cacheKey) && !verseDoneRef.current.has(cacheKey);
     });
 
     if (toTranslate.length === 0) return;
@@ -133,8 +150,10 @@ export default function useTranslationLoading({
       const failed = {};
       results.forEach((r, i) => {
         const key = itemKeys[i];
-        if (r) frenchTranslations[key] = r.result;
-        else failed[key] = true;
+        if (r) {
+          frenchTranslations[key] = r.result;
+          verseDoneRef.current.add(key);
+        } else failed[key] = true;
       });
 
       if (Object.keys(frenchTranslations).length > 0) {
@@ -151,7 +170,7 @@ export default function useTranslationLoading({
       // Remove in-flight items from tracking ref so they can be retried
       itemKeys.forEach(k => verseTranslatingRef.current.delete(k));
     };
-  }, [showFrench, verses, selectedBook, selectedChapter]);
+  }, [showFrench, verses, selectedBook, selectedChapter, retryTick]);
 
   // Clear translations when chapter changes
   useEffect(() => {
@@ -161,12 +180,15 @@ export default function useTranslationLoading({
     setVerseFailed({});
     onkelosTranslatingRef.current.clear();
     verseTranslatingRef.current.clear();
+    onkelosDoneRef.current.clear();
+    verseDoneRef.current.clear();
   }, [selectedBook, selectedChapter]);
 
   return {
     verseFrench,
     onkelosFrench,
     verseFailed,
-    onkelosFailed
+    onkelosFailed,
+    retryFrench
   };
 }
