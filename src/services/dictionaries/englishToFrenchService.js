@@ -108,7 +108,7 @@ const markMirrorFail = (idx, rateLimited) => {
   const now = Date.now();
   if (rateLimited) {
     h.deadUntil = now + MIRROR_POLICY.RATE_MS;
-    apiState.blocked = Math.max(apiState.blocked, now + CONFIG.COOLDOWN);
+    noteRateLimit();
     return;
   }
   h.fails++;
@@ -127,8 +127,20 @@ const markProxyFail = () => {
   }
 };
 
+// Débit ADAPTATIF : Lingva tolère ~4 req/s puis 429 sur tout. L'intervalle
+// double à chaque 429 (relais ou miroir) et se détente de moitié à chaque
+// succès — la file se cale toute seule sur ce que l'amont accepte.
+let dynamicInterval = CONFIG.MIN_INTERVAL;
+const noteRateLimit = () => {
+  dynamicInterval = Math.min(2000, dynamicInterval * 2);
+  apiState.blocked = Math.max(apiState.blocked, Date.now() + 15 * 1000);
+};
+const noteSuccess = () => {
+  dynamicInterval = Math.max(CONFIG.MIN_INTERVAL, Math.floor(dynamicInterval / 2));
+};
+
 const wait = () => {
-  const w = CONFIG.MIN_INTERVAL - (Date.now() - apiState.last);
+  const w = dynamicInterval - (Date.now() - apiState.last);
   return w > 0 ? new Promise(r => setTimeout(r, w)) : Promise.resolve();
 };
 
@@ -160,6 +172,10 @@ const fix = (t) => {
 
 // Main translation function with mirror rotation
 const translate = async (text) => {
+  // Débit adaptatif appliqué À TOUS les upstreams Lingva (relais compris —
+  // Lingva voit l'IP du homelab derrière le proxy, le 429 est le même).
+  await wait();
+  apiState.last = Date.now();
   const proxyBase = getProxyBase();
 
   // ── Relais Lingva par le serveur d'étude — rapide, sans CORS, tenté à
@@ -169,9 +185,11 @@ const translate = async (text) => {
       const r = await fetch(`${proxyBase}/lingva/api/v1/en/fr/${encodeURIComponent(text)}`, {
         signal: AbortSignal.timeout(CONFIG.TIMEOUT)
       });
+      if (r.status === 429) noteRateLimit();
       if (r.ok) {
         const d = await r.json();
         if (d.translation && isValid(text, d.translation)) {
+          noteSuccess();
           log.verbose('Translated via serveur (lingva):', text.slice(0, 30));
           return { translation: fix(d.translation.trim()), source: 'Lingva', accuracy: 'high' };
         }
@@ -192,10 +210,11 @@ const translate = async (text) => {
         signal: AbortSignal.timeout(CONFIG.TIMEOUT)
       });
       if (r.status === 429) {
-        apiState.blocked = Date.now() + CONFIG.COOLDOWN;
+        noteRateLimit();
       } else if (r.ok) {
         const d = await r.json();
         if (d.translation && isValid(text, d.translation)) {
+          noteSuccess();
           return { translation: fix(d.translation.trim()), source: 'Lingva', accuracy: 'high' };
         }
       }
@@ -203,9 +222,6 @@ const translate = async (text) => {
       log.verbose('Proxy dev failed:', e.message);
     }
   } else if (canUse()) {
-    await wait();
-    apiState.last = Date.now();
-
     const fetchTranslation = async (url) => {
       const r = await fetch(url, { signal: AbortSignal.timeout(CONFIG.TIMEOUT) });
       if (!r.ok) {
@@ -247,6 +263,7 @@ const translate = async (text) => {
           if (d.translation && isValid(text, d.translation)) {
             markMirrorOk(idx);
             if (viaProxy) markProxyOk();
+            noteSuccess();
             log.verbose(`Translated via ${mirror}${viaProxy ? ' (proxy)' : ''}:`, text.slice(0, 30));
             return { translation: fix(d.translation.trim()), source: 'Lingva', accuracy: 'high' };
           }
@@ -431,6 +448,7 @@ export const getApiStatus = () => {
     ...apiState,
     available: canUse() && mirrorHealth.some(h => h.deadUntil <= now),
     currentMirror: LINGVA_MIRRORS[apiState.currentMirror],
+    dynamicInterval,
     mirrors: LINGVA_MIRRORS.map((m, i) => ({
       base: m,
       alive: mirrorHealth[i].deadUntil <= now,

@@ -93,6 +93,10 @@ export default function useTranslationLoading({
   // de la file devient un échec VISIBLE au bout de ITEM_TIMEOUT. La borne
   // couvre le pire cas d'un item : relais + tournée miroirs + IA + 2e IA.
   const ITEM_TIMEOUT = 130 * 1000;
+  // Échelonnage : 6 items au départ, puis +6 toutes les 1,5 s — un chapitre
+  // entier (60+ requêtes versets+Onkelos) ne part plus en rafale.
+  const STAGGER_BATCH = 6;
+  const STAGGER_DELAY = 1500;
   const withTimeout = (p) => Promise.race([
     p,
     new Promise(res => setTimeout(() => res(null), ITEM_TIMEOUT)),
@@ -117,10 +121,12 @@ export default function useTranslationLoading({
     // Mark as translating to prevent duplicate requests
     itemKeys.forEach(k => onkelosTranslatingRef.current.add(k));
 
-    // Application incrémentale : chaque item s'affiche dès SA résolution.
-    // Une seule mise à jour en fin de lot (Promise.all) gelait tout
-    // l'écran pendant des minutes quand le fallback IA (lent) tournait.
-    toTranslate.forEach(item => {
+    // Application incrémentale + ÉCHELONNÉE : les items partent par petits
+    // lots (6 toutes les 1,5 s) — la rafale de 60+ requêtes d'un coup
+    // déclenchait le rate-limit de Lingva et vouait la moitié du chapitre
+    // à l'IA lente. Chaque item s'affiche dès SA résolution.
+    const pendingItems = toTranslate.slice();
+    const launchOnkelos = (item) => {
       (async () => {
         let french = null;
         try {
@@ -136,9 +142,15 @@ export default function useTranslationLoading({
           scheduleAutoRetry();
         }
       })();
-    });
+    };
+    pendingItems.splice(0, STAGGER_BATCH).forEach(launchOnkelos);
+    const staggerIv = setInterval(() => {
+      if (pendingItems.length === 0) { clearInterval(staggerIv); return; }
+      pendingItems.splice(0, STAGGER_BATCH).forEach(launchOnkelos);
+    }, STAGGER_DELAY);
 
     return () => {
+      clearInterval(staggerIv);
       // Remove in-flight items from tracking ref so they can be retried
       itemKeys.forEach(k => onkelosTranslatingRef.current.delete(k));
     };
@@ -161,10 +173,12 @@ export default function useTranslationLoading({
     // Mark as translating to prevent duplicate requests
     itemKeys.forEach(k => verseTranslatingRef.current.add(k));
 
-    // Application incrémentale : chaque verset s'affiche dès SA résolution
-    // (le fallback IA met 5-30 s par item — un lot unique laissait la page
-    // entière sur « Chargement... » pendant des minutes).
-    toTranslate.forEach(verse => {
+    // Application incrémentale + ÉCHELONNÉE : les items partent par petits
+    // lots (6 toutes les 1,5 s) — la rafale de 60+ requêtes d'un coup
+    // déclenchait le rate-limit de Lingva et vouait la moitié du chapitre
+    // à l'IA lente. Chaque item s'affiche dès SA résolution.
+    const pendingVerses = toTranslate.slice();
+    const launchVerse = (verse) => {
       const cacheKey = `${selectedBook}:${selectedChapter}:${verse.verse}`;
       (async () => {
         let result = null;
@@ -181,9 +195,15 @@ export default function useTranslationLoading({
           scheduleAutoRetry();
         }
       })();
-    });
+    };
+    pendingVerses.splice(0, STAGGER_BATCH).forEach(launchVerse);
+    const staggerIv = setInterval(() => {
+      if (pendingVerses.length === 0) { clearInterval(staggerIv); return; }
+      pendingVerses.splice(0, STAGGER_BATCH).forEach(launchVerse);
+    }, STAGGER_DELAY);
 
     return () => {
+      clearInterval(staggerIv);
       // Remove in-flight items from tracking ref so they can be retried
       itemKeys.forEach(k => verseTranslatingRef.current.delete(k));
     };
