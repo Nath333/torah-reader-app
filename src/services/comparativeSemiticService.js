@@ -58,7 +58,7 @@ let enrichedRootData = null;
 const loadUnifiedEtymology = async () => {
   if (unifiedEtymologyData) return unifiedEtymologyData;
   try {
-    const response = await fetch('/data/root_meanings_pro.json');
+    const response = await fetch(`${process.env.PUBLIC_URL || ''}/data/root_meanings_pro.json`);
     if (response.ok) {
       const data = await response.json();
       unifiedEtymologyData = data.entries || {};
@@ -107,7 +107,7 @@ const loadEnrichedRoots = async () => {
   if (enrichedRootData) return enrichedRootData;
   try {
     // PRO SCHOLAR V14: Use consolidated root_meanings_pro.json (merged from enriched)
-    const response = await fetch('/data/root_meanings_pro.json');
+    const response = await fetch(`${process.env.PUBLIC_URL || ''}/data/root_meanings_pro.json`);
     if (response.ok) {
       const data = await response.json();
       enrichedRootData = data.entries || {};
@@ -518,7 +518,7 @@ const EXCLUDED_COGNATE_WORDS = new Set([
 const loadBDBDictionary = async () => {
   if (bdbDictionary) return bdbDictionary;
   try {
-    const response = await fetch('/data/bdbComplete.json');
+    const response = await fetch(`${process.env.PUBLIC_URL || ''}/data/bdbComplete.json`);
     if (response.ok) {
       const data = await response.json();
       bdbDictionary = data.byWord || data;
@@ -537,7 +537,7 @@ const loadBDBDictionary = async () => {
 const loadJastrowDictionary = async () => {
   if (jastrowDictionary) return jastrowDictionary;
   try {
-    const response = await fetch('/data/jastrowComplete.json');
+    const response = await fetch(`${process.env.PUBLIC_URL || ''}/data/jastrowComplete.json`);
     if (response.ok) {
       const data = await response.json();
       jastrowDictionary = data.byWord || data;

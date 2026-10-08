@@ -49,7 +49,7 @@ export const loadCALData = async () => {
 
   try {
     // PRO SCHOLAR V12: Use cal_aramaic.json (276 curated entries)
-    const response = await fetch('/data/cal_aramaic.json');
+    const response = await fetch(`${process.env.PUBLIC_URL || ''}/data/cal_aramaic.json`);
     if (response.ok) {
       const data = await response.json();
       // cal_aramaic.json is a flat object (not nested under .entries)

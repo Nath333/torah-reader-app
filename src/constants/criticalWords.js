@@ -271,7 +271,7 @@ export const loadAcademicCriticalWords = async () => {
   if (academicDataLoading) return academicDataLoadPromise;
 
   academicDataLoading = true;
-  academicDataLoadPromise = fetch('/data/critical_words_academic.json')
+  academicDataLoadPromise = fetch(`${process.env.PUBLIC_URL || ''}/data/critical_words_academic.json`)
     .then(res => res.ok ? res.json() : null)
     .then(data => {
       if (data) {

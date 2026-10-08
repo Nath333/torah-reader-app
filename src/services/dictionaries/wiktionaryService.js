@@ -49,7 +49,7 @@ async function loadCachedEtymology() {
   if (cachedEtymologyLoaded) return cachedEtymologyData || {};
 
   try {
-    const response = await fetch('/data/etymology_wiktionary.json');
+    const response = await fetch(`${process.env.PUBLIC_URL || ''}/data/etymology_wiktionary.json`);
     if (response.ok) {
       const data = await response.json();
       cachedEtymologyData = data.entries || {};
