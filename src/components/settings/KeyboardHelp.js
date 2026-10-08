@@ -4,7 +4,7 @@ import './KeyboardHelp.css';
 const shortcuts = [
   // Navigation
   { keys: ['Ctrl', 'K'], description: 'Aller à la recherche', category: 'Navigation' },
-  { keys: ['Ctrl', 'P'], description: 'Palette de commandes — sauter à un sefer, une vue, l'étude du jour', category: 'Navigation' },
+  { keys: ['Ctrl', 'P'], description: 'Palette de commandes — sauter à un sefer, une vue, l’étude du jour', category: 'Navigation' },
   { keys: ['Ctrl', '←'], description: 'Chapitre précédent', category: 'Navigation' },
   { keys: ['Ctrl', '→'], description: 'Chapitre suivant', category: 'Navigation' },
   { keys: ['Esc'], description: 'Retour au lecteur / Vider la sélection', category: 'Navigation' },
@@ -12,7 +12,7 @@ const shortcuts = [
   // Study Tools
   { keys: ['Ctrl', 'Shift', 'S'], description: 'Basculer le mode Étude', category: 'Étude' },
   { keys: ['Ctrl', 'B'], description: 'Basculer les favoris', category: 'Étude' },
-  { keys: ['Ctrl', 'H'], description: 'Basculer l'historique', category: 'Étude' },
+  { keys: ['Ctrl', 'H'], description: 'Basculer l’historique', category: 'Étude' },
   { keys: ['Ctrl', 'V'], description: 'Ouvrir le vocabulaire', category: 'Étude' },
 
   // Selection Mode
@@ -26,7 +26,7 @@ const shortcuts = [
   { keys: ['Ctrl', 'F'], description: 'Basculer le mode focus', category: 'Affichage' },
 
   // AI Analysis
-  { keys: ['Ctrl', 'Enter'], description: 'Lancer l'analyse (dans le mode Étude)', category: 'Analyse' }
+  { keys: ['Ctrl', 'Enter'], description: 'Lancer l’analyse (dans le mode Étude)', category: 'Analyse' }
 ];
 
 // Group shortcuts by category
