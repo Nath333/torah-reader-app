@@ -12,11 +12,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import useStudySession from '../../hooks/useStudySession';
 import { getTodayStats, getLevelProgress, STATS_EVENT } from '../../services/studyTracker';
+import { getStats as getSRSStats } from '../../services/srsService';
 import { getDailyLearning, getRandomInspiration } from '../../services/scholarlyApiService';
 // 2026 Smart Features - Learning Recommendations
 import {
-  getRecommendations,
-  getProgressSummary,
+  generateRecommendations,
+  syncProgress,
   trackStudyActivity,
   LEARNING_LEVELS
 } from '../../services/scholarly/learningRecommendationService';
@@ -32,7 +33,7 @@ const TimerDisplay = ({ time, isActive, onStart, onPause, onStop }) => {
       <div className="timer-time">{time}</div>
       <div className="timer-controls">
         {!isActive ? (
-          <button className="timer-btn start" onClick={onStart} title="Start studying">
+          <button className="timer-btn start" onClick={onStart} title="Démarrer la session">
             ▶
           </button>
         ) : (
@@ -41,7 +42,7 @@ const TimerDisplay = ({ time, isActive, onStart, onPause, onStop }) => {
           </button>
         )}
         {isActive && (
-          <button className="timer-btn stop" onClick={onStop} title="End session">
+          <button className="timer-btn stop" onClick={onStop} title="Terminer la session">
             ⏹
           </button>
         )}
@@ -106,11 +107,11 @@ const StreakDisplay = ({ current, longest }) => {
       <div className="streak-flame">🔥</div>
       <div className="streak-info">
         <span className="streak-current">{current}</span>
-        <span className="streak-label">day streak</span>
+        <span className="streak-label">jour{current > 1 ? 's' : ''} d'affilée</span>
       </div>
       {longest > current && (
-        <span className="streak-best" title="Personal best">
-          Best: {longest}
+        <span className="streak-best" title="Record personnel">
+          Record : {longest}
         </span>
       )}
     </div>
@@ -176,7 +177,7 @@ const LevelBadge = ({ level, progress }) => {
             />
           </div>
           <span className="level-progress-text">
-            {Math.round(progress.progressToNextLevel || 0)}% to next level
+            {Math.round(progress.progressToNextLevel || 0)} % vers le niveau suivant
           </span>
         </div>
       )}
@@ -217,8 +218,8 @@ const RecommendationsPanel = ({ recommendations, onSelect }) => {
               <span className="rec-title">{rec.title}</span>
               <span className="rec-reason">{rec.reason}</span>
             </div>
-            {rec.score && (
-              <span className="rec-score">{Math.round(rec.score * 100)}%</span>
+            {rec.count > 0 && (
+              <span className="rec-score">{rec.count} à réviser</span>
             )}
           </button>
         ))}
@@ -255,7 +256,6 @@ const StudyDashboard = ({
 
   // 2026 Smart Features - Recommendations
   const [recommendations, setRecommendations] = useState([]);
-  const [progressSummary, setProgressSummary] = useState(null);
 
   // Refonte learning : versets lus + niveau en DIRECT (studyTracker, événement)
   const [liveStats, setLiveStats] = useState(getTodayStats);
@@ -272,19 +272,48 @@ const StudyDashboard = ({
 
   // Fetch daily learning and recommendations on mount
   useEffect(() => {
+    let cancelled = false;
+
+    const buildRecommendations = (learning) => {
+      // Aligne les compteurs du moteur de suggestions sur les vraies sources
+      // (lecture cumulée + maîtrise SRS) : sans ce pont, niveaux et
+      // « Presque … ! » restaient figés sur les valeurs d'origine.
+      syncProgress({
+        versesStudied: getLevelProgress().versesStudied,
+        vocabularyMastered: getSRSStats().mastered
+      });
+      let recs = generateRecommendations();
+      // La parasha de la semaine RÉELLE (ref navigable) remplace la carte
+      // systématique « Continuer avec la parasha X » figée à Bereishit.
+      const weekly = learning?.parashat;
+      if (weekly?.ref) {
+        recs = recs.filter(r => r.id !== 'next-parsha');
+        recs.unshift({
+          id: 'weekly-parasha',
+          type: 'parsha',
+          priority: 1,
+          title: `Parasha de la semaine — ${weekly.displayValue?.en || weekly.ref}`,
+          description: 'Ouvrir le début de la parasha courante',
+          ref: weekly.ref,
+          action: { type: 'navigate' },
+          reason: 'Cycle annuel de la lecture'
+        });
+      }
+      return recs;
+    };
+
     const fetchDaily = async () => {
       const learning = await getDailyLearning();
+      if (cancelled) return;
       setDailyLearning(learning);
+      setRecommendations(buildRecommendations(learning));
     };
     fetchDaily();
 
-    // Fetch personalized recommendations
-    const recs = getRecommendations(5);
-    setRecommendations(recs);
+    // Suggestions affichées sans attendre le réseau (repli si offline)
+    setRecommendations(buildRecommendations(null));
 
-    // Get progress summary (level, XP, etc.)
-    const progress = getProgressSummary();
-    setProgressSummary(progress);
+    return () => { cancelled = true; };
   }, []);
 
   // Handle recommendation selection
@@ -296,11 +325,19 @@ const StudyDashboard = ({
       timestamp: Date.now()
     });
 
-    // Navigate to the content
+    // 1. Carte avec une référence → navigation dans le lecteur
+    //    (« Genesis 1:1-6:8 » passe : onNavigateToText parse book + 1ᵉʳ chapitre)
     if (rec.ref && onNavigateToText) {
       onNavigateToText(rec.ref);
+      return;
     }
-  }, [onNavigateToText]);
+
+    // 2. Révisions SRS → la vue Vocabulaire héberge la session de révision
+    const actionType = rec.action?.type;
+    if ((actionType === 'review' || actionType === 'difficult') && onOpenVocabulary) {
+      onOpenVocabulary();
+    }
+  }, [onNavigateToText, onOpenVocabulary]);
 
   // Get fresh inspiration
   const refreshInspiration = useCallback(async () => {
@@ -345,16 +382,16 @@ const StudyDashboard = ({
         </div>
 
         <div className="progress-row">
-          <div className="progress-item" title={`${todayProgress.minutesStudied} / ${todayProgress.goals.dailyMinutes} minutes`}>
-            <ProgressRing progress={todayProgress.progress.minutes} size={40} strokeWidth={4} />
-            <span className="progress-label">Time</span>
+          <div className="progress-item" title={`${minutesTotal.value} / ${todayProgress.goals.dailyMinutes} minutes`}>
+            <ProgressRing progress={minutesTotal.progress} size={40} strokeWidth={4} />
+            <span className="progress-label">Minutes</span>
           </div>
-          <div className="progress-item" title={`${todayProgress.versesRead} / ${todayProgress.goals.dailyVerses} verses`}>
-            <ProgressRing progress={todayProgress.progress.verses} size={40} strokeWidth={4} color="#10B981" />
+          <div className="progress-item" title={`${liveStats.versesRead} / ${todayProgress.goals.dailyVerses} versets`}>
+            <ProgressRing progress={liveStats.versesProgress} size={40} strokeWidth={4} color="#10B981" />
             <span className="progress-label">Versets</span>
           </div>
-          <div className="progress-item" title={`${todayProgress.wordsLearned} / ${todayProgress.goals.dailyVocabulary} words`}>
-            <ProgressRing progress={todayProgress.progress.vocabulary} size={40} strokeWidth={4} color="#F59E0B" />
+          <div className="progress-item" title={`${liveStats.wordsLearned} / ${todayProgress.goals.dailyVocabulary} mots`}>
+            <ProgressRing progress={liveStats.wordsProgress} size={40} strokeWidth={4} color="#F59E0B" />
             <span className="progress-label">Mots</span>
           </div>
         </div>
@@ -380,9 +417,9 @@ const StudyDashboard = ({
       {/* Current session stats (when active) */}
       {isActive && (
         <div className="session-stats">
-          <span>📖 {currentSession.versesRead} verses</span>
-          <span>📝 {currentSession.wordsLearned} words</span>
-          <span>🔖 {currentSession.bookmarksAdded} bookmarks</span>
+          <span>📖 {currentSession.versesRead} versets</span>
+          <span>📝 {currentSession.wordsLearned} mots</span>
+          <span>🔖 {currentSession.bookmarksAdded} favoris</span>
         </div>
       )}
 
@@ -401,22 +438,22 @@ const StudyDashboard = ({
           </div>
 
           <div className="progress-item" title="Versets uniques lus aujourd'hui (1,5 s de lecture)">
-            <ProgressRing progress={liveStats.progress} color="#10B981" />
+            <ProgressRing progress={liveStats.versesProgress} color="#10B981" />
             <div className="progress-details">
               <span className="progress-value">
                 {liveStats.versesRead} / 20
               </span>
-              <span className="progress-label">Verses</span>
+              <span className="progress-label">Versets</span>
             </div>
           </div>
 
-          <div className="progress-item">
-            <ProgressRing progress={todayProgress.progress.vocabulary} color="#F59E0B" />
+          <div className="progress-item" title="Mots appris aujourd'hui (sauvegardés depuis le lecteur)">
+            <ProgressRing progress={liveStats.wordsProgress} color="#F59E0B" />
             <div className="progress-details">
               <span className="progress-value">
-                {todayProgress.wordsLearned} / {todayProgress.goals.dailyVocabulary}
+                {liveStats.wordsLearned} / {todayProgress.goals.dailyVocabulary}
               </span>
-              <span className="progress-label">Words</span>
+              <span className="progress-label">Mots</span>
             </div>
           </div>
         </div>
@@ -484,7 +521,7 @@ const StudyDashboard = ({
               — {inspiration.heRef || inspiration.ref}
             </div>
             <button className="refresh-btn" onClick={refreshInspiration}>
-              Get Another ✨
+              Une autre ✨
             </button>
           </div>
         </div>

@@ -19,6 +19,9 @@ const DAY_KEY = 'torah-study-tracker-day';
 const LIFE_KEY = 'torah-study-tracker-life';
 export const STATS_EVENT = 'study:stats-updated';
 
+// Objectif « mots » du jour (== goals.dailyVocabulary du dashboard)
+export const DAILY_WORDS_GOAL = 5;
+
 const today = () => new Date().toDateString();
 
 const read = (key, fallback) => {
@@ -40,18 +43,22 @@ let notifiedToday = new Set();
 /* ------------------------------- journalier ------------------------------ */
 
 const dayData = () => {
-  const d = read(DAY_KEY, { date: today(), versesRead: 0, verseIds: [], minutesAuto: 0 });
-  if (d.date !== today()) return { date: today(), versesRead: 0, verseIds: [], minutesAuto: 0 };
+  const d = read(DAY_KEY, { date: today(), versesRead: 0, verseIds: [], minutesAuto: 0, wordsLearned: 0, wordIds: [] });
+  if (d.date !== today()) return { date: today(), versesRead: 0, verseIds: [], minutesAuto: 0, wordsLearned: 0, wordIds: [] };
   return d;
 };
 
 export function getTodayStats() {
   const d = dayData();
-  const goal = 20; // == goals.dailyVerses du dashboard
+  const verseGoal = 20; // == goals.dailyVerses du dashboard
   return {
     versesRead: d.versesRead,
+    wordsLearned: d.wordsLearned || 0,
     minutesAuto: d.minutesAuto || 0,
-    progress: Math.min(100, Math.round((d.versesRead / goal) * 100))
+    versesProgress: Math.min(100, Math.round((d.versesRead / verseGoal) * 100)),
+    wordsProgress: Math.min(100, Math.round(((d.wordsLearned || 0) / DAILY_WORDS_GOAL) * 100)),
+    // compat : progress == anneau des versets
+    progress: Math.min(100, Math.round((d.versesRead / verseGoal) * 100))
   };
 }
 
@@ -90,7 +97,9 @@ export function endAutoTime() {
 
 const lifeData = () => read(LIFE_KEY, { versesStudied: 0, verseRefs: [] });
 
-const LEVEL_ORDER = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
+// Le 4ᵉ niveau (SCHOLAR) vit dans LEARNING_LEVELS ; l'ordre ici doit le
+// refléter, sinon la progression reste bloquée à « Advanced 100 % ».
+const LEVEL_ORDER = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'SCHOLAR'];
 
 function computeLevel(versesStudied) {
   const levels = LEVEL_ORDER.map(id => ({ id, cfg: LEARNING_LEVELS[id] || LEARNING_LEVELS.BEGINNER }));
@@ -128,7 +137,8 @@ export function registerVerseRead(ref) {
   if (!ref) return false;
 
   const d = dayData();
-  if (!d.verseIds.includes(ref)) {
+  const isNewToday = !d.verseIds.includes(ref);
+  if (isNewToday) {
     d.verseIds.push(ref);
     d.versesRead = d.verseIds.length;
     write(DAY_KEY, d);
@@ -143,5 +153,23 @@ export function registerVerseRead(ref) {
     write(LIFE_KEY, life);
   }
 
+  return isNewToday;
+}
+
+/**
+ * Marque un mot comme appris aujourd'hui (sauvegarde dans le carnet depuis
+ * le lecteur). Unique par jour — revoir le même mot ne regonfle pas l'anneau.
+ * @param {string} word - le mot hébreu/araméen tel qu'affiché
+ */
+export function registerWordLearned(word) {
+  if (!word) return false;
+  const key = String(word).trim().toLowerCase();
+
+  const d = dayData();
+  if (!d.wordIds) d.wordIds = [];
+  if (d.wordIds.includes(key)) return false;
+  d.wordIds.push(key);
+  d.wordsLearned = d.wordIds.length;
+  write(DAY_KEY, d);
   return true;
 }

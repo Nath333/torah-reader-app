@@ -10,6 +10,7 @@ import { fetchWithFallback } from '../utils/http';
 
 // Base Sefaria unique (dev : proxy Vite ; prod : limud-proxy si configuré)
 import { getSefariaBase } from './sefariaBase';
+import { getStudyTimezone } from './timezone';
 const SEFARIA_BASE = getSefariaBase();
 const DICTA_NAKDAN_BASE = 'https://nakdan-4-0.loadbalancer.dicta.org.il';
 
@@ -594,10 +595,10 @@ export async function getTextPreview(ref) {
 
 /**
  * Get today's learning schedule from Sefaria's calendar
- * @param {string} timezone - Timezone (default: America/New_York)
+ * @param {string} timezone - Timezone (default : fuseau du navigateur, repli Europe/Paris)
  * @returns {Promise<Object>} Today's learning items
  */
-export async function getDailyLearning(timezone = 'America/New_York') {
+export async function getDailyLearning(timezone = getStudyTimezone()) {
   try {
     const response = await fetch(
       `${SEFARIA_BASE}/calendars?timezone=${encodeURIComponent(timezone)}`,

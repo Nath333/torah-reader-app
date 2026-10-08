@@ -29,10 +29,13 @@ import { getStats as getSRSStats, getDifficultCards } from '../srsService';
 const STORAGE_KEY = 'learning-recommendations';
 
 // Learning levels with progression criteria
+// label en français (affiché tel quel par le badge de niveau du dashboard) ;
+// le jugement de niveau est piloté par versesStudied (la même source que le
+// badge studyTracker) — vocabulary/commentators restent des statistiques.
 export const LEARNING_LEVELS = {
   BEGINNER: {
     id: 'beginner',
-    label: 'Beginner',
+    label: 'Débutant',
     hebrewLabel: 'מתחיל',
     criteria: {
       versesStudied: 0,
@@ -45,7 +48,7 @@ export const LEARNING_LEVELS = {
   },
   INTERMEDIATE: {
     id: 'intermediate',
-    label: 'Intermediate',
+    label: 'Intermédiaire',
     hebrewLabel: 'בינוני',
     criteria: {
       versesStudied: 50,
@@ -58,7 +61,7 @@ export const LEARNING_LEVELS = {
   },
   ADVANCED: {
     id: 'advanced',
-    label: 'Advanced',
+    label: 'Avancé',
     hebrewLabel: 'מתקדם',
     criteria: {
       versesStudied: 200,
@@ -71,7 +74,7 @@ export const LEARNING_LEVELS = {
   },
   SCHOLAR: {
     id: 'scholar',
-    label: 'Scholar',
+    label: 'Savant',
     hebrewLabel: 'תלמיד חכם',
     criteria: {
       versesStudied: 500,
@@ -82,6 +85,17 @@ export const LEARNING_LEVELS = {
     suggestedCommentators: ['All commentators'],
     maxComplexity: 4
   }
+};
+
+// Libellés FR des modes d'étude (clés internes de l'IA)
+const MODE_LABELS = {
+  summary: 'Synthèse',
+  translation: 'Traduction',
+  iyun: 'Iyoun (analyse)',
+  mussar: 'Moussar',
+  machloket: 'Mahloket (débat)',
+  halacha: 'Halakha',
+  chavruta: 'Havrouta'
 };
 
 // Topic progressions (what to study after mastering a topic)
@@ -147,17 +161,16 @@ function persistRecommendations() {
 }
 
 /**
- * Calculate user's current learning level
+ * Calculate user's current learning level.
+ * Critère pilote = versesStudied (même logique que le badge studyTracker) —
+ * l'ancienne conjonction stricte (verses ET vocab ET commentateurs) faisait
+ * rester le service à « Débutant » pendant que le badge passait Intermédiaire.
  */
 export function calculateLevel(progress) {
   const levels = Object.values(LEARNING_LEVELS).reverse();
 
   for (const level of levels) {
-    if (
-      progress.versesStudied >= level.criteria.versesStudied &&
-      progress.vocabularyMastered >= level.criteria.vocabularyMastered &&
-      progress.commentatorsExplored.length >= level.criteria.commentatorsExplored
-    ) {
+    if (progress.versesStudied >= level.criteria.versesStudied) {
       return level;
     }
   }
@@ -206,6 +219,26 @@ export function trackStudyActivity(activity) {
 }
 
 /**
+ * Aligne les compteurs du service sur les sources de vérité réelles.
+ * Appelé par le dashboard avant chaque génération : l'ancien store ne
+ * bougeait QUE sur clic d'une suggestion, les niveaux et « Presque … ! »
+ * restaient donc figés malgré une vraie lecture.
+ * @param {{ versesStudied?: number, vocabularyMastered?: number }} measures
+ */
+export function syncProgress(measures = {}) {
+  const p = recommendationStore.userProgress;
+  if (Number.isFinite(measures.versesStudied)) {
+    p.versesStudied = measures.versesStudied;
+  }
+  if (Number.isFinite(measures.vocabularyMastered)) {
+    p.vocabularyMastered = measures.vocabularyMastered;
+  }
+  p.level = calculateLevel(p).id;
+  persistRecommendations();
+  return p;
+}
+
+/**
  * Generate personalized recommendations
  */
 export function generateRecommendations() {
@@ -219,10 +252,10 @@ export function generateRecommendations() {
       id: 'next-parsha',
       type: 'parsha',
       priority: 1,
-      title: `Continue with ${PARSHA_ORDER[progress.currentParsha]}`,
-      description: 'Continue your systematic Torah study',
+      title: `Continuer avec la parasha ${PARSHA_ORDER[progress.currentParsha]}`,
+      description: 'Continuer ton étude systématique de la Torah',
       action: { type: 'navigate', target: PARSHA_ORDER[progress.currentParsha] },
-      reason: 'systematic-learning'
+      reason: 'Apprentissage systématique'
     });
   }
 
@@ -233,10 +266,11 @@ export function generateRecommendations() {
       id: 'vocab-review',
       type: 'vocabulary',
       priority: 2,
-      title: `Review ${srsStats.dueNow} vocabulary words`,
-      description: `${srsStats.dueNow} words are due for review`,
+      count: srsStats.dueNow,
+      title: `Réviser ${srsStats.dueNow} mot${srsStats.dueNow > 1 ? 's' : ''} de vocabulaire`,
+      description: `${srsStats.dueNow} mot(s) arrivent à échéance`,
       action: { type: 'review', mode: 'vocabulary' },
-      reason: 'spaced-repetition',
+      reason: 'Répétition espacée',
       urgent: srsStats.dueNow > 10
     });
   }
@@ -251,10 +285,10 @@ export function generateRecommendations() {
           id: `topic-${nextTopic}`,
           type: 'topic',
           priority: 3,
-          title: `Explore ${nextTopic}`,
-          description: `Based on your interest in ${topic}`,
+          title: `Explorer le thème « ${nextTopic} »`,
+          description: `Dans la continuité de ton intérêt pour « ${topic} »`,
           action: { type: 'search', query: nextTopic },
-          reason: 'topic-progression'
+          reason: 'Progression thématique'
         });
       }
     });
@@ -270,10 +304,10 @@ export function generateRecommendations() {
       id: `commentator-${nextCommentator}`,
       type: 'commentator',
       priority: 4,
-      title: `Try ${nextCommentator}'s commentary`,
-      description: 'Expand your learning with a new perspective',
+      title: `Découvrir le commentaire de ${nextCommentator}`,
+      description: 'Élargir ta lecture avec un nouveau point de vue',
       action: { type: 'filter', commentator: nextCommentator },
-      reason: 'exploration'
+      reason: 'Exploration'
     });
   }
 
@@ -291,10 +325,10 @@ export function generateRecommendations() {
         id: 'level-up',
         type: 'achievement',
         priority: 2,
-        title: `Almost ${nextLevel.label}!`,
-        description: `${Math.min(remaining.verses, remaining.vocabulary)} more items to reach ${nextLevel.label} level`,
+        title: `Presque ${nextLevel.label} !`,
+        description: `Encore ${Math.max(0, Math.min(remaining.verses, remaining.vocabulary))} élément(s) pour atteindre le niveau ${nextLevel.label}`,
         action: { type: 'study' },
-        reason: 'motivation'
+        reason: 'Motivation'
       });
     }
   }
@@ -306,10 +340,11 @@ export function generateRecommendations() {
       id: 'difficult-review',
       type: 'vocabulary',
       priority: 3,
-      title: 'Focus on challenging words',
-      description: `${difficultCards.length} words need extra attention`,
+      count: difficultCards.length,
+      title: 'Retravailler les mots difficiles',
+      description: `${difficultCards.length} mots demandent plus d'attention`,
       action: { type: 'review', mode: 'difficult' },
-      reason: 'strengthen-weakness'
+      reason: 'Renforcer les points faibles'
     });
   }
 
@@ -323,10 +358,10 @@ export function generateRecommendations() {
       id: `mode-${suggestedMode}`,
       type: 'study-mode',
       priority: 5,
-      title: `Try ${suggestedMode} mode`,
-      description: `Recommended for your ${currentLevel.label} level`,
+      title: `Essayer le mode « ${MODE_LABELS[suggestedMode] || suggestedMode} »`,
+      description: `Recommandé pour ton niveau ${currentLevel.label}`,
       action: { type: 'mode', mode: suggestedMode },
-      reason: 'level-appropriate'
+      reason: 'Adapté à ton niveau'
     });
   }
 
@@ -1108,6 +1143,7 @@ const learningRecommendationService = {
   initializeRecommendations,
   calculateLevel,
   trackStudyActivity,
+  syncProgress,
   generateRecommendations,
   dismissRecommendation,
   getRecommendations,

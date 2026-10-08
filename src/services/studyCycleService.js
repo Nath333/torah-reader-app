@@ -9,8 +9,9 @@
 // =============================================================================
 
 import { viaProxy } from './proxyConfig';
+import { getStudyTimezone } from './timezone';
 
-const CACHE_KEY = 'limud_daily_study_v2'; // v2 : labels nus + parasha navigable
+const CACHE_KEY = 'limud_daily_study_v3'; // v3 : fuseau local (le cache v2 pouvait contenir le jour de New York)
 const CACHE_TTL = 6 * 60 * 60 * 1000; // 6 h : l'item du jour ne change pas sous nos pieds
 
 /**
@@ -56,9 +57,10 @@ export const getDailyStudy = async () => {
   if (cached) return cached;
 
   try {
+    const tz = encodeURIComponent(getStudyTimezone());
     const url = viaProxy(
-      '/sefaria/api/calendars',
-      'https://www.sefaria.org/api/calendars'
+      `/sefaria/api/calendars?timezone=${tz}`,
+      `https://www.sefaria.org/api/calendars?timezone=${tz}`
     );
     const response = await fetch(url, { signal: AbortSignal.timeout(6000) });
     if (!response.ok) return [];

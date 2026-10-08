@@ -4,6 +4,7 @@ import useReadingHistory from '../hooks/useReadingHistory';
 import useVerseNotes from '../hooks/useVerseNotes';
 import useVocabulary from '../hooks/useVocabulary';
 import useStudyStreak from '../hooks/useStudyStreak';
+import { registerWordLearned } from '../services/studyTracker';
 import { useToast } from './ToastContext';
 
 export const StudyContext = createContext(null);
@@ -86,17 +87,17 @@ export function StudyProvider({ children, book, chapter }) {
             const milestones = [3, 7, 14, 30, 50, 100];
             if (milestones.includes(newStreak) && newStreak > prevStreak) {
               const messages = {
-                3: '3 day streak! You\'re building a habit!',
-                7: '1 week streak! Incredible dedication!',
-                14: '2 week streak! You\'re on fire!',
-                30: '30 day streak! A month of learning!',
-                50: '50 day streak! Half century champion!',
-                100: '100 day streak! Master scholar!'
+                3: 'Série de 3 jours ! L\'habitude s\'installe !',
+                7: 'Une semaine d\'affilée ! Quelle assiduité !',
+                14: 'Deux semaines de suite ! Tu es en feu !',
+                30: '30 jours de suite ! Un mois d\'étude !',
+                50: '50 jours de suite ! Champion de la demi-année !',
+                100: '100 jours de suite ! Maître érudit !'
               };
               toast?.achievement(messages[newStreak]);
             } else if (newStreak === 1 && prevStreak === 0) {
               // First study day
-              toast?.streak('Welcome! Your learning journey begins!');
+              toast?.streak('Bienvenue ! Ton parcours d\'étude commence !');
             }
           }
         }, 100);
@@ -128,7 +129,7 @@ export function StudyProvider({ children, book, chapter }) {
 
     if (!exists) {
       setBookmarks(prev => [...prev, bookmark]);
-      toast?.bookmark(`Bookmarked ${currentBook} ${currentChapter}:${verse.verse}`);
+      toast?.bookmark(`Favori ajouté — ${currentBook} ${currentChapter}:${verse.verse}`);
     }
   }, [bookmarks, setBookmarks, toast]);
 
@@ -161,7 +162,10 @@ export function StudyProvider({ children, book, chapter }) {
   const saveWord = useCallback((word, english, french, currentBook, currentChapter) => {
     const context = `${currentBook} ${currentChapter}`;
     vocabulary.addWord(word, english, french, context);
-    toast?.vocabulary(`Added "${word}" to vocabulary`);
+    // Alimente l'anneau « Mots » du dashboard (l'ancien compteur de session
+    // n'était JAMAIS incrémenté : anneau à 0 à vie).
+    registerWordLearned(word);
+    toast?.vocabulary(`« ${word} » ajouté au carnet`);
   }, [vocabulary, toast]);
 
   const value = useMemo(() => ({
