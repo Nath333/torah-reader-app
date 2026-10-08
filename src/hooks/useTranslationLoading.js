@@ -58,16 +58,48 @@ export default function useTranslationLoading({
     setRetryTick(t => t + 1);
   }, []);
 
+  // Réessai AUTOMATIQUE borné : quand des items échouent (rafale Lingva,
+  // IA capricieuse), deux vagues espacées de 60 s rejouent les échecs sans
+  // demander de clic — à condition que l'onglet soit visible (on ne traduit
+  // pas pour quelqu'un qui regarde ailleurs). Annulé au changement de
+  // chapitre et au démontage.
+  const autoRetryRef = useRef({ timer: null, count: 0 });
+  const scheduleAutoRetry = useCallback(() => {
+    const st = autoRetryRef.current;
+    if (st.timer || st.count >= 2) return;
+    if (typeof document !== 'undefined' && document.visibilityState !== 'visible') return;
+    st.timer = setTimeout(() => {
+      st.timer = null;
+      st.count += 1;
+      setVerseFailed({});
+      setOnkelosFailed({});
+      verseTranslatingRef.current.clear();
+      onkelosTranslatingRef.current.clear();
+      setRetryTick(t => t + 1);
+    }, 60 * 1000);
+  }, []);
+  const cancelAutoRetry = useCallback(() => {
+    if (autoRetryRef.current.timer) {
+      clearTimeout(autoRetryRef.current.timer);
+      autoRetryRef.current.timer = null;
+    }
+    autoRetryRef.current.count = 0;
+  }, []);
+
   // Pas de garde mountedRef ici : appeler setState après démontage est un
   // no-op sans danger en React 18+, alors une garde mal placée avale des
   // résultats résolus en silence (versets bloqués à jamais). Chaque item
   // est néanmoins borné par une course contre un timer : un gel quelconque
-  // de la file devient un échec VISIBLE au bout de ITEM_TIMEOUT.
-  const ITEM_TIMEOUT = 90 * 1000;
+  // de la file devient un échec VISIBLE au bout de ITEM_TIMEOUT. La borne
+  // couvre le pire cas d'un item : relais + tournée miroirs + IA + 2e IA.
+  const ITEM_TIMEOUT = 130 * 1000;
   const withTimeout = (p) => Promise.race([
     p,
     new Promise(res => setTimeout(() => res(null), ITEM_TIMEOUT)),
   ]);
+
+  // Annule la vague automatique au changement de chapitre/livre.
+  useEffect(() => cancelAutoRetry, [cancelAutoRetry]);
 
   // Load French translations for Onkelos (parallel loading)
   useEffect(() => {
@@ -101,6 +133,7 @@ export default function useTranslationLoading({
           setOnkelosFrench(prev => ({ ...prev, [item.verse]: french }));
         } else {
           setOnkelosFailed(prev => ({ ...prev, [item.verse]: true }));
+          scheduleAutoRetry();
         }
       })();
     });
@@ -109,7 +142,7 @@ export default function useTranslationLoading({
       // Remove in-flight items from tracking ref so they can be retried
       itemKeys.forEach(k => onkelosTranslatingRef.current.delete(k));
     };
-  }, [showFrench, showOnkelos, onkelos, retryTick]);
+  }, [showFrench, showOnkelos, onkelos, retryTick, scheduleAutoRetry]);
 
   // Load French translations for main verses (parallel loading)
   useEffect(() => {
@@ -145,6 +178,7 @@ export default function useTranslationLoading({
           setVerseFrench(prev => ({ ...prev, [cacheKey]: result }));
         } else {
           setVerseFailed(prev => ({ ...prev, [cacheKey]: true }));
+          scheduleAutoRetry();
         }
       })();
     });
@@ -153,10 +187,11 @@ export default function useTranslationLoading({
       // Remove in-flight items from tracking ref so they can be retried
       itemKeys.forEach(k => verseTranslatingRef.current.delete(k));
     };
-  }, [showFrench, verses, selectedBook, selectedChapter, retryTick]);
+  }, [showFrench, verses, selectedBook, selectedChapter, retryTick, scheduleAutoRetry]);
 
   // Clear translations when chapter changes
   useEffect(() => {
+    cancelAutoRetry();
     setOnkelosFrench({});
     setVerseFrench({});
     setOnkelosFailed({});
@@ -165,7 +200,7 @@ export default function useTranslationLoading({
     verseTranslatingRef.current.clear();
     onkelosDoneRef.current.clear();
     verseDoneRef.current.clear();
-  }, [selectedBook, selectedChapter]);
+  }, [selectedBook, selectedChapter, cancelAutoRetry]);
 
   return {
     verseFrench,

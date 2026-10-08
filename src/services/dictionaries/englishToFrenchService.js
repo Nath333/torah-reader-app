@@ -269,8 +269,29 @@ const translate = async (text) => {
 
   // ── IA du serveur d'étude (GLM via OpenRouter, clé server-side) — TOUJOURS
   // tentée : ce n'est pas un miroir public, le rate-limit Lingva ne
-  // s'applique pas. Marquée accuracy 'medium'.
+  // s'applique pas. Marquée accuracy 'medium'. GLM est capricieux sous
+  // rafale (content null, dégradations) : UNE seconde tentative après
+  // 1,5 s quand la première échoue vite.
   if (proxyBase) {
+    const iaOnce = async () => {
+      const response = await aiProxyChat({
+        messages: [
+          { role: 'system', content: 'Tu es un traducteur. Traduis le texte anglais en français naturel. Réponds UNIQUEMENT par la traduction, sans guillemets, sans commentaire. /no_think' },
+          { role: 'user', content: text }
+        ],
+        temperature: 0.2,
+        // Plancher 4096 : GLM-5.3-flash est un modèle à RAISONNEMENT —
+        // sur certains textes il part dans des raisonnements de plusieurs
+        // milliers de tokens et content revient null (piège documenté
+        // depuis la bascule OpenRouter). /no_think ci-dessus est la
+        // première défense (interrupteur doux GLM, no-op ailleurs).
+        max_tokens: Math.max(4096, Math.ceil(text.length * 1.5) + 100)
+      });
+      if (!response.ok) return null;
+      const data = await response.json();
+      const t = data.choices?.[0]?.message?.content?.trim();
+      return t && isValid(text, fix(t)) ? fix(t) : null;
+    };
     try {
       const now = Date.now();
       if (!aiAvailableMemo || now - aiAvailableMemo.at > 5 * 60 * 1000) {
@@ -278,26 +299,19 @@ const translate = async (text) => {
         aiAvailableMemo = { at: now, available: available.available };
       }
       if (aiAvailableMemo.available) {
-        const response = await aiProxyChat({
-          messages: [
-            { role: 'system', content: 'Tu es un traducteur. Traduis le texte anglais en français naturel. Réponds UNIQUEMENT par la traduction, sans guillemets, sans commentaire. /no_think' },
-            { role: 'user', content: text }
-          ],
-          temperature: 0.2,
-          // Plancher 4096 : GLM-5.3-flash est un modèle à RAISONNEMENT —
-          // sur certains textes il part dans des raisonnements de plusieurs
-          // milliers de tokens et content revient null (piège documenté
-          // depuis la bascule OpenRouter). /no_think ci-dessus est la
-          // première défense (interrupteur doux GLM, no-op ailleurs).
-          max_tokens: Math.max(4096, Math.ceil(text.length * 1.5) + 100)
-        });
-        if (response.ok) {
-          const data = await response.json();
-          const t = data.choices?.[0]?.message?.content?.trim();
-          if (t && isValid(text, fix(t))) {
-            log.verbose('Translated via IA:', text.slice(0, 30));
-            return { translation: fix(t), source: 'IA', accuracy: 'medium' };
-          }
+        const t0 = Date.now();
+        let t = await iaOnce();
+        // Retente une fois seulement si le premier appel a échoué VITE
+        // (content null / dégradation passagère) : ne pas doubler la
+        // facture de temps des appels lents qui ont déjà consommé leur
+        // budget de 60 s.
+        if (!t && Date.now() - t0 < 20 * 1000) {
+          await new Promise(r => setTimeout(r, 1500));
+          t = await iaOnce();
+        }
+        if (t) {
+          log.verbose('Translated via IA:', text.slice(0, 30));
+          return { translation: t, source: 'IA', accuracy: 'medium' };
         }
       }
     } catch (e) {
