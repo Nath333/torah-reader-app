@@ -359,7 +359,7 @@ const VerseRow = ({
                 </div>
               ) : verseFrenchFailed && (
                 <div className="translation-text translation-failed">
-                  <span className="loading-text" style={{ opacity: 0.55 }}>Traduction indisponible</span>
+                  <span className="translation-unavailable">Traduction indisponible</span>
                   {retryFrench && (
                     <button
                       className="retry-translation-btn"

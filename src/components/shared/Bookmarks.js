@@ -41,7 +41,7 @@ const Bookmarks = ({ bookmarks, onRemoveBookmark, onSelectBookmark, onImportBook
     return (
       <div className="bookmarks">
         <div className="bookmarks-header">
-          <h3>Saved Bookmarks</h3>
+          <h3>Favoris sauvegardés</h3>
           <div className="bookmarks-actions">
             <input
               type="file"
@@ -55,12 +55,12 @@ const Bookmarks = ({ bookmarks, onRemoveBookmark, onSelectBookmark, onImportBook
               onClick={() => fileInputRef.current?.click()}
               disabled={importing}
             >
-              {importing ? 'Importing...' : 'Import'}
+              {importing ? 'Import en cours…' : 'Importer'}
             </button>
           </div>
         </div>
         {importError && <div className="import-error">{importError}</div>}
-        <div className="no-bookmarks">No bookmarks saved yet</div>
+        <div className="no-bookmarks">Aucun favori sauvegardé pour le moment</div>
       </div>
     );
   }
@@ -68,7 +68,7 @@ const Bookmarks = ({ bookmarks, onRemoveBookmark, onSelectBookmark, onImportBook
   return (
     <div className="bookmarks">
       <div className="bookmarks-header">
-        <h3>Saved Bookmarks ({bookmarks.length})</h3>
+        <h3>Favoris sauvegardés ({bookmarks.length})</h3>
         <div className="bookmarks-actions">
           <button className="export-btn" onClick={handleExportJSON} title="Export as JSON">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -94,7 +94,7 @@ const Bookmarks = ({ bookmarks, onRemoveBookmark, onSelectBookmark, onImportBook
             onClick={() => fileInputRef.current?.click()}
             disabled={importing}
           >
-            {importing ? '...' : 'Import'}
+            {importing ? '…' : 'Importer'}
           </button>
         </div>
       </div>

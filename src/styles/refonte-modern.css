@@ -305,3 +305,13 @@
 .app.dark-mode .app-header {
   border-bottom-color: rgba(148, 163, 184, 0.22);
 }
+
+/* =============================================================================
+   Message « Traduction indisponible » — lisible dans les deux thèmes
+   (l'ancien loading-text opacity .55 était gris pâle sur gris)
+   ============================================================================= */
+.translation-unavailable {
+  color: var(--text-secondary, #94a3b8);
+  font-style: italic;
+  opacity: 1;
+}

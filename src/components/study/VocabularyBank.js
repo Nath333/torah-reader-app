@@ -316,9 +316,9 @@ const VocabularyBank = () => {
           />
         </div>
         <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="sort-select">
-          <option value="recent">Most Recent</option>
-          <option value="alphabetical">Alphabetical</option>
-          <option value="reviews">Most Reviewed</option>
+          <option value="recent">Plus récents</option>
+          <option value="alphabetical">Alphabétique</option>
+          <option value="reviews">Les plus révisés</option>
         </select>
       </div>
 
@@ -327,11 +327,11 @@ const VocabularyBank = () => {
       ) : filteredVocabulary.length === 0 ? (
         <EmptyState
           icon="vocabulary"
-          title={searchQuery ? 'No matching words' : 'No words saved yet'}
+          title={searchQuery ? 'Aucun mot correspondant' : 'Aucun mot sauvegardé'}
           description={
             searchQuery
-              ? `No words match "${searchQuery}". Try a different search.`
-              : 'Click on Hebrew words while reading to add them to your vocabulary bank.'
+              ? `Aucun mot ne correspond à « ${searchQuery} ». Essaie une autre recherche.`
+              : 'Clique sur les mots hébreux pendant la lecture pour les ajouter à ton carnet.'
           }
           compact
         />
@@ -363,7 +363,7 @@ const VocabularyBank = () => {
                     </div>
                   ) : (
                     <span className="word-french" onClick={() => handleStartEdit(word)}>
-                      {word.french || <em>+ Add French</em>}
+                      {word.french || <em>+ Ajouter le français</em>}
                     </span>
                   )}
                 </div>
@@ -376,7 +376,7 @@ const VocabularyBank = () => {
                 <button
                   className="remove-word"
                   onClick={() => removeWord?.(word.id)}
-                  title="Remove word"
+                  title="Retirer le mot"
                 >
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M6 18L18 6M6 6l12 12" />
@@ -397,7 +397,7 @@ const VocabularyBank = () => {
         <EmptyState
           icon="vocabulary"
           title="Tout est à jour !"
-          description="No words due for review. Add more words while reading or come back later."
+          description="Aucun mot à réviser pour le moment. Ajoute des mots en lisant ou reviens plus tard."
         >
           <button
             className="btn btn-secondary"
@@ -414,7 +414,7 @@ const VocabularyBank = () => {
     return (
       <div className="flashcard-container" ref={flashcardRef} tabIndex={-1}>
         <div className="flashcard-progress">
-          <span>Card {reviewIndex + 1} of {reviewWords.length}</span>
+          <span>Carte {reviewIndex + 1} sur {reviewWords.length}</span>
           <span className="keyboard-hint">Espace pour retourner • ← Faux • → Juste</span>
         </div>
 
@@ -712,7 +712,7 @@ const VocabularyBank = () => {
   return (
     <div className="vocabulary-bank">
       <div className="vocabulary-header">
-        <h2>My Vocabulary</h2>
+        <h2>Mon carnet de vocabulaire</h2>
         <div className="vocabulary-tabs">
           <button
             className={`tab ${activeTab === 'list' ? 'active' : ''}`}
@@ -721,7 +721,7 @@ const VocabularyBank = () => {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
             </svg>
-            Words ({vocabulary?.length || 0})
+            Mots ({vocabulary?.length || 0})
           </button>
           <button
             className={`tab ${activeTab === 'review' ? 'active' : ''}`}
@@ -731,7 +731,7 @@ const VocabularyBank = () => {
               <rect x="2" y="4" width="20" height="16" rx="2" />
               <path d="M12 8v8M8 12h8" />
             </svg>
-            Review
+            Révision
           </button>
           <button
             className={`tab ${activeTab === 'stats' ? 'active' : ''}`}
@@ -740,7 +740,7 @@ const VocabularyBank = () => {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M18 20V10M12 20V4M6 20v-6" />
             </svg>
-            Stats
+            Statistiques
           </button>
           <button
             className={`tab ${activeTab === 'learn' ? 'active' : ''}`}
@@ -750,7 +750,7 @@ const VocabularyBank = () => {
               <path d="M12 14l9-5-9-5-9 5 9 5z" />
               <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
             </svg>
-            Learn
+            Apprendre
           </button>
         </div>
       </div>
