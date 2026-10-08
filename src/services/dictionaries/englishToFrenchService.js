@@ -271,14 +271,16 @@ const translate = async (text) => {
       if (available.available) {
         const response = await aiProxyChat({
           messages: [
-            { role: 'system', content: 'Tu es un traducteur. Traduis le texte anglais en français naturel. Réponds UNIQUEMENT par la traduction, sans guillemets, sans commentaire.' },
+            { role: 'system', content: 'Tu es un traducteur. Traduis le texte anglais en français naturel. Réponds UNIQUEMENT par la traduction, sans guillemets, sans commentaire. /no_think' },
             { role: 'user', content: text }
           ],
           temperature: 0.2,
-          // Plancher 2048 : GLM-5.3-flash est un modèle à RAISONNEMENT —
-          // sous ce seuil, tout part en reasoning_tokens et content revient
-          // null (piège documenté depuis la bascule OpenRouter).
-          max_tokens: Math.max(2048, Math.ceil(text.length * 1.5) + 100)
+          // Plancher 4096 : GLM-5.3-flash est un modèle à RAISONNEMENT —
+          // sur certains textes il part dans des raisonnements de plusieurs
+          // milliers de tokens et content revient null (piège documenté
+          // depuis la bascule OpenRouter). /no_think ci-dessus est la
+          // première défense (interrupteur doux GLM, no-op ailleurs).
+          max_tokens: Math.max(4096, Math.ceil(text.length * 1.5) + 100)
         });
         if (response.ok) {
           const data = await response.json();

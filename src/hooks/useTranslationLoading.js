@@ -82,39 +82,27 @@ export default function useTranslationLoading({
     // Mark as translating to prevent duplicate requests
     itemKeys.forEach(k => onkelosTranslatingRef.current.add(k));
 
-    const translateOnkelos = async () => {
-      const results = await Promise.all(
-        toTranslate.map(async item => {
-          try {
-            const french = await translateEnglishToFrench(item.english);
-            return french ? { verse: item.verse, french } : null;
-          } catch (error) {
-            log.warn('Failed to translate Onkelos to French:', error);
-            return null;
-          }
-        })
-      );
+    // Application incrémentale : chaque item s'affiche dès SA résolution.
+    // Une seule mise à jour en fin de lot (Promise.all) gelait tout
+    // l'écran pendant des minutes quand le fallback IA (lent) tournait.
+    toTranslate.forEach(item => {
+      (async () => {
+        let french = null;
+        try {
+          french = await translateEnglishToFrench(item.english);
+        } catch (error) {
+          log.warn('Failed to translate Onkelos to French:', error);
+        }
+        if (!mountedRef.current) return;
+        if (french) {
+          onkelosDoneRef.current.add(item.verse);
+          setOnkelosFrench(prev => ({ ...prev, [item.verse]: french }));
+        } else {
+          setOnkelosFailed(prev => ({ ...prev, [item.verse]: true }));
+        }
+      })();
+    });
 
-      if (!mountedRef.current) return;
-
-      const frenchTranslations = {};
-      const failed = {};
-      results.forEach((r, i) => {
-        if (r) {
-          frenchTranslations[r.verse] = r.french;
-          onkelosDoneRef.current.add(r.verse);
-        } else failed[toTranslate[i].verse] = true;
-      });
-
-      if (Object.keys(frenchTranslations).length > 0) {
-        setOnkelosFrench(prev => ({ ...prev, ...frenchTranslations }));
-      }
-      if (Object.keys(failed).length > 0) {
-        setOnkelosFailed(prev => ({ ...prev, ...failed }));
-      }
-    };
-
-    translateOnkelos();
     return () => {
       // Remove in-flight items from tracking ref so they can be retried
       itemKeys.forEach(k => onkelosTranslatingRef.current.delete(k));
@@ -138,41 +126,28 @@ export default function useTranslationLoading({
     // Mark as translating to prevent duplicate requests
     itemKeys.forEach(k => verseTranslatingRef.current.add(k));
 
-    const translateVerses = async () => {
-      const results = await Promise.all(
-        toTranslate.map(async verse => {
-          const cacheKey = `${selectedBook}:${selectedChapter}:${verse.verse}`;
-          try {
-            const result = await translateWithSource(verse.englishText);
-            return result?.translation ? { cacheKey, result } : null;
-          } catch (error) {
-            log.warn('Failed to translate verse to French:', error);
-            return null;
-          }
-        })
-      );
+    // Application incrémentale : chaque verset s'affiche dès SA résolution
+    // (le fallback IA met 5-30 s par item — un lot unique laissait la page
+    // entière sur « Chargement... » pendant des minutes).
+    toTranslate.forEach(verse => {
+      const cacheKey = `${selectedBook}:${selectedChapter}:${verse.verse}`;
+      (async () => {
+        let result = null;
+        try {
+          result = await translateWithSource(verse.englishText);
+        } catch (error) {
+          log.warn('Failed to translate verse to French:', error);
+        }
+        if (!mountedRef.current) return;
+        if (result?.translation) {
+          verseDoneRef.current.add(cacheKey);
+          setVerseFrench(prev => ({ ...prev, [cacheKey]: result }));
+        } else {
+          setVerseFailed(prev => ({ ...prev, [cacheKey]: true }));
+        }
+      })();
+    });
 
-      if (!mountedRef.current) return;
-
-      const frenchTranslations = {};
-      const failed = {};
-      results.forEach((r, i) => {
-        const key = itemKeys[i];
-        if (r) {
-          frenchTranslations[key] = r.result;
-          verseDoneRef.current.add(key);
-        } else failed[key] = true;
-      });
-
-      if (Object.keys(frenchTranslations).length > 0) {
-        setVerseFrench(prev => ({ ...prev, ...frenchTranslations }));
-      }
-      if (Object.keys(failed).length > 0) {
-        setVerseFailed(prev => ({ ...prev, ...failed }));
-      }
-    };
-
-    translateVerses();
     return () => {
       // Remove in-flight items from tracking ref so they can be retried
       itemKeys.forEach(k => verseTranslatingRef.current.delete(k));
