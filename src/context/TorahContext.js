@@ -310,8 +310,16 @@ export function TorahProvider({ children }) {
       return false;
     }
 
+    // Gemara : les dafs s'écrivent « 20a »/« 20b » — un entier nu (« Daf
+    // Yomi 20 ») serait rejeté par isChapterValidForBook et ferait retomber
+    // le lecteur au début du traité (2a). Un daf sans amud = amud aleph.
+    const normalizedChapter =
+      isTalmudBook(targetBook) && /^\d+$/.test(String(targetChapter))
+        ? `${targetChapter}a`
+        : targetChapter;
+
     // Validate chapter (basic check)
-    const chapterStr = String(targetChapter);
+    const chapterStr = String(normalizedChapter);
     if (!chapterStr || chapterStr === 'undefined' || chapterStr === 'null') {
       if (process.env.NODE_ENV === 'development') {
         console.warn(`goTo: Invalid chapter "${targetChapter}" for book "${targetBook}"`);

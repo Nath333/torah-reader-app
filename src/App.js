@@ -119,7 +119,7 @@ function App() {
   // Hooks
   const isOnline = useOnlineStatus();
   const { modals, handlers } = useModals();
-  const { view, setView, goToReader, toggleView } = useViewRouting(torah.book, torah.chapter);
+  const { view, setView, goToReader, toggleView, navigateTo } = useViewRouting(torah.book, torah.chapter);
   const { getShareLink } = useUrlState(torah.book, torah.chapter, torah.goTo);
 
   // Palette de commandes (Ctrl+P) + onboarding premier lancement
@@ -357,7 +357,12 @@ function App() {
                   const parts = ref.split(' ');
                   const book = parts.slice(0, -1).join(' ');
                   const chapter = parts[parts.length - 1];
-                  handleNavigate(book, parseInt(chapter) || chapter);
+                  const ch = parseInt(chapter) || chapter;
+                  torah.goTo(book, ch);
+                  // Le contexte torah seul ne suffit pas : la vue dérive de
+                  // l'URL (/study) — sans changement de route, le lecteur se
+                  // repositionnait derrière le dashboard sans le montrer.
+                  navigateTo(book, ch);
                 }}
                 onOpenVocabulary={() => setView('vocabulary')}
                 onOpenBookmarks={() => setView('bookmarks')}
