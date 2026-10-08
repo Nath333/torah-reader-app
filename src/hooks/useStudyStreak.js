@@ -8,12 +8,18 @@
  * - Last study date tracking
  * - Automatic streak update on app use
  */
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState, useEffect } from 'react';
 import useLocalStorage from './useLocalStorage';
+import { getTodayStats } from '../services/studyTracker';
 
-// Helper: Get date string in YYYY-MM-DD format
+// Helper: Get date string in YYYY-MM-DD format — en date LOCALE (l'ancien
+// toISOString() décalait le streak d'un jour : à 23 h en France, l'étude
+// était comptée sur le jour UTC suivant).
 const getDateString = (date = new Date()) => {
-  return date.toISOString().split('T')[0];
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 };
 
 // Helper: Get yesterday's date string
@@ -38,6 +44,20 @@ const DEFAULT_STREAK_DATA = {
 
 export default function useStudyStreak() {
   const [streakData, setStreakData] = useLocalStorage('torah-study-streak', DEFAULT_STREAK_DATA);
+
+  // Tick léger : les minutes du jour vivent dans le tracker canonique
+  // (studyTracker, accumulateur automatique) — un rafraîchissement toutes
+  // les 30 s garde l'affichage « Aujourd'hui » vivant sans y toucher ailleurs.
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const iv = setInterval(() => setTick(t => t + 1), 30 * 1000);
+    return () => clearInterval(iv);
+  }, []);
+  // SOURCE UNIQUE des minutes du jour : le studyTracker (temps automatique
+  // sur le lecteur, onglet visible). L'ancien todayMinutes du streak n'était
+  // jamais alimenté → « Aujourd'hui 0m » à côté d'anneaux à 100 %.
+  const trackerMinutes = getTodayStats().minutesAuto || 0;
+  const todayMinutes = Math.max(streakData.todayMinutes || 0, trackerMinutes);
 
   // Record a study session (call when user starts reading)
   const recordStudy = useCallback(() => {
@@ -206,13 +226,13 @@ export default function useStudyStreak() {
       totalDays: streakData.totalDays || 0,
       lastStudyDate: streakData.lastStudyDate,
       studiedToday: streakData.lastStudyDate === today,
-      todayMinutes: streakData.todayMinutes || 0,
+      todayMinutes,
       dailyGoalMinutes: streakData.dailyGoalMinutes || 15,
-      dailyGoalMet: (streakData.todayMinutes || 0) >= (streakData.dailyGoalMinutes || 15),
+      dailyGoalMet: todayMinutes >= (streakData.dailyGoalMinutes || 15),
       weeklyProgress: weekProgress,
       isStreakAtRisk
     };
-  }, [streakData, getWeeklyProgress, isStreakAtRisk]);
+  }, [streakData, getWeeklyProgress, isStreakAtRisk, todayMinutes]);
 
   return {
     // Data
@@ -220,7 +240,7 @@ export default function useStudyStreak() {
     longestStreak: streakData.longestStreak || 0,
     totalDays: streakData.totalDays || 0,
     lastStudyDate: streakData.lastStudyDate,
-    todayMinutes: streakData.todayMinutes || 0,
+    todayMinutes,
     isStreakAtRisk,
 
     // Actions

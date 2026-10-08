@@ -2,6 +2,12 @@
 // Montre OÙ un mot apparaît (Talmud, Mishnah, Midrash…) via le cache Sefaria.
 
 import { cache, loadDictionary, extractRootHelper } from './loaderCore';
+import { HEBREW_PREFIXES_ORDERED } from '../../constants/morphology';
+
+// Préfixes utilisés par l'extraction d'attestations — depuis la source
+// canonique (le split du 04/10 avait retiré la constante locale sans
+// réimporter : « COMMON_PREFIXES is not defined » à l'exécution).
+const COMMON_PREFIXES = HEBREW_PREFIXES_ORDERED;
 import { stripAllDiacritics, normalizeFinals, restoreFinals } from '../../utils/hebrewUtils';
 import { SOURCE_CONFIG } from '../../constants/sourceConfig';
 import { getSefariaBase } from '../sefariaBase';
