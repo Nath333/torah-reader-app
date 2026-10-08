@@ -18,6 +18,8 @@ import { getDailyLearning, getRandomInspiration } from '../../services/scholarly
 import {
   generateRecommendations,
   generateMilestones,
+  matchParshaIndex,
+  setCurrentParsha,
   syncProgress,
   getProgressSummary,
   trackStudyActivity,
@@ -328,9 +330,11 @@ const StudyDashboard = ({
     try {
       commentatorsCount = getProgressSummary().stats.commentatorsExplored;
     } catch { /* store absent : les autres jalons restent justes */ }
+    const srs = getSRSStats();
     return generateMilestones({
       versesStudied: levelProgress.versesStudied,
-      vocabularyMastered: getSRSStats().mastered,
+      vocabularyMastered: srs.mastered,
+      totalReviews: srs.totalReviews,
       studyStreak: streaks.current,
       commentatorsExplored: Array.from({ length: commentatorsCount }, (_, i) => i)
     });
@@ -372,6 +376,10 @@ const StudyDashboard = ({
       const learning = await getDailyLearning();
       if (cancelled) return;
       setDailyLearning(learning);
+      // Parasha courante → moteur learning (jalon « 5 premières parashiot »
+      // et progression systématique, restés à 0 depuis toujours).
+      const parashaIdx = matchParshaIndex(learning?.parashat?.displayValue?.en);
+      if (parashaIdx >= 0) setCurrentParsha(parashaIdx);
       setRecommendations(buildRecommendations(learning));
     };
     fetchDaily();

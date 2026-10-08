@@ -239,6 +239,49 @@ export function syncProgress(measures = {}) {
 }
 
 /**
+ * Index de la parasha hebdomadaire dans PARSHA_ORDER.
+ * Les displayValue Sefaria divergent de la table (« Bereshit » vs
+ * « Bereishit », « V'Zot HaBerachah » vs « Vezot HaBracha »…) : comparaison
+ * sur lettres normalisées + préfixe commun, avec alias pour les cas têtus.
+ * @param {string} displayValue - ex. « Bereshit », « Ki Tisa »
+ * @returns {number} 0-based dans PARSHA_ORDER, -1 si introuvable
+ */
+export function matchParshaIndex(displayValue) {
+  const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z]/g, '');
+  const target = norm(displayValue);
+  if (target.length < 3) return -1;
+  const ALIASES = {
+    bereshit: 'bereishit', bereishit: 'bereshit',
+    behaalotcha: 'behaalotecha', behaalotecha: 'behaalotcha',
+    vzothaberachah: 'vezothabracha', vezothabracha: 'vzothaberachah',
+    reh: 'reeh', reeh: 'reh'
+  };
+  const candidates = [target, ALIASES[target]].filter(Boolean);
+  for (let i = 0; i < PARSHA_ORDER.length; i++) {
+    const p = norm(PARSHA_ORDER[i]);
+    if (candidates.some(c => c === p || (c.length >= 4 && p.startsWith(c)) || (p.length >= 4 && c.startsWith(p)))) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+/**
+ * Écrit l'index de la parasha courante (0-based). Alimente le jalon
+ * « 5 premières parashiot » et la progression systématique — l'ancien
+ * currentParsha n'a JAMAIS bougé de 0.
+ * @param {number} index - position dans PARSHA_ORDER, -1/negatif = ignoré
+ */
+export function setCurrentParsha(index) {
+  const idx = Number(index);
+  if (!Number.isInteger(idx) || idx < 0 || idx >= PARSHA_ORDER.length) return false;
+  if (recommendationStore.userProgress.currentParsha === idx) return false;
+  recommendationStore.userProgress.currentParsha = idx;
+  persistRecommendations();
+  return true;
+}
+
+/**
  * Generate personalized recommendations
  */
 export function generateRecommendations() {
@@ -457,70 +500,6 @@ export function getProgressSummary() {
       topicsMastered: progress.topicsMastered.length,
       studyStreak: progress.studyStreak
     }
-  };
-}
-
-/**
- * Get study path suggestion
- */
-export function getStudyPath(duration = 'week') {
-  const progress = recommendationStore.userProgress;
-  const currentLevel = LEARNING_LEVELS[progress.level.toUpperCase()] || LEARNING_LEVELS.BEGINNER;
-
-  const dailyTasks = [];
-  const days = duration === 'week' ? 7 : duration === 'month' ? 30 : 7;
-
-  for (let day = 0; day < days; day++) {
-    const tasks = [];
-
-    // Daily vocabulary review
-    tasks.push({
-      type: 'vocabulary',
-      description: 'Review due vocabulary',
-      estimatedMinutes: 10
-    });
-
-    // Parsha study (spread across week)
-    if (day % 2 === 0) {
-      tasks.push({
-        type: 'parsha',
-        description: `Study ${PARSHA_ORDER[progress.currentParsha] || 'Bereishit'}`,
-        estimatedMinutes: 20
-      });
-    }
-
-    // Commentary deep-dive
-    if (day === 0 || day === 3) {
-      tasks.push({
-        type: 'commentary',
-        description: `Explore ${currentLevel.suggestedCommentators[0]} commentary`,
-        estimatedMinutes: 15
-      });
-    }
-
-    // Analysis mode practice
-    if (day === 1 || day === 4 || day === 6) {
-      const mode = currentLevel.suggestedModes[day % currentLevel.suggestedModes.length];
-      tasks.push({
-        type: 'analysis',
-        description: `Practice ${mode} analysis`,
-        estimatedMinutes: 15
-      });
-    }
-
-    dailyTasks.push({
-      day: day + 1,
-      date: new Date(Date.now() + day * 86400000).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
-      tasks,
-      totalMinutes: tasks.reduce((sum, t) => sum + t.estimatedMinutes, 0)
-    });
-  }
-
-  return {
-    duration,
-    level: currentLevel.label,
-    dailyTasks,
-    totalMinutes: dailyTasks.reduce((sum, d) => sum + d.totalMinutes, 0)
   };
 }
 
@@ -1014,13 +993,13 @@ export function generateMilestones(progress) {
       reward: '🏆 Initié du vocabulaire',
     },
     {
-      id: 'root-explorer',
-      title: 'Explorateur de racines',
-      hebrewTitle: 'חוקר שורשים',
-      target: 10,
-      current: Object.keys(progress.rootFamiliesStarted || {}).length,
-      type: 'roots',
-      reward: '🌳 Maître des racines',
+      id: 'review-100',
+      title: '100 révisions de vocabulaire',
+      hebrewTitle: 'מאה חזרות',
+      target: 100,
+      current: progress.totalReviews || 0,
+      type: 'reviews',
+      reward: '🔁 Répétiteur assidu',
     },
     {
       id: 'weekly-streak',
@@ -1144,11 +1123,12 @@ const learningRecommendationService = {
   calculateLevel,
   trackStudyActivity,
   syncProgress,
+  matchParshaIndex,
+  setCurrentParsha,
   generateRecommendations,
   dismissRecommendation,
   getRecommendations,
   getProgressSummary,
-  getStudyPath,
   resetRecommendations,
   // PRO SCHOLAR v3
   PRIORITY_WEIGHTS,

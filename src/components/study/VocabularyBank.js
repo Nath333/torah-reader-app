@@ -95,6 +95,7 @@ const VocabularyBank = () => {
       const milestones = generateMilestones({
         versesStudied: getLevelProgress().versesStudied,
         vocabularyMastered: masteredWords.length,
+        totalReviews: currentStats?.totalReviews || 0,
         studyStreak: currentStats?.streak || 0
       });
 

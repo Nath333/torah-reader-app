@@ -8,6 +8,8 @@ import {
   syncProgress,
   generateRecommendations,
   generateMilestones,
+  matchParshaIndex,
+  setCurrentParsha,
   calculateLevel,
   LEARNING_LEVELS,
   getProgressSummary
@@ -110,5 +112,37 @@ describe('generateMilestones (FR, contrat de champs)', () => {
     const ms = generateMilestones({ versesStudied: 9999 });
     const verse100 = ms.find(m => m.id === 'verse-100');
     expect(verse100.progress).toBe(100);
+  });
+
+  test('le jalon révisions lit totalReviews (l\'ancien jalon racines était inalimentable)', () => {
+    const ms = generateMilestones({ totalReviews: 40 });
+    const reviews = ms.find(m => m.id === 'review-100');
+    expect(reviews.title).toBe('100 révisions de vocabulaire');
+    expect(reviews.current).toBe(40);
+    expect(reviews.progress).toBe(40);
+  });
+});
+
+describe('parasha courante (matchParshaIndex + setCurrentParsha)', () => {
+  test('orthographe Sefaria tolérée : « Bereshit » -> Bereishit (index 0)', () => {
+    expect(matchParshaIndex('Bereshit')).toBe(0);
+  });
+
+  test('multi-mots et cas têtus', () => {
+    expect(matchParshaIndex('Ki Tisa')).toBe(20);
+    expect(matchParshaIndex("V'Zot HaBerachah")).toBe(53); // dernier de l'année
+    expect(matchParshaIndex('Chayei Sarah')).toBe(4);
+  });
+
+  test('entrées inconnues/vides -> -1', () => {
+    expect(matchParshaIndex('Shmini Atzeret')).toBe(-1);
+    expect(matchParshaIndex('')).toBe(-1);
+    expect(matchParshaIndex(null)).toBe(-1);
+  });
+
+  test('setCurrentParsha écrit et rejette le hors-bornes', () => {
+    expect(setCurrentParsha(20)).toBe(true);
+    expect(setCurrentParsha(-3)).toBe(false);
+    expect(setCurrentParsha(999)).toBe(false);
   });
 });
