@@ -26,7 +26,7 @@
 |---|---|---|---|
 | `constants/morphology.js` | 1 912 (était 2 696) | ✅ fait | `functionWords.js` extrait ; reste STOP/binyanim/analyse |
 | ~~`services/commentary/commentaryServiceFactory.js`~~ | **fait 03/10** | façade 263 l. + `factory/` (core 371, Rashi 151, Ramban 129, TosafotMaharsha 57, Sephardi 265) + smoke test (5) | ✅ |
-| `components/scholar-mode/NotebookTab.js` | 1 163 | UI — sous-onglets | nécessite tests d'abord |
+| ~~`components/scholar-mode/NotebookTab.js`~~ | 1 163 → **223 + `NotebookTab/sections/` 5 fichiers (fait 08/10)** | ✅ tests de rendu D'ABORD (7 tests : parcours des 6 sous-onglets), puis split sections | pièges : composants fermés APRÈS la borne de coupe (}; orphelin en façade), chemins à 4 niveaux depuis sections/, FeatureIndicator partagé part avec sa seule consommatrice (Today) |
 | `components/scholar-mode/ProScholarV29RichAnalysis.panels.js` | 1 186 | UI — un fichier par panneau | |
 | `components/layout/FocusMode.js` | 1 242 | UI — sections | importé par App.js |
 | `components/scholar-mode/WordsTab/components/LookupTab.js` | 1 443 | UI — panneaux | |
