@@ -5,7 +5,6 @@ import './HeaderGreeting.css';
 /**
  * Compact header greeting with Hebrew date
  * Shows greeting and Hebrew date in the toolbar
- * Note: "Continue Reading" is handled by WelcomeBanner to avoid duplication
  */
 const HeaderGreeting = () => {
   const { hebrewDate, greeting } = useHebrewDate();

@@ -12,6 +12,5 @@ export { default as ScholarlySourceIndicator } from './ScholarlySourceIndicator'
 export { default as SourceBadge } from './SourceBadge';
 export { default as SourceChainView } from './SourceChainView';
 export { default as Tooltip } from './Tooltip';
-export { default as WelcomeBanner } from './WelcomeBanner';
 // WordIntelligenceCard is the PRO SCHOLAR v3 version from dictionary
 export { default as WordIntelligenceCard } from '../dictionary/WordIntelligenceCard';
