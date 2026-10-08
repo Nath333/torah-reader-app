@@ -14,7 +14,6 @@ import { initializePreload, preloadForBook } from './services/dictionaries/dicti
 import { preloadCommonWords } from './services/unifiedLookupService';
 import { FEATURES } from './services/featureFlags';
 // Semantic search index (populates the corpus that SmartSearch queries)
-import { indexVerses } from './services/ai/semanticSearchService';
 
 // Context
 import { useTorah } from './context/TorahContext';
@@ -187,11 +186,13 @@ function App() {
       hebrew: v.hebrewText || '',
       english: v.englishText || ''
     }));
-    try {
-      indexVerses(payload);
-    } catch (err) {
-      console.debug('[App] indexVerses error:', err?.message);
-    }
+    // Import dynamique : le service sémantique ne doit pas alourdir le chunk
+    // principal (SmartSearch, son seul consommateur interactif, est déjà lazy).
+    import('./services/ai/semanticSearchService')
+      .then(({ indexVerses }) => indexVerses(payload))
+      .catch(err => {
+        console.debug('[App] indexVerses error:', err?.message);
+      });
   }, [torah.book, torah.chapter, torah.verses]);
 
   // =============================================================================
