@@ -193,7 +193,17 @@ export function TorahProvider({ children }) {
         if (!abortController.signal.aborted) {
           setChapters(chapterList);
           setParshas(parshaList);
-          setChapter(chapterList[0] || '');
+          // Ne PAS écraser le chapitre posé par le deep-link / la navigation :
+          // l'ancien setChapter(chapterList[0]) inconditionnel faisait que tout
+          // lien vers un chapitre ≠ premier retombait sur le chapitre 1 (le
+          // fetch du bon chapitre partait en course et perdait l'affichage).
+          setChapter((prev) => {
+            const prevStr = String(prev || '');
+            if (prevStr && chapterList.length > 0 && chapterList.includes(prevStr)) {
+              return prevStr;
+            }
+            return chapterList[0] || prevStr || '';
+          });
         }
       } catch (err) {
         if (err.name !== 'AbortError' && !abortController.signal.aborted) {
