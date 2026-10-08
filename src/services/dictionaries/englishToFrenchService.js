@@ -231,24 +231,33 @@ const translate = async (text) => {
       }
 
       let rateLimited = false;
-      let tried = false;
+      let directOk = null;   // null = non tenté, false = tenté et raté
+      let proxyTried = false;
       for (const url of attempts) {
+        const viaProxy = url !== apiUrl;
         try {
-          tried = true;
           const d = await fetchTranslation(url);
+          if (viaProxy) proxyTried = true;
+          else directOk = true;
           if (d.translation && isValid(text, d.translation)) {
             markMirrorOk(idx);
-            if (url !== apiUrl) markProxyOk();
-            log.verbose(`Translated via ${mirror}${url === apiUrl ? '' : ' (proxy)'}:`, text.slice(0, 30));
+            if (viaProxy) markProxyOk();
+            log.verbose(`Translated via ${mirror}${viaProxy ? ' (proxy)' : ''}:`, text.slice(0, 30));
             return { translation: fix(d.translation.trim()), source: 'Lingva', accuracy: 'high' };
           }
+          // 200 mais anglais renvoyé à l'identique (écho) : pas une
+          // traduction — on enchaîne sur l'URL suivante.
         } catch (e) {
           if (e.status === 429) rateLimited = true;
-          log.verbose(`Mirror ${mirror}${url === apiUrl ? '' : ' (proxy)'} failed:`, e.message);
+          if (viaProxy) { proxyTried = true; markProxyFail(); }
+          else directOk = false;
+          log.verbose(`Mirror ${mirror}${viaProxy ? ' (proxy)' : ''} failed:`, e.message);
         }
         if (rateLimited) break; // inutile de marteler les autres URLs
       }
-      if (tried) markMirrorFail(idx, rateLimited);
+      // Échec du miroir compté seulement si le direct lui-même a été tenté
+      // et n'a pas abouti ; un échec du seul proxy n'incrimine pas le miroir.
+      if (directOk === false || (directOk === null && !proxyTried)) markMirrorFail(idx, rateLimited);
       if (rateLimited) break; // backoff global : stopper la tournée
     }
   }
