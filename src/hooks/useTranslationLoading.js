@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { translateWithSource, translateEnglishToFrench, resetApiState, hasWorkingUpstream } from '../services/dictionaries/englishToFrenchService';
+import { isTanakhBook, getFrenchVerse } from '../services/tanakhFrenchService';
 import { createLogger } from '../utils/debug';
 
 const log = createLogger('useTranslationLoading');
@@ -181,29 +182,52 @@ export default function useTranslationLoading({
     // lots (6 toutes les 1,5 s) — la rafale de 60+ requêtes d'un coup
     // déclenchait le rate-limit de Lingva et vouait la moitié du chapitre
     // à l'IA lente. Chaque item s'affiche dès SA résolution.
+    // SOURCE PRIMAIRE pour le Tanakh : la traduction française OFFICIELLE
+    // (Louis Segond 1910, domaine public, locale) — instantanée, hors-ligne ;
+    // la chaîne Lingva/IA ne sert qu'en secours (Talmud, Onkelos, livres sans
+    // version FR, ou verset absent de Segond).
     const pendingVerses = toTranslate.slice();
-    const launchVerse = (verse) => {
+    const launchVerse = async (verse) => {
       const cacheKey = `${selectedBook}:${selectedChapter}:${verse.verse}`;
-      (async () => {
-        let result = null;
+      // 1) Tanakh → Segond 1910 locale (instantané)
+      if (isTanakhBook(selectedBook)) {
         try {
-          result = await withTimeout(translateWithSource(verse.englishText));
+          const fr = await getFrenchVerse(selectedBook, selectedChapter, verse.verse);
+          if (fr) {
+            verseDoneRef.current.add(cacheKey);
+            setVerseFrench(prev => ({
+              ...prev,
+              [cacheKey]: { translation: fr, source: 'Segond 1910', accuracy: 'high', method: 'Tanakh FR' }
+            }));
+            return;
+          }
         } catch (error) {
-          log.warn('Failed to translate verse to French:', error);
+          log.warn('Segond lookup failed, fallback IA:', error);
         }
-        if (result?.translation) {
-          verseDoneRef.current.add(cacheKey);
-          setVerseFrench(prev => ({ ...prev, [cacheKey]: result }));
-        } else {
-          setVerseFailed(prev => ({ ...prev, [cacheKey]: true }));
-          scheduleAutoRetry();
-        }
-      })();
+      }
+      // 2) Secours : chaîne Lingva/IA
+      let result = null;
+      try {
+        result = await withTimeout(translateWithSource(verse.englishText));
+      } catch (error) {
+        log.warn('Failed to translate verse to French:', error);
+      }
+      if (result?.translation) {
+        verseDoneRef.current.add(cacheKey);
+        setVerseFrench(prev => ({ ...prev, [cacheKey]: result }));
+      } else {
+        setVerseFailed(prev => ({ ...prev, [cacheKey]: true }));
+        scheduleAutoRetry();
+      }
     };
-    pendingVerses.splice(0, STAGGER_BATCH).forEach(launchVerse);
+    const launchQueue = toTranslate.slice();
+    const launchNext = () => {
+      launchQueue.splice(0, STAGGER_BATCH).forEach(v => launchVerse(v));
+    };
+    launchNext();
     const staggerIv = setInterval(() => {
-      if (pendingVerses.length === 0) { clearInterval(staggerIv); return; }
-      pendingVerses.splice(0, STAGGER_BATCH).forEach(launchVerse);
+      if (launchQueue.length === 0) { clearInterval(staggerIv); return; }
+      launchNext();
     }, STAGGER_DELAY);
 
     return () => {
