@@ -102,16 +102,6 @@
   font-size: 0.75rem;
 }
 
-/* =============================================================================
-   Content Area
-   ============================================================================= */
-
-.chavruta-content {
-  flex: 1;
-  overflow-y: auto;
-  transition: opacity 0.15s ease;
-}
-
 .chavruta-content.transitioning {
   opacity: 0.5;
   pointer-events: none;
@@ -224,19 +214,6 @@
   margin: 0 0 0.75rem 0;
   font-size: 0.9rem;
   color: var(--text-primary, #333);
-}
-
-/* =============================================================================
-   View Mode Toggle
-   ============================================================================= */
-
-.compare-view-toggle {
-  display: flex;
-  gap: 0.25rem;
-  padding: 0.35rem;
-  background: var(--bg-secondary, #f0f0f0);
-  border-radius: 10px;
-  margin-bottom: 0.75rem;
 }
 
 .toggle-btn {
@@ -492,10 +469,6 @@
 
 [data-theme="dark"] .comparison-questions li {
   color: #fef3c7;
-}
-
-[data-theme="dark"] .compare-view-toggle {
-  background: var(--bg-tertiary, #1e1e1e);
 }
 
 [data-theme="dark"] .toggle-btn {

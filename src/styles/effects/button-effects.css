@@ -74,42 +74,6 @@
 }
 
 /* -----------------------------------------------------------------------------
-   Floating Action Button Enhancements
-   ----------------------------------------------------------------------------- */
-
-.floating-action-button {
-  transition:
-    transform var(--duration-fast, 150ms) var(--ease-spring, cubic-bezier(0.175, 0.885, 0.32, 1.275)),
-    box-shadow var(--duration-fast, 150ms) ease !important;
-}
-
-.floating-action-button:hover {
-  transform: scale(1.1) !important;
-  box-shadow:
-    0 8px 25px var(--primary-glow, rgba(91, 76, 219, 0.4)),
-    0 4px 12px rgba(0, 0, 0, 0.15) !important;
-}
-
-.floating-action-button:active {
-  transform: scale(0.95) !important;
-}
-
-/* Ripple effect */
-.floating-action-button::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: radial-gradient(circle at center, rgba(255,255,255,0.3) 0%, transparent 70%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.floating-action-button:active::after {
-  opacity: 1;
-}
-
-/* -----------------------------------------------------------------------------
    Button Group Styling
    ----------------------------------------------------------------------------- */
 
@@ -151,21 +115,11 @@
   transform: translateY(-1px) scale(0.97);
 }
 
-/* Smooth icon transitions */
-.icon-spin:hover svg {
-  animation: iconSpin 0.5s ease-in-out;
-}
-
 @keyframes iconSpin {
   0% { transform: rotate(0deg); }
   25% { transform: rotate(-10deg); }
   75% { transform: rotate(10deg); }
   100% { transform: rotate(0deg); }
-}
-
-/* Wiggle effect for attention */
-.wiggle:hover {
-  animation: wiggle 0.5s ease-in-out;
 }
 
 @keyframes wiggle {

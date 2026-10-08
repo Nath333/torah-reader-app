@@ -1,14 +1,4 @@
-/* =============================================================================
-   STUDY INSIGHTS PANEL - PRO SCHOLAR V6 Styles
-   ============================================================================= */
 
-.study-insights-panel {
-  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
 
 /* =============================================================================
    HEADER
@@ -32,30 +22,6 @@
   font-weight: 600;
   color: #e0e7ff;
   flex: 1;
-}
-
-.study-insights-panel .insights-badge {
-  background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
-  color: white;
-  font-size: 0.65rem;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 10px;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-/* =============================================================================
-   TAB NAVIGATION
-   ============================================================================= */
-
-.study-insights-panel .insights-tabs {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 16px;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
-  padding: 4px;
 }
 
 .study-insights-panel .insights-tabs .tab {
@@ -375,9 +341,6 @@
    ============================================================================= */
 
 @media (max-width: 600px) {
-  .study-insights-panel {
-    padding: 12px;
-  }
 
   .study-insights-panel .semantic-fields-grid {
     grid-template-columns: 1fr;

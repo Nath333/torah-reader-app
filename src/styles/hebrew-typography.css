@@ -40,35 +40,6 @@
   letter-spacing: 0.01em;
 }
 
-/* Hebrew font classes */
-.font-hebrew {
-  font-family: var(--font-hebrew);
-}
-
-.font-torah {
-  font-family: var(--font-torah);
-  font-size: var(--text-torah);
-  line-height: var(--leading-hebrew);
-}
-
-.font-gemara {
-  font-family: var(--font-gemara);
-  font-size: var(--text-hebrew-lg);
-  line-height: var(--leading-hebrew);
-}
-
-.font-rashi {
-  font-family: var(--font-rashi);
-  font-size: var(--text-rashi);
-  line-height: var(--leading-relaxed);
-}
-
-.font-commentary {
-  font-family: var(--font-commentary);
-  font-size: var(--text-commentary);
-  line-height: var(--leading-relaxed);
-}
-
 /* -----------------------------------------------------------------------------
    Torah Text Styling (Sefer Torah aesthetic)
    ----------------------------------------------------------------------------- */
@@ -102,11 +73,6 @@
   margin-inline-start: 0.3em;
   -webkit-user-select: none;
   user-select: none;
-}
-
-.verse-number-hebrew {
-  font-family: var(--font-hebrew);
-  font-weight: 500;
 }
 
 /* -----------------------------------------------------------------------------
@@ -182,23 +148,6 @@
 }
 
 /* -----------------------------------------------------------------------------
-   Dibbur HaMaschil (Opening words that Rashi comments on)
-   ----------------------------------------------------------------------------- */
-
-.dibbur-hamaschil,
-.dh {
-  font-weight: 700;
-  color: var(--sefer-gold-accent);
-}
-
-.dibbur-hamaschil::after,
-.dh::after {
-  content: ' – ';
-  font-weight: 400;
-  color: var(--sefer-ink);
-}
-
-/* -----------------------------------------------------------------------------
    Abbreviations (Rashei Teivot)
    ----------------------------------------------------------------------------- */
 
@@ -224,51 +173,9 @@
   content: '׳';
 }
 
-/* -----------------------------------------------------------------------------
-   Hebrew Numerals (Gematria styling)
-   ----------------------------------------------------------------------------- */
-
-.gematria-value {
-  font-family: var(--font-hebrew);
-  font-weight: 600;
-  color: var(--sefer-gold);
-}
-
 .hebrew-numeral {
   font-family: var(--font-hebrew);
   font-weight: 500;
-}
-
-/* -----------------------------------------------------------------------------
-   Book/Page Headers (Like printed sefarim)
-   ----------------------------------------------------------------------------- */
-
-.sefer-header {
-  font-family: var(--font-torah);
-  font-size: var(--text-hebrew-2xl);
-  font-weight: 700;
-  color: var(--sefer-gold-accent);
-  text-align: center;
-  direction: rtl;
-  letter-spacing: 0.05em;
-  margin-bottom: 1rem;
-}
-
-.sefer-subheader {
-  font-family: var(--font-hebrew);
-  font-size: var(--text-hebrew-lg);
-  font-weight: 500;
-  color: var(--sefer-brown);
-  text-align: center;
-  direction: rtl;
-}
-
-.masechet-name {
-  font-family: var(--font-torah);
-  font-size: var(--text-hebrew-xl);
-  font-weight: 700;
-  color: var(--sefer-ink);
-  direction: rtl;
 }
 
 .daf-number {
@@ -276,23 +183,6 @@
   font-size: var(--text-hebrew-lg);
   font-weight: 600;
   color: var(--sefer-gold-accent);
-}
-
-.amud-indicator {
-  font-family: var(--font-hebrew);
-  font-size: var(--text-hebrew-base);
-  color: var(--sefer-brown);
-}
-
-/* -----------------------------------------------------------------------------
-   Parchment/Paper Background Effects
-   ----------------------------------------------------------------------------- */
-
-.parchment-bg {
-  background: var(--sefer-parchment);
-  background-image:
-    radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.3) 0%, transparent 70%),
-    linear-gradient(180deg, var(--sefer-parchment) 0%, var(--sefer-parchment-dark) 100%);
 }
 
 .paper-texture {
@@ -320,14 +210,6 @@
     );
   pointer-events: none;
   opacity: 0.8;
-}
-
-/* Gilded edge effect */
-.gilded-edge {
-  border: 2px solid var(--sefer-gold);
-  box-shadow:
-    inset 0 0 30px rgba(201, 162, 39, 0.1),
-    0 0 20px rgba(201, 162, 39, 0.15);
 }
 
 /* -----------------------------------------------------------------------------
@@ -403,17 +285,8 @@
     color: black !important;
   }
 
-  .parchment-bg {
-    background: white !important;
-  }
-
   .paper-texture::before {
     display: none;
-  }
-
-  .gilded-edge {
-    border-color: #999 !important;
-    box-shadow: none !important;
   }
 }
 
@@ -428,10 +301,6 @@
 
   .text-gemara {
     font-size: calc(var(--text-hebrew-lg) * 0.9);
-  }
-
-  .sefer-header {
-    font-size: calc(var(--text-hebrew-2xl) * 0.85);
   }
 }
 
@@ -497,22 +366,6 @@
   color: var(--sefer-gold-accent);
 }
 
-/* Parsha markers */
-.parsha-marker {
-  display: inline-block;
-  font-weight: 700;
-  color: var(--sefer-gold);
-  margin: 0 0.5em;
-}
-
-.parsha-petuhah::before {
-  content: '(פ)';
-}
-
-.parsha-stumah::before {
-  content: '(ס)';
-}
-
 /* -----------------------------------------------------------------------------
    Hebrew Text Highlight Effects
    ----------------------------------------------------------------------------- */
@@ -565,48 +418,6 @@
   50% {
     box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2);
   }
-}
-
-/* -----------------------------------------------------------------------------
-   Commentary Panel Styling
-   ----------------------------------------------------------------------------- */
-
-/* Rashi commentary container */
-.commentary-rashi-container {
-  background: linear-gradient(
-    to bottom,
-    var(--sefer-parchment) 0%,
-    var(--sefer-parchment-dark) 100%
-  );
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
-  border: 1px solid var(--sefer-border);
-  box-shadow: var(--shadow-sm);
-}
-
-/* Dibbur HaMatchil (opening phrase) styling */
-.dibbur-hamatchil {
-  font-family: var(--font-torah);
-  font-weight: 700;
-  font-size: 1.1em;
-  color: var(--sefer-gold-accent);
-  display: inline;
-}
-
-.dibbur-hamatchil::after {
-  content: ' - ';
-  color: var(--sefer-brown);
-  font-weight: 400;
-}
-
-/* Commentary text flow */
-.commentary-text-flow {
-  font-family: var(--font-commentary);
-  font-size: var(--text-commentary);
-  line-height: 1.9;
-  color: var(--sefer-ink);
-  direction: rtl;
-  text-align: justify;
 }
 
 /* -----------------------------------------------------------------------------

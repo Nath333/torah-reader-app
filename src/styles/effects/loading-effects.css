@@ -66,51 +66,13 @@
   animation: spinGradient 0.8s linear infinite;
 }
 
-/* -----------------------------------------------------------------------------
-   Skeleton Loading Improvements
-   ----------------------------------------------------------------------------- */
-
-.skeleton-friendly {
-  background: linear-gradient(
-    90deg,
-    var(--bg-subtle, #f1f5f9) 0%,
-    var(--bg-elevated, #ffffff) 50%,
-    var(--bg-subtle, #f1f5f9) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmerLoad 1.5s ease-in-out infinite;
-  border-radius: var(--radius);
-}
-
-.skeleton-text {
-  height: 1em;
-  margin: 0.5em 0;
-}
-
 .skeleton-title {
   height: 1.5em;
   width: 60%;
 }
 
-.skeleton-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-}
-
 .skeleton-card {
   height: 120px;
-}
-
-/* -----------------------------------------------------------------------------
-   Smooth Progress Indicators
-   ----------------------------------------------------------------------------- */
-
-.progress-smooth {
-  height: 8px;
-  background: var(--bg-subtle);
-  border-radius: 4px;
-  overflow: hidden;
 }
 
 .progress-smooth .progress-bar {

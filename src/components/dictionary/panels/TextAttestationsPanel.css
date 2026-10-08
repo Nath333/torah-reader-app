@@ -24,53 +24,12 @@
   padding: 8px;
 }
 
-/* =============================================================================
-   HEADER
-   ============================================================================= */
-
-.tap-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--border-color, #e5e7eb);
-}
-
 .text-attestations-panel.dark .tap-header {
   border-bottom-color: var(--border-color-dark, #374151);
 }
 
-.tap-title {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: var(--text-primary, #1f2937);
-}
-
 .text-attestations-panel.dark .tap-title {
   color: var(--text-primary-dark, #f3f4f6);
-}
-
-.tap-icon {
-  font-size: 1.1rem;
-}
-
-.tap-title-text {
-  font-size: inherit;
-  font-weight: inherit;
-  color: inherit;
-}
-
-.tap-total-badge {
-  background: #3b82f6;
-  color: white;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-size: 0.7rem;
-  font-weight: 700;
 }
 
 /* =============================================================================
@@ -312,15 +271,6 @@
   }
 }
 
-/* =============================================================================
-   PRO SCHOLAR V17: DICTIONARY SOURCES DISPLAY
-   Shows which dictionaries have this word with definitions
-   ============================================================================= */
-
-.tap-dict-badge {
-  background: linear-gradient(135deg, #059669, #0d9488);
-}
-
 .tap-dict-sources {
   margin-bottom: 12px;
   padding: 10px;
@@ -482,54 +432,8 @@
   color: var(--text-muted-dark, #6b7280);
 }
 
-/* Root badge - shows when word was found via root fallback */
-.tap-root-badge {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  color: white;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-size: 0.7rem;
-  font-weight: 500;
-  margin-left: 6px;
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-}
-
-.tap-root-badge span[dir="rtl"] {
-  font-family: 'SBL Hebrew', 'Times New Roman', serif;
-  font-size: 0.8rem;
-}
-
-/* PRO SCHOLAR V22: Local badge - shows when found in local dictionaries */
-.tap-local-badge {
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-  color: white;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-size: 0.65rem;
-  font-weight: 600;
-  margin-left: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
 .text-attestations-panel.dark .tap-local-badge {
   background: linear-gradient(135deg, #a78bfa, #8b5cf6);
-}
-
-/* PRO SCHOLAR V24: Live API badge - shows when fetched from Sefaria API */
-.tap-live-badge {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-size: 0.65rem;
-  font-weight: 600;
-  margin-left: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  animation: tap-live-pulse 2s ease-in-out infinite;
 }
 
 @keyframes tap-live-pulse {
@@ -587,20 +491,6 @@
   background: linear-gradient(90deg, rgba(139, 92, 246, 0.12), transparent);
 }
 
-/* Strong's number badge */
-.tap-strong-number {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  color: white;
-  padding: 1px 6px;
-  border-radius: 4px;
-  font-size: 0.65rem;
-  font-weight: 600;
-  font-family: 'Monaco', 'Consolas', monospace;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
 .text-attestations-panel.dark .tap-strong-number {
   background: linear-gradient(135deg, #60a5fa, #3b82f6);
 }
@@ -654,84 +544,12 @@
   border-color: rgba(59, 130, 246, 0.4);
 }
 
-.tap-suggestion-title {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: #3b82f6;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
 .text-attestations-panel.dark .tap-suggestion-title {
   color: #60a5fa;
 }
 
-.tap-suggestion-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-  font-size: 0.75rem;
-  color: var(--text-secondary, #4b5563);
-  text-align: left;
-}
-
 .text-attestations-panel.dark .tap-suggestion-item {
   color: var(--text-secondary-dark, #9ca3af);
-}
-
-.tap-suggestion-icon {
-  flex-shrink: 0;
-  font-size: 0.8rem;
-}
-
-/* Try root lookup button */
-.tap-try-root {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 8px;
-  padding: 4px 10px;
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  color: white;
-  border-radius: 12px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.tap-try-root:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
-}
-
-.tap-try-root-hebrew {
-  font-family: 'SBL Hebrew', 'Times New Roman', serif;
-  font-size: 0.8rem;
-}
-
-/* Sefaria link */
-.tap-sefaria-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 6px;
-  padding: 3px 8px;
-  background: transparent;
-  color: #3b82f6;
-  border: 1px solid #3b82f6;
-  border-radius: 10px;
-  font-size: 0.65rem;
-  font-weight: 500;
-  cursor: pointer;
-  text-decoration: none;
-  transition: all 0.15s ease;
-}
-
-.tap-sefaria-link:hover {
-  background: #3b82f6;
-  color: white;
 }
 
 .text-attestations-panel.dark .tap-sefaria-link {

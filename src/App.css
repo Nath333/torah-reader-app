@@ -281,8 +281,6 @@ body {
   padding: var(--space-1) var(--space-2);
 }
 
-
-
 /* -----------------------------------------------------------------------------
    Header Toolbar
    ----------------------------------------------------------------------------- */
@@ -576,29 +574,6 @@ body {
   }
 }
 
-.content-header {
-  display: flex;
-  justify-content: center;
-  margin-bottom: var(--space-4);
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Enhanced content cards container */
-.content-card {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-sm);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.content-card:hover {
-  box-shadow: var(--shadow-md);
-  border-color: rgba(91, 76, 219, 0.2);
-}
-
 /* -----------------------------------------------------------------------------
    Navigation / Selectors
    ----------------------------------------------------------------------------- */
@@ -761,17 +736,9 @@ body {
   .main-content {
     padding: var(--space-5);
   }
-
-  .content-header {
-    grid-template-columns: 280px 1fr;
-  }
 }
 
 @media (max-width: 900px) {
-  .content-header {
-    max-width: 100%;
-    padding: 0 var(--space-2);
-  }
 }
 
 @media (max-width: 768px) {
@@ -815,11 +782,6 @@ body {
   .main-content {
     padding: var(--space-4);
     gap: var(--space-4);
-  }
-
-  .content-header {
-    grid-template-columns: 1fr;
-    gap: var(--space-3);
   }
 }
 
@@ -921,19 +883,6 @@ body {
     transform: scale(0.96);
   }
 
-  /* Remove hover effects on touch devices */
-  .card-lift:hover,
-  .premium-card:hover {
-    transform: none;
-  }
-
-  /* Add active states instead */
-  .card-lift:active,
-  .premium-card:active {
-    transform: scale(0.98);
-    box-shadow: var(--shadow-sm);
-  }
-
   /* Disable shimmer effects on mobile to save battery */
   .toolbar-btn::after {
     display: none;
@@ -944,12 +893,6 @@ body {
     padding: var(--space-4);
     margin-bottom: var(--space-2);
   }
-
-  /* Better spacing for readability */
-  .verse-text-hebrew {
-    font-size: 1.3rem;
-    line-height: 2.2;
-  }
 }
 
 /* =============================================================================
@@ -958,14 +901,6 @@ body {
 
 .main-content {
   animation: fadeInUp 0.3s ease-out;
-}
-
-/* View transition animations */
-.content-header,
-.welcome-banner,
-.chapter-header,
-.verse-container {
-  animation: fadeIn 0.25s ease-out;
 }
 
 /* Staggered animation for lists */
@@ -1035,17 +970,6 @@ body {
   height: 18px;
   color: var(--text-muted);
   pointer-events: none;
-}
-
-/* Input sizes */
-.input-sm {
-  padding: var(--space-1) var(--space-2);
-  font-size: 13px;
-}
-
-.input-lg {
-  padding: var(--space-3) var(--space-4);
-  font-size: 15px;
 }
 
 /* Input states */
@@ -1281,11 +1205,6 @@ body {
   contain: layout style;
 }
 
-.verse-container,
-.content-card {
-  contain: layout;
-}
-
 /* Optimize images */
 img {
   content-visibility: auto;
@@ -1385,42 +1304,6 @@ img {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
-/* Line clamp */
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* Flex utilities */
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.flex-between {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-/* Gap utilities */
-.gap-1 { gap: var(--space-1); }
-.gap-2 { gap: var(--space-2); }
-.gap-3 { gap: var(--space-3); }
-.gap-4 { gap: var(--space-4); }
 
 /* Animation utilities - keyframes defined in animations.css */
 .animate-fade-in {
@@ -1586,15 +1469,6 @@ img {
   animation: fadeIn 0.2s ease-out;
 }
 
-/* =============================================================================
-   Page Transitions - Smooth View Switching
-   ============================================================================= */
-
-/* View enter animation */
-.view-enter {
-  animation: viewEnter 0.3s var(--ease-out-expo) forwards;
-}
-
 @keyframes viewEnter {
   from {
     opacity: 0;
@@ -1606,11 +1480,6 @@ img {
   }
 }
 
-/* View exit animation */
-.view-exit {
-  animation: viewExit 0.2s ease-out forwards;
-}
-
 @keyframes viewExit {
   from {
     opacity: 1;
@@ -1620,11 +1489,6 @@ img {
     opacity: 0;
     transform: translateY(-8px);
   }
-}
-
-/* Smooth content fade for lazy components */
-.lazy-content {
-  animation: lazyFadeIn 0.4s ease-out;
 }
 
 @keyframes lazyFadeIn {

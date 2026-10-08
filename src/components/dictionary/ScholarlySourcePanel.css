@@ -1,14 +1,4 @@
-/* =============================================================================
-   PRO SCHOLAR V10: SCHOLARLY SOURCE PANEL STYLES
-   ============================================================================= */
 
-.scholarly-source-panel {
-  background: var(--bg-secondary, #f8fafc);
-  border: 1px solid var(--border-color, #e2e8f0);
-  border-radius: 8px;
-  padding: 16px;
-  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
-}
 
 .scholarly-source-panel.empty {
   text-align: center;
@@ -183,11 +173,6 @@
   direction: rtl;
 }
 
-/* Alternatives Section */
-.alternatives-section {
-  margin-top: 16px;
-}
-
 .expand-toggle {
   display: flex;
   align-items: center;
@@ -205,12 +190,6 @@
 
 .expand-toggle:hover {
   background: var(--bg-hover, #e2e8f0);
-}
-
-.alternatives-list {
-  margin-top: 12px;
-  padding-left: 8px;
-  border-left: 2px solid var(--border-color, #e2e8f0);
 }
 
 /* Divergent Opinions */
@@ -259,21 +238,6 @@
   color: var(--text-secondary, #475569);
 }
 
-/* Analysis Notes */
-.analysis-notes {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px dashed var(--border-color, #e2e8f0);
-}
-
-.analysis-note {
-  font-size: 0.85rem;
-  color: var(--text-muted, #64748b);
-}
-
 /* No Sources */
 .no-sources {
   padding: 24px;
@@ -283,10 +247,6 @@
 
 /* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
-  .scholarly-source-panel {
-    background: var(--bg-secondary, #1e293b);
-    border-color: var(--border-color, #334155);
-  }
 
   .source-card {
     background: var(--bg-primary, #0f172a);
@@ -312,9 +272,6 @@
 
 /* Mobile Responsive */
 @media (max-width: 640px) {
-  .scholarly-source-panel {
-    padding: 12px;
-  }
 
   .panel-title {
     flex-direction: column;

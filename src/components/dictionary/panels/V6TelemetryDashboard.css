@@ -247,16 +247,6 @@
   color: #e2e8f0;
 }
 
-/* =============================================================================
-   ACTIONS
-   ============================================================================= */
-
-.actions-section {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
 .action-btn {
   flex: 1;
   display: flex;
@@ -310,20 +300,6 @@
 .action-label {
   text-transform: uppercase;
   letter-spacing: 0.3px;
-}
-
-/* =============================================================================
-   FOOTER
-   ============================================================================= */
-
-.dashboard-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 0.65rem;
-  color: #64748b;
 }
 
 /* =============================================================================
@@ -507,18 +483,8 @@
     flex: 1 1 calc(50% - 5px);
   }
 
-  .actions-section {
-    flex-wrap: wrap;
-  }
-
   .action-btn {
     flex: 1 1 calc(50% - 5px);
-  }
-
-  .dashboard-footer {
-    flex-direction: column;
-    gap: 4px;
-    text-align: center;
   }
 }
 

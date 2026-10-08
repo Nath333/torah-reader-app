@@ -141,10 +141,6 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.toggle-indicator {
-  font-size: 1rem;
-}
-
 .toggle-hebrew {
   font-weight: 500;
 }
@@ -309,100 +305,10 @@
   color: var(--text-muted, #6b7280);
 }
 
-.flow-view-header {
-  margin-bottom: 16px;
-}
-
-.flow-view-title {
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: var(--text-primary, #111827);
-  margin: 0 0 4px 0;
-}
-
-.flow-view-subtitle {
-  font-size: 0.85rem;
-  color: var(--text-muted, #6b7280);
-  margin: 0;
-}
-
-/* Klalei Pesika Panel */
-.klalei-pesika-panel {
-  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
-  border: 1px solid #bbf7d0;
-  border-radius: 10px;
-  padding: 14px;
-  margin-bottom: 16px;
-}
-
-.kp-header {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #065f46;
-  margin-bottom: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.kp-note {
-  padding: 8px 12px;
-  border-radius: 6px;
-  background: rgba(255,255,255,0.6);
-  margin-bottom: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.kp-note:last-child { margin-bottom: 0; }
-
-.kp-title {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #064e3b;
-}
-
-.kp-text {
-  font-size: 0.8rem;
-  color: #047857;
-  line-height: 1.4;
-}
-
-.kp-rule_application { border-left: 3px solid #22c55e; }
-.kp-methodology { border-left: 3px solid #a855f7; }
-.kp-tradition_split { border-left: 3px solid #f97316; }
-.kp-unified { border-left: 3px solid #22c55e; }
-.kp-chain_summary { border-left: 3px solid #3b82f6; }
-
-/* Flow Cards */
-.flow-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.flow-card {
-  background: var(--bg-elevated, #f9fafb);
-  border-radius: 10px;
-  padding: 14px;
-  border: 2px solid transparent;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.flow-card:hover {
-  border-color: var(--border-color, #e5e7eb);
-}
-
 .flow-card.focused {
   border-color: #3b82f6;
   background: #eff6ff;
 }
-
-.flow-card.final-accepted { border-left: 4px solid #22c55e; }
-.flow-card.final-partial { border-left: 4px solid #f59e0b; }
-.flow-card.final-rejected { border-left: 4px solid #ef4444; }
-.flow-card.final-minority { border-left: 4px solid #f59e0b; }
 
 .flow-card-header {
   display: flex;

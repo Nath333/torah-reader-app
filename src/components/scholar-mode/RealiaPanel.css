@@ -1,16 +1,4 @@
-/**
- * RealiaPanel Styles
- * Measures, currency, and objects display
- */
 
-.realia-panel {
-  background: var(--card-bg, #ffffff);
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  max-width: 360px;
-  font-size: 14px;
-}
 
 .realia-panel.compact {
   max-width: 280px;
@@ -108,16 +96,6 @@
   border-top: 1px solid #e5e7eb;
 }
 
-.realia-panel h5 {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin: 0 0 8px 0;
-  font-size: 12px;
-  color: #6b7280;
-  font-weight: 600;
-}
-
 .realia-panel .section-icon {
   font-size: 12px;
 }
@@ -145,25 +123,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-}
-
-.conversion-chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: 14px;
-  border: 1px solid #e5e7eb;
-  background: #ffffff;
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
-  color: #374151;
-}
-
-.conversion-chip:hover {
-  background: #eff6ff;
-  border-color: #3b82f6;
-  color: #1d4ed8;
 }
 
 /* Context */
@@ -216,9 +175,6 @@
 
 /* Dark Mode */
 @media (prefers-color-scheme: dark) {
-  .realia-panel {
-    background: #1f2937;
-  }
 
   .realia-panel .panel-header {
     background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
@@ -248,12 +204,6 @@
   .realia-panel .modern-value {
     background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
     color: #a7f3d0;
-  }
-
-  .conversion-chip {
-    background: #374151;
-    border-color: #4b5563;
-    color: #e5e7eb;
   }
 
   .realia-panel .info-section,

@@ -152,32 +152,6 @@
   border-left: 2px solid var(--border);
 }
 
-.remove-bookmark {
-  padding: var(--space-2);
-  background: transparent;
-  color: var(--text-muted);
-  border: 1px solid transparent;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-size: 12px;
-  transition: all var(--transition-fast);
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.remove-bookmark:hover {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: var(--error);
-  color: var(--error);
-}
-
-.remove-bookmark svg {
-  width: 16px;
-  height: 16px;
-}
-
 .no-bookmarks {
   text-align: center;
   padding: var(--space-10);
@@ -212,10 +186,6 @@
   .bookmark-item {
     flex-direction: column;
     gap: var(--space-3);
-  }
-
-  .remove-bookmark {
-    align-self: flex-end;
   }
 }
 

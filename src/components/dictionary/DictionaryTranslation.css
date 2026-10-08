@@ -61,27 +61,6 @@
   color: var(--text-muted);
 }
 
-/* Source badges - Pro Scholar styling */
-.scholar-source {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 0.65rem;
-  font-weight: 600;
-  color: white;
-  padding: 3px 8px;
-  border-radius: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
-}
-
-.scholar-source:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
-}
-
 .scholar-source.small {
   font-size: 0.6rem;
   padding: 2px 5px;
@@ -199,15 +178,6 @@
   background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
 }
 
-.gl-type {
-  font-size: 0.6rem;
-  padding: 2px 5px;
-  border-radius: 3px;
-  background: #6366f1;
-  color: white;
-  font-weight: 600;
-}
-
 .gl-type.abbrev {
   background: #8b5cf6;
 }
@@ -259,11 +229,6 @@
   font-size: 0.85rem;
 }
 
-.gl-alt-def {
-  color: var(--text-secondary);
-  flex: 1;
-}
-
 /* Strong's number badge */
 .gl-strong {
   font-size: 0.6rem;
@@ -273,16 +238,6 @@
   padding: 1px 4px;
   border-radius: 3px;
   font-family: monospace;
-}
-
-/* Root word indicator */
-.gl-root-tag {
-  font-size: 0.55rem;
-  color: #8b5cf6;
-  background: rgba(139, 92, 246, 0.1);
-  padding: 1px 4px;
-  border-radius: 3px;
-  text-transform: uppercase;
 }
 
 /* Academic source highlight */
@@ -397,34 +352,7 @@
   border-top: 1px dashed var(--border-color);
 }
 
-.match-legend-title {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-.match-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.7rem;
-  color: var(--text-secondary);
-}
-
-.match-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  font-size: 0.6rem;
-  font-weight: 700;
-  border-radius: 3px;
-  color: white;
-}
-
 .match-badge.exact { background: #059669; }
-.match-badge.morphed { background: #8b5cf6; }
 .match-badge.root { background: #3b82f6; }
 .match-badge.fuzzy { background: #f59e0b; }
 
@@ -476,16 +404,6 @@
 .confidence-indicator.high { color: #10b981; }
 .confidence-indicator.med { color: #f59e0b; }
 .confidence-indicator.low { color: #ef4444; }
-
-/* PRO SCHOLAR V7: Glossary confidence indicators */
-.gl-confidence {
-  font-size: 0.65rem;
-  font-weight: 600;
-  padding: 1px 4px;
-  border-radius: 3px;
-  margin-left: auto;
-  background: rgba(0, 0, 0, 0.08);
-}
 .gl-confidence.high { color: #059669; background: rgba(5, 150, 105, 0.1); }
 .gl-confidence.med { color: #d97706; background: rgba(245, 158, 11, 0.1); }
 .gl-confidence.low { color: #dc2626; background: rgba(239, 68, 68, 0.1); }
@@ -557,11 +475,6 @@
   border-radius: 3px;
 }
 
-.gl-note {
-  cursor: help;
-  font-size: 0.75rem;
-}
-
 /* ═══════════════════════════════════════════════════════════════════════════
    PRO SCHOLAR V7: Footer
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -580,21 +493,6 @@
   color: var(--text-secondary);
   text-align: center;
   line-height: 1.5;
-}
-
-.scholar-tip-secondary {
-  padding: var(--space-1) var(--space-3);
-  font-size: 0.68rem;
-  color: var(--text-muted);
-  text-align: center;
-}
-
-.scholar-tip-tertiary {
-  padding: var(--space-1) var(--space-3);
-  font-size: 0.65rem;
-  color: var(--text-muted);
-  text-align: center;
-  opacity: 0.8;
 }
 
 /* Sources label styling */

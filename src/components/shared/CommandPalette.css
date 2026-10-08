@@ -163,15 +163,6 @@
   font-size: 0.72rem;
 }
 
-/* Portion de label correspondant à la requête */
-.cmdk-mark {
-  background: var(--primary-light, rgb(99 102 241 / 0.25));
-  color: inherit;
-  border-radius: 3px;
-  padding: 0 1px;
-  font-weight: 600;
-}
-
 /* Raccourcis chiffres 1-9 sur les premiers résultats */
 .cmdk-num {
   flex: 0 0 auto;

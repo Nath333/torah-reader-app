@@ -129,21 +129,6 @@ a:hover {
   transform: scale(1.02);
 }
 
-/* Clickable card style */
-.clickable-card {
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.clickable-card:hover {
-  border-color: var(--primary-glow);
-  box-shadow: var(--shadow);
-}
-
-.clickable-card:active {
-  transform: scale(0.99);
-}
-
 /* Focus ring */
 .focus-ring:focus-visible {
   outline: 2px solid var(--primary);
@@ -166,19 +151,7 @@ a:hover {
 
 /* Animation utility classes - keyframes defined in animations.css */
 .fade-in { animation: fadeIn 0.2s ease-out; }
-.fade-in-up { animation: fadeInUp 0.2s ease-out; }
-.fade-in-down { animation: fadeInDown 0.2s ease-out; }
-.slide-in-right { animation: slideInRight 0.2s ease-out; }
-.scale-pop { animation: scalePop 0.15s ease-out; }
-.pulse { animation: pulse 2s ease-in-out infinite; }
 .spinner { animation: spin 0.8s linear infinite; }
-
-/* Glass effect */
-.glass {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
 
 .app.dark-mode .glass {
   background: rgba(30, 41, 59, 0.8);

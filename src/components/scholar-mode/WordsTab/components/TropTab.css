@@ -1,10 +1,4 @@
-/**
- * TropTab Styles
- */
 
-.trop-tab {
-  height: 100%;
-}
 
 .trop-tab.empty {
   display: flex;

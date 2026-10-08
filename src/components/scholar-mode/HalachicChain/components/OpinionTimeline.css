@@ -545,10 +545,6 @@
   background: rgba(252, 231, 243, 0.4);
 }
 
-.rema-column {
-  background: rgba(219, 234, 254, 0.4);
-}
-
 .tradition-header {
   display: flex;
   gap: 8px;
@@ -645,48 +641,6 @@
   padding: 6px 2px;
 }
 
-/* Minority positions */
-.minority-positions {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid #fde68a;
-}
-
-.minority-title {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #92400e;
-  display: block;
-  margin-bottom: 6px;
-}
-
-.minority-position-row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  font-size: 0.8rem;
-  padding: 4px 0;
-}
-
-.minority-ruling-text {
-  font-weight: 500;
-  color: #78350f;
-  text-transform: capitalize;
-}
-
-.minority-authorities {
-  color: #92400e;
-}
-
-.significant-badge {
-  font-size: 0.65rem;
-  padding: 2px 6px;
-  background: #fed7aa;
-  color: #9a3412;
-  border-radius: 8px;
-  font-weight: 600;
-}
-
 /* Halacha Lemaaseh */
 .halacha-lemaaseh {
   margin-top: 12px;
@@ -694,27 +648,6 @@
   background: rgba(255,255,255,0.6);
   border-radius: 8px;
   border-left: 4px solid #22c55e;
-}
-
-.lemaaseh-label {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #166534;
-  display: block;
-  margin-bottom: 4px;
-}
-
-.lemaaseh-text {
-  font-size: 0.85rem;
-  color: #15803d;
-  line-height: 1.5;
-}
-
-.psak-v2-location {
-  margin-top: 8px;
-  font-size: 0.8rem;
-  color: #a16207;
-  font-family: monospace;
 }
 
 /* ═══ Layer 6: Acharon Card ═══ */
@@ -913,15 +846,8 @@
   .tradition-text { color: #d1d5db; background: rgba(0,0,0,0.2); }
   .tradition-note { color: #6b7280; }
   .mechaber-column { background: rgba(157, 23, 77, 0.15); }
-  .rema-column { background: rgba(30, 64, 175, 0.15); }
   .supporter-chip { background: rgba(0,0,0,0.3); color: #d1d5db; }
-  .minority-title { color: #fde68a; }
-  .minority-ruling-text { color: #fef3c7; }
-  .minority-authorities { color: #fde68a; }
-  .lemaaseh-label { color: #86efac; }
-  .lemaaseh-text { color: #bbf7d0; }
   .halacha-lemaaseh { background: rgba(0,0,0,0.3); border-color: #22c55e; }
-  .psak-v2-location { color: #fde68a; }
 
   /* Dark: Acharon */
   .acharon-card.focused { border-color: #ca8a04; background: #451a03; }

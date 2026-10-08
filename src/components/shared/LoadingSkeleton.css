@@ -19,22 +19,6 @@
   100% { background-position: -200% 0; }
 }
 
-/* Shared skeleton element base */
-.skeleton-base {
-  background: linear-gradient(
-    90deg,
-    var(--border) 0%,
-    var(--bg-subtle) 20%,
-    var(--border-light) 40%,
-    var(--border-light) 60%,
-    var(--bg-subtle) 80%,
-    var(--border) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 2s ease-in-out infinite;
-  border-radius: var(--radius-sm);
-}
-
 /* Verse Skeleton */
 .skeleton-verse {
   padding: var(--space-5);

@@ -40,9 +40,6 @@ a:focus-visible {
 
 /* Scroll snap for better reading experience */
 @media (min-width: 768px) {
-  .verse-container {
-    scroll-snap-type: y proximity;
-  }
 
   .verse-item {
     scroll-snap-align: start;

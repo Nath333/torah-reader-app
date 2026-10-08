@@ -1,20 +1,4 @@
-/**
- * KnowledgeGraph CSS - Torah Study Tool Styles
- * Designed for serious learning in Kollel/Yeshiva style
- */
 
-/* =============================================================================
-   CONTAINER
-   ============================================================================= */
-
-.kg-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background: var(--bg-secondary, #f8f9fa);
-  border-radius: 12px;
-  overflow: hidden;
-}
 
 .kg-container.kg-empty {
   align-items: center;
@@ -42,19 +26,6 @@
   font-size: 0.9rem;
 }
 
-/* =============================================================================
-   HEADER
-   ============================================================================= */
-
-.kg-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
 .header-title {
   display: flex;
   align-items: center;
@@ -70,35 +41,12 @@
   flex-direction: column;
 }
 
-.title-hebrew {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
-}
-
-.title-english {
-  font-size: 0.75rem;
-  opacity: 0.85;
-}
-
 .current-ref {
   padding: 4px 12px;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 16px;
   font-size: 0.85rem;
   font-family: var(--font-hebrew, 'SBL Hebrew', serif);
-}
-
-/* =============================================================================
-   VIEW TABS
-   ============================================================================= */
-
-.kg-view-tabs {
-  display: flex;
-  gap: 4px;
-  padding: 8px;
-  background: var(--bg-tertiary, #e9ecef);
 }
 
 .view-tab {
@@ -137,20 +85,6 @@
   font-family: var(--font-hebrew, 'SBL Hebrew', serif);
 }
 
-/* =============================================================================
-   QUICK STATS
-   ============================================================================= */
-
-.kg-quick-stats {
-  display: flex;
-  gap: 16px;
-  padding: 8px 16px;
-  background: var(--bg-primary, white);
-  border-bottom: 1px solid var(--border, #dee2e6);
-  font-size: 0.85rem;
-  color: var(--text-secondary, #6c757d);
-}
-
 .kg-quick-stats .stat strong {
   color: var(--accent, #667eea);
   margin-right: 4px;
@@ -164,34 +98,6 @@
   flex: 1;
   display: flex;
   overflow: hidden;
-}
-
-.kg-main {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-}
-
-/* =============================================================================
-   COMMENTATOR BADGE
-   ============================================================================= */
-
-.kg-commentator-badge {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  background: white;
-  border: 2px solid var(--badge-color, var(--border));
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.kg-commentator-badge:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: var(--badge-color);
 }
 
 .kg-commentator-badge.unavailable {
@@ -242,55 +148,6 @@
   font-family: var(--font-hebrew, 'SBL Hebrew', serif);
 }
 
-/* =============================================================================
-   STUDY PATH VIEW
-   ============================================================================= */
-
-.kg-study-path {
-  display: flex;
-  flex-direction: column;
-}
-
-.study-path-header {
-  margin-bottom: 20px;
-}
-
-.study-path-header h4 {
-  margin: 0 0 4px;
-  font-size: 1.1rem;
-  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
-  color: var(--text-primary, #212529);
-}
-
-.study-path-header p {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--text-muted, #6c757d);
-}
-
-.study-path-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.study-step {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 14px;
-  background: white;
-  border: 1px solid var(--border, #dee2e6);
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.study-step:hover {
-  border-color: var(--accent, #667eea);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
-}
-
 .study-step.unavailable {
   opacity: 0.5;
   cursor: not-allowed;
@@ -301,117 +158,9 @@
   box-shadow: none;
 }
 
-.step-number {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-radius: 50%;
-  font-size: 0.85rem;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-
 .step-content {
   flex: 1;
   min-width: 0;
-}
-
-.step-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 4px;
-}
-
-.step-icon {
-  font-size: 1.2rem;
-}
-
-.step-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-primary, #212529);
-  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
-}
-
-.step-name-en {
-  font-size: 0.8rem;
-  color: var(--text-muted, #6c757d);
-}
-
-.step-reason {
-  margin: 0 0 8px;
-  font-size: 0.85rem;
-  color: var(--text-secondary, #495057);
-  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
-  line-height: 1.5;
-}
-
-.step-link {
-  display: inline-block;
-  padding: 4px 10px;
-  background: var(--bg-tertiary, #e9ecef);
-  border-radius: 4px;
-  font-size: 0.8rem;
-  color: var(--accent, #667eea);
-  text-decoration: none;
-  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
-  transition: background 0.2s ease;
-}
-
-.step-link:hover {
-  background: var(--accent, #667eea);
-  color: white;
-}
-
-.step-connector {
-  text-align: center;
-  color: var(--text-muted, #6c757d);
-  font-size: 1.2rem;
-  padding: 4px 0;
-}
-
-/* =============================================================================
-   SHITA GRID VIEW
-   ============================================================================= */
-
-.kg-shita-grid {
-  display: flex;
-  flex-direction: column;
-}
-
-.shita-header {
-  margin-bottom: 20px;
-}
-
-.shita-header h4 {
-  margin: 0 0 4px;
-  font-size: 1.1rem;
-  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
-  color: var(--text-primary, #212529);
-}
-
-.shita-header p {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--text-muted, #6c757d);
-}
-
-.shita-categories {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.shita-category {
-  background: white;
-  border: 1px solid var(--border, #dee2e6);
-  border-radius: 12px;
-  overflow: hidden;
 }
 
 .category-header {
@@ -447,50 +196,6 @@
   padding: 12px;
 }
 
-/* =============================================================================
-   MACHLOKET VIEW
-   ============================================================================= */
-
-.kg-machloket-view {
-  display: flex;
-  flex-direction: column;
-}
-
-.machloket-view-header {
-  margin-bottom: 20px;
-}
-
-.machloket-view-header h4 {
-  margin: 0 0 4px;
-  font-size: 1.1rem;
-  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
-  color: var(--text-primary, #212529);
-}
-
-.machloket-view-header p {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--text-muted, #6c757d);
-}
-
-.machloket-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.kg-machloket-card {
-  background: white;
-  border: 1px solid var(--border, #dee2e6);
-  border-radius: 12px;
-  overflow: hidden;
-  transition: box-shadow 0.2s ease;
-}
-
-.kg-machloket-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-}
-
 .machloket-header {
   display: flex;
   align-items: center;
@@ -504,29 +209,6 @@
   background: var(--bg-tertiary, #f8f9fa);
 }
 
-.machloket-parties {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.machloket-parties .party {
-  padding: 6px 12px;
-  background: var(--bg-tertiary, #e9ecef);
-  border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
-  color: var(--text-primary, #212529);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.machloket-parties .party:hover {
-  background: var(--accent, #667eea);
-  color: white;
-}
-
 .vs-icon {
   font-size: 1.2rem;
 }
@@ -535,78 +217,6 @@
   font-size: 0.8rem;
   color: var(--text-muted, #6c757d);
   transition: transform 0.2s ease;
-}
-
-.machloket-summary {
-  padding: 0 16px 14px;
-  font-size: 0.9rem;
-  color: var(--text-secondary, #495057);
-  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
-  line-height: 1.6;
-}
-
-.machloket-details {
-  padding: 16px;
-  background: var(--bg-tertiary, #f8f9fa);
-  border-top: 1px solid var(--border, #dee2e6);
-}
-
-.machloket-explanation {
-  margin: 0 0 12px;
-  font-size: 0.9rem;
-  color: var(--text-primary, #212529);
-  line-height: 1.6;
-}
-
-.machloket-learn-more {
-  padding: 12px;
-  background: white;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  font-size: 0.85rem;
-  line-height: 1.5;
-}
-
-.machloket-learn-more strong {
-  display: block;
-  margin-bottom: 4px;
-  color: var(--accent, #667eea);
-}
-
-.machloket-question {
-  padding: 12px;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-  border-radius: 8px;
-  border-left: 4px solid var(--accent, #667eea);
-  margin-bottom: 12px;
-}
-
-.machloket-question strong {
-  display: block;
-  margin-bottom: 8px;
-  color: var(--accent, #667eea);
-}
-
-.machloket-question p {
-  margin: 0;
-  font-size: 0.95rem;
-  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
-  line-height: 1.6;
-  color: var(--text-primary, #212529);
-}
-
-.machloket-question .question-english {
-  margin-top: 8px;
-  font-size: 0.85rem;
-  color: var(--text-muted, #6c757d);
-  font-family: inherit;
-  font-style: italic;
-}
-
-.machloket-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
 }
 
 .sefaria-link {
@@ -650,42 +260,6 @@
 
 .no-machloket p:last-child {
   color: var(--text-muted, #6c757d);
-}
-
-.machloket-tip {
-  margin-top: 20px;
-  padding: 14px;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
-  border-radius: 10px;
-  border-left: 4px solid #10b981;
-}
-
-.machloket-tip strong {
-  display: block;
-  margin-bottom: 6px;
-  color: #10b981;
-  font-size: 0.9rem;
-}
-
-.machloket-tip p {
-  margin: 0;
-  font-size: 0.85rem;
-  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
-  line-height: 1.6;
-  color: var(--text-primary, #212529);
-}
-
-/* =============================================================================
-   DETAILS PANEL
-   ============================================================================= */
-
-.kg-details-panel {
-  width: 320px;
-  background: white;
-  border-left: 1px solid var(--border, #dee2e6);
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
 }
 
 .kg-details-panel .close-btn {
@@ -750,11 +324,6 @@
   font-style: italic;
 }
 
-.details-body {
-  padding: 16px 20px;
-  flex: 1;
-}
-
 .info-row {
   display: flex;
   gap: 8px;
@@ -781,54 +350,6 @@
   line-height: 1.5;
 }
 
-.approach-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.approach-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border-radius: 16px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
-}
-
-.details-actions {
-  padding: 16px 20px;
-  background: var(--bg-tertiary, #f8f9fa);
-  border-top: 1px solid var(--border, #dee2e6);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.sefaria-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 16px;
-  background: var(--accent, #667eea);
-  border: none;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
-  color: white;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.sefaria-btn:hover {
-  background: #5a6fd6;
-  transform: translateY(-1px);
-}
-
 .sefaria-btn.secondary {
   background: white;
   border: 1px solid var(--border, #dee2e6);
@@ -837,19 +358,6 @@
 
 .sefaria-btn.secondary:hover {
   background: var(--bg-tertiary, #f8f9fa);
-}
-
-/* =============================================================================
-   FOOTER TIP
-   ============================================================================= */
-
-.kg-footer-tip {
-  padding: 10px 16px;
-  background: linear-gradient(to right, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
-  font-size: 0.85rem;
-  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
-  color: var(--text-secondary, #495057);
-  text-align: center;
 }
 
 /* =============================================================================
@@ -878,19 +386,8 @@
     flex-direction: column;
   }
 
-  .kg-details-panel {
-    width: 100%;
-    max-height: 50vh;
-    border-left: none;
-    border-top: 1px solid var(--border, #dee2e6);
-  }
-
   .category-commentators {
     grid-template-columns: 1fr;
-  }
-
-  .machloket-actions {
-    flex-direction: column;
   }
 
   .sefaria-link {
@@ -903,13 +400,6 @@
    ============================================================================= */
 
 @media (prefers-color-scheme: dark) {
-  .kg-container {
-    background: var(--bg-secondary, #1e1e1e);
-  }
-
-  .kg-view-tabs {
-    background: var(--bg-tertiary, #2d2d2d);
-  }
 
   .view-tab {
     color: var(--text-secondary, #a0a0a0);
@@ -925,87 +415,16 @@
     color: var(--accent, #8b9cf6);
   }
 
-  .kg-quick-stats {
-    background: var(--bg-primary, #252525);
-    border-color: var(--border, #3d3d3d);
-  }
-
-  .kg-commentator-badge,
-  .study-step,
-  .kg-machloket-card,
-  .shita-category {
-    background: var(--bg-primary, #252525);
-    border-color: var(--border, #3d3d3d);
-  }
-
-  .kg-details-panel {
-    background: var(--bg-primary, #252525);
-    border-color: var(--border, #3d3d3d);
-  }
-
-  .machloket-details,
-  .details-actions {
-    background: var(--bg-tertiary, #2d2d2d);
-  }
-
   .sefaria-link {
     background: var(--bg-tertiary, #2d2d2d);
     border-color: var(--border, #3d3d3d);
     color: var(--text-primary, #e0e0e0);
   }
-
-  .machloket-learn-more {
-    background: var(--bg-tertiary, #2d2d2d);
-  }
-}
-
-/* =============================================================================
-   TABS CONTAINER - Two Row Layout
-   ============================================================================= */
-
-.kg-view-tabs-container {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 8px 12px;
-  background: var(--bg-secondary, #f5f5f5);
-  border-bottom: 1px solid var(--border, #e0e0e0);
-}
-
-.kg-view-tabs-secondary {
-  background: transparent;
-  padding: 0;
-  border-bottom: none;
 }
 
 .kg-view-tabs-secondary .view-tab {
   font-size: 0.78rem;
   padding: 6px 10px;
-}
-
-/* =============================================================================
-   CHAVRUSA VIEW - Compare Two Commentators
-   ============================================================================= */
-
-.kg-chavrusa-view {
-  padding: 4px;
-}
-
-.chavrusa-header {
-  text-align: center;
-  margin-bottom: 16px;
-}
-
-.chavrusa-header h4 {
-  margin: 0 0 4px;
-  font-size: 1.1rem;
-  color: var(--primary, #8B2635);
-}
-
-.chavrusa-header p {
-  margin: 0;
-  font-size: 0.82rem;
-  color: var(--text-muted, #666);
 }
 
 .chavrusa-selectors {
@@ -1070,42 +489,6 @@
   cursor: not-allowed;
 }
 
-.sel-icon {
-  font-size: 1.1rem;
-}
-
-.sel-name {
-  font-family: var(--font-hebrew, "SBL Hebrew", serif);
-  font-size: 0.88rem;
-  color: var(--text-primary, #333);
-}
-
-.chavrusa-vs {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 1.2rem;
-  color: var(--accent, #C49A3D);
-  padding-top: 32px;
-}
-
-.chavrusa-comparison {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.chavrusa-machloket-banner {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
-  border-radius: 10px;
-  border-left: 4px solid var(--accent, #C49A3D);
-}
-
 .banner-icon {
   font-size: 1.5rem;
 }
@@ -1120,38 +503,6 @@
   margin: 0;
   font-size: 0.85rem;
   color: var(--text-secondary, #555);
-}
-
-.chavrusa-cards {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.chavrusa-card {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 14px;
-  background: var(--bg-primary, #fff);
-  border: 1px solid var(--border, #e0e0e0);
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.chavrusa-card .kg-commentator-badge {
-  margin: 0;
-}
-
-.card-info {
-  padding: 8px 0;
-}
-
-.comm-approach {
-  margin: 0;
-  font-size: 0.82rem;
-  color: var(--text-muted, #666);
-  line-height: 1.5;
 }
 
 .open-commentary-btn {
@@ -1189,52 +540,6 @@
   color: var(--primary, #8B2635);
 }
 
-.chavrusa-prompts {
-  padding: 16px;
-  background: var(--bg-secondary, #f8f5f2);
-  border-radius: 10px;
-  border: 1px solid var(--border, #e0e0e0);
-}
-
-.chavrusa-prompts h5 {
-  margin: 0 0 12px;
-  font-size: 0.95rem;
-  color: var(--primary, #8B2635);
-}
-
-.chavrusa-prompts ul {
-  margin: 0;
-  padding-left: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.chavrusa-prompts li {
-  font-size: 0.88rem;
-  line-height: 1.5;
-  color: var(--text-primary, #333);
-}
-
-.chavrusa-prompts li[dir="rtl"] {
-  padding-left: 0;
-  padding-right: 20px;
-  text-align: right;
-  font-family: var(--font-hebrew, "SBL Hebrew", serif);
-}
-
-.chavrusa-tip {
-  padding: 12px 16px;
-  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
-  border-radius: 8px;
-  font-size: 0.85rem;
-  color: var(--text-primary, #333);
-}
-
-.chavrusa-tip strong {
-  color: #1565C0;
-}
-
 .chavrusa-empty {
   padding: 48px 24px;
   text-align: center;
@@ -1251,44 +556,6 @@
   font-size: 0.85rem;
 }
 
-/* =============================================================================
-   TODAY'S LEARNING PANEL
-   ============================================================================= */
-
-.kg-today-panel {
-  padding: 4px;
-}
-
-.today-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 16px;
-}
-
-.today-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.today-icon {
-  font-size: 1.5rem;
-}
-
-.today-title h4 {
-  margin: 0;
-  font-size: 1.05rem;
-  font-family: var(--font-hebrew, "SBL Hebrew", serif);
-  color: var(--text-primary, #333);
-}
-
-.today-date {
-  font-size: 0.8rem;
-  color: var(--text-muted, #666);
-  font-family: var(--font-hebrew, "SBL Hebrew", serif);
-}
-
 .streak-badge {
   display: flex;
   align-items: center;
@@ -1300,13 +567,6 @@
   font-weight: 600;
   font-size: 0.82rem;
   box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
-}
-
-.today-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 20px;
 }
 
 .stat-box {
@@ -1334,33 +594,6 @@
   font-family: var(--font-hebrew, "SBL Hebrew", serif);
 }
 
-.today-learned {
-  margin-bottom: 20px;
-}
-
-.today-learned h5 {
-  margin: 0 0 12px;
-  font-size: 0.92rem;
-  color: var(--text-primary, #333);
-  font-family: var(--font-hebrew, "SBL Hebrew", serif);
-}
-
-.learned-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.learned-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  background: var(--bg-secondary, #f8f5f2);
-  border-radius: 8px;
-  border-left: 3px solid var(--success, #4CAF50);
-}
-
 .learned-item .check {
   margin-left: auto;
   color: var(--success, #4CAF50);
@@ -1382,37 +615,8 @@
   color: var(--text-muted, #666);
 }
 
-.today-suggestion {
-  padding: 16px;
-  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
-  border-radius: 10px;
-  border-left: 4px solid var(--success, #4CAF50);
-}
-
-.today-suggestion h5 {
-  margin: 0 0 8px;
-  font-size: 0.92rem;
-  color: #2E7D32;
-}
-
-.today-suggestion p {
-  margin: 0;
-  font-size: 0.88rem;
-  font-family: var(--font-hebrew, "SBL Hebrew", serif);
-  color: var(--text-primary, #333);
-  line-height: 1.5;
-}
-
 /* Dark mode for new views */
 @media (prefers-color-scheme: dark) {
-  .chavrusa-machloket-banner {
-    background: linear-gradient(135deg, #3E2723 0%, #4E342E 100%);
-  }
-
-  .chavrusa-card {
-    background: var(--bg-primary, #252525);
-    border-color: var(--border, #3d3d3d);
-  }
 
   .selector-btn {
     background: var(--bg-primary, #252525);
@@ -1424,16 +628,6 @@
     background: var(--bg-tertiary, #2d2d2d);
   }
 
-  .chavrusa-prompts {
-    background: var(--bg-tertiary, #2d2d2d);
-    border-color: var(--border, #3d3d3d);
-  }
-
-  .chavrusa-tip {
-    background: linear-gradient(135deg, #1A237E 0%, #283593 100%);
-    color: var(--text-primary, #e0e0e0);
-  }
-
   .stat-box {
     background: var(--bg-primary, #252525);
     border-color: var(--border, #3d3d3d);
@@ -1442,15 +636,5 @@
   .learned-item,
   .today-empty {
     background: var(--bg-tertiary, #2d2d2d);
-  }
-
-  .today-suggestion {
-    background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%);
-    color: #E8F5E9;
-  }
-
-  .today-suggestion h5,
-  .today-suggestion p {
-    color: #E8F5E9;
   }
 }

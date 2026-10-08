@@ -12,140 +12,14 @@
   border: 1px solid var(--border-light, #e0e0e0);
 }
 
-.morphology-pro {
-  border-left: 3px solid var(--accent, #1976d2);
-}
-
-.morphology-simple {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.morphology-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.morphology-word {
-  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
-  font-size: 1.4em;
-  font-weight: 600;
-  color: var(--text-primary, #1a1a1a);
-}
-
-.morphology-meaning {
-  color: var(--text-secondary, #666);
-  font-style: italic;
-}
-
-.morphology-arrow {
-  color: var(--text-muted, #999);
-  font-size: 1.2em;
-}
-
-.morphology-components {
-  display: flex;
-  align-items: stretch;
-  gap: 4px;
-  flex-wrap: wrap;
-  direction: rtl;
-}
-
-.morph-component {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 8px 12px;
-  border-radius: 6px;
-  min-width: 50px;
-  text-align: center;
-}
-
-.morph-prefix-box {
-  background: var(--prefix-bg, #e3f2fd);
-  border: 1px solid var(--prefix-border, #90caf9);
-}
-
-.morph-root-box {
-  background: var(--root-bg, #fff3e0);
-  border: 2px solid var(--root-border, #ffb74d);
-  font-weight: 600;
-}
-
-.morph-suffix-box {
-  background: var(--suffix-bg, #f3e5f5);
-  border: 1px solid var(--suffix-border, #ce93d8);
-}
-
-.morph-text {
-  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
-  font-size: 1.3em;
-  color: var(--text-primary, #1a1a1a);
-  margin-bottom: 4px;
-}
-
 .morph-label {
   font-size: 0.85em;
   color: var(--text-secondary, #555);
   white-space: nowrap;
 }
 
-.morph-type {
-  font-size: 0.7em;
-  color: var(--text-muted, #888);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-top: 2px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.morph-strong {
-  font-family: monospace;
-  font-size: 0.9em;
-  color: var(--accent, #1976d2);
-  background: var(--surface, #fff);
-  padding: 1px 4px;
-  border-radius: 3px;
-}
-
-.morph-plus {
-  display: flex;
-  align-items: center;
-  color: var(--text-muted, #999);
-  font-size: 1.2em;
-  padding: 0 2px;
-}
-
-.morphology-language-tag {
-  display: inline-block;
-  margin-top: 8px;
-  padding: 2px 8px;
-  background: var(--aramaic-bg, #ffecb3);
-  color: var(--aramaic-text, #f57c00);
-  border-radius: 4px;
-  font-size: 0.75em;
-  font-weight: 500;
-  text-transform: uppercase;
-}
-
-/* Compact inline view */
-.morphology-inline {
-  display: inline;
-  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
-}
-
 .morphology-inline .morph-prefix {
   color: var(--prefix-color, #1976d2);
-  cursor: help;
-}
-
-.morphology-inline .morph-root {
-  font-weight: 600;
   cursor: help;
 }
 
@@ -159,31 +33,6 @@
   .morphology-breakdown {
     background: var(--surface-elevated-dark, #2d2d2d);
     border-color: var(--border-dark, #444);
-  }
-
-  .morphology-word,
-  .morph-text {
-    color: var(--text-primary-dark, #f0f0f0);
-  }
-
-  .morph-prefix-box {
-    background: rgba(33, 150, 243, 0.15);
-    border-color: rgba(33, 150, 243, 0.4);
-  }
-
-  .morph-root-box {
-    background: rgba(255, 152, 0, 0.15);
-    border-color: rgba(255, 152, 0, 0.5);
-  }
-
-  .morph-suffix-box {
-    background: rgba(156, 39, 176, 0.15);
-    border-color: rgba(156, 39, 176, 0.4);
-  }
-
-  .morph-strong {
-    background: var(--surface-dark, #1e1e1e);
-    color: var(--accent-light, #64b5f6);
   }
 }
 
@@ -255,40 +104,8 @@
   border-bottom: none;
 }
 
-/* =============================================================================
-   PRO SCHOLAR: Morphology Badges Row
-   ============================================================================= */
-
-.morphology-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 12px;
-}
-
-.pattern-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
-  border-radius: 4px;
-  font-size: 0.8em;
-  border: 1px solid;
-}
-
 .pattern-name {
   font-weight: 600;
-}
-
-.pattern-type {
-  font-size: 0.85em;
-  opacity: 0.8;
-}
-
-.pattern-lang {
-  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
-  font-size: 0.9em;
-  margin-left: 4px;
 }
 
 .pattern-hebrew {
@@ -325,54 +142,6 @@
   font-family: 'SBL Hebrew', 'Ezra SIL', serif;
 }
 
-/* =============================================================================
-   PRO SCHOLAR: Weak Verb Type Badges (פ"נ, ע"ו, ל"ה)
-   ============================================================================= */
-
-.weak-verb-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 0.8em;
-  border: 1px solid;
-  cursor: help;
-  transition: all 0.2s ease;
-}
-
-.weak-verb-badge:hover {
-  transform: scale(1.02);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-
-.weak-icon {
-  font-size: 0.9em;
-}
-
-.weak-hebrew {
-  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
-  font-weight: 600;
-  font-size: 1em;
-}
-
-.weak-label {
-  font-size: 0.85em;
-  opacity: 0.9;
-  text-transform: capitalize;
-}
-
-/* =============================================================================
-   PRO SCHOLAR: Related Words Section
-   ============================================================================= */
-
-.related-words-section {
-  margin-top: 12px;
-  border: 1px solid var(--border-light, #e0e0e0);
-  border-radius: 8px;
-  overflow: hidden;
-}
-
 .related-header {
   display: flex;
   align-items: center;
@@ -398,22 +167,6 @@
   font-weight: 600;
   font-size: 0.9em;
   color: var(--text-primary, #1a1a1a);
-}
-
-.related-count {
-  margin-left: auto;
-  padding: 2px 8px;
-  background: var(--accent-light, #e3f2fd);
-  color: var(--accent, #1976d2);
-  border-radius: 10px;
-  font-size: 0.75em;
-  font-weight: 600;
-}
-
-.related-arrow {
-  font-size: 0.7em;
-  color: var(--text-muted, #888);
-  transition: transform 0.2s ease;
 }
 
 .related-arrow.expanded {
@@ -540,9 +293,6 @@
 
 /* Dark mode for related words */
 @media (prefers-color-scheme: dark) {
-  .related-words-section {
-    border-color: var(--border-dark, #444);
-  }
 
   .related-header {
     background: var(--surface-dark, #1e1e1e);
@@ -602,26 +352,6 @@
   background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
   border-radius: 6px;
   border: 1px solid #a5d6a7;
-}
-
-.computed-label {
-  font-size: 0.8em;
-  font-weight: 600;
-  color: #2e7d32;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.computed-value {
-  font-size: 1.1em;
-  font-weight: 600;
-  color: #1b5e20;
-}
-
-.computed-source {
-  font-size: 0.7em;
-  color: #558b2f;
-  font-style: italic;
 }
 
 /* =============================================================================
@@ -719,24 +449,6 @@
 
 /* Responsive */
 @media (max-width: 480px) {
-  .morphology-components {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .morph-plus {
-    transform: rotate(90deg);
-    padding: 4px 0;
-  }
-
-  .morph-component {
-    width: 100%;
-    max-width: 200px;
-  }
-
-  .morphology-badges {
-    justify-content: center;
-  }
 
   .grammar-parts {
     grid-template-columns: 1fr;

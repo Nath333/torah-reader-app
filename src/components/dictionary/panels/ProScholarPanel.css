@@ -1,15 +1,4 @@
-/* =============================================================================
-   PRO SCHOLAR V6 PANEL - Advanced Linguistic Analysis Styles
-   ============================================================================= */
 
-.pro-scholar-panel {
-  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
-  border-radius: 12px;
-  padding: 16px;
-  margin-top: 12px;
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
 
 .pro-scholar-panel.compact {
   padding: 10px;
@@ -53,35 +42,6 @@
   gap: 10px;
 }
 
-/* =============================================================================
-   SEMANTIC FIELD BADGE
-   ============================================================================= */
-
-.semantic-field-badge {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid var(--field-color, #6B7280);
-}
-
-.semantic-field-badge .field-header {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  background: transparent;
-  border: none;
-  color: #e0e7ff;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.2s;
-}
-
-.semantic-field-badge .field-header:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-
 .semantic-field-badge .field-icon {
   color: var(--field-color, #8B5CF6);
   font-size: 1.1em;
@@ -89,37 +49,6 @@
 
 .semantic-field-badge .field-name {
   font-weight: 600;
-}
-
-.semantic-field-badge .field-chevron {
-  margin-left: auto;
-  font-size: 0.7em;
-  color: #a5b4fc;
-}
-
-.semantic-field-badge .field-concepts {
-  padding: 8px 12px;
-  background: rgba(0, 0, 0, 0.2);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-}
-
-.semantic-field-badge .concepts-label {
-  font-size: 0.75rem;
-  color: #a5b4fc;
-  margin-right: 4px;
-}
-
-.semantic-field-badge .concept-chip {
-  background: var(--field-color, #6B7280);
-  color: white;
-  font-size: 0.75rem;
-  padding: 3px 8px;
-  border-radius: 12px;
-  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
 }
 
 /* =============================================================================
@@ -295,14 +224,6 @@
 .binyan-analysis-badge .detail-value.pattern {
   font-family: 'SBL Hebrew', 'Ezra SIL', serif;
   direction: rtl;
-}
-
-/* =============================================================================
-   DIALECT MARKER
-   ============================================================================= */
-
-.dialect-marker {
-  display: inline-block;
 }
 
 .dialect-marker .dialect-badge {
@@ -644,73 +565,6 @@
   color: #9ca3af;
 }
 
-/* =============================================================================
-   PRO SCHOLAR V6.1: GRAMMATICAL ANOMALY BADGE
-   ============================================================================= */
-
-.anomaly-badge {
-  background: rgba(234, 179, 8, 0.1);
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid rgba(234, 179, 8, 0.3);
-}
-
-.anomaly-badge .anomaly-header {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  background: transparent;
-  border: none;
-  color: #fbbf24;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.2s;
-}
-
-.anomaly-badge .anomaly-header:hover {
-  background: rgba(234, 179, 8, 0.1);
-}
-
-.anomaly-badge .anomaly-icon {
-  font-size: 1.1em;
-}
-
-.anomaly-badge .anomaly-type {
-  font-weight: 600;
-}
-
-.anomaly-badge .anomaly-chevron {
-  margin-left: auto;
-  font-size: 0.7em;
-}
-
-.anomaly-badge .anomaly-details {
-  padding: 10px 12px;
-  background: rgba(0, 0, 0, 0.2);
-  border-top: 1px solid rgba(234, 179, 8, 0.2);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.anomaly-badge .anomaly-row {
-  display: flex;
-  gap: 8px;
-  font-size: 0.8rem;
-}
-
-.anomaly-badge .anomaly-label {
-  color: #fbbf24;
-  min-width: 60px;
-}
-
-.anomaly-badge .anomaly-value {
-  color: #e0e7ff;
-  text-transform: capitalize;
-}
-
 .anomaly-badge .anomaly-value.note {
   font-style: italic;
 }
@@ -719,12 +573,6 @@
   margin-top: 4px;
   padding-top: 6px;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.anomaly-badge .scholarly-ref {
-  font-size: 0.75rem;
-  color: #a5b4fc;
-  font-style: italic;
 }
 
 /* =============================================================================
@@ -843,9 +691,6 @@
    ============================================================================= */
 
 @media (max-width: 600px) {
-  .pro-scholar-panel {
-    padding: 12px;
-  }
 
   .root-family-panel .family-grid {
     grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));

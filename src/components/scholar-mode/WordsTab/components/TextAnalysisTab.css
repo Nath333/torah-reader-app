@@ -71,30 +71,6 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Grammar View */
-.grammar-view h5 {
-  margin: 0 0 16px 0;
-  color: var(--text-primary, #111827);
-  font-size: 1rem;
-}
-
-.grammar-words {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.grammar-word-card {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 12px 16px;
-  background: var(--bg-elevated, #f9fafb);
-  border-radius: 10px;
-  border: 1px solid var(--border-color, #e5e7eb);
-}
-
 .word-hebrew {
   font-size: 1.5rem;
   font-weight: 600;
@@ -153,10 +129,6 @@
   border-radius: 4px;
 }
 
-.talmudic-term-badge {
-  font-size: 0.8rem;
-}
-
 .no-data {
   text-align: center;
   padding: 40px;
@@ -197,19 +169,6 @@
   margin-left: 4px;
 }
 
-/* Masoretic View */
-.masoretic-view h5 {
-  margin: 0 0 16px 0;
-  color: var(--text-primary, #111827);
-  font-size: 1rem;
-}
-
-.masoretic-content {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
 .kq-item {
   background: var(--bg-elevated, #f9fafb);
   padding: 16px;
@@ -224,16 +183,6 @@
 
 .kq-item b {
   color: var(--text-primary, #111827);
-}
-
-.kq-type {
-  display: inline-block;
-  font-size: 0.8rem;
-  color: #7c3aed;
-  background: rgba(139, 92, 246, 0.1);
-  padding: 4px 10px;
-  border-radius: 6px;
-  margin-top: 4px;
 }
 
 .kq-item .notes {
@@ -282,16 +231,6 @@
   .textual-view-toggle button.active {
     background: var(--bg-card-dark, #1f2937);
     color: #60a5fa;
-  }
-
-  .grammar-view h5,
-  .masoretic-view h5 {
-    color: var(--text-primary-dark, #f9fafb);
-  }
-
-  .grammar-word-card {
-    background: var(--bg-elevated-dark, #374151);
-    border-color: var(--border-color-dark, #4b5563);
   }
 
   .word-hebrew {

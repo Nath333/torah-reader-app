@@ -1,16 +1,4 @@
-/**
- * RabbiInfoPanel Styles
- * Professional scholar biography display
- */
 
-.rabbi-info-panel {
-  background: var(--card-bg, #ffffff);
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  max-width: 400px;
-  font-size: 14px;
-}
 
 .rabbi-info-panel.compact {
   max-width: 320px;
@@ -183,20 +171,6 @@
   gap: 6px;
 }
 
-/* Person Chips */
-.person-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border-radius: 16px;
-  border: 1px solid #e5e7eb;
-  background: #ffffff;
-  font-size: 12px;
-  cursor: default;
-  transition: all 0.2s;
-}
-
 .person-chip.has-data {
   cursor: pointer;
   border-color: #93c5fd;
@@ -217,24 +191,6 @@
 .person-chip.teacher.has-data:hover {
   background: #dcfce7;
   border-color: #22c55e;
-}
-
-.person-chip .person-icon {
-  font-size: 12px;
-}
-
-.person-chip .person-name {
-  color: #374151;
-}
-
-.person-chip .person-arrow {
-  font-size: 10px;
-  color: #9ca3af;
-}
-
-.person-chip:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
 }
 
 /* Teaching Section */
@@ -368,12 +324,6 @@
   outline-offset: 2px;
 }
 
-.person-chip:focus-visible {
-  outline: 2px solid var(--primary, #3b82f6);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
-}
-
 .rabbi-info-panel .external-link:focus-visible {
   outline: 2px solid var(--primary, #2563eb);
   outline-offset: 2px;
@@ -403,9 +353,6 @@
    ============================================================================= */
 
 @media (prefers-contrast: more) {
-  .rabbi-info-panel {
-    border: 2px solid #000;
-  }
 
   .rabbi-info-panel .panel-header {
     border-bottom-width: 3px;
@@ -419,10 +366,6 @@
   .rabbi-info-panel .links-section {
     border-top-width: 2px;
     border-color: #000;
-  }
-
-  .person-chip {
-    border-width: 2px;
   }
 
   .rabbi-info-panel .key-teaching {

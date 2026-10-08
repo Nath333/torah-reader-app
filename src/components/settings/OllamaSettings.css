@@ -1,32 +1,4 @@
-/**
- * OllamaSettings Styles
- * Modern, clean UI for AI provider configuration
- */
 
-.ollama-settings {
-  background: var(--bg-primary, #1a1a2e);
-  border-radius: 12px;
-  padding: 24px;
-  max-width: 700px;
-  max-height: 85vh;
-  overflow-y: auto;
-  color: var(--text-primary, #e0e0e0);
-}
-
-.settings-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border-color, #2a2a4e);
-}
-
-.settings-header h2 {
-  margin: 0;
-  font-size: 1.5rem;
-  color: var(--text-primary, #fff);
-}
 
 .close-btn {
   background: none;
@@ -42,25 +14,6 @@
 .close-btn:hover {
   background: var(--bg-secondary, #2a2a4e);
   color: var(--text-primary, #fff);
-}
-
-/* Provider Toggle Section */
-.provider-toggle-section {
-  margin-bottom: 24px;
-}
-
-.provider-toggle-section h3 {
-  font-size: 1rem;
-  margin-bottom: 12px;
-  color: var(--text-secondary, #aaa);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.provider-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
 }
 
 .provider-card {
@@ -387,13 +340,6 @@
   cursor: not-allowed;
 }
 
-/* Recommended Models */
-.recommended-models {
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border-color, #3a3a5e);
-}
-
 .recommended-models .model-card {
   display: flex;
   flex-direction: column;
@@ -455,27 +401,8 @@
 
 /* Responsive */
 @media (max-width: 600px) {
-  .ollama-settings {
-    padding: 16px;
-  }
-
-  .provider-cards {
-    grid-template-columns: 1fr;
-  }
 
   .model-grid {
     grid-template-columns: 1fr 1fr;
   }
-}
-
-/* Light Mode Support */
-[data-theme="light"] .ollama-settings {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f5f5f5;
-  --bg-hover: #e8e8e8;
-  --bg-active: #e0e0ff;
-  --text-primary: #1a1a2e;
-  --text-secondary: #666;
-  --border-color: #ddd;
-  --accent-color: #6366f1;
 }

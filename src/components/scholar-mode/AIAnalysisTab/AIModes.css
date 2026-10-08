@@ -139,23 +139,6 @@
   padding: 12px;
 }
 
-.mode-grid-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.ai-indicator {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(99, 102, 241, 0.1) 100%);
-  border: 1px solid rgba(124, 58, 237, 0.3);
-  border-radius: 20px;
-}
-
 .mode-buttons {
   display: flex;
   flex-direction: column;
@@ -280,15 +263,6 @@
   animation: spin 1s linear infinite;
 }
 
-/* Iyun results */
-.iyun-result {
-  margin-top: 16px;
-  padding: 16px;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
-  border: 1px solid rgba(124, 58, 237, 0.2);
-}
-
 .iyun-result .result-header {
   display: flex;
   align-items: center;
@@ -310,20 +284,6 @@
 .iyun-result .result-content {
   line-height: 1.7;
   color: rgba(255, 255, 255, 0.9);
-}
-
-.iyun-result .result-text p {
-  margin: 0 0 8px 0;
-}
-
-.iyun-result .mermaid-code {
-  padding: 12px;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 8px;
-  overflow-x: auto;
-  font-family: monospace;
-  font-size: 0.85rem;
-  color: #a78bfa;
 }
 
 /* =============================================================================
@@ -377,19 +337,6 @@
   border-top-color: white;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-}
-
-.auto-run-toggle {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.8rem;
-  color: #9ca3af;
-  cursor: pointer;
-}
-
-.auto-run-toggle input {
-  accent-color: #3b82f6;
 }
 
 /* Bekius result */
@@ -462,39 +409,6 @@
   line-height: 1.5;
 }
 
-.full-result-details {
-  margin-top: 12px;
-}
-
-.full-result-details summary {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  color: #9ca3af;
-}
-
-.full-result-details summary:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.full-result-content {
-  padding: 16px;
-  margin-top: 8px;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.full-result-content p {
-  margin: 0 0 8px 0;
-}
-
 /* =============================================================================
    AI Chazara Mode
    ============================================================================= */
@@ -507,40 +421,6 @@
   border-radius: 20px;
   color: white;
   font-weight: 600;
-}
-
-.score-divider {
-  margin: 0 4px;
-  opacity: 0.6;
-}
-
-.chazara-generate {
-  text-align: center;
-  padding: 32px;
-}
-
-.generate-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 28px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  border: none;
-  border-radius: 12px;
-  color: white;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.generate-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
-}
-
-.generate-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 
 .generate-hint {
@@ -662,62 +542,6 @@
 .check-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-
-.answer-revealed {
-  margin-top: 16px;
-  padding: 16px;
-  background: rgba(16, 185, 129, 0.05);
-  border-radius: 10px;
-  border: 1px solid rgba(16, 185, 129, 0.2);
-}
-
-.correct-answer {
-  margin-bottom: 12px;
-}
-
-.answer-label {
-  display: block;
-  font-size: 0.8rem;
-  color: #10b981;
-  margin-bottom: 4px;
-}
-
-.answer-text {
-  font-size: 1rem;
-  color: #f3f4f6;
-  line-height: 1.5;
-}
-
-.ai-feedback {
-  padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.feedback-label {
-  display: block;
-  font-size: 0.8rem;
-  color: #a78bfa;
-  margin-bottom: 8px;
-}
-
-.feedback-text {
-  color: rgba(255, 255, 255, 0.85);
-  line-height: 1.6;
-}
-
-.feedback-text p {
-  margin: 0 0 8px 0;
-}
-
-/* Navigation */
-.question-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .nav-btn {

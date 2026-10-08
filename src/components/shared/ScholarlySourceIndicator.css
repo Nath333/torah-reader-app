@@ -1,14 +1,4 @@
-/* =============================================================================
-   Scholarly Source Indicator Styles
-   Shows which dictionaries found a word
-   ============================================================================= */
 
-/* Compact badge row */
-.source-indicator-compact {
-  display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
-}
 
 .source-badge {
   display: inline-flex;
@@ -41,56 +31,6 @@
   opacity: 1;
 }
 
-/* Full list view */
-.source-indicator-list {
-  padding: 12px;
-  background: var(--surface-elevated, #fafafa);
-  border-radius: 8px;
-  border: 1px solid var(--border-light, #e0e0e0);
-}
-
-.source-indicator-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--border-light, #eee);
-}
-
-.source-indicator-title {
-  font-weight: 600;
-  color: var(--text-primary, #333);
-  font-size: 0.9em;
-}
-
-.source-indicator-count {
-  font-size: 0.8em;
-  color: var(--text-secondary, #666);
-  background: var(--surface, #fff);
-  padding: 2px 8px;
-  border-radius: 10px;
-}
-
-.source-indicator-items {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.source-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 8px;
-  border-radius: 6px;
-  transition: background 0.15s ease;
-}
-
-.source-item:hover {
-  background: var(--surface-hover, rgba(0,0,0,0.03));
-}
-
 .source-item.source-found {
   color: var(--text-primary, #333);
 }
@@ -98,17 +38,6 @@
 .source-item.source-missing {
   color: var(--text-muted, #999);
   opacity: 0.7;
-}
-
-.source-status-icon {
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  font-size: 0.75em;
-  font-weight: 700;
 }
 
 .source-found .source-status-icon {
@@ -137,15 +66,6 @@
   margin-left: 4px;
 }
 
-.source-strong-num {
-  font-family: 'SF Mono', 'Consolas', monospace;
-  font-size: 0.75em;
-  background: var(--accent-bg, #e3f2fd);
-  color: var(--accent, #1976d2);
-  padding: 2px 6px;
-  border-radius: 4px;
-}
-
 .source-definition {
   flex: 1;
   font-size: 0.85em;
@@ -163,44 +83,6 @@
   font-style: italic;
 }
 
-/* Additional sources */
-.source-additional {
-  margin-top: 10px;
-  padding-top: 8px;
-  border-top: 1px dashed var(--border-light, #ddd);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.source-additional-label {
-  font-size: 0.8em;
-  color: var(--text-muted, #888);
-}
-
-.source-additional-item {
-  font-size: 0.75em;
-  background: var(--surface, #f0f0f0);
-  padding: 2px 8px;
-  border-radius: 4px;
-  color: var(--text-secondary, #666);
-}
-
-/* Inline badge (for use in text) */
-.source-badge-inline {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 3px;
-  font-size: 0.6em;
-  font-weight: 700;
-  vertical-align: middle;
-  margin: 0 2px;
-}
-
 .source-badge-inline.found {
   background: var(--source-color, #999);
   color: white;
@@ -214,31 +96,10 @@
 
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
-  .source-indicator-list {
-    background: var(--surface-elevated-dark, #2d2d2d);
-    border-color: var(--border-dark, #444);
-  }
-
-  .source-indicator-count {
-    background: var(--surface-dark, #1e1e1e);
-  }
-
-  .source-item:hover {
-    background: rgba(255,255,255,0.05);
-  }
 
   .source-missing .source-status-icon {
     background: var(--surface-dark, #333);
     border-color: var(--border-dark, #555);
-  }
-
-  .source-strong-num {
-    background: rgba(33, 150, 243, 0.2);
-  }
-
-  .source-additional-item {
-    background: var(--surface-dark, #333);
-    color: var(--text-secondary-dark, #aaa);
   }
 }
 

@@ -1,77 +1,4 @@
-/* =============================================================================
-   Conjugation Table Styles - PRO SCHOLAR v3
-   Shows full verb paradigm for Hebrew/Aramaic binyanim
-   ============================================================================= */
 
-.conjugation-table {
-  margin: 16px 0;
-  padding: 16px;
-  background: var(--surface-elevated, #f8f9fa);
-  border-radius: 10px;
-  border: 1px solid var(--border-light, #e0e0e0);
-  border-left: 4px solid var(--accent, #1976d2);
-}
-
-.conj-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--border-light, #e0e0e0);
-}
-
-.conj-icon {
-  font-size: 1.2em;
-}
-
-.conj-title {
-  font-weight: 600;
-  font-size: 1em;
-  color: var(--text-primary, #1a1a1a);
-}
-
-.conj-binyan {
-  margin-left: auto;
-  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
-  font-size: 1.1em;
-  font-weight: 600;
-  color: var(--accent, #1976d2);
-  background: rgba(25, 118, 210, 0.1);
-  padding: 4px 10px;
-  border-radius: 6px;
-}
-
-/* =============================================================================
-   Tense Selector Tabs
-   ============================================================================= */
-
-.tense-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 14px;
-}
-
-.tense-tab {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 8px 12px;
-  background: var(--surface, #fff);
-  border: 1px solid var(--border-light, #e0e0e0);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
-  font-size: 0.95em;
-  min-width: 70px;
-}
-
-.tense-tab:hover {
-  background: var(--surface-elevated, #f5f5f5);
-  border-color: var(--accent, #1976d2);
-}
 
 .tense-tab.active {
   background: var(--accent, #1976d2);
@@ -143,24 +70,6 @@
   color: var(--text-muted, #888);
 }
 
-.form-cell {
-  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
-  font-size: 1.2em;
-  font-weight: 500;
-  color: var(--text-primary, #1a1a1a);
-}
-
-.doubling-mark {
-  color: var(--accent, #1976d2);
-  font-weight: bold;
-}
-
-.affix-cell {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
 .prefix-mark,
 .suffix-mark {
   display: inline-block;
@@ -178,12 +87,6 @@
 .suffix-mark {
   background: rgba(139, 92, 246, 0.15);
   color: #7c3aed;
-}
-
-.form-label {
-  font-size: 0.75em;
-  color: var(--text-muted, #888);
-  font-style: italic;
 }
 
 /* =============================================================================
@@ -241,21 +144,6 @@
   border-color: var(--accent, #1976d2);
 }
 
-/* =============================================================================
-   Pattern Note
-   ============================================================================= */
-
-.pattern-note {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  margin-top: 12px;
-  padding: 10px;
-  background: rgba(16, 185, 129, 0.1);
-  border-radius: 6px;
-  border-left: 3px solid #10b981;
-}
-
 .note-icon {
   font-size: 1em;
 }
@@ -276,29 +164,6 @@
    ============================================================================= */
 
 @media (prefers-color-scheme: dark) {
-  .conjugation-table {
-    background: var(--surface-elevated-dark, #2d2d2d);
-    border-color: var(--border-dark, #444);
-  }
-
-  .conj-header {
-    border-color: var(--border-dark, #444);
-  }
-
-  .conj-binyan {
-    background: rgba(100, 181, 246, 0.2);
-    color: #90caf9;
-  }
-
-  .tense-tab {
-    background: var(--surface-dark, #1e1e1e);
-    border-color: var(--border-dark, #444);
-    color: var(--text-primary-dark, #e0e0e0);
-  }
-
-  .tense-tab:hover {
-    background: var(--surface-elevated-dark, #333);
-  }
 
   .tense-tab.active {
     background: var(--accent, #1976d2);
@@ -333,10 +198,6 @@
     color: var(--text-primary-dark, #e0e0e0);
   }
 
-  .pattern-note {
-    background: rgba(16, 185, 129, 0.15);
-  }
-
   .note-text {
     color: var(--text-secondary-dark, #aaa);
   }
@@ -351,19 +212,6 @@
    ============================================================================= */
 
 @media (max-width: 600px) {
-  .conjugation-table {
-    padding: 12px;
-  }
-
-  .tense-tabs {
-    justify-content: center;
-  }
-
-  .tense-tab {
-    min-width: 60px;
-    padding: 6px 10px;
-    font-size: 0.9em;
-  }
 
   .forms-table {
     font-size: 0.85em;
@@ -372,15 +220,6 @@
   .forms-table th,
   .forms-table td {
     padding: 6px 8px;
-  }
-
-  .form-cell {
-    font-size: 1.1em;
-  }
-
-  .conj-binyan {
-    font-size: 1em;
-    padding: 3px 8px;
   }
 
   .infinitive-forms {

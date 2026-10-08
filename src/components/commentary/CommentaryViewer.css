@@ -487,15 +487,6 @@
   gap: 12px;
 }
 
-/* Commentary Display Card - Compact */
-.commentary-display {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  overflow: visible;
-  border-left: 4px solid var(--display-color, #6366f1);
-}
-
 .dark-mode .commentary-display {
   background: #0f172a;
   border-color: #334155;
@@ -830,20 +821,6 @@
   letter-spacing: 1px;
 }
 
-.translation-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  color: #92400e;
-  border-radius: 12px;
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: none;
-  letter-spacing: 0;
-}
-
 .dark-mode .translation-badge {
   background: linear-gradient(135deg, #78350f 0%, #92400e 100%);
   color: #fef3c7;
@@ -948,20 +925,6 @@
   .verse-ref {
     font-size: 11px;
   }
-}
-
-/* ==============================================
-   ENHANCED RASHI UI STYLES
-   ============================================== */
-
-/* Rashi Enhanced Container */
-.commentary-display.rashi-enhanced {
-  border: 1px solid rgba(79, 70, 229, 0.15);
-  border-left: 5px solid #4f46e5;
-  background: linear-gradient(135deg, #fefefe 0%, #faf8ff 100%);
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.08);
 }
 
 .dark-mode .commentary-display.rashi-enhanced {
@@ -1486,21 +1449,6 @@
   transform: rotate(90deg) scale(0.95);
 }
 
-/* Enhanced Translate Button */
-.translate-btn {
-  transition:
-    all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.translate-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.translate-btn:active {
-  transform: translateY(0) scale(0.97);
-}
-
 .translate-btn.active {
   box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.2),
@@ -1545,14 +1493,6 @@
 
 .compare-all:active {
   transform: translateY(0) scale(0.97);
-}
-
-/* Enhanced Commentary Display Card */
-.commentary-display {
-  transition:
-    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow 0.2s ease,
-    border-color 0.2s ease;
 }
 
 .commentary-display:not(.empty):hover {

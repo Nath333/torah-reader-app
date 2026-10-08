@@ -36,30 +36,6 @@
 }
 
 /* =============================================================================
-   SIZE VARIANTS
-   ============================================================================= */
-
-.v6-analysis-badge.size-small {
-  padding: 2px 6px;
-  gap: 4px;
-  font-size: 0.7rem;
-  border-radius: 6px;
-}
-
-.v6-analysis-badge.size-medium {
-  padding: 4px 10px;
-  gap: 6px;
-  font-size: 0.75rem;
-}
-
-.v6-analysis-badge.size-large {
-  padding: 6px 14px;
-  gap: 8px;
-  font-size: 0.85rem;
-  border-radius: 10px;
-}
-
-/* =============================================================================
    CONFIDENCE LEVELS
    ============================================================================= */
 
@@ -151,9 +127,6 @@
    ============================================================================= */
 
 @media (prefers-color-scheme: dark) {
-  .v6-analysis-badge {
-    background: color-mix(in srgb, var(--badge-bg) 30%, #1f2937);
-  }
 
   .v6-analysis-badge.no-analysis,
   .v6-analysis-badge.no-data {
@@ -180,10 +153,6 @@
    ============================================================================= */
 
 @media (max-width: 400px) {
-  .v6-analysis-badge.size-large {
-    padding: 4px 10px;
-    font-size: 0.8rem;
-  }
 
   .badge-binyan {
     display: none;

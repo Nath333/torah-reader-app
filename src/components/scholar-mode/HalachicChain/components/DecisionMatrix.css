@@ -92,28 +92,6 @@
   font-size: 0.9rem;
 }
 
-/* Grid */
-.matrix-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-/* Ruling Group */
-.ruling-group {
-  background: var(--bg-elevated, #f9fafb);
-  border-radius: 10px;
-  padding: 16px;
-  border: 2px solid transparent;
-  transition: all 0.2s ease;
-}
-
-.ruling-group:hover {
-  border-color: var(--group-color);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
 .ruling-group.majority {
   border-color: var(--group-color);
   background: linear-gradient(135deg, var(--bg-elevated, #f9fafb) 0%, rgba(255, 255, 255, 0.5) 100%);
@@ -388,48 +366,8 @@
   color: #7c3aed;
 }
 
-.pillar-vote {
-  display: block;
-  margin-top: 4px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: capitalize;
-}
-
 .pillar-vote.agrees { color: #059669; }
 .pillar-vote.disagrees { color: #dc2626; }
-
-.pillar-result {
-  text-align: center;
-  margin-top: 8px;
-  font-size: 0.8rem;
-  color: #6b7280;
-  font-weight: 500;
-}
-
-/* ═══ Minority Positions ═══ */
-.matrix-minorities {
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid var(--border-color, #e5e7eb);
-}
-
-.minorities-title {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-primary, #111827);
-  margin: 0 0 8px 0;
-}
-
-.minority-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  border-radius: 6px;
-  margin-bottom: 4px;
-  background: var(--bg-elevated, #f9fafb);
-}
 
 .minority-row.significant { border-left: 3px solid #f59e0b; }
 .minority-ruling { font-weight: 600; color: var(--text-primary, #111827); text-transform: capitalize; font-size: 0.85rem; }
@@ -542,28 +480,6 @@
   background: rgba(0,0,0,0.02);
 }
 
-.tcm-lemaaseh {
-  margin-top: 12px;
-  padding: 10px 14px;
-  background: rgba(34,197,94,0.08);
-  border-left: 3px solid #22c55e;
-  border-radius: 6px;
-}
-
-.tcm-lemaaseh-label {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #166534;
-  display: block;
-  margin-bottom: 4px;
-}
-
-.tcm-lemaaseh-text {
-  font-size: 0.85rem;
-  color: #15803d;
-  line-height: 1.4;
-}
-
 /* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
   .decision-matrix {
@@ -572,10 +488,6 @@
 
   .matrix-title {
     color: var(--text-primary-dark, #f9fafb);
-  }
-
-  .ruling-group {
-    background: var(--bg-elevated-dark, #374151);
   }
 
   .ruling-group.majority {

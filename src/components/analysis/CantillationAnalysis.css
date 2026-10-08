@@ -23,32 +23,8 @@
   color: white;
 }
 
-.cant-header-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.cant-header-title h4 {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-}
-
 .cant-icon {
   font-size: 1.3rem;
-}
-
-.cant-ref {
-  font-size: 0.75rem;
-  padding: 2px 8px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-}
-
-.cant-controls {
-  display: flex;
-  gap: 10px;
 }
 
 .cant-tradition-toggle,
@@ -584,10 +560,6 @@
 
 /* Dark Mode */
 @media (prefers-color-scheme: dark) {
-  .cantillation-analysis {
-    background: #1f2937;
-    border-color: #374151;
-  }
 
   .cant-stats {
     background: #111827;
@@ -667,11 +639,6 @@
   .cant-header {
     flex-direction: column;
     gap: 10px;
-  }
-
-  .cant-controls {
-    width: 100%;
-    justify-content: center;
   }
 
   .marks-grid {

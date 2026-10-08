@@ -264,13 +264,6 @@
   font-family: 'David Libre', serif;
 }
 
-.daf-amud {
-  font-size: 1.5rem;
-  color: var(--gold-accent);
-  font-weight: 600;
-  margin-right: 0.5rem;
-}
-
 /* ===== THREE COLUMN LAYOUT ===== */
 .daf-three-columns {
   display: grid;
@@ -597,12 +590,6 @@
     var(--gold-accent) 90%,
     transparent 100%
   );
-}
-
-.daf-footer-label {
-  font-family: 'David Libre', serif;
-  letter-spacing: 0.15em;
-  font-weight: 600;
 }
 
 /* ===== DARK MODE ===== */

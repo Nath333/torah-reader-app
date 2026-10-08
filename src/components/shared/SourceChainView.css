@@ -37,14 +37,6 @@
   color: var(--text-secondary, #666);
 }
 
-/* =============================================================================
-   Timeline View
-   ============================================================================= */
-
-.source-timeline {
-  padding: 1rem;
-}
-
 .era-labels {
   display: flex;
   margin-bottom: 1rem;
@@ -78,29 +70,6 @@
 .era-years {
   font-size: 0.75rem;
   color: var(--text-secondary, #666);
-}
-
-.timeline-track {
-  display: flex;
-  gap: 0.75rem;
-  padding: 1rem 0;
-  overflow-x: auto;
-  border-top: 2px solid var(--border-color, #e0e0e0);
-  border-bottom: 2px solid var(--border-color, #e0e0e0);
-}
-
-.timeline-node {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 80px;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.timeline-node:hover {
-  transform: translateY(-4px);
 }
 
 .timeline-node.selected {

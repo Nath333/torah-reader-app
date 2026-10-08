@@ -24,64 +24,6 @@
   font-family: var(--font-hebrew, 'David Libre', serif);
 }
 
-/* Stats bar - Enhanced with progress bar */
-.glossed-stats {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 10px 14px;
-  background: linear-gradient(to bottom, var(--bg-subtle, #f1f5f9), var(--bg-elevated, #f8fafc));
-  border-top: 1px solid var(--border, #e2e8f0);
-}
-
-/* Progress bar container */
-.glossed-progress-bar {
-  position: relative;
-  height: 6px;
-  background: var(--border, #e2e8f0);
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.glossed-progress-fill {
-  height: 100%;
-  border-radius: 3px;
-  background: linear-gradient(90deg, #10b981, #059669);
-  transition: width 0.5s ease-out;
-  position: relative;
-}
-
-.glossed-progress-fill::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 20px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3));
-}
-
-/* Stats row */
-.glossed-stats-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.7rem;
-  color: var(--text-muted, #94a3b8);
-}
-
-.glossed-stats-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.glossed-stats-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
 .glossed-stats .stat-coverage {
   font-weight: 700;
   font-size: 0.85rem;
@@ -604,11 +546,5 @@
   .glossed-text rt {
     font-size: 0.45em;
     max-width: 80px;
-  }
-
-  .glossed-stats {
-    font-size: 0.65rem;
-    padding: 4px 8px;
-    gap: 8px;
   }
 }

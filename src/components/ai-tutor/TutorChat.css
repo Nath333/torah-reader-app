@@ -1,53 +1,4 @@
-/**
- * TutorChat Styles - AI Study Partner Interface
- */
 
-.tutor-chat {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  max-height: 80vh;
-  background: var(--bg-primary, #1a1a2e);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
-
-/* Header */
-.tutor-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  background: linear-gradient(135deg, var(--gold-dark, #9a7b1c) 0%, var(--gold-primary, #c9a227) 100%);
-  color: white;
-}
-
-.tutor-title {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.tutor-icon {
-  font-size: 28px;
-}
-
-.tutor-title-text h3 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.tutor-subtitle {
-  font-size: 12px;
-  opacity: 0.9;
-}
-
-.tutor-actions {
-  display: flex;
-  gap: 8px;
-}
 
 .tutor-btn {
   width: 36px;
@@ -930,9 +881,6 @@
 
 /* Light mode */
 @media (prefers-color-scheme: light) {
-  .tutor-chat {
-    background: #ffffff;
-  }
 
   .tutor-settings,
   .tutor-input-container,
@@ -968,14 +916,6 @@
 
 /* Mobile */
 @media (max-width: 640px) {
-  .tutor-chat {
-    max-height: 100vh;
-    border-radius: 0;
-  }
-
-  .tutor-header {
-    padding: 12px 16px;
-  }
 
   .tutor-messages {
     padding: 12px;

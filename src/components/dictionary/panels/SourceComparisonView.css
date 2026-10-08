@@ -1,15 +1,4 @@
-/* =============================================================================
-   SOURCE COMPARISON VIEW - PRO SCHOLAR V6 Styles
-   Multi-dictionary side-by-side comparison
-   ============================================================================= */
 
-.source-comparison-view {
-  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  border-radius: 12px;
-  padding: 16px;
-  margin: 12px 0;
-}
 
 .source-comparison-view.empty {
   padding: 30px;
@@ -82,17 +71,6 @@
   padding: 3px 10px;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 12px;
-}
-
-/* =============================================================================
-   SOURCE TABS
-   ============================================================================= */
-
-.source-comparison-view .source-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 14px;
 }
 
 .source-tab {
@@ -433,12 +411,6 @@
 @media (max-width: 768px) {
   .comparison-grid {
     grid-template-columns: 1fr;
-  }
-
-  .source-comparison-view .source-tabs {
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    padding-bottom: 6px;
   }
 
   .source-tab {

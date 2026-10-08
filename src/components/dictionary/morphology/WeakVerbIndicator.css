@@ -1,27 +1,4 @@
-/* =============================================================================
-   WEAK VERB INDICATOR - PRO SCHOLAR V6 Styles
-   ============================================================================= */
 
-.weak-verb-indicator {
-  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  border-radius: 12px;
-  padding: 16px;
-  margin: 12px 0;
-}
-
-/* =============================================================================
-   HEADER
-   ============================================================================= */
-
-.weak-verb-indicator .indicator-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 14px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
-}
 
 .weak-verb-indicator .header-icon {
   font-size: 1.3rem;
@@ -65,28 +42,6 @@
 .weak-verb-indicator.compact .pattern-badges {
   display: flex;
   gap: 4px;
-}
-
-/* =============================================================================
-   PATTERN BADGE
-   ============================================================================= */
-
-.weak-verb-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid var(--pattern-color, #8B5CF6);
-  border-radius: 14px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.weak-verb-badge:hover {
-  background: rgba(0, 0, 0, 0.5);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .weak-verb-badge .badge-icon {
@@ -168,19 +123,6 @@
   color: var(--pattern-color, #a5b4fc);
   font-family: 'SBL Hebrew', 'Ezra SIL', serif;
   direction: rtl;
-}
-
-/* =============================================================================
-   PATTERN DETAIL CARD
-   ============================================================================= */
-
-.pattern-detail-card {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--pattern-color, rgba(139, 92, 246, 0.3));
-  border-radius: 10px;
-  margin-bottom: 8px;
-  overflow: hidden;
-  transition: all 0.2s ease;
 }
 
 .pattern-detail-card.expanded {
@@ -368,22 +310,10 @@
 }
 
 /* =============================================================================
-   PATTERN CARDS CONTAINER
-   ============================================================================= */
-
-.weak-verb-indicator .pattern-cards {
-  display: flex;
-  flex-direction: column;
-}
-
-/* =============================================================================
    RESPONSIVE
    ============================================================================= */
 
 @media (max-width: 600px) {
-  .weak-verb-indicator {
-    padding: 12px;
-  }
 
   .transformation-diagram {
     flex-direction: column;

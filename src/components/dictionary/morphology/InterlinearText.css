@@ -1,29 +1,4 @@
-/* =============================================================================
-   InterlinearText Component Styles
-   Hebrew text with English translations underneath each word
-   ============================================================================= */
 
-.interlinear-text {
-  padding: 0.75rem;
-}
-
-/* Stats bar */
-.il-stats {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 0.75rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px dashed var(--border-light, #e2e8f0);
-}
-
-.il-stat {
-  font-size: 0.7rem;
-  color: var(--text-muted, #64748b);
-  background: var(--bg-subtle, #f8fafc);
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
-}
 
 .il-stat.known {
   background: var(--success-light, #dcfce7);
@@ -39,36 +14,6 @@
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
-}
-
-/* Words container - RTL for Hebrew */
-.il-words {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 0.75rem;
-  justify-content: flex-start;
-}
-
-/* Individual word block */
-.interlinear-word {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0.4rem 0.5rem;
-  background: var(--card-bg, #fff);
-  border: 1px solid var(--border-light, #f1f5f9);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 150ms ease;
-  position: relative;
-  min-width: 50px;
-}
-
-.interlinear-word:hover {
-  border-color: var(--primary, #6366f1);
-  background: var(--primary-light, #f0eeff);
-  transform: translateY(-2px);
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
 }
 
 .interlinear-word.known {

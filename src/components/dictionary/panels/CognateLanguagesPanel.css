@@ -114,44 +114,12 @@
   line-height: 1;
 }
 
-/* =============================================================================
-   PROTO-SEMITIC BADGE
-   ============================================================================= */
-
-.clp-proto-semitic {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: linear-gradient(90deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.2));
-  border-radius: 8px;
-  padding: 10px 16px;
-  margin-bottom: 12px;
-  border: 1px dashed rgba(139, 92, 246, 0.3);
-}
-
 .dark .clp-proto-semitic {
   background: linear-gradient(90deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.25));
 }
 
-.clp-proto-label {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #7c3aed;
-  font-weight: 600;
-}
-
 .dark .clp-proto-label {
   color: #a78bfa;
-}
-
-.clp-proto-form {
-  font-size: 1.1rem;
-  font-weight: 700;
-  font-style: italic;
-  color: #5b21b6;
-  font-family: 'Times New Roman', serif;
 }
 
 .dark .clp-proto-form {
@@ -207,115 +175,29 @@
   margin-bottom: 14px;
 }
 
-.clp-cognate-card {
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 10px;
-  padding: 12px;
-  transition: all 0.2s ease;
-  border-left: 3px solid var(--lang-color, #8b5cf6);
-}
-
 .dark .clp-cognate-card {
   background: rgba(0, 0, 0, 0.3);
   border-color: rgba(167, 139, 250, 0.3);
-}
-
-.clp-cognate-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
 }
 
 .dark .clp-cognate-card:hover {
   box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
 }
 
-.clp-cognate-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-.clp-language-flag {
-  font-size: 1rem;
-  line-height: 1.2;
-}
-
-.clp-language-info {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.clp-language-name {
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  color: var(--lang-color, #7c3aed);
-  line-height: 1.2;
-}
-
 .dark .clp-language-name {
   color: #c4b5fd;
-}
-
-.clp-language-desc {
-  font-size: 0.6rem;
-  color: #9ca3af;
-  font-weight: 400;
 }
 
 .dark .clp-language-desc {
   color: #6b7280;
 }
 
-.clp-cognate-word {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #4c1d95;
-  margin-bottom: 4px;
-  font-style: italic;
-}
-
 .dark .clp-cognate-word {
   color: #e9d5ff;
 }
 
-.clp-cognate-meaning {
-  font-size: 0.8rem;
-  color: #6d28d9;
-}
-
 .dark .clp-cognate-meaning {
   color: #c4b5fd;
-}
-
-.clp-cognate-note {
-  font-size: 0.7rem;
-  color: #9ca3af;
-  margin-top: 6px;
-  font-style: italic;
-}
-
-.clp-period {
-  display: inline-block;
-  background: rgba(139, 92, 246, 0.1);
-  padding: 2px 6px;
-  border-radius: 4px;
-  margin-right: 4px;
-  font-style: normal;
-}
-
-.clp-cognate-form {
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  color: #8b5cf6;
-  margin-top: 6px;
-  padding-top: 6px;
-  border-top: 1px solid rgba(139, 92, 246, 0.2);
 }
 
 .dark .clp-cognate-form {
@@ -373,69 +255,20 @@
   letter-spacing: 0.3px;
 }
 
-/* =============================================================================
-   SCHOLARLY NOTE (updated)
-   ============================================================================= */
-
-.clp-scholarly-note {
-  background: rgba(139, 92, 246, 0.08);
-  border-radius: 8px;
-  padding: 12px;
-  border-left: 3px solid #8b5cf6;
-  margin-top: 12px;
-}
-
 .dark .clp-scholarly-note {
   background: rgba(139, 92, 246, 0.12);
-}
-
-.clp-note-content {
-  font-size: 0.85rem;
-  color: #5b21b6;
-  font-style: italic;
-  line-height: 1.5;
 }
 
 .dark .clp-note-content {
   color: #ddd6fe;
 }
 
-/* =============================================================================
-   SCHOLARLY NOTE
-   ============================================================================= */
-
-.clp-note {
-  background: rgba(139, 92, 246, 0.1);
-  border-radius: 8px;
-  padding: 12px;
-  border-left: 3px solid #8b5cf6;
-}
-
 .dark .clp-note {
   background: rgba(139, 92, 246, 0.15);
 }
 
-.clp-note-label {
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #7c3aed;
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
 .dark .clp-note-label {
   color: #a78bfa;
-}
-
-.clp-note-text {
-  font-size: 0.85rem;
-  color: #5b21b6;
-  font-style: italic;
-  line-height: 1.5;
 }
 
 .dark .clp-note-text {
@@ -464,18 +297,6 @@
 .clp-no-data-text {
   font-size: 0.85rem;
 }
-
-/* =============================================================================
-   LANGUAGE-SPECIFIC STYLING
-   ============================================================================= */
-
-/* Language-specific accent colors (optional enhancement) */
-.clp-cognate-card[data-language="akkadian"] { border-left: 3px solid #d97706; }
-.clp-cognate-card[data-language="ugaritic"] { border-left: 3px solid #65a30d; }
-.clp-cognate-card[data-language="arabic"] { border-left: 3px solid #059669; }
-.clp-cognate-card[data-language="ethiopic"] { border-left: 3px solid #7c3aed; }
-.clp-cognate-card[data-language="syriac"] { border-left: 3px solid #dc2626; }
-.clp-cognate-card[data-language="phoenician"] { border-left: 3px solid #0284c7; }
 
 /* =============================================================================
    COMPACT MODE

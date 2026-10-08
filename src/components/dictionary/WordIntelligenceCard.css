@@ -38,15 +38,6 @@
   color: var(--text-secondary, #666);
 }
 
-.wic-spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid var(--border-light, #e0e0e0);
-  border-top-color: var(--accent, #1976d2);
-  border-radius: 50%;
-  animation: wic-spin 0.8s linear infinite;
-}
-
 @keyframes wic-spin {
   to { transform: rotate(360deg); }
 }
@@ -67,71 +58,6 @@
   background: var(--error-bg, #fef2f2);
   border-radius: 50%;
   font-weight: bold;
-}
-
-/* =============================================================================
-   Header Section
-   ============================================================================= */
-
-.wic-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 12px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--accent, #1976d2);
-}
-
-.wic-word-section {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.wic-word {
-  font-family: 'SBL Hebrew', 'Ezra SIL', 'Times New Roman', serif;
-  font-size: 2em;
-  font-weight: 600;
-  color: var(--text-primary, #1a1a1a);
-  line-height: 1.2;
-}
-
-.wic-root {
-  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
-  font-size: 0.9em;
-  color: var(--accent, #1976d2);
-  background: var(--accent-bg, #e3f2fd);
-  padding: 2px 8px;
-  border-radius: 4px;
-  display: inline-block;
-}
-
-.wic-close {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--surface-elevated, #f5f5f5);
-  border: none;
-  border-radius: 50%;
-  font-size: 1.2em;
-  color: var(--text-muted, #888);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.wic-close:hover {
-  background: var(--error-bg, #fef2f2);
-  color: var(--error, #dc2626);
-}
-
-/* =============================================================================
-   Domain Badge Row
-   ============================================================================= */
-
-.wic-domain-row {
-  margin-bottom: 12px;
 }
 
 .wic-domain-badge {
@@ -155,30 +81,12 @@
   color: var(--text-secondary, #555);
 }
 
-/* =============================================================================
-   Definitions Section
-   ============================================================================= */
-
-.wic-definitions {
-  margin-bottom: 16px;
-}
-
 .wic-definitions.empty {
   padding: 12px;
   text-align: center;
   color: var(--text-muted, #888);
   background: var(--surface-elevated, #f8f9fa);
   border-radius: 8px;
-}
-
-.def-primary {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 12px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
-  border-radius: 8px;
-  border: 1px solid var(--border-light, #e0e0e0);
 }
 
 .def-content {
@@ -189,45 +97,6 @@
   font-size: 1.05em;
   color: var(--text-primary, #1a1a1a);
   line-height: 1.5;
-}
-
-.def-toggle {
-  display: block;
-  width: 100%;
-  margin-top: 8px;
-  padding: 8px;
-  background: none;
-  border: 1px dashed var(--border-light, #d0d0d0);
-  border-radius: 6px;
-  color: var(--accent, #1976d2);
-  font-size: 0.85em;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.def-toggle:hover {
-  background: var(--accent-bg, #e3f2fd);
-  border-style: solid;
-}
-
-.def-alternatives {
-  margin-top: 8px;
-  padding: 8px;
-  background: var(--surface-elevated, #f8f9fa);
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.def-alt {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 8px;
-  background: var(--surface, #fff);
-  border-radius: 6px;
-  border: 1px solid var(--border-light, #e8e8e8);
 }
 
 .def-alt .def-text {
@@ -343,25 +212,6 @@
   color: var(--text-muted, #888);
 }
 
-/* =============================================================================
-   Morphology Section
-   ============================================================================= */
-
-.wic-morphology {
-  margin-bottom: 16px;
-  padding: 12px;
-  background: var(--surface-elevated, #f8f9fa);
-  border-radius: 8px;
-  border-left: 3px solid var(--accent, #1976d2);
-}
-
-.morph-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
 .morph-title {
   font-size: 0.85em;
   font-weight: 600;
@@ -370,30 +220,12 @@
   color: var(--text-muted, #666);
 }
 
-.morph-confidence {
-  font-family: var(--font-mono, monospace);
-  font-size: 0.75em;
-  padding: 2px 6px;
-  background: var(--surface, #fff);
-  border-radius: 10px;
-  color: var(--accent, #1976d2);
-}
-
 .morph-breakdown {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
   flex-wrap: wrap;
-}
-
-.morph-part {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 8px 12px;
-  border-radius: 6px;
-  min-width: 40px;
 }
 
 .morph-part.prefix {
@@ -411,13 +243,6 @@
   border: 1px solid var(--suffix-border, #ce93d8);
 }
 
-.morph-part .part-text {
-  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
-  font-size: 1.3em;
-  font-weight: 600;
-  color: var(--text-primary, #1a1a1a);
-}
-
 .morph-part .part-label {
   font-size: 0.65em;
   text-transform: uppercase;
@@ -426,40 +251,11 @@
   margin-top: 2px;
 }
 
-.morph-plus {
-  color: var(--text-muted, #999);
-  font-size: 1.2em;
-}
-
-.morph-pattern,
-.morph-computed {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--border-light, #e0e0e0);
-  font-size: 0.9em;
-}
-
 .pattern-label,
 .computed-label {
   font-size: 0.8em;
   font-weight: 600;
   color: var(--text-muted, #666);
-}
-
-.pattern-value {
-  padding: 2px 8px;
-  background: #fef3c7;
-  border-radius: 4px;
-  color: #92400e;
-  font-weight: 500;
-}
-
-.computed-value {
-  font-style: italic;
-  color: var(--success, #16a34a);
 }
 
 /* =============================================================================
@@ -718,60 +514,6 @@
   color: white;
 }
 
-/* Quick Review Rating Buttons */
-.srs-quick-review {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 10px 0;
-  padding: 8px;
-  background: var(--surface-elevated, #f8f9fa);
-  border-radius: 8px;
-}
-
-.review-label {
-  font-size: 0.75em;
-  color: var(--text-secondary, #666);
-  white-space: nowrap;
-}
-
-.review-btns {
-  display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
-}
-
-.rbtn {
-  min-width: 28px;
-  height: 28px;
-  padding: 0 6px;
-  font-size: 0.8em;
-  font-weight: 600;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.rbtn:hover {
-  transform: scale(1.1);
-}
-
-/* SM-2 Quality Ratings: 0=forgot, 1=wrong, 2=hard, 3=ok, 4=easy, 5=perfect */
-.rbtn.q0 { background: #ef5350; color: white; }
-.rbtn.q1 { background: #ff7043; color: white; }
-.rbtn.q2 { background: #ffa726; color: white; }
-.rbtn.q3 { background: #66bb6a; color: white; }
-.rbtn.q4 { background: #42a5f5; color: white; }
-.rbtn.q5 { background: #ab47bc; color: white; }
-
-.rbtn.q0:hover { background: #c62828; }
-.rbtn.q1:hover { background: #e64a19; }
-.rbtn.q2:hover { background: #ef6c00; }
-.rbtn.q3:hover { background: #388e3c; }
-.rbtn.q4:hover { background: #1976d2; }
-.rbtn.q5:hover { background: #7b1fa2; }
-
 /* Success Feedback */
 .srs-feedback {
   display: inline-block;
@@ -790,48 +532,6 @@
 }
 
 /* =============================================================================
-   Footer Actions
-   ============================================================================= */
-
-.wic-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 12px;
-  border-top: 1px solid var(--border-light, #e0e0e0);
-}
-
-.wic-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.wic-action {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 12px;
-  background: var(--surface-elevated, #f5f5f5);
-  border: 1px solid var(--border-light, #e0e0e0);
-  border-radius: 16px;
-  font-size: 0.8em;
-  color: var(--text-secondary, #555);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.wic-action:hover {
-  background: var(--accent-bg, #e3f2fd);
-  border-color: var(--accent, #1976d2);
-  color: var(--accent, #1976d2);
-}
-
-.wic-source-info {
-  font-size: 0.75em;
-  color: var(--text-muted, #888);
-}
-
-/* =============================================================================
    Dark Mode
    ============================================================================= */
 
@@ -844,11 +544,6 @@
   .wic-word,
   .srs-level {
     color: var(--text-primary-dark, #f0f0f0);
-  }
-
-  .def-primary {
-    background: linear-gradient(135deg, #2d2d2d 0%, #252525 100%);
-    border-color: var(--border-dark, #444);
   }
 
   .def-text {
@@ -873,10 +568,6 @@
   .wic-srs.not-in-srs {
     background: var(--surface-elevated-dark, #2d2d2d);
     border-color: var(--border-dark, #444);
-  }
-
-  .srs-quick-review {
-    background: var(--surface-elevated-dark, #2d2d2d);
   }
 
   .srs-feedback {
@@ -919,10 +610,6 @@
     background: rgba(156, 39, 176, 0.15);
     border-color: rgba(156, 39, 176, 0.4);
   }
-
-  .morph-part .part-text {
-    color: var(--text-primary-dark, #f0f0f0);
-  }
 }
 
 /* =============================================================================
@@ -935,16 +622,8 @@
     border-radius: 8px;
   }
 
-  .wic-word {
-    font-size: 1.6em;
-  }
-
   .morph-breakdown {
     flex-direction: column;
-  }
-
-  .morph-plus {
-    transform: rotate(90deg);
   }
 
   .wic-srs.not-in-srs {
@@ -957,37 +636,6 @@
     flex-direction: column;
     gap: 4px;
   }
-
-  .wic-footer {
-    flex-direction: column;
-    gap: 8px;
-  }
-}
-
-/* =============================================================================
-   PRO SCHOLAR: Enhanced Header with Language & Meta
-   ============================================================================= */
-
-.wic-header-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
-}
-
-.wic-meta {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.wic-lang {
-  padding: 3px 8px;
-  border-radius: 4px;
-  font-size: 0.75em;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .wic-lang.hebrew {
@@ -1100,10 +748,6 @@
   border-radius: 12px;
   font-size: 0.75em;
   font-weight: 500;
-}
-
-.source-category-icon {
-  font-size: 0.9em;
 }
 
 .source-category.dictionary {
@@ -1303,68 +947,6 @@
   background: #9ca3af;
 }
 
-/* =============================================================================
-   PRO SCHOLAR: Weak Verb Reconstruction
-   ============================================================================= */
-
-.wic-weak-verb {
-  margin-bottom: 12px;
-  padding: 12px;
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  border: 1px solid #fbbf24;
-  border-radius: 8px;
-}
-
-.weak-verb-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.weak-verb-icon {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #92400e;
-  color: white;
-  border-radius: 50%;
-  font-size: 0.9em;
-  font-weight: 700;
-}
-
-.weak-verb-title {
-  font-weight: 600;
-  color: #78350f;
-}
-
-.weak-verb-type {
-  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
-  font-size: 1.1em;
-  color: #92400e;
-  margin-left: 4px;
-}
-
-.weak-verb-explanation {
-  font-size: 0.9em;
-  color: #92400e;
-  margin-bottom: 10px;
-  line-height: 1.5;
-}
-
-.weak-verb-reconstruction {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 12px;
-  background: var(--surface, #fff);
-  border-radius: 6px;
-  border: 1px solid #fcd34d;
-}
-
 .reconstruction-form {
   display: flex;
   flex-direction: column;
@@ -1389,19 +971,6 @@
 .reconstruction-arrow {
   font-size: 1.5em;
   color: #f59e0b;
-}
-
-/* =============================================================================
-   PRO SCHOLAR: Verb Grammar Section
-   ============================================================================= */
-
-.wic-verb-grammar {
-  margin-bottom: 16px;
-  padding: 12px;
-  background: var(--surface-elevated, #f8f9fa);
-  border-radius: 8px;
-  border: 1px solid var(--border-light, #e0e0e0);
-  border-left: 3px solid #7c3aed;
 }
 
 .grammar-header {
@@ -1440,49 +1009,6 @@
   color: var(--text-muted, #666);
 }
 
-.grammar-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 10px;
-}
-
-.grammar-item {
-  display: flex;
-  flex-direction: column;
-  padding: 8px 10px;
-  background: var(--surface, #fff);
-  border-radius: 6px;
-  border: 1px solid var(--border-light, #e8e8e8);
-}
-
-.grammar-item-label {
-  font-size: 0.7em;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-muted, #888);
-  margin-bottom: 4px;
-}
-
-.grammar-item-value {
-  font-weight: 600;
-  color: var(--text-primary, #1a1a1a);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.grammar-item-hebrew {
-  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
-  color: #7c3aed;
-  font-size: 0.9em;
-}
-
-.grammar-item-desc {
-  font-size: 0.8em;
-  color: var(--text-secondary, #666);
-  margin-top: 2px;
-}
-
 .grammar-item.binyan {
   border-left: 3px solid #f59e0b;
 }
@@ -1503,76 +1029,16 @@
   border-left: 3px solid #8b5cf6;
 }
 
-/* =============================================================================
-   PRO SCHOLAR: Enhanced Morphology Pattern Row
-   ============================================================================= */
-
-.morph-pattern-row {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--border-light, #e0e0e0);
-}
-
-.morph-pattern-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 4px;
-  font-size: 0.8em;
-}
-
-.morph-pattern-badge.verb-pattern {
-  background: #fef3c7;
-  border: 1px solid #fbbf24;
-  color: #92400e;
-}
-
 .morph-pattern-badge.binyan {
   background: #dbeafe;
   border: 1px solid #60a5fa;
   color: #1e40af;
 }
 
-.pattern-badge-name {
-  font-weight: 600;
-}
-
-.pattern-badge-hebrew {
-  font-family: 'SBL Hebrew', 'Ezra SIL', serif;
-}
-
-/* =============================================================================
-   PRO SCHOLAR: Enhanced Etymology with Frequency
-   ============================================================================= */
-
-.ety-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 10px;
-}
-
 .ety-field {
   display: flex;
   flex-direction: column;
   gap: 2px;
-}
-
-.ety-field-label {
-  font-size: 0.7em;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-muted, #888);
-}
-
-.ety-field-value {
-  font-weight: 600;
-  color: var(--text-primary, #1a1a1a);
 }
 
 .ety-frequency {
@@ -1649,40 +1115,7 @@
     border-color: var(--border-dark, #444);
   }
 
-  .wic-weak-verb {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.1) 100%);
-    border-color: rgba(245, 158, 11, 0.4);
-  }
-
-  .weak-verb-title {
-    color: #fcd34d;
-  }
-
-  .weak-verb-explanation {
-    color: #fde68a;
-  }
-
-  .weak-verb-reconstruction {
-    background: var(--surface-dark, #252525);
-    border-color: rgba(245, 158, 11, 0.3);
-  }
-
   .reconstruction-hebrew {
-    color: var(--text-primary-dark, #f0f0f0);
-  }
-
-  .wic-verb-grammar {
-    background: var(--surface-elevated-dark, #2d2d2d);
-    border-color: var(--border-dark, #444);
-    border-left-color: #7c3aed;
-  }
-
-  .grammar-item {
-    background: var(--surface-dark, #252525);
-    border-color: var(--border-dark, #444);
-  }
-
-  .grammar-item-value {
     color: var(--text-primary-dark, #f0f0f0);
   }
 
@@ -1726,26 +1159,8 @@
     grid-template-columns: 1fr;
   }
 
-  .grammar-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .weak-verb-reconstruction {
-    flex-direction: column;
-  }
-
   .reconstruction-arrow {
     transform: rotate(90deg);
-  }
-
-  .wic-header-right {
-    align-items: flex-start;
-    margin-top: 8px;
-  }
-
-  .ety-row {
-    flex-direction: column;
-    gap: 8px;
   }
 
   .ety-frequency {
@@ -2155,41 +1570,6 @@
   color: var(--text-primary, #1f2937);
 }
 
-.quick-review-buttons {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-}
-
-.review-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 10px 16px;
-  background: var(--surface, #fff);
-  border: 2px solid var(--btn-color, #e5e7eb);
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-width: 65px;
-}
-
-.review-btn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--btn-color) 10%, white);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.review-btn:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.review-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
 .review-btn.active {
   background: var(--btn-color);
   color: white;
@@ -2245,17 +1625,6 @@
   min-width: 50px;
 }
 
-/* =============================================================================
-   PRO SCHOLAR v3: LEARNING INSIGHTS PANEL
-   ============================================================================= */
-
-.wic-learning-insights {
-  margin: 12px 0;
-  border: 1px solid var(--border-light, #e5e7eb);
-  border-radius: 10px;
-  overflow: hidden;
-}
-
 .insights-header {
   display: flex;
   align-items: center;
@@ -2280,13 +1649,6 @@
   font-size: 0.9em;
   font-weight: 600;
   color: var(--text-primary, #1f2937);
-}
-
-.insights-toggle {
-  margin-left: auto;
-  font-size: 0.8em;
-  color: var(--text-muted, #9ca3af);
-  transition: transform 0.2s ease;
 }
 
 .insights-toggle.expanded {
@@ -2582,25 +1944,12 @@
     border-color: var(--border-dark, #374151);
   }
 
-  .review-btn {
-    background: var(--surface-dark, #1f2937);
-    border-color: var(--btn-color, #374151);
-  }
-
-  .review-btn:hover:not(:disabled) {
-    background: color-mix(in srgb, var(--btn-color) 20%, #1f2937);
-  }
-
   .quick-review-feedback {
     background: rgba(34, 197, 94, 0.15);
   }
 
   .feedback-message {
     color: #4ade80;
-  }
-
-  .wic-learning-insights {
-    border-color: var(--border-dark, #374151);
   }
 
   .insights-header {
@@ -2678,15 +2027,6 @@
    ============================================================================= */
 
 @media (max-width: 480px) {
-  .quick-review-buttons {
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .review-btn {
-    flex: 1 1 45%;
-    min-width: 0;
-  }
 
   .srs-progress {
     gap: 12px;
@@ -2749,22 +2089,6 @@
   color: #78350f;
 }
 
-.cant-marks {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.cant-mark {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  background: var(--surface, #fff);
-  border-radius: 6px;
-  border-left: 3px solid #fbbf24;
-}
-
 .cant-mark.disjunctive {
   border-left-color: #dc2626;
 }
@@ -2779,13 +2103,6 @@
   color: var(--text-primary, #1a1a1a);
   min-width: 40px;
   text-align: center;
-}
-
-.mark-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
 }
 
 .mark-name {
@@ -2978,17 +2295,6 @@
 .related-construct:hover {
   background: #dbeafe;
   border-color: #3b82f6;
-}
-
-/* =============================================================================
-   PRO SCHOLAR v4: MANUSCRIPT VARIANTS INDICATOR
-   ============================================================================= */
-
-.wic-variants {
-  margin-top: 12px;
-  border: 1px solid var(--border-light, #e5e7eb);
-  border-radius: 8px;
-  overflow: hidden;
 }
 
 .wic-variants.significant {
@@ -3231,10 +2537,6 @@
     color: #fcd34d;
   }
 
-  .cant-mark {
-    background: var(--surface-dark, #252525);
-  }
-
   .mark-symbol,
   .mark-name {
     color: var(--text-primary-dark, #f0f0f0);
@@ -3269,10 +2571,6 @@
     background: rgba(59, 130, 246, 0.15);
     border-color: rgba(59, 130, 246, 0.4);
     color: #93c5fd;
-  }
-
-  .wic-variants {
-    border-color: var(--border-dark, #374151);
   }
 
   .variants-toggle {
@@ -3320,10 +2618,6 @@
    ============================================================================= */
 
 @media (max-width: 480px) {
-  .cant-mark {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
 
   .mark-symbol {
     min-width: 30px;
@@ -3366,18 +2660,6 @@
   }
 }
 
-/* =============================================================================
-   PRO SCHOLAR V6: Enhanced Analysis Badges
-   ============================================================================= */
-
-/* V6 Badges Row Container */
-.wic-v6-badges-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
 /* V6 Semantic Field Badge */
 .wic-semantic-field-v6 {
   display: inline-flex;
@@ -3411,18 +2693,6 @@
   font-family: 'David Libre', 'SBL Hebrew', serif;
 }
 
-/* V6 Dialect Indicator */
-.wic-dialect-v6 {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: var(--surface-secondary, #f5f5f5);
-  border-radius: 8px;
-  font-size: 0.8em;
-  border: 1px solid var(--border-light, #e0e0e0);
-}
-
 .wic-dialect-v6 .dialect-icon {
   font-size: 1em;
 }
@@ -3441,32 +2711,10 @@
   margin-left: 4px;
 }
 
-/* V6 Dictionary Tier Badge */
-.wic-tier-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3px 8px;
-  border-radius: 6px;
-  font-size: 0.8em;
-  margin-left: 6px;
-}
-
-/* V6 Source Badge Enhancement */
-.wic-definitions .def-primary .wic-tier-badge,
-.wic-definitions .def-alt .wic-tier-badge {
-  margin-left: 8px;
-}
-
 /* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
   .wic-semantic-field-v6 {
     background: var(--surface-dark, #2d2d2d);
-  }
-
-  .wic-dialect-v6 {
-    background: var(--surface-dark, #2d2d2d);
-    border-color: var(--border-dark, #404040);
   }
 
   .wic-dialect-v6 .dialect-confidence {
@@ -3476,17 +2724,8 @@
 
 /* Responsive */
 @media (max-width: 480px) {
-  .wic-v6-badges-row {
-    flex-direction: column;
-    gap: 8px;
-  }
 
   .wic-semantic-field-v6 {
-    width: 100%;
-    justify-content: flex-start;
-  }
-
-  .wic-dialect-v6 {
     width: 100%;
     justify-content: flex-start;
   }

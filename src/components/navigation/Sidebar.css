@@ -530,7 +530,6 @@
   color: var(--text-primary);
 }
 
-
 .seder-name {
   font-weight: 600;
   color: inherit;
@@ -602,7 +601,6 @@
 .tractate-btn:hover {
   background: var(--card-bg-subtle, var(--bg-subtle, #f8fafc));
 }
-
 
 .tractate-name {
   font-weight: 500;
@@ -748,30 +746,11 @@
   border-radius: 2px;
 }
 
-/* Chapter grid header with page range for Talmud */
-.chapter-grid-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 6px 12px;
-  background: linear-gradient(135deg, var(--primary-light, #ede9fe) 0%, rgba(91, 76, 219, 0.05) 100%);
-  border-radius: 6px 6px 0 0;
-  margin: 4px 8px 0;
-  border: 1px solid var(--primary, #5b4cdb);
-  border-bottom: none;
-}
-
 .chapter-grid-header + .chapter-grid {
   margin-top: 0;
   border-radius: 0 0 8px 8px;
   border: 1px solid var(--border, #e5e7eb);
   border-top: none;
-}
-
-.chapter-count {
-  font-size: 0.7rem;
-  color: var(--primary, #5b4cdb);
-  font-weight: 600;
 }
 
 .page-range-selector {
@@ -800,27 +779,6 @@
   background: var(--primary, #5b4cdb);
   color: white;
   border-color: var(--primary, #5b4cdb);
-}
-
-/* Compact chapter view toggle */
-.chapter-view-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px 8px;
-  margin: 0 8px;
-  background: var(--bg-subtle, #f3f4f6);
-  border: none;
-  border-radius: 4px;
-  font-size: 0.7rem;
-  color: var(--text-muted, #9ca3af);
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.chapter-view-toggle:hover {
-  background: var(--primary-light, #ede9fe);
-  color: var(--primary, #5b4cdb);
 }
 
 @keyframes fadeIn {
@@ -1111,8 +1069,6 @@
   border-color: var(--border, #374151);
   color: var(--text-secondary, #9ca3af);
 }
-
-
 
 /* Mobile */
 @media (max-width: 768px) {

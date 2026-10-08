@@ -199,15 +199,6 @@
   margin-left: auto;
 }
 
-/* =============================================================================
-   CONJUGATION TABLE
-   ============================================================================= */
-
-.conj-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
 .conj-cell {
   padding: 10px 12px;
   text-align: center;
@@ -405,10 +396,6 @@
   .binyan-tab {
     flex: 0 0 calc(50% - 4px);
     min-width: 0;
-  }
-
-  .conj-table {
-    font-size: 0.85rem;
   }
 
   .cell-form {

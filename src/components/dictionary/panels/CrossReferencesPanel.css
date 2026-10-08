@@ -125,51 +125,6 @@
   border-color: var(--ref-color, #3b82f6);
 }
 
-.cri-type-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  padding: 2px 6px;
-  background: var(--ref-color, #6b7280);
-  border-radius: 4px;
-  color: white;
-  font-size: 0.7rem;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.cri-icon {
-  font-size: 0.75rem;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-}
-
-.cri-label {
-  font-family: 'SBL Hebrew', 'David Libre', serif;
-  direction: rtl;
-}
-
-.cri-word {
-  font-family: 'SBL Hebrew', 'David Libre', serif;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #1f2937;
-  direction: rtl;
-}
-
-.cri-source {
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.65rem;
-  color: #9ca3af;
-  padding: 1px 4px;
-  background: rgba(156, 163, 175, 0.15);
-  border-radius: 3px;
-  white-space: nowrap;
-}
-
 /* =============================================================================
    FOOTER
    ============================================================================= */
@@ -267,10 +222,6 @@
 
 @media (max-width: 480px) {
   .crp-hebrew {
-    display: none;
-  }
-
-  .cri-source {
     display: none;
   }
 }

@@ -43,17 +43,6 @@
   }
 }
 
-/* Apply to content areas */
-.chapter-header,
-.welcome-banner {
-  animation: fadeSlideUp 0.4s var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1)) backwards;
-}
-
-.content-header {
-  animation: fadeSlideUp 0.35s var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1)) backwards;
-  animation-delay: 0.05s;
-}
-
 /* Staggered list animations */
 .verse-item:nth-child(1) { animation-delay: 0.02s; }
 .verse-item:nth-child(2) { animation-delay: 0.04s; }
@@ -144,41 +133,4 @@
 .expandable.expanded {
   max-height: 1000px;
   opacity: 1;
-}
-
-/* -----------------------------------------------------------------------------
-   Smooth Accordion
-   ----------------------------------------------------------------------------- */
-
-.accordion-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 16px;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: all 0.25s ease;
-}
-
-.accordion-trigger:hover {
-  background: var(--bg-subtle);
-  border-color: var(--primary);
-}
-
-.accordion-trigger .accordion-icon {
-  transition: transform 0.3s var(--ease-smooth);
-}
-
-.accordion-trigger[aria-expanded="true"] .accordion-icon {
-  transform: rotate(180deg);
-}
-
-.accordion-content {
-  overflow: hidden;
-  transition: max-height 0.35s var(--ease-smooth),
-              padding 0.35s ease,
-              opacity 0.25s ease;
 }

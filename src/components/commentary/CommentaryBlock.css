@@ -1,26 +1,4 @@
-/* =============================================================================
-   CommentaryBlock Component Styles
-   ============================================================================= */
 
-.commentary-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-/* Commentary Source Group - Full Content Display */
-.commentary-source-group {
-  background: var(--card-bg, var(--bg-elevated, #fff));
-  border: 1px solid var(--card-border, var(--border, #e2e8f0));
-  border-radius: var(--card-border-radius, var(--radius-lg, 14px));
-  overflow: visible;
-  box-shadow: var(--card-shadow);
-  transition: var(--card-transition);
-}
-
-.commentary-source-group:hover {
-  box-shadow: var(--card-shadow-hover);
-}
 
 /* Allow clickable text definition cards to overflow */
 .commentary-source-group .clickable-text {
@@ -30,22 +8,6 @@
 .commentary-source-group .word-definition-card {
   position: relative;
   z-index: 100;
-}
-
-.commentary-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--card-padding-sm, 0.75rem 1rem);
-  background: var(--card-header-bg, var(--bg-subtle, #f8fafc));
-  border-bottom: 1px solid var(--card-border, var(--border, #e2e8f0));
-  border-radius: var(--card-border-radius, 14px) var(--card-border-radius, 14px) 0 0;
-}
-
-.commentary-source {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
 }
 
 .source-icon {
@@ -72,41 +34,6 @@
   transform: scale(1.1);
 }
 
-.commentary-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* Action Buttons - Using unified btn system */
-.ai-summary-toggle,
-.translate-toggle,
-.glossary-toggle,
-.interlinear-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.4rem 0.75rem;
-  background: var(--card-bg, var(--bg-elevated, #fff));
-  border: 1px solid var(--card-border, var(--border, #e2e8f0));
-  border-radius: var(--btn-radius, 6px);
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--text-secondary, #475569);
-  cursor: pointer;
-  transition: var(--card-transition, all 150ms ease);
-}
-
-.ai-summary-toggle:hover,
-.translate-toggle:hover,
-.glossary-toggle:hover,
-.interlinear-toggle:hover {
-  background: var(--primary-light, #f0eeff);
-  border-color: var(--primary, #6366f1);
-  color: var(--primary, #6366f1);
-  transform: translateY(-1px);
-}
-
 .ai-summary-toggle.active,
 .translate-toggle.active,
 .glossary-toggle.active,
@@ -115,36 +42,6 @@
   border-color: var(--primary, #6366f1);
   color: white;
   box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
-}
-
-.ai-summary-toggle svg,
-.translate-toggle svg,
-.glossary-toggle svg,
-.interlinear-toggle svg {
-  width: 14px;
-  height: 14px;
-}
-
-/* Glossary Section */
-.glossary-section {
-  padding: 0 var(--card-padding, 1rem);
-}
-
-/* Commentary Body */
-.commentary-body {
-  padding: var(--card-padding, 1rem);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.commentary-entry {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-  hyphens: auto;
 }
 
 .commentary-text {
@@ -202,19 +99,6 @@
   padding: 2rem;
   color: var(--text-muted, #94a3b8);
   font-size: 0.9rem;
-}
-
-.commentary-none {
-  text-align: center;
-  padding: 1.5rem;
-  color: var(--text-muted, #94a3b8);
-  font-size: 0.9rem;
-  font-style: italic;
-}
-
-/* Animations */
-.slide-down {
-  animation: slideDown 200ms ease;
 }
 
 @keyframes slideDown {
@@ -288,26 +172,6 @@
    ============================================================================= */
 
 @media (max-width: 768px) {
-  .commentary-header {
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .commentary-actions {
-    flex-wrap: wrap;
-    width: 100%;
-    justify-content: flex-start;
-    margin-top: 0.5rem;
-  }
-
-  .ai-summary-toggle,
-  .translate-toggle,
-  .glossary-toggle,
-  .interlinear-toggle {
-    flex: 0 0 auto;
-    padding: 0.35rem 0.6rem;
-    font-size: 0.7rem;
-  }
 
   .commentary-text.hebrew-commentary {
     font-size: 1.1rem;
@@ -326,20 +190,9 @@
     font-size: 0.95rem;
     line-height: 1.7;
   }
-
-  .commentary-body {
-    padding: 0.75rem;
-  }
 }
 
 @media (max-width: 480px) {
-  .commentary-source-group {
-    border-radius: 10px;
-  }
-
-  .commentary-header {
-    padding: 0.6rem 0.75rem;
-  }
 
   .source-name {
     font-size: 0.8rem;
@@ -362,52 +215,10 @@
 }
 
 /* =============================================================================
-   PRO SCHOLAR V5: Accessibility & Focus States
-   ============================================================================= */
-
-/* Keyboard focus for action buttons */
-.ai-summary-toggle:focus-visible,
-.translate-toggle:focus-visible,
-.glossary-toggle:focus-visible,
-.interlinear-toggle:focus-visible {
-  outline: 2px solid var(--primary, #6366f1);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
-}
-
-/* Source-specific accent colors */
-.commentary-source-group[data-source="Rashi"] {
-  border-left: 3px solid var(--purple-500, #a855f7);
-}
-
-.commentary-source-group[data-source="Tosafot"] {
-  border-left: 3px solid var(--amber-500, #f59e0b);
-}
-
-.commentary-source-group[data-source="Ibn Ezra"] {
-  border-left: 3px solid var(--emerald-500, #10b981);
-}
-
-.commentary-source-group[data-source="Ramban"] {
-  border-left: 3px solid var(--blue-500, #3b82f6);
-}
-
-.commentary-source-group[data-source="Sforno"] {
-  border-left: 3px solid var(--rose-500, #f43f5e);
-}
-
-.commentary-source-group[data-source="Or HaChaim"] {
-  border-left: 3px solid var(--orange-500, #f97316);
-}
-
-/* =============================================================================
    PRO SCHOLAR V5: Reduced Motion Support
    ============================================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-  .slide-down {
-    animation: none;
-  }
 
   .loading-spinner {
     animation: none;
@@ -436,21 +247,6 @@
    ============================================================================= */
 
 @media (prefers-contrast: more) {
-  .commentary-source-group {
-    border-width: 2px;
-    border-color: #000;
-  }
-
-  .commentary-header {
-    border-bottom-width: 2px;
-  }
-
-  .ai-summary-toggle,
-  .translate-toggle,
-  .glossary-toggle,
-  .interlinear-toggle {
-    border-width: 2px;
-  }
 
   .commentary-text.english-translation {
     border-left-width: 4px;
@@ -458,62 +254,10 @@
   }
 }
 
-/* =============================================================================
-   PRO SCHOLAR V6: Clickable Source Name Button
-   ============================================================================= */
-
-.source-name-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.25rem 0.5rem;
-  margin: -0.25rem 0;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--btn-radius, 6px);
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--text-primary, #0f172a);
-  cursor: pointer;
-  transition: all 150ms ease;
-}
-
-.source-name-btn:hover {
-  background: var(--primary-light, rgba(99, 102, 241, 0.08));
-  border-color: var(--primary-muted, rgba(99, 102, 241, 0.2));
-  color: var(--primary, #6366f1);
-}
-
-.source-name-btn:focus-visible {
-  outline: 2px solid var(--primary, #6366f1);
-  outline-offset: 2px;
-}
-
 .source-name-btn.active {
   background: var(--primary-light, rgba(99, 102, 241, 0.12));
   border-color: var(--primary, #6366f1);
   color: var(--primary, #6366f1);
-}
-
-.source-info-icon {
-  font-size: 0.75rem;
-  opacity: 0.5;
-  transition: opacity 150ms ease;
-}
-
-.source-name-btn:hover .source-info-icon {
-  opacity: 1;
-}
-
-/* =============================================================================
-   PRO SCHOLAR V6: Rabbi Info Panel Section
-   ============================================================================= */
-
-.rabbi-info-section {
-  padding: 0.75rem 1rem;
-  background: var(--bg-subtle, #f8fafc);
-  border-bottom: 1px solid var(--border, #e2e8f0);
-  animation: slideDown 200ms ease;
 }
 
 .rabbi-loading {
@@ -550,28 +294,6 @@
 
 .dark-mode .rabbi-loading {
   color: var(--text-muted, #64748b);
-}
-
-/* Back button when navigating to teacher/student */
-.rabbi-back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.5rem 0.75rem;
-  margin-top: 0.5rem;
-  background: var(--primary-light, rgba(99, 102, 241, 0.1));
-  border: 1px solid var(--primary-muted, rgba(99, 102, 241, 0.3));
-  border-radius: var(--btn-radius, 6px);
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--primary, #6366f1);
-  cursor: pointer;
-  transition: all 150ms ease;
-}
-
-.rabbi-back-btn:hover {
-  background: var(--primary-light, rgba(99, 102, 241, 0.15));
-  border-color: var(--primary, #6366f1);
 }
 
 .dark-mode .rabbi-back-btn {

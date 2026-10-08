@@ -280,29 +280,6 @@
   gap: 8px;
 }
 
-/* =============================================================================
-   WORD ITEMS
-   ============================================================================= */
-
-.family-word-item {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 8px 12px;
-  background: var(--surface-secondary, #f9fafb);
-  border: 1px solid var(--border-light, #e5e7eb);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-width: 60px;
-}
-
-.family-word-item:hover {
-  background: var(--accent-light, #dbeafe);
-  border-color: var(--accent, #3b82f6);
-  transform: translateY(-1px);
-}
-
 .family-word-item.highlighted {
   background: var(--accent, #3b82f6);
   border-color: var(--accent, #3b82f6);
@@ -461,15 +438,6 @@
     background: var(--surface-dark, #1f2937);
   }
 
-  .family-word-item {
-    background: var(--surface-darker, #111827);
-    border-color: var(--border-dark, #374151);
-  }
-
-  .family-word-item:hover {
-    background: var(--accent-dark, #1e40af);
-  }
-
   .family-word-item .word-text {
     color: var(--text-light, #f3f4f6);
   }
@@ -500,10 +468,5 @@
 
   .subcategory-header {
     flex-wrap: wrap;
-  }
-
-  .family-word-item {
-    flex-grow: 1;
-    min-width: calc(33% - 6px);
   }
 }

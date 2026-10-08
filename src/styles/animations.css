@@ -535,21 +535,6 @@
 .animate-pageSlideIn { animation: pageSlideIn 0.35s var(--ease-out-expo); }
 .animate-hebrewReveal { animation: hebrewReveal 0.3s var(--ease-out-expo); }
 
-/* Shimmer text effect utility */
-.shimmer-text {
-  background: linear-gradient(
-    90deg,
-    var(--text-primary) 0%,
-    var(--primary) 50%,
-    var(--text-primary) 100%
-  );
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: textShimmer 3s linear infinite;
-}
-
 /* Loading dots utility */
 .loading-dots {
   display: inline-flex;

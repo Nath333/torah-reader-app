@@ -1,31 +1,7 @@
-/* API Key Settings Styles */
 
-.api-key-settings {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  max-width: 480px;
-  width: 100%;
-  overflow: hidden;
-}
 
 .dark-mode .api-key-settings {
   background: #2d3748;
-}
-
-.settings-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-.settings-header h3 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
 }
 
 .settings-header .close-btn {
@@ -51,60 +27,17 @@
   padding: 20px;
 }
 
-.info-box {
-  background: #f0f4ff;
-  border: 1px solid #c7d2fe;
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 20px;
-  font-size: 14px;
-}
-
 .dark-mode .info-box {
   background: #1a202c;
   border-color: #4a5568;
-}
-
-.info-box p {
-  margin: 0 0 12px 0;
-  color: #4a5568;
 }
 
 .dark-mode .info-box p {
   color: #e2e8f0;
 }
 
-.info-box ol {
-  margin: 0 0 12px 0;
-  padding-left: 20px;
-  color: #4a5568;
-}
-
 .dark-mode .info-box ol {
   color: #e2e8f0;
-}
-
-.info-box li {
-  margin-bottom: 4px;
-}
-
-.info-box a {
-  color: #667eea;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.info-box a:hover {
-  text-decoration: underline;
-}
-
-.free-note {
-  background: #d1fae5;
-  color: #065f46;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-weight: 500;
-  margin-bottom: 0 !important;
 }
 
 .dark-mode .free-note {
@@ -177,13 +110,6 @@
   opacity: 1;
 }
 
-.test-result {
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  font-size: 14px;
-}
-
 .test-result.success {
   background: #d1fae5;
   color: #065f46;
@@ -233,11 +159,6 @@
   transform: translateY(-1px);
 }
 
-.test-btn {
-  background: #e2e8f0;
-  color: #4a5568;
-}
-
 .dark-mode .test-btn {
   background: #4a5568;
   color: #e2e8f0;
@@ -252,34 +173,14 @@
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
-.remove-btn {
-  background: #fed7d7;
-  color: #c53030;
-  flex: 0 !important;
-  min-width: auto !important;
-}
-
 .dark-mode .remove-btn {
   background: #742a2a;
   color: #feb2b2;
 }
 
-.settings-footer {
-  padding: 12px 20px;
-  background: #f7fafc;
-  border-top: 1px solid #e2e8f0;
-}
-
 .dark-mode .settings-footer {
   background: #1a202c;
   border-top-color: #4a5568;
-}
-
-.settings-footer p {
-  margin: 0;
-  font-size: 12px;
-  color: #718096;
-  text-align: center;
 }
 
 .dark-mode .settings-footer p {
@@ -307,9 +208,6 @@
 }
 
 @media (max-width: 500px) {
-  .api-key-settings {
-    max-width: 100%;
-  }
 
   .button-group {
     flex-direction: column;
@@ -317,9 +215,5 @@
 
   .button-group button {
     min-width: 100%;
-  }
-
-  .remove-btn {
-    flex: 1 !important;
   }
 }

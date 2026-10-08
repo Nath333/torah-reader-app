@@ -314,26 +314,9 @@
   border-left: 3px solid #ef4444;
 }
 
-.question-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  cursor: pointer;
-}
-
-.question-header:hover {
-  background: var(--bg-secondary, #f8f9fa);
-}
-
 .status-icon {
   flex-shrink: 0;
   font-size: 1rem;
-}
-
-.question-main {
-  flex: 1;
-  min-width: 0;
 }
 
 .question-text {
@@ -372,33 +355,6 @@
   color: var(--text-muted, #94a3b8);
 }
 
-.question-body {
-  padding: 0.75rem;
-  padding-top: 0;
-  border-top: 1px solid var(--border-color, #e2e8f0);
-  margin-top: 0.5rem;
-}
-
-.terutz-display {
-  padding: 0.75rem;
-  background: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%);
-  border-radius: 6px;
-}
-
-.terutz-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #166534;
-  margin-bottom: 0.25rem;
-  font-family: 'Frank Ruhl Libre', serif;
-}
-
-.terutz-display p {
-  margin: 0;
-  font-size: 0.85rem;
-  color: #15803d;
-}
-
 .question-actions {
   display: flex;
   gap: 0.35rem;
@@ -416,47 +372,6 @@
 
 .question-actions button:hover {
   background: var(--bg-tertiary, #e0e0e0);
-}
-
-.resolve-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.resolve-form textarea {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid var(--border-color, #e2e8f0);
-  border-radius: 4px;
-  font-family: inherit;
-  font-size: 0.85rem;
-  resize: vertical;
-}
-
-.form-actions {
-  display: flex;
-  gap: 0.35rem;
-  justify-content: flex-end;
-}
-
-.form-actions button {
-  padding: 0.35rem 0.75rem;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.form-actions button:first-child {
-  background: var(--primary, #4a90d9);
-  color: white;
-  border: none;
-}
-
-.form-actions button:last-child {
-  background: white;
-  border: 1px solid var(--border-color, #ddd);
 }
 
 /* =============================================================================
@@ -484,18 +399,6 @@
   margin-bottom: 0.35rem;
 }
 
-.insight-ref {
-  font-size: 0.75rem;
-  font-family: 'Frank Ruhl Libre', serif;
-  font-weight: 600;
-  color: var(--primary, #4a90d9);
-}
-
-.insight-date {
-  font-size: 0.7rem;
-  color: var(--text-muted, #94a3b8);
-}
-
 .insight-text {
   margin: 0 0 0.35rem 0;
   font-size: 0.85rem;
@@ -503,36 +406,8 @@
   color: var(--text-primary, #1e293b);
 }
 
-.insight-source {
-  font-size: 0.75rem;
-  color: var(--text-secondary, #64748b);
-  font-style: italic;
-}
-
-.delete-btn {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  width: 20px;
-  height: 20px;
-  padding: 0;
-  background: transparent;
-  border: none;
-  border-radius: 50%;
-  font-size: 0.75rem;
-  color: var(--text-muted, #94a3b8);
-  cursor: pointer;
-  opacity: 0;
-  transition: all 0.2s ease;
-}
-
 .insight-item:hover .delete-btn {
   opacity: 1;
-}
-
-.delete-btn:hover {
-  background: #fee2e2;
-  color: #ef4444;
 }
 
 /* =============================================================================
@@ -580,42 +455,11 @@
   text-transform: uppercase;
 }
 
-.filter-row {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.filter-row select {
-  padding: 0.4rem 0.6rem;
-  border: 1px solid var(--border-color, #e2e8f0);
-  border-radius: 6px;
-  font-size: 0.8rem;
-  background: white;
-}
-
-.progress-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
 .progress-item {
   background: var(--bg-primary, white);
   border: 1px solid var(--border-color, #e2e8f0);
   border-radius: 8px;
   padding: 0.75rem;
-}
-
-.progress-main {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.35rem;
-}
-
-.progress-ref {
-  display: flex;
-  flex-direction: column;
 }
 
 .progress-ref .book {
@@ -655,36 +499,6 @@
 
 .progress-details .last-review.warning {
   color: #f59e0b;
-}
-
-.progress-actions {
-  display: flex;
-  gap: 0.35rem;
-  align-items: center;
-}
-
-.progress-actions select {
-  flex: 1;
-  padding: 0.35rem;
-  border: 1px solid var(--border-color, #e2e8f0);
-  border-radius: 4px;
-  font-size: 0.75rem;
-  background: white;
-}
-
-.progress-actions button {
-  padding: 0.35rem 0.5rem;
-  background: var(--bg-secondary, #f0f0f0);
-  border: 1px solid var(--border-color, #ddd);
-  border-radius: 4px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.progress-actions button:hover {
-  background: #dbeafe;
-  border-color: #3b82f6;
 }
 
 /* =============================================================================
@@ -792,13 +606,6 @@
   justify-content: center;
 }
 
-.feature-indicator {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.7rem;
-}
-
 .feature-indicator .feature-dot {
   font-size: 0.6rem;
 }
@@ -850,22 +657,6 @@
   color: #92400e;
 }
 
-.today-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
-}
-
-.today-stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0.75rem;
-  background: var(--bg-primary, white);
-  border: 1px solid var(--border-color, #e2e8f0);
-  border-radius: 8px;
-}
-
 .today-stat .stat-icon {
   font-size: 1.25rem;
   margin-bottom: 0.25rem;
@@ -881,68 +672,6 @@
   font-size: 0.65rem;
   color: var(--text-muted, #94a3b8);
   text-transform: uppercase;
-}
-
-.reminder-card {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  border: 1px solid #f59e0b;
-  border-radius: 8px;
-}
-
-.reminder-icon {
-  font-size: 1.25rem;
-}
-
-.reminder-content {
-  flex: 1;
-}
-
-.reminder-content strong {
-  display: block;
-  font-size: 0.85rem;
-  color: #92400e;
-}
-
-.reminder-content p {
-  margin: 0;
-  font-size: 0.75rem;
-  color: #a16207;
-}
-
-.quote-card {
-  padding: 1rem;
-  background: var(--bg-secondary, #f8f9fa);
-  border-radius: 8px;
-  text-align: center;
-}
-
-.quote-text {
-  margin: 0 0 0.35rem 0;
-  font-size: 1rem;
-  font-family: 'Frank Ruhl Libre', serif;
-  color: var(--text-primary, #1e293b);
-}
-
-.quote-translation {
-  margin: 0;
-  font-size: 0.8rem;
-  font-style: italic;
-  color: var(--text-secondary, #64748b);
-}
-
-.context-card {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  background: var(--bg-secondary, #f8f9fa);
-  border-radius: 8px;
-  font-size: 0.8rem;
 }
 
 .context-label {
@@ -1008,10 +737,6 @@
   border-color: var(--border-color, #334155);
 }
 
-[data-theme="dark"] .question-header:hover {
-  background: var(--bg-tertiary, #334155);
-}
-
 [data-theme="dark"] .question-text,
 [data-theme="dark"] .insight-text {
   color: var(--text-primary, #e2e8f0);
@@ -1036,40 +761,6 @@
 [data-theme="dark"] .streak-badge {
   background: linear-gradient(135deg, #422006 0%, #78350f 100%);
   color: #fcd34d;
-}
-
-[data-theme="dark"] .reminder-card {
-  background: linear-gradient(135deg, #422006 0%, #78350f 100%);
-  border-color: #b45309;
-}
-
-[data-theme="dark"] .reminder-content strong {
-  color: #fcd34d;
-}
-
-[data-theme="dark"] .reminder-content p {
-  color: #fde68a;
-}
-
-[data-theme="dark"] .quote-card,
-[data-theme="dark"] .context-card {
-  background: var(--bg-tertiary, #1e1e1e);
-}
-
-[data-theme="dark"] .quote-text {
-  color: var(--text-primary, #e2e8f0);
-}
-
-[data-theme="dark"] .terutz-display {
-  background: linear-gradient(135deg, #14532d 0%, #166534 100%);
-}
-
-[data-theme="dark"] .terutz-label {
-  color: #86efac;
-}
-
-[data-theme="dark"] .terutz-display p {
-  color: #bbf7d0;
 }
 
 [data-theme="dark"] .study-mode-selector-card {
@@ -1261,11 +952,6 @@
 .motiv-text {
   font-size: 0.8rem;
   color: var(--text-secondary, #64748b);
-}
-
-/* Chapter Heatmap */
-.chapter-heatmap {
-  padding: 0.5rem;
 }
 
 .heatmap-header {

@@ -31,10 +31,6 @@
   color: var(--text-primary, #f5f0e6);
 }
 
-.quiz-icon {
-  font-size: 22px;
-}
-
 .quiz-header .close-btn {
   width: 32px;
   height: 32px;
@@ -146,45 +142,8 @@
   transition: width 0.3s ease;
 }
 
-/* Quiz Setup */
-.quiz-setup {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-}
-
-.setup-section {
-  margin-bottom: 24px;
-}
-
-.setup-section h4 {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0 0 12px 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-secondary, #c4b8a8);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
 .setup-section h4 .section-icon {
   font-size: 16px;
-}
-
-/* Quiz Title with Hebrew */
-.quiz-title-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.quiz-title-hebrew {
-  font-size: 10px;
-  font-family: var(--font-hebrew, 'SBL Hebrew', serif);
-  opacity: 0.8;
-  letter-spacing: 1px;
 }
 
 /* No text warning */

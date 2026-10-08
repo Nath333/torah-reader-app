@@ -513,22 +513,6 @@
   outline: none;
 }
 
-/* Skip to content link (accessibility) */
-.skip-link {
-  position: absolute;
-  top: -40px;
-  left: 0;
-  background: var(--primary);
-  color: white;
-  padding: 8px 16px;
-  z-index: 1000;
-  transition: top 0.3s;
-}
-
-.skip-link:focus {
-  top: 0;
-}
-
 /* Reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -539,28 +523,6 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-}
-
-/* Performance: contain for layout isolation */
-.contain-layout {
-  contain: layout;
-}
-
-.contain-paint {
-  contain: paint;
-}
-
-.contain-strict {
-  contain: strict;
-}
-
-/* Performance: will-change hints (use sparingly!) */
-.will-change-transform {
-  will-change: transform;
-}
-
-.will-change-opacity {
-  will-change: opacity;
 }
 
 /* Screen reader only (visually hidden but accessible) */

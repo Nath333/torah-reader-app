@@ -44,19 +44,6 @@
 }
 
 /* -----------------------------------------------------------------------------
-   Thin scrollbar variant (6px)
-   Usage: Add class "scrollbar-thin" to element
-   ----------------------------------------------------------------------------- */
-.scrollbar-thin::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  border-width: 1px;
-}
-
-/* -----------------------------------------------------------------------------
    Hidden scrollbar (but still scrollable)
    Usage: Add class "scrollbar-hidden" to element
    ----------------------------------------------------------------------------- */
@@ -67,28 +54,6 @@
 .scrollbar-hidden {
   -ms-overflow-style: none;
   scrollbar-width: none;
-}
-
-/* -----------------------------------------------------------------------------
-   Minimal scrollbar variant
-   Usage: Add class "scrollbar-minimal" to element
-   ----------------------------------------------------------------------------- */
-.scrollbar-minimal::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-
-.scrollbar-minimal::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.scrollbar-minimal::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.15);
-  border-radius: 2px;
-}
-
-.scrollbar-minimal::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.25);
 }
 
 .app.dark-mode .scrollbar-minimal::-webkit-scrollbar-thumb {
@@ -113,15 +78,4 @@
 
 .scrollbar-hidden {
   scrollbar-width: none;
-}
-
-/* -----------------------------------------------------------------------------
-   Gutter stability (prevents layout shift)
-   ----------------------------------------------------------------------------- */
-.scrollbar-stable {
-  scrollbar-gutter: stable;
-}
-
-.scrollbar-stable-both {
-  scrollbar-gutter: stable both-edges;
 }

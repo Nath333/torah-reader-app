@@ -198,21 +198,6 @@
   color: var(--text-secondary, #4b5563);
 }
 
-.clear-history-btn {
-  background: none;
-  border: none;
-  color: #ef4444;
-  font-size: 0.75rem;
-  cursor: pointer;
-  padding: 2px 8px;
-  border-radius: 4px;
-  transition: background 0.2s ease;
-}
-
-.clear-history-btn:hover {
-  background: rgba(239, 68, 68, 0.1);
-}
-
 .history-item {
   display: flex;
   align-items: center;
@@ -749,11 +734,6 @@
 
 .klein-entry .lexicon-name {
   background: #8b5cf6;
-}
-
-.klein-entry {
-  background: rgba(139, 92, 246, 0.02);
-  border-color: rgba(139, 92, 246, 0.2);
 }
 
 .bdb-aramaic-entry .lexicon-name {
@@ -1640,15 +1620,6 @@
   display: inline-block;
   padding: 8px 16px;
   border-radius: 20px;
-}
-
-/* =============================================================================
-   CAL-Only Result
-   ============================================================================= */
-
-.cal-only-result,
-.local-only-result {
-  padding: 0 16px 16px;
 }
 
 /* =============================================================================
