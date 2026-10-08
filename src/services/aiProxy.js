@@ -23,13 +23,20 @@ export const checkAiProxy = () => {
     cachedPromise = Promise.resolve({ available: false, model: null });
     return cachedPromise;
   }
-  cachedPromise = fetch(`${base}/ai/status`)
+  // Timeout obligatoire + oubli de la promesse en cas d'échec : un fetch
+  // qui pend ne doit ni verrouiller les appelants (la file de traduction
+  // s'est retrouvée gelée : 3 slots bloqués sur un /ai/status jamais
+  // réglé) ni mémoizer l'échec pour toute la session.
+  cachedPromise = fetch(`${base}/ai/status`, { signal: AbortSignal.timeout(5000) })
     .then((r) => (r.ok ? r.json() : { available: false, model: null }))
     .then((data) => ({
       available: !!data.aiAvailable,
       model: data.model || null
     }))
-    .catch(() => ({ available: false, model: null }));
+    .catch(() => {
+      cachedPromise = null; // retentera à l'appel suivant
+      return { available: false, model: null };
+    });
   return cachedPromise;
 };
 
@@ -41,6 +48,8 @@ export const resetAiProxyCache = () => {
 /**
  * POST {proxy}/ai/chat — payload OpenRouter verbatim. Résout la Response
  * (le caller gère ok/ko et le parsing, comme pour l'appel direct).
+ * Sans signal passé, un timeout de secours (60 s) évite de retenir un slot
+ * de la file de traduction indéfiniment sur un upstream qui ne répond pas.
  */
 export const aiProxyChat = async (payload, signal) => {
   const base = getProxyBase();
@@ -49,6 +58,6 @@ export const aiProxyChat = async (payload, signal) => {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
-    ...(signal && { signal })
+    signal: signal || AbortSignal.timeout(60000)
   });
 };
