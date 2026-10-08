@@ -1068,7 +1068,14 @@ const arePropsEqual = (prevProps, nextProps) => {
   const prevTrans = prevProps.translationData || {};
   const nextTrans = nextProps.translationData || {};
   const verseKey = `${nextProps.selectedBook}:${nextProps.selectedChapter}:${nextProps.verse?.verse}`;
-  if (prevTrans.frenchTranslations?.[verseKey] !== nextTrans.frenchTranslations?.[verseKey]) return false;
+  // Champs RÉELS du retour de useTranslationLoading (l'ancien champ
+  // frenchTranslations n'existe plus — le memo bloquait tout re-rendu
+  // quand une traduction arrivait, d'où des « Chargement... » éternels
+  // alors que le state était rempli).
+  if (prevTrans.verseFrench?.[verseKey] !== nextTrans.verseFrench?.[verseKey]) return false;
+  if (prevTrans.onkelosFrench?.[nextProps.verse?.verse] !== nextTrans.onkelosFrench?.[nextProps.verse?.verse]) return false;
+  if (prevTrans.verseFailed?.[verseKey] !== nextTrans.verseFailed?.[verseKey]) return false;
+  if (prevTrans.onkelosFailed?.[nextProps.verse?.verse] !== nextTrans.onkelosFailed?.[nextProps.verse?.verse]) return false;
 
   // All checks passed - props are equal
   return true;
