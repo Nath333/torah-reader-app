@@ -35,7 +35,7 @@
 | `services/dictionaries/dictionaryLoader.js` | 2 157 | par dictionnaire | **state.js partagé obligatoire** (cache + health) ; tests réels présents |
 | ~~`services/analysis/preClassificationService.js`~~ | **fait 03/10** | `preClassificationData.js` (1 067, 14 bases pures) + façade 1 232 (helpers + preClassify) | ✅ |
 | `constants/morphology.js` (reste) | — | conjugaison/binyanim | peut rejoindre `morphology/verbPatterns.js` existant |
-| `services/unifiedLookupService.js` | 3 123 | par étage (pipeline, cache, traduction) | 300+ tests = filet solide ; state partagé |
+| ~~`services/unifiedLookupService.js` (étages)~~ | 3 123 → 2 318 (lane) → **1 768 + `unifiedLookup/{state 9, preload 133, enriched 505}`** (fait 08/10) | ✅ données/étages faits ; la façade garde le pipeline `lookupWord` et la config dictionnaires | state partagé dans `state.js` (cache géré, dédup, variants) ; `enriched.js` en cycle paresseux vers la façade (appels runtime uniquement) |
 | ~~`services/scholarly/discoursePatternService.js`~~ | **fait 03/10 (2 phases)** | `discourse/` 7 modules : discourseData 710, detection 540, gemaraQA 560, tzuratHavad 468, mishna 285, svara 257, layers 157 + façade 203 (composite + default, 33 noms ré-exportés) | ✅ |
 | `services/dictionaries/scholarlyLexiconService.js` | 4 102 | par lexique | |
 | ~~`services/scholarly/talmudDiagramService.js` (données)~~ | 4 217 → **3 795 + `talmudDiagramData.js` 449** (fait 08/10) | générateurs par type de diagramme (reste) | données pures extraites (commentateurs, types, outcomes, patterns, sages, marqueurs) ; la suite = un fichier par générateur, exige un module extracteurs partagé (tous les générateurs appellent extract*/analyze*) — service à état (LRU+stats), faire en dernier |
