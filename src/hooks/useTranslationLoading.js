@@ -55,6 +55,17 @@ export default function useTranslationLoading({
     setRetryTick(t => t + 1);
   }, []);
 
+  // Garde de montage uniquement : les traductions obtenues doivent être
+  // appliquées même si les deps de l'effet ont changé entre-temps (re-rendus
+  // fréquents du lecteur). Annuler à chaque changement de deps jetait des
+  // résultats pourtant résolus — les versets restaient bloqués sur
+  // « Chargement... » sans jamais être rejoués.
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
+
   // Load French translations for Onkelos (parallel loading)
   useEffect(() => {
     if (!showFrench || !showOnkelos || onkelos.length === 0) return;
@@ -66,7 +77,6 @@ export default function useTranslationLoading({
 
     if (toTranslate.length === 0) return;
 
-    let cancelled = false;
     const itemKeys = toTranslate.map(item => item.verse);
 
     // Mark as translating to prevent duplicate requests
@@ -85,7 +95,7 @@ export default function useTranslationLoading({
         })
       );
 
-      if (cancelled) return;
+      if (!mountedRef.current) return;
 
       const frenchTranslations = {};
       const failed = {};
@@ -106,7 +116,6 @@ export default function useTranslationLoading({
 
     translateOnkelos();
     return () => {
-      cancelled = true;
       // Remove in-flight items from tracking ref so they can be retried
       itemKeys.forEach(k => onkelosTranslatingRef.current.delete(k));
     };
@@ -124,7 +133,6 @@ export default function useTranslationLoading({
 
     if (toTranslate.length === 0) return;
 
-    let cancelled = false;
     const itemKeys = toTranslate.map(verse => `${selectedBook}:${selectedChapter}:${verse.verse}`);
 
     // Mark as translating to prevent duplicate requests
@@ -144,7 +152,7 @@ export default function useTranslationLoading({
         })
       );
 
-      if (cancelled) return;
+      if (!mountedRef.current) return;
 
       const frenchTranslations = {};
       const failed = {};
@@ -166,7 +174,6 @@ export default function useTranslationLoading({
 
     translateVerses();
     return () => {
-      cancelled = true;
       // Remove in-flight items from tracking ref so they can be retried
       itemKeys.forEach(k => verseTranslatingRef.current.delete(k));
     };
