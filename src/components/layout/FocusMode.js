@@ -5,40 +5,11 @@ import { COMMENTATORS, ERAS } from '../../constants/commentatorRegistry';
 import { GEMATRIA_VALUES, calculateGematria, getVerseStats, getChapterStats } from '../../utils/hebrewUtils';
 
 // Theme options - including Jewish scholarly themes
-const THEMES = {
-  dark: { name: 'Dark', icon: '🌙' },
-  light: { name: 'Light', icon: '☀️' },
-  sepia: { name: 'Sepia', icon: '📜' },
-  parchment: { name: 'Klaf', icon: '📖' },
-  midnight: { name: 'Midnight', icon: '🌌' }
-};
-
-// Auto-scroll speed options (in seconds)
-const SCROLL_SPEEDS = [3, 5, 8, 12, 20];
-
-// Focus view modes (different from Talmud STUDY_MODES in talmudStudy.js)
-const FOCUS_VIEW_MODES = {
-  single: { name: 'Single Verse', icon: '1️⃣' },
-  context: { name: 'With Context', icon: '📖' },
-  learning: { name: 'Learning Mode', icon: '🎓' }
-};
-
-// Meforshim (Commentators) - derived from central registry
-const MEFORSHIM = Object.fromEntries(
-  ['rashi', 'onkelos', 'ramban', 'ibn_ezra', 'sforno', 'rashbam', 'ohr_hachaim']
-    .filter(key => COMMENTATORS[key])
-    .map(key => {
-      const c = COMMENTATORS[key];
-      const era = ERAS[c.era];
-      return [key, {
-        name: c.hebrew,
-        fullName: c.full,
-        era: `${era?.name || c.era} (${c.dates})`,
-        style: c.method,
-        description: `${c.method} commentary`
-      }];
-    })
-);
+// THEMES et MEFORSHIM déplacés dans ./FocusMode/data.js.
+import { THEMES, MEFORSHIM, FOCUS_VIEW_MODES } from './FocusMode/data';
+import { StatsPanel } from './FocusMode/panels/StatsPanel';
+import { MeforshimPanel } from './FocusMode/panels/MeforshimPanel';
+import { GematriaPanel } from './FocusMode/panels/GematriaPanel';
 
 // DRY: GEMATRIA_VALUES & calculateGematria imported from utils/hebrewUtils.js
 
@@ -537,60 +508,7 @@ const FocusMode = React.memo(function FocusMode({
       )}
 
       {/* Study Statistics Panel */}
-      {showStats && (
-        <div className="study-stats-panel">
-          <div className="stats-header">
-            <h4>📊 Study Statistics</h4>
-            <button className="close-stats" onClick={() => setShowStats(false)}>×</button>
-          </div>
-          <div className="stats-content">
-            <div className="stat-item">
-              <span className="stat-label">Verses Studied</span>
-              <span className="stat-value">{studyStats.versesStudied} / {studyStats.totalVerses}</span>
-            </div>
-            <div className="stat-progress">
-              <div className="stat-progress-fill" style={{ width: `${studyStats.percentComplete}%` }} />
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Progress</span>
-              <span className="stat-value">{studyStats.percentComplete}%</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Highlighted</span>
-              <span className="stat-value">{studyStats.highlightedCount} verses</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Study Time</span>
-              <span className="stat-value">{studyStats.readingTimeFormatted}</span>
-            </div>
-            {studyStats.currentVerseWords > 0 && (
-              <>
-                <div className="stat-divider" />
-                <div className="stat-item">
-                  <span className="stat-label">Verse Words</span>
-                  <span className="stat-value">{studyStats.currentVerseWords} ({studyStats.currentVerseUniqueWords} unique)</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-label">Verse Letters</span>
-                  <span className="stat-value">{studyStats.currentVerseLetters}</span>
-                </div>
-              </>
-            )}
-            {studyStats.chapterTotalWords > 0 && (
-              <>
-                <div className="stat-item">
-                  <span className="stat-label">Chapter Words</span>
-                  <span className="stat-value">{studyStats.chapterTotalWords} ({studyStats.chapterUniqueWords} unique)</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-label">Avg Words/Verse</span>
-                  <span className="stat-value">{studyStats.chapterAvgWordsPerVerse}</span>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+<StatsPanel showStats={showStats} setShowStats={setShowStats} studyStats={studyStats} verses={verses} versesStudied={versesStudied} currentVerse={currentVerse} />
 
       {/* Notes Panel */}
       {showNotesPanel && (
@@ -615,101 +533,10 @@ const FocusMode = React.memo(function FocusMode({
       )}
 
       {/* Meforshim (Commentary) Panel */}
-      {showMeforshimPanel && (
-        <div className="meforshim-panel">
-          <div className="meforshim-header">
-            <h4>📚 מפרשים - Meforshim</h4>
-            <button className="close-meforshim" onClick={() => setShowMeforshimPanel(false)}>×</button>
-          </div>
-          <div className="meforshim-selector">
-            {Object.entries(MEFORSHIM).map(([key, info]) => (
-              <button
-                key={key}
-                className={`mefaresh-btn ${selectedMeforshim.includes(key) ? 'active' : ''}`}
-                onClick={() => {
-                  setSelectedMeforshim(prev =>
-                    prev.includes(key)
-                      ? prev.filter(m => m !== key)
-                      : [...prev, key]
-                  );
-                }}
-                title={info.description}
-              >
-                <span className="mefaresh-name">{info.name}</span>
-                <span className="mefaresh-era">{info.era.split(' ')[0]}</span>
-              </button>
-            ))}
-          </div>
-          <div className="meforshim-content">
-            {selectedMeforshim.map(key => {
-              const info = MEFORSHIM[key];
-              return (
-                <div key={key} className="mefaresh-section">
-                  <div className="mefaresh-title">
-                    <span className="mefaresh-hebrew">{info.name}</span>
-                    <span className="mefaresh-english">{info.fullName}</span>
-                    <span className="mefaresh-style">{info.style}</span>
-                  </div>
-                  <div className="mefaresh-text" dir="rtl">
-                    {key === 'onkelos' && currentOnkelos ? (
-                      <p>{currentOnkelos.aramaic}</p>
-                    ) : (
-                      <p className="mefaresh-placeholder">
-                        {info.description}
-                        <br />
-                        <span className="mefaresh-note">
-                          Commentary text for {selectedBook} {selectedChapter}:{currentVerse?.verse}
-                        </span>
-                      </p>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+<MeforshimPanel showMeforshimPanel={showMeforshimPanel} setShowMeforshimPanel={setShowMeforshimPanel} selectedMeforshim={selectedMeforshim} setSelectedMeforshim={setSelectedMeforshim} currentVerse={currentVerse} currentOnkelos={currentOnkelos} onkelos={onkelos} selectedBook={selectedBook} selectedChapter={selectedChapter} />
 
       {/* Gematria Panel */}
-      {showGematria && (
-        <div className="gematria-panel">
-          <div className="gematria-header">
-            <h4>🔢 גימטריא - Gematria</h4>
-            <button className="close-gematria" onClick={() => setShowGematria(false)}>×</button>
-          </div>
-          <div className="gematria-content">
-            <div className="gematria-total">
-              <span className="gematria-label">סה"כ פסוק</span>
-              <span className="gematria-value">{verseGematria.total}</span>
-            </div>
-            <div className="gematria-words">
-              {verseGematria.words.map((item, idx) => (
-                <div
-                  key={idx}
-                  className={`gematria-word ${selectedWord === idx ? 'selected' : ''}`}
-                  onClick={() => setSelectedWord(selectedWord === idx ? null : idx)}
-                >
-                  <span className="gematria-word-text">{item.word}</span>
-                  <span className="gematria-word-value">{item.value}</span>
-                </div>
-              ))}
-            </div>
-            {selectedWord !== null && verseGematria.words[selectedWord] && (
-              <div className="gematria-breakdown">
-                <span className="breakdown-title">Letter breakdown:</span>
-                <div className="breakdown-letters">
-                  {verseGematria.words[selectedWord].word.split('').map((char, i) => (
-                    <span key={i} className="breakdown-letter">
-                      <span className="letter">{char}</span>
-                      <span className="letter-value">{GEMATRIA_VALUES[char] || 0}</span>
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+<GematriaPanel showGematria={showGematria} setShowGematria={setShowGematria} verseGematria={verseGematria} readingTime={readingTime} formatTime={formatTime} selectedWord={selectedWord} setSelectedWord={setSelectedWord} />
 
       {/* Cross References Panel */}
       {showCrossRefs && (
