@@ -52,6 +52,9 @@ const proxyHealth = { fails: 0, deadUntil: 0 };
 // streame déjà un /ai/chat) et fait sauter l'étape IA. TTL 5 min, vidée par
 // resetApiState (bouton Réessayer).
 let aiAvailableMemo = null;
+// IA suspendue après un 402 (crédits OpenRouter épuisés) : erreur
+// permanente, inutile de rappeler avant 30 min ou un Réessayer manuel.
+let iaBlockedUntil = 0;
 const stats = { hits: 0, calls: 0, ok: 0, fail: 0 };
 const pending = new Map();
 let activeCount = 0;
@@ -304,12 +307,23 @@ const translate = async (text) => {
         // première défense (interrupteur doux GLM, no-op ailleurs).
         max_tokens: Math.max(4096, Math.ceil(text.length * 1.5) + 100)
       });
+      // 402 = crédits OpenRouter épuisés : erreur PERMANENTE — on cesse
+      // d'appeler l'IA 30 min (sinon chaque item et chaque vague de retry
+      // paie un 402, pour rien : constaté 08/10 après une grosse journée).
+      if (response.status === 402) {
+        iaBlockedUntil = Date.now() + 30 * 60 * 1000;
+        log.warn('IA indisponible : crédits OpenRouter épuisés (402) — IA suspendue 30 min');
+        return null;
+      }
       if (!response.ok) return null;
       const data = await response.json();
       const t = data.choices?.[0]?.message?.content?.trim();
       return t && isValid(text, fix(t)) ? fix(t) : null;
     };
     try {
+      // IA suspendue (402 crédits) : ni appel ni probe — le Réessayer
+      // manuel (resetApiState) réarme.
+      if (iaBlockedUntil > Date.now()) return null;
       const now = Date.now();
       if (!aiAvailableMemo || now - aiAvailableMemo.at > 5 * 60 * 1000) {
         const available = await checkAiProxy();
@@ -458,6 +472,15 @@ export const getApiStatus = () => {
   };
 };
 
+// Un chemin de traduction fonctionne-t-il encore ? (utilisé par le hook
+// pour ne pas programmer de vagues de retry vouées à l'échec : 402 IA +
+// Lingva bloqué = tout est mort pour un moment.)
+export const hasWorkingUpstream = () => {
+  if (iaBlockedUntil > Date.now()) return false;
+  const now = Date.now();
+  return canUse() && mirrorHealth.some(h => h.deadUntil <= now);
+};
+
 export const resetApiState = () => {
   apiState.last = 0;
   apiState.blocked = 0;
@@ -466,6 +489,7 @@ export const resetApiState = () => {
   proxyHealth.fails = 0;
   proxyHealth.deadUntil = 0;
   aiAvailableMemo = null; // le Réessayer re-sonde le serveur d'étude
+  iaBlockedUntil = 0; // le Réessayer manuel réautorise l'IA (crédits rechargés ?)
   // Drain complet de la file : des items bloqués (fetch fantôme, slot
   // gelé) ne doivent pas survivre à un Réessayer — les promesses pending
   // renvoyées par enqueue n'amorceraient plus jamais aucun fetch.

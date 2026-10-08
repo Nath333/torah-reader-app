@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { translateWithSource, translateEnglishToFrench, resetApiState } from '../services/dictionaries/englishToFrenchService';
+import { translateWithSource, translateEnglishToFrench, resetApiState, hasWorkingUpstream } from '../services/dictionaries/englishToFrenchService';
 import { createLogger } from '../utils/debug';
 
 const log = createLogger('useTranslationLoading');
@@ -68,6 +68,10 @@ export default function useTranslationLoading({
     const st = autoRetryRef.current;
     if (st.timer || st.count >= 2) return;
     if (typeof document !== 'undefined' && document.visibilityState !== 'visible') return;
+    // Tous les upstreams sont morts (402 crédits IA + Lingva bloqué) ?
+    // Reprogrammer une vague ne produirait que des échecs — on s'abstient ;
+    // le Réessayer manuel réarme tout et rejugera.
+    if (!hasWorkingUpstream()) return;
     st.timer = setTimeout(() => {
       st.timer = null;
       st.count += 1;
