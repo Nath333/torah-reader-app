@@ -7,6 +7,7 @@ import { describe, test, expect, beforeEach } from 'vitest';
 import {
   syncProgress,
   generateRecommendations,
+  generateMilestones,
   calculateLevel,
   LEARNING_LEVELS,
   getProgressSummary
@@ -76,5 +77,38 @@ describe('generateRecommendations (FR)', () => {
     const summary = getProgressSummary();
     expect(summary.level.label).toBe('Avancé');
     expect(summary.stats.versesStudied).toBe(210);
+  });
+});
+
+describe('generateMilestones (FR, contrat de champs)', () => {
+  test('titres FR + champs title/completed/progress 0-100', () => {
+    const ms = generateMilestones({
+      versesStudied: 100,
+      vocabularyMastered: 50,
+      studyStreak: 7,
+      commentatorsExplored: ['Rashi']
+    });
+
+    const verse100 = ms.find(m => m.id === 'verse-100');
+    expect(verse100.title).toBe('100 versets étudiés');
+    expect(verse100.completed).toBe(true);
+    expect(verse100.progress).toBe(100);
+    expect(verse100.remaining).toBe(0);
+
+    const trio = ms.find(m => m.id === 'commentator-trio');
+    expect(trio.title).toBe('Trois commentateurs');
+    expect(trio.current).toBe(1);
+    expect(trio.remaining).toBe(2);
+    expect(trio.completed).toBe(false);
+
+    const streak = ms.find(m => m.id === 'weekly-streak');
+    expect(streak.title).toBe('Série de 7 jours');
+    expect(streak.completed).toBe(true); // 7/7
+  });
+
+  test('progress bornée 0-100 même au-delà de la cible', () => {
+    const ms = generateMilestones({ versesStudied: 9999 });
+    const verse100 = ms.find(m => m.id === 'verse-100');
+    expect(verse100.progress).toBe(100);
   });
 });

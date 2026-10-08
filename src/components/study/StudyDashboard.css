@@ -570,3 +570,68 @@
     height: 40px;
   }
 }
+
+/* =============================================================================
+   Milestones Panel — objectifs sur données réelles (learning v3)
+   Les barres réutilisent .level-progress-bar/.level-progress-fill
+   (définies dans styles/refonte-phase2.css + refonte-modern.css).
+   ============================================================================= */
+
+.milestones-panel h4 {
+  margin: 0 0 12px 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.milestones-done-badge {
+  margin-left: auto;
+  font-size: 0.72rem;
+  text-transform: none;
+  letter-spacing: 0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--success-bg, rgba(16, 185, 129, 0.15));
+  color: var(--success, #10b981);
+  font-weight: 600;
+}
+
+.milestones-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.milestone-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.milestone-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary, #1e293b);
+}
+
+.milestone-remaining {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #64748b);
+  white-space: nowrap;
+}
+
+.milestone-item.all-done {
+  padding: 8px 0;
+}
+
+.milestone-item.all-done .milestone-title {
+  color: var(--success, #10b981);
+  font-weight: 600;
+}

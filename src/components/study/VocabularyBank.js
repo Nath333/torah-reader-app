@@ -7,6 +7,7 @@ import {
   generateMilestones,
   analyzeRootFamilyGaps
 } from '../../services/scholarly/learningRecommendationService';
+import { getLevelProgress } from '../../services/studyTracker';
 import { useStudy } from '../../context/StudyContext';
 import { useWordDetail } from '../dictionary/WordIntelligenceModal';
 import EmptyState from '../shared/EmptyState';
@@ -78,7 +79,9 @@ const VocabularyBank = () => {
       })) || [];
 
       const level = calculateLevel({
-        versesStudied: vocabulary?.length || 0,
+        // vraie lecture cumulée (studyTracker) — l'ancien `vocabulary.length`
+        // confondait carnet de mots et versets étudiés
+        versesStudied: getLevelProgress().versesStudied,
         vocabularyMastered: masteredWords.length,
         commentatorsExplored: 1
       });
@@ -90,9 +93,9 @@ const VocabularyBank = () => {
       });
 
       const milestones = generateMilestones({
+        versesStudied: getLevelProgress().versesStudied,
         vocabularyMastered: masteredWords.length,
-        totalWords: vocabulary?.length || 0,
-        streak: currentStats?.streak || 0
+        studyStreak: currentStats?.streak || 0
       });
 
       const rootGaps = analyzeRootFamilyGaps(masteredWords);
@@ -645,22 +648,22 @@ const VocabularyBank = () => {
         {/* Milestones */}
         {milestones?.length > 0 && (
           <div className="milestones-card">
-            <h4>🏆 Milestones</h4>
+            <h4>🎯 Objectifs</h4>
             <div className="milestones-list">
               {milestones.slice(0, 4).map((milestone, i) => (
                 <div
                   key={i}
-                  className={`milestone ${milestone.achieved ? 'achieved' : ''}`}
+                  className={`milestone ${milestone.completed ? 'achieved' : ''}`}
                 >
-                  <span className="milestone-icon">{milestone.achieved ? '✓' : '○'}</span>
+                  <span className="milestone-icon">{milestone.completed ? '✓' : '○'}</span>
                   <div className="milestone-info">
-                    <span className="milestone-name">{milestone.name}</span>
-                    {milestone.hebrewName && (
-                      <span className="milestone-hebrew">{milestone.hebrewName}</span>
+                    <span className="milestone-name">{milestone.title}</span>
+                    {milestone.hebrewTitle && (
+                      <span className="milestone-hebrew">{milestone.hebrewTitle}</span>
                     )}
                   </div>
-                  {!milestone.achieved && milestone.progress !== undefined && (
-                    <span className="milestone-progress">{Math.round(milestone.progress * 100)}%</span>
+                  {!milestone.completed && (
+                    <span className="milestone-progress">{Math.round(milestone.progress)}%</span>
                   )}
                 </div>
               ))}
@@ -671,9 +674,9 @@ const VocabularyBank = () => {
         {/* Root Family Gaps */}
         {rootGaps?.gaps?.length > 0 && (
           <div className="root-gaps-card">
-            <h4>🌱 Root Families to Learn</h4>
+            <h4>🌱 Racines à apprendre</h4>
             <p className="gaps-description">
-              Learning related words from the same root helps retention
+              Apprendre les mots d'une même racine ancre la mémorisation
             </p>
             <div className="root-gaps-list">
               {rootGaps.gaps.slice(0, 5).map((gap, i) => (

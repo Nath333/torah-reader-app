@@ -126,26 +126,26 @@ export default function useStudyStreak() {
     const { currentStreak, lastStudyDate } = streakData;
 
     if (!lastStudyDate) {
-      return { emoji: '🌱', message: 'Start your study journey today!' };
+      return { emoji: '🌱', message: 'Commence ton étude aujourd\'hui !' };
     }
 
     if (lastStudyDate === today) {
       if (currentStreak >= 30) {
-        return { emoji: '🔥', message: `Amazing! ${currentStreak} day streak!` };
+        return { emoji: '🔥', message: `Incroyable ! ${currentStreak} jours d'affilée !` };
       } else if (currentStreak >= 7) {
-        return { emoji: '⭐', message: `Great job! ${currentStreak} day streak!` };
+        return { emoji: '⭐', message: `Bravo ! ${currentStreak} jours d'affilée !` };
       } else if (currentStreak >= 3) {
-        return { emoji: '📚', message: `${currentStreak} day streak - keep it up!` };
+        return { emoji: '📚', message: `${currentStreak} jours d'affilée — continue !` };
       } else {
-        return { emoji: '✓', message: 'You studied today!' };
+        return { emoji: '✓', message: 'Tu as étudié aujourd\'hui !' };
       }
     }
 
     if (isStreakAtRisk) {
-      return { emoji: '⚠️', message: `Study today to keep your ${currentStreak} day streak!` };
+      return { emoji: '⚠️', message: `Étudie aujourd'hui pour garder ta série de ${currentStreak} jour${currentStreak > 1 ? 's' : ''} !` };
     }
 
-    return { emoji: '📖', message: 'Ready to study?' };
+    return { emoji: '📖', message: 'Prêt à étudier ?' };
   }, [streakData, isStreakAtRisk]);
 
   // Get weekly progress

@@ -1,8 +1,9 @@
-import React, { createContext, useContext, useMemo, useCallback } from 'react';
+import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
 import useLocalStorage from '../hooks/useLocalStorage';
 import { useToggleSetting } from '../hooks/useToggleSetting';
 import { TRADITIONS } from '../services/pronunciationService';
 import { AI_PROVIDERS } from '../services/providers/aiProviderFactory';
+import { trackStudyActivity } from '../services/scholarly/learningRecommendationService';
 
 const SettingsContext = createContext(null);
 
@@ -81,6 +82,24 @@ export function SettingsProvider({ children, darkMode, toggleDarkMode }) {
   }, [setShowRashi, setShowTosafot, setShowMaharsha, setShowRamban, setShowIbnEzra, setShowSforno]);
 
   // ============================================================================
+  // Exploration des commentateurs → moteur learning (niveaux + jalon
+  // « Trois commentateurs »). Le 3ᵉ pilier des niveaux n'était JAMAIS
+  // alimenté : on track à l'allumage du toggle seulement.
+  // ============================================================================
+  const trackExploration = (name, isOn, toggleFn) =>
+    useCallback(() => {
+      if (!isOn) trackStudyActivity({ commentator: name });
+      toggleFn();
+    }, [name, isOn, toggleFn]);
+
+  const toggleRashiTracked = trackExploration('Rashi', showRashi, toggleRashi);
+  const toggleTosafotTracked = trackExploration('Tosafot', showTosafot, toggleTosafot);
+  const toggleMaharshaTracked = trackExploration('Maharsha', showMaharsha, toggleMaharsha);
+  const toggleRambanTracked = trackExploration('Ramban', showRamban, toggleRamban);
+  const toggleIbnEzraTracked = trackExploration('Ibn Ezra', showIbnEzra, toggleIbnEzra);
+  const toggleSfornoTracked = trackExploration('Sforno', showSforno, toggleSforno);
+
+  // ============================================================================
   // Context value - memoized to prevent unnecessary re-renders
   // ============================================================================
   const value = useMemo(() => ({
@@ -119,16 +138,16 @@ export function SettingsProvider({ children, darkMode, toggleDarkMode }) {
     setCommentaryPosition,
     setFontSize,
 
-    // Toggles
+    // Toggles (commentateurs trackés pour le moteur learning)
     toggleFrench,
     toggleOnkelos,
-    toggleRashi,
-    toggleTosafot,
-    toggleMaharsha,
+    toggleRashi: toggleRashiTracked,
+    toggleTosafot: toggleTosafotTracked,
+    toggleMaharsha: toggleMaharshaTracked,
     toggleSoncino,
-    toggleRamban,
-    toggleIbnEzra,
-    toggleSforno,
+    toggleRamban: toggleRambanTracked,
+    toggleIbnEzra: toggleIbnEzraTracked,
+    toggleSforno: toggleSfornoTracked,
     toggleFocusMode,
     toggleSidebar,
     toggleTraditionalView,
@@ -163,7 +182,7 @@ export function SettingsProvider({ children, darkMode, toggleDarkMode }) {
     showVowels, showCantillation, toggleVowels, toggleCantillation,
     focusMode, sidebarCollapsed, commentaryPosition, fontSize, showTraditionalView,
     setShowFrench, setTradition, setCommentaryPosition, setFontSize,
-    toggleFrench, toggleOnkelos, toggleRashi, toggleTosafot, toggleMaharsha, toggleSoncino, toggleRamban, toggleIbnEzra, toggleSforno,
+    toggleFrench, toggleOnkelos, toggleRashiTracked, toggleTosafotTracked, toggleMaharshaTracked, toggleSoncino, toggleRambanTracked, toggleIbnEzraTracked, toggleSfornoTracked,
     toggleFocusMode, toggleSidebar, toggleTraditionalView, toggleAllCommentaries,
     aiProvider, setAiProvider, ollamaModel, setOllamaModel, showAiSettings, setShowAiSettings, toggleAiSettings,
     dictionaryPriority, setDictionaryPriority, showMorphology, setShowMorphology,

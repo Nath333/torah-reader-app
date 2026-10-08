@@ -357,8 +357,8 @@ const WordDefinitionCard = React.memo(function WordDefinitionCard({
           <button
             className={`wdc-act ${copied ? 'done' : ''}`}
             onClick={handleCopy}
-            title="Copy definition"
-            aria-label={copied ? 'Copied!' : 'Copy definition to clipboard'}
+            title="Copier la définition"
+            aria-label={copied ? 'Copié !' : 'Copier la définition dans le presse-papiers'}
           >
             <span aria-hidden="true">{copied ? '✓' : '⎘'}</span>
           </button>
@@ -367,13 +367,13 @@ const WordDefinitionCard = React.memo(function WordDefinitionCard({
               className={`wdc-act ${isWordSaved ? 'done' : ''}`}
               onClick={handleSave}
               disabled={isWordSaved}
-              title={isWordSaved ? 'Word saved' : 'Save to vocabulary'}
-              aria-label={isWordSaved ? 'Word saved to vocabulary' : 'Save word to vocabulary'}
+              title={isWordSaved ? 'Mot sauvegardé' : 'Sauvegarder au carnet'}
+              aria-label={isWordSaved ? 'Mot sauvegardé au carnet' : 'Sauvegarder le mot au carnet'}
             >
               <span aria-hidden="true">{isWordSaved ? '✓' : '★'}</span>
             </button>
           )}
-          <button className="wdc-close" onClick={onClose} aria-label="Close definition card">
+          <button className="wdc-close" onClick={onClose} aria-label="Fermer la carte de définition">
             <span aria-hidden="true">×</span>
           </button>
         </div>

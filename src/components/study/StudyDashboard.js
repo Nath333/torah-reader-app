@@ -9,7 +9,7 @@
  * - Daily learning schedule
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import useStudySession from '../../hooks/useStudySession';
 import { getTodayStats, getLevelProgress, STATS_EVENT } from '../../services/studyTracker';
 import { getStats as getSRSStats } from '../../services/srsService';
@@ -17,7 +17,9 @@ import { getDailyLearning, getRandomInspiration } from '../../services/scholarly
 // 2026 Smart Features - Learning Recommendations
 import {
   generateRecommendations,
+  generateMilestones,
   syncProgress,
+  getProgressSummary,
   trackStudyActivity,
   LEARNING_LEVELS
 } from '../../services/scholarly/learningRecommendationService';
@@ -229,6 +231,55 @@ const RecommendationsPanel = ({ recommendations, onSelect }) => {
 };
 
 // =============================================================================
+// MILESTONES PANEL (objectifs alimentés par les vraies données)
+// =============================================================================
+
+const MilestonesPanel = ({ milestones }) => {
+  if (!milestones || milestones.length === 0) return null;
+
+  const done = milestones.filter(m => m.completed);
+  // Les 3 plus proches de l'atteinte d'abord : c'est ce qui motive.
+  const pending = milestones
+    .filter(m => !m.completed)
+    .sort((a, b) => b.progress - a.progress)
+    .slice(0, 3);
+
+  return (
+    <div className="milestones-panel">
+      <h4>
+        <span className="rec-icon">🎯</span>
+        Objectifs
+        {done.length > 0 && (
+          <span className="milestones-done-badge">
+            {done.length} atteint{done.length > 1 ? 's' : ''}
+          </span>
+        )}
+      </h4>
+      <div className="milestones-list">
+        {pending.map(m => (
+          <div key={m.id} className="milestone-item" title={m.reward}>
+            <div className="milestone-head">
+              <span className="milestone-title">{m.title}</span>
+              <span className="milestone-remaining">
+                {m.remaining} restant{m.remaining > 1 ? 's' : ''}
+              </span>
+            </div>
+            <div className="level-progress-bar">
+              <div className="level-progress-fill" style={{ width: `${m.progress}%` }} />
+            </div>
+          </div>
+        ))}
+        {pending.length === 0 && (
+          <div className="milestone-item all-done">
+            <span className="milestone-title">Tous les objectifs sont atteints !</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// =============================================================================
 // MAIN COMPONENT
 // =============================================================================
 
@@ -269,6 +320,21 @@ const StudyDashboard = ({
     window.addEventListener(STATS_EVENT, refresh);
     return () => window.removeEventListener(STATS_EVENT, refresh);
   }, []);
+
+  // Objectifs (jalons) alimentés par les vraies sources : lecture cumulée
+  // (studyTracker), maîtrise SRS, série du jour, commentateurs explorés.
+  const milestones = useMemo(() => {
+    let commentatorsCount = 0;
+    try {
+      commentatorsCount = getProgressSummary().stats.commentatorsExplored;
+    } catch { /* store absent : les autres jalons restent justes */ }
+    return generateMilestones({
+      versesStudied: levelProgress.versesStudied,
+      vocabularyMastered: getSRSStats().mastered,
+      studyStreak: streaks.current,
+      commentatorsExplored: Array.from({ length: commentatorsCount }, (_, i) => i)
+    });
+  }, [levelProgress, streaks.current]);
 
   // Fetch daily learning and recommendations on mount
   useEffect(() => {
@@ -497,6 +563,9 @@ const StudyDashboard = ({
         recommendations={recommendations}
         onSelect={handleRecommendationSelect}
       />
+
+      {/* Objectifs — jalons sur données réelles (lecture, vocabulaire, série) */}
+      <MilestonesPanel milestones={milestones} />
 
       {/* Quick Actions */}
       <div className="quick-actions">

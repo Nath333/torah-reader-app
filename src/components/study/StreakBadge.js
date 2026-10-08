@@ -8,7 +8,7 @@ import { StudyContext } from '../../context/StudyContext';
 import './StreakBadge.css';
 
 // Default values when context is unavailable
-const DEFAULT_STREAK_MESSAGE = { emoji: '📚', message: 'Start studying!' };
+const DEFAULT_STREAK_MESSAGE = { emoji: '📚', message: 'Commence ton étude !' };
 const DEFAULT_WEEKLY_PROGRESS = { daysStudied: 0, goal: 5, percentage: 0, weekDates: [], studyDates: [] };
 const DEFAULT_STATS = { currentStreak: 0, longestStreak: 0, totalDays: 0, todayMinutes: 0, isStreakAtRisk: false };
 
@@ -70,7 +70,7 @@ const StreakBadge = ({ compact = false }) => {
         </div>
         <div className="streak-info">
           <div className="streak-count-large">{stats.currentStreak}</div>
-          <div className="streak-label">day streak</div>
+          <div className="streak-label">jour{stats.currentStreak > 1 ? 's' : ''} d'affilée</div>
         </div>
       </div>
 
@@ -80,20 +80,21 @@ const StreakBadge = ({ compact = false }) => {
       {/* Weekly Progress */}
       <div className="weekly-progress">
         <div className="weekly-header">
-          <span>This Week</span>
+          <span>Cette semaine</span>
           <span className="weekly-count">{weeklyProgress.daysStudied}/{weeklyProgress.goal}</span>
         </div>
         <div className="weekly-dots">
-          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => {
+          {['D', 'L', 'M', 'M', 'J', 'V', 'S'].map((day, i) => {
             const dateStr = weeklyProgress.weekDates[i];
             const isStudied = weeklyProgress.studyDates.includes(dateStr);
             const isToday = dateStr === new Date().toISOString().split('T')[0];
+            const dayName = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'][i];
 
             return (
               <div
                 key={i}
                 className={`day-dot ${isStudied ? 'studied' : ''} ${isToday ? 'today' : ''}`}
-                title={`${day}: ${isStudied ? 'Studied' : 'Not studied'}`}
+                title={`${dayName} : ${isStudied ? 'étudié' : 'pas étudié'}`}
               >
                 <span className="day-letter">{day}</span>
                 {isStudied && <span className="check-mark">✓</span>}
@@ -113,15 +114,15 @@ const StreakBadge = ({ compact = false }) => {
       <div className="streak-stats">
         <div className="stat-item">
           <span className="stat-value">{stats.longestStreak}</span>
-          <span className="stat-label">Best</span>
+          <span className="stat-label">Record</span>
         </div>
         <div className="stat-item">
           <span className="stat-value">{stats.totalDays}</span>
-          <span className="stat-label">Total Days</span>
+          <span className="stat-label">Jours totaux</span>
         </div>
         <div className="stat-item">
           <span className="stat-value">{stats.todayMinutes}m</span>
-          <span className="stat-label">Today</span>
+          <span className="stat-label">Aujourd'hui</span>
         </div>
       </div>
     </div>
