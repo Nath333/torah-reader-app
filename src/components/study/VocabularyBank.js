@@ -29,7 +29,8 @@ const VocabularyBank = () => {
     exportVocabulary,
     importVocabulary,
     getWordsForReview,
-    getStats: getContextStats
+    getStats: getContextStats,
+    studyStreak
   } = useStudy();
 
   // Word detail modal for deep word analysis
@@ -92,11 +93,13 @@ const VocabularyBank = () => {
         masteredWords
       });
 
+      // Mêmes sources que le dashboard : maîtrise = SRS (interval+répétitions,
+      // pas le flag du carnet), série = useStudyStreak (pas la série SRS).
       const milestones = generateMilestones({
         versesStudied: getLevelProgress().versesStudied,
-        vocabularyMastered: masteredWords.length,
+        vocabularyMastered: currentStats.mastered,
         totalReviews: currentStats?.totalReviews || 0,
-        studyStreak: currentStats?.streak || 0
+        studyStreak: studyStreak?.currentStreak || 0
       });
 
       const rootGaps = analyzeRootFamilyGaps(masteredWords);

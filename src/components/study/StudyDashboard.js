@@ -11,7 +11,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import useStudySession from '../../hooks/useStudySession';
-import { getTodayStats, getLevelProgress, STATS_EVENT } from '../../services/studyTracker';
+import { getTodayStats, getLevelProgress, STATS_EVENT, DAILY_VERSES_GOAL } from '../../services/studyTracker';
 import { getStats as getSRSStats } from '../../services/srsService';
 import { getDailyLearning, getRandomInspiration } from '../../services/scholarlyApiService';
 // 2026 Smart Features - Learning Recommendations
@@ -488,12 +488,14 @@ const StudyDashboard = ({
         <StreakDisplay current={streaks.current} longest={streaks.longest} />
       </div>
 
-      {/* Current session stats (when active) */}
+      {/* Current session stats (when active) — stats du JOUR en direct :
+          l'ancien affichage lisait currentSession.versesRead/wordsLearned/
+          bookmarksAdded, des compteurs de session JAMAIS incrémentés. */}
       {isActive && (
         <div className="session-stats">
-          <span>📖 {currentSession.versesRead} versets</span>
-          <span>📝 {currentSession.wordsLearned} mots</span>
-          <span>🔖 {currentSession.bookmarksAdded} favoris</span>
+          <span>📖 {liveStats.versesRead} / {DAILY_VERSES_GOAL} versets</span>
+          <span>📝 {liveStats.wordsLearned} / 5 mots</span>
+          <span>⏱ {minutesTotal.value} min</span>
         </div>
       )}
 
@@ -511,11 +513,11 @@ const StudyDashboard = ({
             </div>
           </div>
 
-          <div className="progress-item" title="Versets uniques lus aujourd'hui (1,5 s de lecture)">
+          <div className="progress-item" title={`Versets uniques lus aujourd'hui (1,5 s de lecture)`}>
             <ProgressRing progress={liveStats.versesProgress} color="#10B981" />
             <div className="progress-details">
               <span className="progress-value">
-                {liveStats.versesRead} / 20
+                {liveStats.versesRead} / {DAILY_VERSES_GOAL}
               </span>
               <span className="progress-label">Versets</span>
             </div>

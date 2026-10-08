@@ -19,7 +19,9 @@ const DAY_KEY = 'torah-study-tracker-day';
 const LIFE_KEY = 'torah-study-tracker-life';
 export const STATS_EVENT = 'study:stats-updated';
 
-// Objectif « mots » du jour (== goals.dailyVocabulary du dashboard)
+// Objectifs du jour — SOURCE UNIQUE (le dashboard les lit, plus de « 20 »
+// en dur dans les composants).
+export const DAILY_VERSES_GOAL = 20;
 export const DAILY_WORDS_GOAL = 5;
 
 const today = () => new Date().toDateString();
@@ -50,15 +52,14 @@ const dayData = () => {
 
 export function getTodayStats() {
   const d = dayData();
-  const verseGoal = 20; // == goals.dailyVerses du dashboard
   return {
     versesRead: d.versesRead,
     wordsLearned: d.wordsLearned || 0,
     minutesAuto: d.minutesAuto || 0,
-    versesProgress: Math.min(100, Math.round((d.versesRead / verseGoal) * 100)),
+    versesProgress: Math.min(100, Math.round((d.versesRead / DAILY_VERSES_GOAL) * 100)),
     wordsProgress: Math.min(100, Math.round(((d.wordsLearned || 0) / DAILY_WORDS_GOAL) * 100)),
     // compat : progress == anneau des versets
-    progress: Math.min(100, Math.round((d.versesRead / verseGoal) * 100))
+    progress: Math.min(100, Math.round((d.versesRead / DAILY_VERSES_GOAL) * 100))
   };
 }
 

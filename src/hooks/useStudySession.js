@@ -11,12 +11,14 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import useLocalStorage from './useLocalStorage';
 import useStudyStreak from './useStudyStreak';
+import { DAILY_VERSES_GOAL, DAILY_WORDS_GOAL } from '../services/studyTracker';
 
-// Default daily goals
+// Default daily goals — les versements/mots pointent vers la SOURCE UNIQUE
+// de studyTracker (le dashboard affiche les mêmes chiffres partout).
 const DEFAULT_GOALS = {
   dailyMinutes: 30,
-  dailyVerses: 20,
-  dailyVocabulary: 5
+  dailyVerses: DAILY_VERSES_GOAL,
+  dailyVocabulary: DAILY_WORDS_GOAL
 };
 
 // Get today's date string
