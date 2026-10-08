@@ -29,7 +29,7 @@
 | ~~`components/scholar-mode/NotebookTab.js`~~ | 1 163 → **223 + `NotebookTab/sections/` 5 fichiers (fait 08/10)** | ✅ tests de rendu D'ABORD (7 tests : parcours des 6 sous-onglets), puis split sections | pièges : composants fermés APRÈS la borne de coupe (}; orphelin en façade), chemins à 4 niveaux depuis sections/, FeatureIndicator partagé part avec sa seule consommatrice (Today) |
 | `components/scholar-mode/ProScholarV29RichAnalysis.panels.js` | 1 186 | UI — un fichier par panneau | |
 | `components/layout/FocusMode.js` | 1 242 | UI — sections | importé par App.js |
-| `components/scholar-mode/WordsTab/components/LookupTab.js` | 1 443 | UI — panneaux | |
+| ~~`components/scholar-mode/WordsTab/components/LookupTab.js` (panneaux)~~ | 1 443 → **1 091 + `LookupTab/panels/` 6 fichiers (fait 08/10)** | ✅ tests de rendu d'abord (4 tests), panneaux ré-exportés par la façade (consommateurs WordIntelligenceCard/useProScholarV6 inchangés) | |
 | ~~`services/analysis/linguisticAnalysis.js`~~ | **fait 03/10** | `linguistic/` 4 domaines (binyan 252, context 561, historical 646, cognates 403) + façade composite 250 (analyzeWordV6/Enhanced + default) | ✅ |
 | ~~`services/comparativeSemiticService.js`~~ | **fait 03/10** | données `comparativeSemitic/cognateDatabase.js` (926) + façade 1 225 (loaders état conservés) + **fix latent : log() appelé comme fonction ×21 = fallbacks morts** + smoke test (5) | phase 2 : helpers/parsers vs API |
 | `services/dictionaries/dictionaryLoader.js` | 2 157 | par dictionnaire | **state.js partagé obligatoire** (cache + health) ; tests réels présents |
