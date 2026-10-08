@@ -268,7 +268,7 @@ describe('TzuratHaDaf', () => {
       render(<TzuratHaDaf {...defaultProps} />);
 
       await waitFor(() => {
-        const translateBtn = screen.getByTitle(/translation/i);
+        const translateBtn = screen.getByTitle(/traduction/i);
         expect(translateBtn).toBeInTheDocument();
       });
     });
@@ -544,7 +544,7 @@ describe('TzuratHaDaf', () => {
         expect(screen.getByLabelText('Zoom in')).toBeInTheDocument();
         expect(screen.getByLabelText('Zoom out')).toBeInTheDocument();
         expect(screen.getByLabelText(/Fullscreen/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/Close/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/Fermer/i)).toBeInTheDocument();
       });
     });
 

@@ -211,7 +211,7 @@ const ScholarModePanel = ({
     return Object.entries(groups);
   }, [internalSelectedVerses]);
 
-  // Clear all selections across all pages
+  // Tout désélectionner across all pages
   const clearAllSelections = useCallback(() => {
     setInternalSelectedVerses([]);
   }, []);
@@ -557,7 +557,7 @@ const ScholarModePanel = ({
                 <span className="reference-detail">{multiVerseReference || reference}</span>
               </>
             ) : (
-              'Click verses to select, then analyze'
+              'Clique des versets pour les sélectionner, puis analyse'
             )}
           </span>
         </div>
@@ -566,7 +566,7 @@ const ScholarModePanel = ({
           <button
             className={`verse-selector-toggle ${showVerseSelector ? 'active' : ''}`}
             onClick={() => setShowVerseSelector(!showVerseSelector)}
-            title="Select verses from current or other pages"
+            title="Sélectionne des versets de cette page ou d’une autre"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
               <rect x="3" y="3" width="7" height="7" rx="1" />
@@ -584,7 +584,7 @@ const ScholarModePanel = ({
             <button
               className={`tzurat-toggle ${showTzuratHaDaf ? 'active' : ''}`}
               onClick={() => setShowTzuratHaDaf(!showTzuratHaDaf)}
-              title="Toggle traditional page layout (צורת הדף)"
+              title="Basculer la mise en page traditionnelle (צורת הדף)"
             >
               <span className="toggle-icon toggle-icon-text">דף</span>
             </button>
@@ -595,7 +595,7 @@ const ScholarModePanel = ({
             <button
               className={`vocalization-toggle ${isVocalized ? 'active' : ''}`}
               onClick={handleVocalizationToggle}
-              title="Toggle nikud (vocalization)"
+              title="Basculer le nikoud (vocalisation)"
             >
               <span className="toggle-icon">ניקוד</span>
             </button>
@@ -605,7 +605,7 @@ const ScholarModePanel = ({
           <button
             className={`gloss-toggle ${showInlineGlosses ? 'active' : ''}`}
             onClick={toggleInlineGlosses}
-            title="Toggle inline word glossing"
+            title="Basculer le glossaire inline des mots"
           >
             <span className="toggle-icon">תרגום</span>
           </button>
@@ -614,7 +614,7 @@ const ScholarModePanel = ({
           <ConnectivityIndicator compact />
 
           {/* Close Button */}
-          <button className="close-button" onClick={onClose} title="Close (ESC)">
+          <button className="close-button" onClick={onClose} title="Fermer (Échap)">
             ×
           </button>
         </div>
@@ -708,7 +708,7 @@ const ScholarModePanel = ({
                     value={browseBook || ''}
                     onChange={(e) => handleBrowseBookChange(e.target.value)}
                   >
-                    <option value="">Select a book...</option>
+                    <option value="">Choisis un livre…</option>
                     {Object.entries(sefarimCategories).map(([key, category]) => (
                       <optgroup key={key} label={`${category.hebrewName} - ${category.name}`}>
                         {category.books.map(book => (
@@ -727,7 +727,7 @@ const ScholarModePanel = ({
                       value={browseChapter || ''}
                       onChange={(e) => handleBrowseChapterChange(e.target.value)}
                     >
-                      <option value="">Select chapter...</option>
+                      <option value="">Choisis un chapitre…</option>
                       {availableChapters.map(ch => (
                         <option key={ch} value={ch}>{ch}</option>
                       ))}
@@ -764,7 +764,7 @@ const ScholarModePanel = ({
                   {loadingBrowseVerses ? (
                     <div className="browse-loading">
                       <div className="loading-spinner" />
-                      <span>Loading verses...</span>
+                      <span>Chargement des versets…</span>
                     </div>
                   ) : browseVerses.length > 0 ? (
                     <div className="verse-selector-list">
@@ -785,17 +785,17 @@ const ScholarModePanel = ({
                       ))}
                     </div>
                   ) : (
-                    <div className="browse-empty">No verses found</div>
+                    <div className="browse-empty">Aucun verset trouvé</div>
                   )}
                 </>
               )}
 
               {!browseChapter && browseBook && (
-                <div className="browse-hint">Select a chapter to view verses</div>
+                <div className="browse-hint">Choisis un chapitre pour voir les versets</div>
               )}
 
               {!browseBook && (
-                <div className="browse-hint">Select a book to start browsing</div>
+                <div className="browse-hint">Choisis un livre pour commencer</div>
               )}
             </div>
           )}
@@ -809,7 +809,7 @@ const ScholarModePanel = ({
                 <button
                   className="selector-btn clear-all-btn"
                   onClick={clearAllSelections}
-                  title="Clear all selections"
+                  title="Tout désélectionner"
                 >
                   Clear All
                 </button>
@@ -910,7 +910,7 @@ const ScholarModePanel = ({
                   </button>
                 )}
 
-                <span className="glossed-hint">Click word to lookup</span>
+                <span className="glossed-hint">Clique un mot pour le consulter</span>
               </div>
             </div>
 
@@ -967,11 +967,11 @@ const ScholarModePanel = ({
       <div className="tab-content">
         {loading && !['learn', 'words', 'notebook'].includes(activeTab) ? (
           <LoadingState
-            message="Loading scholarly data..."
+            message="Chargement des données savantes…"
             subMessage="Fetching commentaries and references from Sefaria"
           />
         ) : (
-          <Suspense fallback={<LoadingState message="Loading module…" />}>
+          <Suspense fallback={<LoadingState message="Chargement du module…" />}>
             {/* LEARN Tab - AI Analysis modes (includes Chavruta features) */}
             {activeTab === 'learn' && !showTzuratHaDaf && (
               <AIAnalysisTab

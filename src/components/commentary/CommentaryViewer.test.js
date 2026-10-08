@@ -160,16 +160,16 @@ describe('CommentaryViewer', () => {
       // Select and deselect behavior
     });
 
-    it('should show "Compare All" button', () => {
+    it('should show "Tout comparer" button', () => {
       render(<CommentaryViewer {...defaultProps} />);
 
-      expect(screen.getByText('Compare All')).toBeInTheDocument();
+      expect(screen.getByText('Tout comparer')).toBeInTheDocument();
     });
 
     // Skip - triggers CommentaryDisplay render with internal dep issues
-    it.skip('should select all sources when "Compare All" clicked', async () => {
+    it.skip('should select all sources when "Tout comparer" clicked', async () => {
       render(<CommentaryViewer {...defaultProps} />);
-      fireEvent.click(screen.getByText('Compare All'));
+      fireEvent.click(screen.getByText('Tout comparer'));
       // All chips should be selected
     });
   });
@@ -193,13 +193,13 @@ describe('CommentaryViewer', () => {
       render(<CommentaryViewer {...defaultProps} />);
 
       expect(screen.getByTitle('Single view')).toBeInTheDocument();
-      expect(screen.getByTitle('Compare view')).toBeInTheDocument();
+      expect(screen.getByTitle('Mode comparaison')).toBeInTheDocument();
     });
 
     it('should default to compare mode', () => {
       render(<CommentaryViewer {...defaultProps} />);
 
-      const compareBtn = screen.getByTitle('Compare view');
+      const compareBtn = screen.getByTitle('Mode comparaison');
       expect(compareBtn).toHaveClass('active');
     });
 
@@ -217,20 +217,20 @@ describe('CommentaryViewer', () => {
     it('should render translation toggle button', () => {
       render(<CommentaryViewer {...defaultProps} />);
 
-      expect(screen.getByTitle('Toggle translation')).toBeInTheDocument();
+      expect(screen.getByTitle('Basculer la traduction')).toBeInTheDocument();
     });
 
     it('should default to showing translation', () => {
       render(<CommentaryViewer {...defaultProps} />);
 
-      const translateBtn = screen.getByTitle('Toggle translation');
+      const translateBtn = screen.getByTitle('Basculer la traduction');
       expect(translateBtn).toHaveClass('active');
     });
 
     it('should toggle translation visibility', () => {
       render(<CommentaryViewer {...defaultProps} />);
 
-      const translateBtn = screen.getByTitle('Toggle translation');
+      const translateBtn = screen.getByTitle('Basculer la traduction');
       fireEvent.click(translateBtn);
 
       expect(translateBtn).not.toHaveClass('active');
@@ -241,13 +241,13 @@ describe('CommentaryViewer', () => {
     it('should render close button', () => {
       render(<CommentaryViewer {...defaultProps} />);
 
-      expect(screen.getByLabelText('Close commentary viewer')).toBeInTheDocument();
+      expect(screen.getByLabelText('Fermer le visualiseur de commentaires')).toBeInTheDocument();
     });
 
     it('should call onClose when close button clicked', () => {
       render(<CommentaryViewer {...defaultProps} />);
 
-      fireEvent.click(screen.getByLabelText('Close commentary viewer'));
+      fireEvent.click(screen.getByLabelText('Fermer le visualiseur de commentaires'));
 
       expect(defaultProps.onClose).toHaveBeenCalledTimes(1);
     });
@@ -506,7 +506,7 @@ describe('accessibility', () => {
       selectedChapter: 1,
     }} />);
 
-    const translateBtn = screen.getByTitle('Toggle translation');
+    const translateBtn = screen.getByTitle('Basculer la traduction');
     expect(translateBtn).toHaveAttribute('aria-pressed');
     expect(translateBtn).toHaveAttribute('aria-label');
   });
@@ -521,6 +521,6 @@ describe('accessibility', () => {
       selectedChapter: 1,
     }} />);
 
-    expect(screen.getByLabelText('Close commentary viewer')).toBeInTheDocument();
+    expect(screen.getByLabelText('Fermer le visualiseur de commentaires')).toBeInTheDocument();
   });
 });

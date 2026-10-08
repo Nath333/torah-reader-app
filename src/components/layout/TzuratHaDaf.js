@@ -579,14 +579,14 @@ const TzuratHaDaf = ({
           <button
             className={`daf-control-btn filter-btn ${showRashi ? 'active' : ''}`}
             onClick={() => toggleColumn('rashi')}
-            title={showRashi ? "Hide Rashi" : "Show Rashi"}
+            title={showRashi ? "Masquer Rashi" : "Afficher Rashi"}
           >
             <span>רש״י</span>
           </button>
           <button
             className={`daf-control-btn filter-btn ${showTosafot ? 'active' : ''}`}
             onClick={() => toggleColumn('tosafot')}
-            title={showTosafot ? "Hide Tosafot" : "Show Tosafot"}
+            title={showTosafot ? "Masquer Tosafot" : "Afficher Tosafot"}
           >
             <span>תוס׳</span>
           </button>
@@ -599,7 +599,7 @@ const TzuratHaDaf = ({
           className={`daf-control-btn ${showSettingsPanel ? 'active' : ''}`}
           onClick={() => setShowSettingsPanel(!showSettingsPanel)}
           title="Settings (S)"
-          aria-label="Open settings panel"
+          aria-label="Ouvrir le panneau de réglages"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="12" cy="12" r="3" />
@@ -610,8 +610,8 @@ const TzuratHaDaf = ({
         <button
           className={`daf-control-btn ${displayTranslation ? 'active' : ''}`}
           onClick={toggleTranslation}
-          title={displayTranslation ? "Hide English translation" : "Show English translation"}
-          aria-label={displayTranslation ? "Hide English translation" : "Show English translation"}
+          title={displayTranslation ? "Masquer la traduction" : "Afficher la traduction"}
+          aria-label={displayTranslation ? "Masquer la traduction" : "Afficher la traduction"}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
@@ -658,7 +658,7 @@ const TzuratHaDaf = ({
             className="daf-control-btn"
             onClick={onClose}
             title="Close"
-            aria-label="Close traditional view"
+            aria-label="Fermer la vue traditionnelle"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M18 6L6 18M6 6l12 12" />
@@ -717,7 +717,7 @@ const TzuratHaDaf = ({
             <button
               className="daf-settings-close"
               onClick={() => setShowSettingsPanel(false)}
-              aria-label="Close settings"
+              aria-label="Fermer les réglages"
             >
               ✕
             </button>

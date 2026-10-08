@@ -331,7 +331,7 @@ const VerseRow = ({
                 {verse.rawEnglishHtml && hasAnnotationMarkup(verse.rawEnglishHtml) ? (
                   <AnnotatedTranslationInline text={verse.rawEnglishHtml} language="en" />
                 ) : (
-                  <SafeText text={verse.englishText || 'Error loading translation'} lang="en" />
+                  <SafeText text={verse.englishText || 'Erreur de chargement de la traduction'} lang="en" />
                 )}
               </div>
             </div>
@@ -533,8 +533,8 @@ const VerseRow = ({
                 ) : (
                   <div className="rashi-empty">
                     {isTalmud
-                      ? `No Rashi commentary available for ${selectedBook} ${selectedChapter}`
-                      : 'No Rashi commentary available for this verse'}
+                      ? `Aucun commentaire de Rashi pour ${selectedBook} ${selectedChapter}`
+                      : 'Aucun commentaire de Rashi pour ce verset'}
                   </div>
                 )}
               </div>
@@ -553,7 +553,7 @@ const VerseRow = ({
                 <div className="soncino-source">
                   <a href="https://halakhah.com" target="_blank" rel="noopener noreferrer" className="soncino-link">halakhah.com</a>
                   {onToggleSoncino && (
-                    <button className="soncino-toggle active" onClick={onToggleSoncino} title="Hide Soncino">✕</button>
+                    <button className="soncino-toggle active" onClick={onToggleSoncino} title="Masquer Soncino">✕</button>
                   )}
                 </div>
               </div>
@@ -591,7 +591,7 @@ const VerseRow = ({
                         <small style={{ display: 'block', marginTop: '4px', opacity: 0.7 }}>{soncinoError}</small>
                       </>
                     ) : (
-                      `No Soncino footnotes available for daf ${selectedChapter}`
+                      `Aucune note de Soncino pour le daf ${selectedChapter}`
                     )}
                   </div>
                 )}
@@ -643,7 +643,7 @@ const VerseRow = ({
                     </div>
                   ))
                 ) : (
-                  <div className="tosafot-empty">No Tosafot commentary available for this daf</div>
+                  <div className="tosafot-empty">Aucun commentaire de Tosafot pour ce daf</div>
                 )}
               </div>
             </div>
@@ -729,7 +729,7 @@ const VerseRow = ({
                     )}
                   </>
                 ) : (
-                  <div className="maharsha-empty">No Maharsha commentary available for this daf</div>
+                  <div className="maharsha-empty">Aucun commentaire de Maharsha pour ce daf</div>
                 )}
               </div>
             </div>
@@ -779,7 +779,7 @@ const VerseRow = ({
                     </div>
                   ))
                 ) : (
-                  <div className="ramban-empty">No Ramban commentary available for this verse</div>
+                  <div className="ramban-empty">Aucun commentaire de Ramban pour ce verset</div>
                 )}
               </div>
             </div>
@@ -829,7 +829,7 @@ const VerseRow = ({
                     </div>
                   ))
                 ) : (
-                  <div className="ibn-ezra-empty">No Ibn Ezra commentary available for this verse</div>
+                  <div className="ibn-ezra-empty">Aucun commentaire d’Ibn Ezra pour ce verset</div>
                 )}
               </div>
             </div>
@@ -879,7 +879,7 @@ const VerseRow = ({
                     </div>
                   ))
                 ) : (
-                  <div className="sforno-empty">No Sforno commentary available for this verse</div>
+                  <div className="sforno-empty">Aucun commentaire de Sforno pour ce verset</div>
                 )}
               </div>
             </div>

@@ -137,7 +137,7 @@ const COMMENTARY_SOURCES = {
     icon: '📗',
     textTypes: ['mishnah'],
     importance: 'primary',
-    methodology: 'Clear Mishnah explanation',
+    methodology: 'Effacer l’explication de la Mishna',
     keyContribution: 'Standard Mishnah commentary, based on Rashi & Rambam'
   }
 };
@@ -259,7 +259,7 @@ const CommentaryDisplay = ({ source, commentaries, showTranslation, enableClicka
     return (
       <div className="commentary-display empty">
         <div className="empty-icon">📭</div>
-        <p>No {source} commentary for this verse</p>
+        <p>Aucun commentaire {source} pour ce verset</p>
       </div>
     );
   }
@@ -288,9 +288,9 @@ const CommentaryDisplay = ({ source, commentaries, showTranslation, enableClicka
           <button
             className={`info-toggle ${showMetadata ? 'active' : ''}`}
             onClick={() => setShowMetadata(!showMetadata)}
-            title="Show commentator info"
+            title="Afficher les infos du commentateur"
             aria-expanded={showMetadata}
-            aria-label={showMetadata ? 'Hide commentator info' : 'Show commentator info'}
+            aria-label={showMetadata ? 'Masquer les infos du commentateur' : 'Afficher les infos du commentateur'}
           >
             ℹ️
           </button>
@@ -302,7 +302,7 @@ const CommentaryDisplay = ({ source, commentaries, showTranslation, enableClicka
               target="_blank"
               rel="noopener noreferrer"
               className="sefaria-link-btn"
-              title="View on Sefaria"
+              title="Voir sur Sefaria"
             >
               ↗
             </a>
@@ -311,9 +311,9 @@ const CommentaryDisplay = ({ source, commentaries, showTranslation, enableClicka
           <button
             className={`dict-test-btn ${showDictTest ? 'active' : ''}`}
             onClick={() => setShowDictTest(!showDictTest)}
-            title="Toggle Dictionary Test Card"
+            title="Basculer la carte de test du dictionnaire"
             aria-expanded={showDictTest}
-            aria-label={showDictTest ? 'Hide dictionary test' : 'Show dictionary test'}
+            aria-label={showDictTest ? 'Masquer le test du dictionnaire' : 'Afficher le test du dictionnaire'}
             style={{
               background: showDictTest ? '#f59e0b' : 'transparent',
               border: '1px solid #f59e0b',
@@ -332,7 +332,7 @@ const CommentaryDisplay = ({ source, commentaries, showTranslation, enableClicka
               onClick={() => setShowSummary(!showSummary)}
               title="AI Analysis"
               aria-expanded={showSummary}
-              aria-label={showSummary ? 'Hide AI analysis' : 'Show AI analysis'}
+              aria-label={showSummary ? 'Masquer l’analyse IA' : 'Afficher l’analyse IA'}
             >
               🤖
             </button>
@@ -554,7 +554,7 @@ const CommentaryViewer = ({
             <span className="verse-ref">{verseRef}</span>
           </div>
           <div className="header-controls">
-            <div className="view-toggle" role="group" aria-label="View mode">
+            <div className="view-toggle" role="group" aria-label="Mode simple">
               <button
                 className={viewMode === 'single' ? 'active' : ''}
                 onClick={() => setViewMode('single')}
@@ -566,7 +566,7 @@ const CommentaryViewer = ({
               <button
                 className={viewMode === 'compare' ? 'active' : ''}
                 onClick={() => setViewMode('compare')}
-                title="Compare view"
+                title="Mode comparaison"
                 aria-pressed={viewMode === 'compare'}
               >
                 ▤
@@ -575,20 +575,20 @@ const CommentaryViewer = ({
             <button
               className={`translate-btn ${showTranslation ? 'active' : ''}`}
               onClick={() => setShowTranslation(!showTranslation)}
-              title="Toggle translation"
+              title="Basculer la traduction"
               aria-pressed={showTranslation}
-              aria-label={showTranslation ? 'Hide translation' : 'Show translation'}
+              aria-label={showTranslation ? 'Masquer la traduction' : 'Afficher la traduction'}
             >
               🌐
             </button>
-            <button className="close-viewer" onClick={onClose} aria-label="Close commentary viewer">✕</button>
+            <button className="close-viewer" onClick={onClose} aria-label="Fermer le visualiseur de commentaires">✕</button>
           </div>
         </div>
 
         <div className="source-selector">
           <div className="selector-header">
-            <span>Select Commentary:</span>
-            <button onClick={selectAllSources} className="compare-all">Compare All</button>
+            <span>Choisir un commentaire :</span>
+            <button onClick={selectAllSources} className="compare-all">Tout comparer</button>
           </div>
           <div className="source-chips">
             {availableSources.map(source => (
