@@ -82,6 +82,47 @@ describe('sefariaOfflineKit', () => {
     expect(verses[0].englishText).toBe('In the beginning God created');
   });
 
+  test('repli Rashi offline : chapitre entier servi par le kit', async () => {
+    vi.resetModules();
+    const kitFetch = vi.fn((url) => {
+      if (String(url).includes('sefaria-kit-torah.json')) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(KIT) });
+      }
+      return Promise.reject(new Error('offline'));
+    });
+    vi.stubGlobal('fetch', kitFetch);
+    vi.doMock('../../../utils/http', () => ({
+      fetchWithFallback: vi.fn(() => Promise.reject(new Error('offline'))),
+      default: vi.fn()
+    }));
+    const { fetchTorahCommentary } = await import('../commentary/factory/factoryCore');
+    const result = await fetchTorahCommentary('rashi', 'Genesis', 1);
+    expect(result.offline).toBe(true);
+    expect(result.source).toBe('Rashi');
+    expect(result.comments).toBeDefined();
+  });
+
+  test('repli Rashi offline : un verset précis extrait du chapitre', async () => {
+    vi.resetModules();
+    const kitFetch = vi.fn((url) => {
+      if (String(url).includes('sefaria-kit-torah.json')) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(KIT) });
+      }
+      return Promise.reject(new Error('offline'));
+    });
+    vi.stubGlobal('fetch', kitFetch);
+    vi.doMock('../../../utils/http', () => ({
+      fetchWithFallback: vi.fn(() => Promise.reject(new Error('offline'))),
+      default: vi.fn()
+    }));
+    const { fetchTorahCommentary } = await import('../commentary/factory/factoryCore');
+    const result = await fetchTorahCommentary('rashi', 'Genesis', 1, 2);
+    expect(result.offline).toBe(true);
+    expect(result.verse).toBe(2);
+    expect(JSON.stringify(result.comments)).toContain('Rashi 1:2');
+    expect(JSON.stringify(result.comments)).not.toContain('Rashi 1:1a');
+  });
+
   test('repli getOnkelos : araméen servi par le kit', async () => {
     vi.resetModules();
     const kitFetch = vi.fn((url) => {

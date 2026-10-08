@@ -33,6 +33,7 @@ export function loadKit() {
       })
       .catch(() => {
         kitData = null;
+        kitPromise = null; // échec (ex. premier essai hors-ligne) : réessayable
         return null;
       });
   }

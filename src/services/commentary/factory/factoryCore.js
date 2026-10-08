@@ -6,6 +6,7 @@
 // PRO SCHOLAR V6.2: Use CacheOrchestrator for unified cache management
 import { createManagedCache } from '../../cacheOrchestrator';
 import { fetchWithFallback } from '../../../utils/http';
+import { getChapter as kitChapter } from '../../sefariaOfflineKit';
 import { cleanHtml } from '../../../utils/sanitize';
 import {
   processCommentArrayWithTranslation,
@@ -267,6 +268,45 @@ export const fetchTorahCommentary = async (commentaryKey, bookName, chapter, ver
     cache.set(cacheKey, result);
     return result;
   } catch (error) {
+    // Hors-ligne : repli sur le kit Torah embarqué (Rashi uniquement —
+    // les chapitres du kit sont au format API [verses][commentaires])
+    if (commentaryKey === 'rashi') {
+      try {
+        const offline = await kitChapter(`${config.sefariaPrefix}${bookName}`, chapter);
+        if (offline) {
+          let he = offline.he;
+          let text = offline.text;
+          if (verse) {
+            he = he?.[verse - 1] !== undefined
+              ? (Array.isArray(he[verse - 1]) ? he[verse - 1] : [he[verse - 1]])
+              : [];
+            text = text?.[verse - 1] !== undefined
+              ? (Array.isArray(text[verse - 1]) ? text[verse - 1] : [text[verse - 1]])
+              : [];
+          }
+          const comments = await processCommentArrayWithTranslation(he, text, { verse });
+          const result = {
+            source: config.name,
+            sourceHebrew: config.nameHebrew,
+            ...(config.fullName && { fullName: config.fullName }),
+            ...(config.fullNameHebrew && { fullNameHebrew: config.fullNameHebrew }),
+            bookType,
+            book: bookName,
+            bookHebrew: BOOK_HEBREW_NAMES[bookName] || bookName,
+            chapter,
+            verse,
+            ref: `${bookName}.${chapter}`,
+            heRef: `${bookName}.${chapter}`,
+            offline: true,
+            comments
+          };
+          cache.set(cacheKey, result);
+          return result;
+        }
+      } catch (kitErr) {
+        log.debug(`[OfflineKit] Rashi unavailable: ${kitErr?.message}`);
+      }
+    }
     log.error(`Error fetching ${config.name}:`, error);
     return createErrorResponse(error.message);
   }
