@@ -310,7 +310,7 @@ const VocabularyBank = () => {
           </svg>
           <input
             type="text"
-            placeholder="Search words..."
+            placeholder="Rechercher des mots…"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -343,7 +343,7 @@ const VocabularyBank = () => {
                 <span
                   className="word-hebrew clickable"
                   onClick={() => handleWordClick(word)}
-                  title="Click for full word details"
+                  title="Cliquer pour tous les détails du mot"
                 >
                   {word.original || word.hebrew}
                 </span>
@@ -355,7 +355,7 @@ const VocabularyBank = () => {
                         type="text"
                         value={editFrench}
                         onChange={(e) => setEditFrench(e.target.value)}
-                        placeholder="French translation..."
+                        placeholder="Traduction française…"
                         autoFocus
                       />
                       <button onClick={() => handleSaveEdit(word.id)} className="save-btn">Save</button>
@@ -396,7 +396,7 @@ const VocabularyBank = () => {
       return (
         <EmptyState
           icon="vocabulary"
-          title="All caught up!"
+          title="Tout est à jour !"
           description="No words due for review. Add more words while reading or come back later."
         >
           <button
@@ -415,7 +415,7 @@ const VocabularyBank = () => {
       <div className="flashcard-container" ref={flashcardRef} tabIndex={-1}>
         <div className="flashcard-progress">
           <span>Card {reviewIndex + 1} of {reviewWords.length}</span>
-          <span className="keyboard-hint">Space to flip • ← Wrong • → Correct</span>
+          <span className="keyboard-hint">Espace pour retourner • ← Faux • → Juste</span>
         </div>
 
         <div className={`flashcard ${showAnswer ? 'flipped' : ''}`} onClick={() => setShowAnswer(!showAnswer)}>
@@ -423,11 +423,11 @@ const VocabularyBank = () => {
             <span
               className="flashcard-hebrew clickable"
               onClick={(e) => { e.stopPropagation(); handleWordClick(currentWord); }}
-              title="Click for full word details"
+              title="Cliquer pour tous les détails du mot"
             >
               {currentWord.original || currentWord.hebrew}
             </span>
-            <span className="flashcard-hint">Click to reveal</span>
+            <span className="flashcard-hint">Clique pour révéler</span>
           </div>
           <div className="flashcard-back">
             <div className="flashcard-translations">
@@ -462,12 +462,12 @@ const VocabularyBank = () => {
 
         {showAnswer && showQualityPicker && (
           <div className="srs-quality-picker">
-            <p className="quality-prompt">How well did you remember?</p>
+            <p className="quality-prompt">À quel point te souviens-tu du mot ?</p>
             <div className="quality-buttons">
               <button
                 className="quality-btn quality-3"
                 onClick={() => handleSrsReview(QUALITY.CORRECT_DIFFICULT)}
-                title="Correct but difficult"
+                title="Juste mais difficile"
               >
                 <span className="quality-icon">😓</span>
                 <span className="quality-label">Hard</span>
@@ -475,7 +475,7 @@ const VocabularyBank = () => {
               <button
                 className="quality-btn quality-4"
                 onClick={() => handleSrsReview(QUALITY.CORRECT_HESITATION)}
-                title="Correct with some hesitation"
+                title="Juste avec hésitation"
               >
                 <span className="quality-icon">🤔</span>
                 <span className="quality-label">Good</span>
@@ -483,7 +483,7 @@ const VocabularyBank = () => {
               <button
                 className="quality-btn quality-5"
                 onClick={() => handleSrsReview(QUALITY.PERFECT)}
-                title="Perfect recall, no hesitation"
+                title="Rappel parfait, sans hésitation"
               >
                 <span className="quality-icon">✨</span>
                 <span className="quality-label">Easy</span>
@@ -598,7 +598,7 @@ const VocabularyBank = () => {
       return (
         <div className="learning-loading">
           <div className="loading-spinner" />
-          <p>Analyzing your learning patterns...</p>
+          <p>Analyse de tes habitudes d’apprentissage…</p>
         </div>
       );
     }

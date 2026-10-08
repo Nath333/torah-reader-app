@@ -121,12 +121,12 @@ EmptyState.displayName = 'EmptyState';
 export const BookmarksEmpty = memo(({ onAction }) => (
   <EmptyState
     icon="bookmark"
-    title="No bookmarks yet"
-    description="Save verses you want to revisit later by clicking the bookmark icon on any verse."
+    title="Aucun favori pour le moment"
+    description="Sauvegarde les versets à revoir en cliquant sur l’icône favori de n’importe quel verset."
   >
     {onAction && (
       <button className="btn btn-primary" onClick={onAction}>
-        Start Reading
+        Commencer à lire
       </button>
     )}
   </EmptyState>
@@ -135,8 +135,8 @@ export const BookmarksEmpty = memo(({ onAction }) => (
 export const HistoryEmpty = memo(({ onAction }) => (
   <EmptyState
     icon="history"
-    title="No reading history"
-    description="Your reading history will appear here as you explore different texts."
+    title="Aucun historique de lecture"
+    description="Ton historique de lecture apparaîtra ici au fil de tes explorations."
   >
     {onAction && (
       <button className="btn btn-primary" onClick={onAction}>
@@ -149,12 +149,12 @@ export const HistoryEmpty = memo(({ onAction }) => (
 export const VocabularyEmpty = memo(({ onAction }) => (
   <EmptyState
     icon="vocabulary"
-    title="No saved words"
-    description="Click on Hebrew words while reading to save them to your vocabulary bank for review."
+    title="Aucun mot sauvegardé"
+    description="Clique sur les mots hébreux pendant la lecture pour les ajouter à ton carnet et les réviser."
   >
     {onAction && (
       <button className="btn btn-primary" onClick={onAction}>
-        Start Learning
+        Commencer à apprendre
       </button>
     )}
   </EmptyState>
@@ -163,20 +163,20 @@ export const VocabularyEmpty = memo(({ onAction }) => (
 export const SearchEmpty = memo(({ query }) => (
   <EmptyState
     icon="search"
-    title="No results found"
-    description={query ? `No results for "${query}". Try a different search term.` : 'Enter a search term to find verses.'}
+    title="Aucun résultat"
+    description={query ? `Aucun résultat pour « ${query} ». Essaie un autre terme.` : 'Entre un terme pour trouver des versets.'}
   />
 ));
 
 export const NotesEmpty = memo(({ onAction }) => (
   <EmptyState
     icon="note"
-    title="No notes yet"
-    description="Add personal notes to any verse to capture your thoughts and insights."
+    title="Aucune note pour le moment"
+    description="Ajoute des notes personnelles à n’importe quel verset pour garder tes réflexions."
   >
     {onAction && (
       <button className="btn btn-secondary" onClick={onAction}>
-        Add Note
+        Ajouter une note
       </button>
     )}
   </EmptyState>
@@ -185,8 +185,8 @@ export const NotesEmpty = memo(({ onAction }) => (
 export const CommentaryEmpty = memo(({ commentator }) => (
   <EmptyState
     icon="commentary"
-    title="No commentary available"
-    description={commentator ? `${commentator} does not have commentary on this passage.` : 'No commentary is available for this selection.'}
+    title="Aucun commentaire disponible"
+    description={commentator ? `${commentator} n’a pas de commentaire sur ce passage.` : 'Aucun commentaire disponible pour cette sélection.'}
     compact
   />
 ));
@@ -194,12 +194,12 @@ export const CommentaryEmpty = memo(({ commentator }) => (
 export const AnalysisEmpty = memo(({ onAction }) => (
   <EmptyState
     icon="analysis"
-    title="Select text to analyze"
-    description="Choose a verse or passage, then select an analysis mode to explore deeper insights."
+    title="Sélectionne un texte à analyser"
+    description="Choisis un verset ou un passage, puis un mode d’analyse pour explorer plus profond."
   >
     {onAction && (
       <button className="btn btn-primary" onClick={onAction}>
-        Select Text
+        Choisir un texte
       </button>
     )}
   </EmptyState>
@@ -208,12 +208,12 @@ export const AnalysisEmpty = memo(({ onAction }) => (
 export const ErrorEmpty = memo(({ message, onRetry }) => (
   <EmptyState
     icon="error"
-    title="Something went wrong"
-    description={message || 'An unexpected error occurred. Please try again.'}
+    title="Une erreur est survenue"
+    description={message || 'Une erreur inattendue est survenue. Réessaie.'}
   >
     {onRetry && (
       <button className="btn btn-primary" onClick={onRetry}>
-        Try Again
+        Réessayer
       </button>
     )}
   </EmptyState>

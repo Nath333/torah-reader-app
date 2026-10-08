@@ -485,7 +485,7 @@ const FocusMode = React.memo(function FocusMode({
       {showVerseJump && (
         <div className="verse-jump-modal" onClick={() => setShowVerseJump(false)}>
           <div className="verse-jump-content" onClick={e => e.stopPropagation()}>
-            <label>Jump to verse:</label>
+            <label>Aller au verset :</label>
             <input
               ref={verseJumpInputRef}
               type="number"
@@ -523,10 +523,10 @@ const FocusMode = React.memo(function FocusMode({
             value={currentNote}
             onChange={(e) => setCurrentNote(e.target.value)}
             onBlur={saveNote}
-            placeholder="Add your study notes here... (auto-saves)"
+            placeholder="Ajoute tes notes d’étude ici… (sauvegarde auto)"
           />
           <div className="notes-footer">
-            <span className="notes-hint">Notes auto-save when you leave this field</span>
+            <span className="notes-hint">Les notes sont sauvegardées quand tu quittes ce champ</span>
             <button className="save-notes-btn" onClick={saveNote}>Save</button>
           </div>
         </div>
@@ -549,7 +549,7 @@ const FocusMode = React.memo(function FocusMode({
             <div className="crossref-category">
               <h5>📖 תורה - Torah</h5>
               <div className="crossref-items">
-                <span className="crossref-item">See also: Deut. 5:6-21 (Ten Commandments)</span>
+                <span className="crossref-item">Voir aussi : Deut. 5:6-21 (Dix Paroles)</span>
                 <span className="crossref-item">Related: Lev. 19:18 (Love your neighbor)</span>
               </div>
             </div>
@@ -612,7 +612,7 @@ const FocusMode = React.memo(function FocusMode({
               <button
                 className={`control-btn ${autoScroll ? 'active' : ''}`}
                 onClick={() => setAutoScroll(!autoScroll)}
-                title={autoScroll ? 'Stop auto-scroll' : 'Start auto-scroll'}
+                title={autoScroll ? 'Arrêter le défilement auto' : 'Démarrer le défilement auto'}
               >
                 {autoScroll ? (
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -634,7 +634,7 @@ const FocusMode = React.memo(function FocusMode({
             <button
               className={`control-btn ${wordHighlightMode ? 'active' : ''}`}
               onClick={() => { setWordHighlightMode(!wordHighlightMode); setCurrentWordIndex(0); }}
-              title="Word-by-word mode (W)"
+              title="Mode mot à mot (W)"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M4 7h16M4 12h10M4 17h12" />
@@ -645,7 +645,7 @@ const FocusMode = React.memo(function FocusMode({
             <button
               className={`control-btn ${showTranslation ? 'active' : ''}`}
               onClick={() => setShowTranslation(!showTranslation)}
-              title="Toggle translation (T)"
+              title="Basculer la traduction (T)"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M5 8l6 6m-6 0l6-6m5 0v12m4-8h-4m0 0h-4m4 0v8" />
@@ -656,7 +656,7 @@ const FocusMode = React.memo(function FocusMode({
             <button
               className={`control-btn ${showTimer ? 'active' : ''}`}
               onClick={() => setShowTimer(!showTimer)}
-              title="Show reading timer (C)"
+              title="Afficher le minuteur de lecture (C)"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="10" />
@@ -677,7 +677,7 @@ const FocusMode = React.memo(function FocusMode({
             <button
               className={`control-btn ${showNotesPanel ? 'active' : ''}`}
               onClick={() => setShowNotesPanel(!showNotesPanel)}
-              title="Study notes (N)"
+              title="Notes d’étude (N)"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
@@ -689,7 +689,7 @@ const FocusMode = React.memo(function FocusMode({
             <button
               className={`control-btn ${showStats ? 'active' : ''}`}
               onClick={() => setShowStats(!showStats)}
-              title="Study statistics (S)"
+              title="Statistiques d’étude (S)"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M18 20V10M12 20V4M6 20v-6" />
@@ -700,7 +700,7 @@ const FocusMode = React.memo(function FocusMode({
             <button
               className={`control-btn ${highlightedVerses.has(currentVerse?.verse) ? 'active highlighted' : ''}`}
               onClick={() => currentVerse && toggleHighlight(currentVerse.verse)}
-              title="Highlight verse (H)"
+              title="Surligner le verset (H)"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
@@ -711,7 +711,7 @@ const FocusMode = React.memo(function FocusMode({
             <button
               className="control-btn zen-btn"
               onClick={() => setZenMode(true)}
-              title="Zen mode - hide UI (Z)"
+              title="Mode zen — masquer l’interface (Z)"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="10" />
@@ -726,8 +726,8 @@ const FocusMode = React.memo(function FocusMode({
               <button
                 className="control-btn"
                 onClick={() => setFontSize(prev => prev === 'xlarge' ? 'large' : prev === 'large' ? 'medium' : 'medium')}
-                title="Decrease font size (-)"
-                aria-label="Decrease font size"
+                title="Réduire la taille du texte (-)"
+                aria-label="Réduire la taille du texte"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="5" y1="12" x2="19" y2="12" />
@@ -737,8 +737,8 @@ const FocusMode = React.memo(function FocusMode({
               <button
                 className="control-btn"
                 onClick={() => setFontSize(prev => prev === 'medium' ? 'large' : prev === 'large' ? 'xlarge' : 'xlarge')}
-                title="Increase font size (+)"
-                aria-label="Increase font size"
+                title="Augmenter la taille du texte (+)"
+                aria-label="Augmenter la taille du texte"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="12" y1="5" x2="12" y2="19" />
@@ -751,7 +751,7 @@ const FocusMode = React.memo(function FocusMode({
             <button
               className={`control-btn meforshim-btn ${showMeforshimPanel ? 'active' : ''}`}
               onClick={() => setShowMeforshimPanel(!showMeforshimPanel)}
-              title="Meforshim / Commentaries (P)"
+              title="Meforshim / Commentaires (P)"
             >
               <span className="btn-hebrew">פ</span>
             </button>
@@ -769,7 +769,7 @@ const FocusMode = React.memo(function FocusMode({
             <button
               className={`control-btn crossrefs-btn ${showCrossRefs ? 'active' : ''}`}
               onClick={() => setShowCrossRefs(!showCrossRefs)}
-              title="Cross References (O)"
+              title="Références croisées (O)"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
@@ -781,7 +781,7 @@ const FocusMode = React.memo(function FocusMode({
             <button
               className={`control-btn rashi-script-btn ${useRashiScript ? 'active' : ''}`}
               onClick={() => setUseRashiScript(!useRashiScript)}
-              title="Rashi Script (R)"
+              title="Écriture Rashi (R)"
             >
               <span className="btn-hebrew rashi-font">א</span>
             </button>
@@ -791,7 +791,7 @@ const FocusMode = React.memo(function FocusMode({
               <button
                 className="control-btn bookmark-btn"
                 onClick={() => onBookmarkVerse(currentVerse)}
-                title="Bookmark verse (B)"
+                title="Mettre le verset en favori (B)"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2v16z" />
@@ -803,7 +803,7 @@ const FocusMode = React.memo(function FocusMode({
             <button
               className="control-btn"
               onClick={() => setShowVerseJump(true)}
-              title="Jump to verse (G)"
+              title="Aller au verset (G)"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="11" cy="11" r="8" />
@@ -812,7 +812,7 @@ const FocusMode = React.memo(function FocusMode({
             </button>
 
             {/* Close */}
-            <button className="control-btn close-btn" onClick={onClose} title="Exit focus mode (Esc)">
+            <button className="control-btn close-btn" onClick={onClose} title="Quitter le mode Focus (Échap)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="18" y1="6" x2="6" y2="18" />
                 <line x1="6" y1="6" x2="18" y2="18" />
@@ -858,7 +858,7 @@ const FocusMode = React.memo(function FocusMode({
                   setCopyFeedback('ref');
                   setTimeout(() => setCopyFeedback(null), 1500);
                 }}
-                title="Copy reference"
+                title="Copier la référence"
               >
                 <span className="qa-icon">{copyFeedback === 'ref' ? '✓' : '📋'}</span>
                 <span className="qa-label">{copyFeedback === 'ref' ? 'Copié !' : 'Copier la référence'}</span>

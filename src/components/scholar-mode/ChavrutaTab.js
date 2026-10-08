@@ -78,8 +78,8 @@ const CommentatorComparison = ({ commentaries, reference }) => {
     return (
       <div className="compare-empty">
         <div className="empty-icon">👥</div>
-        <h4>No Commentaries Available</h4>
-        <p>Select verses with commentaries to compare different approaches.</p>
+        <h4>Aucun commentaire disponible</h4>
+        <p>Sélectionne des versets avec commentaires pour comparer les approches.</p>
         {/* Show all commentators for learning */}
         <div className="show-all-chain">
           <h5>📜 Explore Chain of Tradition</h5>
@@ -100,21 +100,21 @@ const CommentatorComparison = ({ commentaries, reference }) => {
         <button
           className={`toggle-btn ${viewMode === 'texts' ? 'active' : ''}`}
           onClick={() => setViewMode('texts')}
-          title="Compare commentary texts"
+          title="Comparer les textes des commentaires"
         >
           📝 Texts
         </button>
         <button
           className={`toggle-btn ${viewMode === 'chain' ? 'active' : ''}`}
           onClick={() => setViewMode('chain')}
-          title="View chain of tradition"
+          title="Voir la chaîne de tradition"
         >
           📜 Chain
         </button>
         <button
           className={`toggle-btn ${viewMode === 'both' ? 'active' : ''}`}
           onClick={() => setViewMode('both')}
-          title="Show both views"
+          title="Afficher les deux vues"
         >
           ⚡ Both
         </button>
@@ -142,7 +142,7 @@ const CommentatorComparison = ({ commentaries, reference }) => {
         <>
           {/* Commentator selector */}
           <div className="commentator-selector">
-            <span className="selector-label">Compare texts (select up to 3):</span>
+            <span className="selector-label">Comparer les textes (jusqu’à 3) :</span>
             <div className="commentator-chips">
               {availableCommentators.slice(0, 10).map(c => (
                 <button
@@ -183,10 +183,10 @@ const CommentatorComparison = ({ commentaries, reference }) => {
           <div className="comparison-questions">
             <h4>🤔 Questions to Consider</h4>
             <ul>
-              <li>Where do these commentators agree?</li>
+              <li>Sur quoi ces commentateurs s’accordent-ils ?</li>
               <li>What's the root cause of their disagreement?</li>
               <li>What's the נפקא מינה (practical difference)?</li>
-              <li>Which approach resonates more with you?</li>
+              <li>Quelle approche te parle le plus ?</li>
             </ul>
           </div>
         </>
@@ -229,8 +229,8 @@ const ChavrutaTab = ({
       <div className="chavruta-tab">
         <div className="chavruta-empty-state">
           <div className="empty-icon">🎓</div>
-          <h3>Select Text to Study</h3>
-          <p>Choose verses to begin your chavruta session.</p>
+          <h3>Choisis un texte à étudier</h3>
+          <p>Sélectionne des versets pour commencer ta havrouta.</p>
           <div className="empty-features">
             {SUB_TABS.map(tab => (
               <div key={tab.id} className="feature">

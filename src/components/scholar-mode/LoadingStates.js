@@ -8,7 +8,7 @@ import React from 'react';
  * LoadingState - Shows a loading indicator with optional message
  */
 export const LoadingState = React.memo(({
-  message = 'Loading...',
+  message = 'Chargement...',
   subMessage,
   variant = 'default', // 'default' | 'minimal' | 'skeleton'
   lines = 5
@@ -47,7 +47,7 @@ export const LoadingState = React.memo(({
   // Default loading state
   return (
     <div className="loading-state enhanced">
-      <div className="loading-spinner" role="status" aria-label="Loading">
+      <div className="loading-spinner" role="status" aria-label="Chargement">
         <div className="spinner-ring" />
         <div className="spinner-ring" />
         <div className="spinner-ring" />
@@ -66,7 +66,7 @@ LoadingState.displayName = 'LoadingState';
 export const ErrorState = React.memo(({
   error,
   onRetry,
-  title = 'Something went wrong',
+  title = 'Une erreur est survenue',
   suggestions = []
 }) => (
   <div className="error-state" role="alert">
@@ -74,7 +74,7 @@ export const ErrorState = React.memo(({
       <span className="error-icon" aria-hidden="true">⚠️</span>
     </div>
     <h4 className="error-title">{title}</h4>
-    <p className="error-message">{error || 'An unexpected error occurred. Please try again.'}</p>
+    <p className="error-message">{error || 'Une erreur inattendue est survenue. Réessaie.'}</p>
 
     {suggestions.length > 0 && (
       <ul className="error-suggestions">
@@ -91,7 +91,7 @@ export const ErrorState = React.memo(({
         type="button"
       >
         <span className="retry-icon">↻</span>
-        Try Again
+        Réessayer
       </button>
     )}
   </div>
