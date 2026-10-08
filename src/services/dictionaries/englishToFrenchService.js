@@ -47,6 +47,11 @@ registerCache('frenchTranslation', cache, CACHE_CONFIGS.frenchTranslation);
 const apiState = { last: 0, blocked: 0, currentMirror: 0 };
 const mirrorHealth = LINGVA_MIRRORS.map(() => ({ fails: 0, deadUntil: 0, lastOk: 0 }));
 const proxyHealth = { fails: 0, deadUntil: 0 };
+// Disponibilité IA mémoizée localement : sonder /ai/status à CHAQUE verset
+// provoque une tempête de sondes (la sonde passe en timeout quand le proxy
+// streame déjà un /ai/chat) et fait sauter l'étape IA. TTL 5 min, vidée par
+// resetApiState (bouton Réessayer).
+let aiAvailableMemo = null;
 const stats = { hits: 0, calls: 0, ok: 0, fail: 0 };
 const pending = new Map();
 let activeCount = 0;
@@ -267,8 +272,12 @@ const translate = async (text) => {
   // s'applique pas. Marquée accuracy 'medium'.
   if (proxyBase) {
     try {
-      const available = await checkAiProxy();
-      if (available.available) {
+      const now = Date.now();
+      if (!aiAvailableMemo || now - aiAvailableMemo.at > 5 * 60 * 1000) {
+        const available = await checkAiProxy();
+        aiAvailableMemo = { at: now, available: available.available };
+      }
+      if (aiAvailableMemo.available) {
         const response = await aiProxyChat({
           messages: [
             { role: 'system', content: 'Tu es un traducteur. Traduis le texte anglais en français naturel. Réponds UNIQUEMENT par la traduction, sans guillemets, sans commentaire. /no_think' },
@@ -424,6 +433,7 @@ export const resetApiState = () => {
   mirrorHealth.forEach(h => { h.fails = 0; h.deadUntil = 0; });
   proxyHealth.fails = 0;
   proxyHealth.deadUntil = 0;
+  aiAvailableMemo = null; // le Réessayer re-sonde le serveur d'étude
 };
 
 const englishToFrenchService = {

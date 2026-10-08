@@ -26,8 +26,9 @@ export const checkAiProxy = () => {
   // Timeout obligatoire + oubli de la promesse en cas d'échec : un fetch
   // qui pend ne doit ni verrouiller les appelants (la file de traduction
   // s'est retrouvée gelée : 3 slots bloqués sur un /ai/status jamais
-  // réglé) ni mémoizer l'échec pour toute la session.
-  cachedPromise = fetch(`${base}/ai/status`, { signal: AbortSignal.timeout(5000) })
+  // réglé) ni mémoizer l'échec pour toute la session. 8 s : la sonde peut
+  // attendre derrière un /ai/chat en cours de streaming côté proxy.
+  cachedPromise = fetch(`${base}/ai/status`, { signal: AbortSignal.timeout(8000) })
     .then((r) => (r.ok ? r.json() : { available: false, model: null }))
     .then((data) => ({
       available: !!data.aiAvailable,
