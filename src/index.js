@@ -155,7 +155,11 @@ window.addEventListener('load', () => {
       `${base}/data/strongsComplete.json`,
       // Kit Torah hors-ligne (Sefaria-Export : texte + EN + Rashi + Onkelos,
       // par chapitre au format API) — consommé par services/sefariaOfflineKit
-      `${base}/data/sefaria-kit-torah.json`
+      `${base}/data/sefaria-kit-torah.json`,
+      // Tanakh français OFFICIEL, version par défaut (Segond 1910) — les 39
+      // livres consommés par services/tanakhFrenchService. Les 2 autres
+      // versions (Rabbinat, Martin) restent cache-à-la-consultation.
+      ...Array.from({ length: 39 }, (_, i) => `${base}/data/tanakh-fr/${i + 1}.json`)
     ]);
   });
 });
