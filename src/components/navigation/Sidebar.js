@@ -197,13 +197,10 @@ function Sidebar({
   return (
     <aside className="sidebar" role="navigation">
       {/* Header */}
+      {/* Le repli se fait via le ☰ du header (unique contrôle — l'ancien
+          bouton « Réduire » ici était un doublon du même toggle) */}
       <header className="sidebar-header">
         <h2>Bibliothèque</h2>
-        <button className="sidebar-toggle" onClick={onToggleCollapse} title="Réduire">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-        </button>
       </header>
 
       {/* Tabs - simplified to 3 */}
