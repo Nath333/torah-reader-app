@@ -21,51 +21,51 @@ const STORAGE_KEY = 'torah_mastery_data';
 // Mastery level configuration with Hebrew scholarly terminology
 export const MASTERY_LEVELS = {
   0: {
-    name: 'New',
+    name: 'Nouveau',
     hebrewName: 'חדש',
     icon: '⚪',
     color: '#94a3b8',
-    description: 'Not yet studied',
+    description: 'Pas encore étudié',
     hebrewDesc: 'טרם נלמד'
   },
   1: {
-    name: 'Seen',
+    name: 'Vu',
     hebrewName: 'נקרא',
     icon: '🔵',
     color: '#3b82f6',
-    description: 'Read at least once',
+    description: 'Lu au moins une fois',
     hebrewDesc: 'קריאה ראשונה'
   },
   2: {
-    name: 'Learning',
+    name: 'En apprentissage',
     hebrewName: 'לומד',
     icon: '🟡',
     color: '#f59e0b',
-    description: 'Currently studying',
+    description: 'En cours d’étude',
     hebrewDesc: 'בתהליך לימוד'
   },
   3: {
-    name: 'Bekiut',
+    name: 'Bekious',
     hebrewName: 'בקיאות',
     icon: '🟢',
     color: '#10b981',
-    description: 'Basic familiarity',
+    description: 'Familiarité de base',
     hebrewDesc: 'הבנה בסיסית'
   },
   4: {
-    name: 'Iyun',
+    name: 'Iyoun',
     hebrewName: 'עיון',
     icon: '🟣',
     color: '#8b5cf6',
-    description: 'In-depth understanding',
+    description: 'Compréhension en profondeur',
     hebrewDesc: 'הבנה מעמיקה'
   },
   5: {
-    name: 'Mastered',
+    name: 'Maîtrisé',
     hebrewName: 'שליטה',
     icon: '⭐',
     color: '#eab308',
-    description: 'Can teach others',
+    description: 'Peut l’enseigner aux autres',
     hebrewDesc: 'יכול ללמד אחרים'
   }
 };

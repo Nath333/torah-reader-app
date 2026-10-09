@@ -8,6 +8,7 @@ const shortcuts = [
   { keys: ['Ctrl', '←'], description: 'Chapitre précédent', category: 'Navigation' },
   { keys: ['Ctrl', '→'], description: 'Chapitre suivant', category: 'Navigation' },
   { keys: ['Esc'], description: 'Retour au lecteur / Vider la sélection', category: 'Navigation' },
+  { keys: ['G'], description: 'Aller à un verset du chapitre courant', category: 'Navigation' },
 
   // Study Tools
   { keys: ['Ctrl', 'Shift', 'S'], description: 'Basculer le mode Étude', category: 'Étude' },

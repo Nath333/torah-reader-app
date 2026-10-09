@@ -75,12 +75,24 @@ const HowItWorks = () => {
             </section>
 
             <section>
+              <h4>📡 Hors-ligne</h4>
+              <p>
+                La <strong>Torah complète, Rashi et Onkelos</strong> (plus les dictionnaires
+                BDB · Jastrow · Strong's) sont téléchargés à l'avance : tu peux étudier
+                <strong> sans connexion</strong>. La traduction française des versets, elle,
+                nécessite le réseau.
+              </p>
+            </section>
+
+            <section>
               <h4>⌨️ Raccourcis</h4>
               <ul className="hiw-shortcuts">
                 <li><kbd>Ctrl</kbd>+<kbd>K</kbd> recherche de versets</li>
                 <li><kbd>Ctrl</kbd>+<kbd>P</kbd> palette de commandes</li>
                 <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> Study</li>
                 <li><kbd>Ctrl</kbd>+<kbd>D</kbd> thème clair/sombre</li>
+                <li><kbd>Ctrl</kbd>+<kbd>F</kbd> mode focus</li>
+                <li><kbd>G</kbd> aller à un verset du chapitre</li>
               </ul>
             </section>
 
