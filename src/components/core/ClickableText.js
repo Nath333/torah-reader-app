@@ -36,6 +36,8 @@ import { CLICK_DEBOUNCE_MS } from '../../constants/clickableTextConstants';
 
 // Components - Use existing modular components
 import { WordDefinitionCard } from '../dictionary';
+import { useStudy } from '../../context/StudyContext';
+import { cleanHebrewWordStrict } from '../../utils/hebrewUtils';
 
 // =============================================================================
 // Main Component
@@ -158,6 +160,20 @@ const ClickableText = ({
       onSaveWord?.(selectedWord, english, french);
     }
   }, [selectedWord, translationData, onSaveWord]);
+
+  // Complète rétroactivement la traduction française d'un mot sauvegardé
+  // TROP TÔT (clic ★ avant l'arrivée de la trad FR : il partait avec un
+  // champ vide pour toujours).
+  const { vocabulary, updateWord } = useStudy();
+  useEffect(() => {
+    const fr = translationData?.french;
+    if (!fr || !selectedWord) return;
+    // le carnet stocke le mot nettoyé (sans niqqudot) — comparer nettoyé
+    const existing = vocabulary?.find(w => w.hebrew === cleanHebrewWordStrict(selectedWord));
+    if (existing && !existing.french) {
+      updateWord(existing.id, { french: fr });
+    }
+  }, [translationData?.french, selectedWord, vocabulary, updateWord]);
 
   // Load French translation on-demand when showFrench is enabled
   useEffect(() => {
