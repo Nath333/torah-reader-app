@@ -145,6 +145,9 @@ const VerseRow = ({
 
   // Get French translation for this verse
   const verseFrenchData = translationData.verseFrench?.[verseKey];
+  // Segond 1910 ⇄ Rabbinat 1899 : le badge source devient un sélecteur
+  const canSwitchFrenchSource = verseFrenchData &&
+    ['Segond 1910', 'Rabbinat 1899'].includes(verseFrenchData.source);
   const verseFrenchFailed = !!translationData.verseFailed?.[verseKey];
   const onkelosFrenchData = translationData.onkelosFrench?.[verse.verse];
   const onkelosFrenchFailed = !!translationData.onkelosFailed?.[verse.verse];
@@ -340,7 +343,11 @@ const VerseRow = ({
           {/* French Translation */}
           {showFrench && showTranslation && (
             <div className="french-translation" lang="fr">
-              <div className="translation-header">
+              <div
+                className={`translation-header${canSwitchFrenchSource ? ' translation-header-switch' : ''}`}
+                onClick={canSwitchFrenchSource ? (e) => { e.stopPropagation(); translationData.switchTanakhVersion?.(); } : undefined}
+                title={canSwitchFrenchSource ? 'Changer de traduction française : Segond 1910 ⇄ Rabbinat 1899' : undefined}
+              >
                 <TranslationSourceHeader
                   language="fr"
                   source={verseFrenchData?.source || 'Dictionary'}

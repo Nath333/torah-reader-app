@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { translateWithSource, translateEnglishToFrench, resetApiState, hasWorkingUpstream } from '../services/dictionaries/englishToFrenchService';
-import { isTanakhBook, getFrenchVerse } from '../services/tanakhFrenchService';
+import { isTanakhBook, getFrenchVerse, getTanakhVersionLabel, switchTanakhVersionPref } from '../services/tanakhFrenchService';
 import { createLogger } from '../utils/debug';
 
 const log = createLogger('useTranslationLoading');
@@ -89,6 +89,18 @@ export default function useTranslationLoading({
       autoRetryRef.current.timer = null;
     }
     autoRetryRef.current.count = 0;
+  }, []);
+
+  // Changement de version française du Tanakh (Segond 1910 ⇄ Rabbinat
+  // 1899) : bascule la préférence, vide les états du chapitre et rejoue —
+  // les items repartent du jeu de données sélectionné.
+  const switchTanakhVersion = useCallback(() => {
+    switchTanakhVersionPref();
+    verseDoneRef.current.clear();
+    setVerseFrench({});
+    setVerseFailed({});
+    verseTranslatingRef.current.clear();
+    setRetryTick(t => t + 1);
   }, []);
 
   // Pas de garde mountedRef ici : appeler setState après démontage est un
@@ -197,7 +209,7 @@ export default function useTranslationLoading({
             verseDoneRef.current.add(cacheKey);
             setVerseFrench(prev => ({
               ...prev,
-              [cacheKey]: { translation: fr, source: 'Segond 1910', accuracy: 'high', method: 'Tanakh FR' }
+              [cacheKey]: { translation: fr, source: getTanakhVersionLabel(), accuracy: 'high', method: 'Tanakh FR' }
             }));
             return;
           }
@@ -255,6 +267,7 @@ export default function useTranslationLoading({
     onkelosFrench,
     verseFailed,
     onkelosFailed,
-    retryFrench
+    retryFrench,
+    switchTanakhVersion
   };
 }

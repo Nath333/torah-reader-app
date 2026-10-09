@@ -1,19 +1,41 @@
 /**
- * tanakhFrenchService — traduction française OFFICIELLE du Tanakh.
+ * tanakhFrenchService — traductions françaises OFFICIELLES du Tanakh.
  *
- * Source : Louis Segond (1910), domaine public, données open data
- * getbible.net (v2, translation ls1910) — pré-téléchargées dans
- * public/data/tanakh-fr/{nr}.json (39 livres, 23 212 versets).
+ * Deux versions du domaine public, pré-téléchargées dans public/data/ :
+ *  - segond   : Louis Segond (1910) — open data getbible.net (ls1910)
+ *  - rabbinat : La Bible du Rabbinat (1899, Rabbinat français) — Wikisource
  *
- * C'est la source PRIMAIRE du français pour les livres du Tanakh :
- * traduction humaine de référence, instantanée, hors-ligne après le
- * premier chargement. La chaîne Lingva/IA ne sert qu'en secours pour
- * les livres sans version française (Talmud, Onkelos, Rashi…).
+ * Le choix est persisté (localStorage) et lu par le hook de traduction :
+ * le Tanakh affiche le français officiel (instantané, hors-ligne) ; la
+ * chaîne Lingva/IA ne sert qu'en secours (Talmud, Onkelos, Rashi…).
  */
 
-const BASE = `${process.env.PUBLIC_URL || ''}/data/tanakh-fr`;
+const VERSIONS = {
+  segond: { dir: 'tanakh-fr', label: 'Segond 1910' },
+  rabbinat: { dir: 'tanakh-fr-rabbinat', label: 'Rabbinat 1899' }
+};
 
-// Noms Sefaria (bookConstants) → n° getbible ls1910
+const PREF_KEY = 'torah_fr_tanakh_version';
+
+export const getTanakhVersion = () => {
+  try {
+    const v = localStorage.getItem(PREF_KEY);
+    if (v === 'segond' || v === 'rabbinat') return v;
+  } catch { /* localStorage indisponible */ }
+  return 'segond';
+};
+
+export const setTanakhVersion = (version) => {
+  const v = version === 'rabbinat' ? 'rabbinat' : 'segond';
+  try { localStorage.setItem(PREF_KEY, v); } catch { /* noop */ }
+  return v;
+};
+
+export const getTanakhVersionLabel = () => VERSIONS[getTanakhVersion()].label;
+
+export const switchTanakhVersionPref = () => setTanakhVersion(getTanakhVersion() === 'segond' ? 'rabbinat' : 'segond');
+
+// Noms Sefaria (bookConstants) → n° de fichier getbible/segment Wikisource
 const SEFARIA_TO_NR = {
   Genesis: 1,
   Exodus: 2,
@@ -56,29 +78,31 @@ const SEFARIA_TO_NR = {
   Malachi: 39
 };
 
-const bookCache = new Map();      // nr → { name, chapters: { ch: { v: text } } }
-const bookPromises = new Map();   // nr → Promise (dédup des loads en vol)
+const bookCache = new Map();      // `${version}:${nr}` → données
+const bookPromises = new Map();   // dédup des loads en vol
 
 export const isTanakhBook = (book) => Boolean(SEFARIA_TO_NR[book]);
 
 const loadBook = async (book) => {
   const nr = SEFARIA_TO_NR[book];
+  const version = getTanakhVersion();
   if (!nr) return null;
-  if (bookCache.has(nr)) return bookCache.get(nr);
-  if (bookPromises.has(nr)) return bookPromises.get(nr);
+  const cacheKey = `${version}:${nr}`;
+  if (bookCache.has(cacheKey)) return bookCache.get(cacheKey);
+  if (bookPromises.has(cacheKey)) return bookPromises.get(cacheKey);
 
-  const promise = fetch(`${BASE}/${nr}.json`)
+  const promise = fetch(`${process.env.PUBLIC_URL || ''}/data/${VERSIONS[version].dir}/${nr}.json`)
     .then((r) => (r.ok ? r.json() : null))
     .then((data) => {
-      bookCache.set(nr, data);
-      bookPromises.delete(nr);
+      bookCache.set(cacheKey, data);
+      bookPromises.delete(cacheKey);
       return data;
     })
     .catch(() => {
-      bookPromises.delete(nr);
+      bookPromises.delete(cacheKey);
       return null;
     });
-  bookPromises.set(nr, promise);
+  bookPromises.set(cacheKey, promise);
   return promise;
 };
 
@@ -96,4 +120,4 @@ export const getFrenchChapter = async (book, chapter) => {
   return data.chapters?.[String(chapter)] || null;
 };
 
-export default { isTanakhBook, getFrenchVerse, getFrenchChapter };
+export default { isTanakhBook, getFrenchVerse, getFrenchChapter, getTanakhVersion, setTanakhVersion, getTanakhVersionLabel, switchTanakhVersionPref };

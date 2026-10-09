@@ -6589,3 +6589,16 @@
 .verse .verse-commentaries {
   margin-top: 12px;
 }
+
+/* Sélecteur de version française du Tanakh (Segond 1910 ⇄ Rabbinat 1899) */
+.translation-header-switch {
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 2px 4px;
+  margin: -2px -4px;
+  transition: background 0.15s ease;
+}
+
+.translation-header-switch:hover {
+  background: rgba(59, 130, 246, 0.12);
+}
