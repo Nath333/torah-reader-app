@@ -12,28 +12,35 @@
 
 const VERSIONS = {
   segond: { dir: 'tanakh-fr', label: 'Segond 1910' },
-  rabbinat: { dir: 'tanakh-fr-rabbinat', label: 'Rabbinat 1899' }
+  rabbinat: { dir: 'tanakh-fr-rabbinat', label: 'Rabbinat 1899' },
+  martin: { dir: 'tanakh-fr-martin', label: 'Martin 1744' }
 };
+const VERSION_ORDER = ['segond', 'rabbinat', 'martin'];
 
 const PREF_KEY = 'torah_fr_tanakh_version';
 
 export const getTanakhVersion = () => {
   try {
     const v = localStorage.getItem(PREF_KEY);
-    if (v === 'segond' || v === 'rabbinat') return v;
+    if (VERSION_ORDER.includes(v)) return v;
   } catch { /* localStorage indisponible */ }
   return 'segond';
 };
 
 export const setTanakhVersion = (version) => {
-  const v = version === 'rabbinat' ? 'rabbinat' : 'segond';
+  const v = VERSION_ORDER.includes(version) ? version : 'segond';
   try { localStorage.setItem(PREF_KEY, v); } catch { /* noop */ }
   return v;
 };
 
 export const getTanakhVersionLabel = () => VERSIONS[getTanakhVersion()].label;
 
-export const switchTanakhVersionPref = () => setTanakhVersion(getTanakhVersion() === 'segond' ? 'rabbinat' : 'segond');
+export const getTanakhVersions = () => VERSION_ORDER.map(v => ({ id: v, label: VERSIONS[v].label }));
+
+export const switchTanakhVersionPref = () => {
+  const next = VERSION_ORDER[(VERSION_ORDER.indexOf(getTanakhVersion()) + 1) % VERSION_ORDER.length];
+  return setTanakhVersion(next);
+};
 
 // Noms Sefaria (bookConstants) → n° de fichier getbible/segment Wikisource
 const SEFARIA_TO_NR = {
@@ -120,4 +127,4 @@ export const getFrenchChapter = async (book, chapter) => {
   return data.chapters?.[String(chapter)] || null;
 };
 
-export default { isTanakhBook, getFrenchVerse, getFrenchChapter, getTanakhVersion, setTanakhVersion, getTanakhVersionLabel, switchTanakhVersionPref };
+export default { isTanakhBook, getFrenchVerse, getFrenchChapter, getTanakhVersion, setTanakhVersion, getTanakhVersionLabel, getTanakhVersions, switchTanakhVersionPref };

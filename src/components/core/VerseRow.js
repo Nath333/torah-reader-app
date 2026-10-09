@@ -346,7 +346,7 @@ const VerseRow = ({
               <div
                 className={`translation-header${canSwitchFrenchSource ? ' translation-header-switch' : ''}`}
                 onClick={canSwitchFrenchSource ? (e) => { e.stopPropagation(); translationData.switchTanakhVersion?.(); } : undefined}
-                title={canSwitchFrenchSource ? 'Changer de traduction française : Segond 1910 ⇄ Rabbinat 1899' : undefined}
+                title={canSwitchFrenchSource ? 'Changer de traduction française du Tanakh (clic pour cycler)' : undefined}
               >
                 <TranslationSourceHeader
                   language="fr"
