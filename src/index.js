@@ -157,9 +157,11 @@ window.addEventListener('load', () => {
       // par chapitre au format API) — consommé par services/sefariaOfflineKit
       `${base}/data/sefaria-kit-torah.json`,
       // Tanakh français OFFICIEL, version par défaut (Segond 1910) — les 39
-      // livres consommés par services/tanakhFrenchService. Les 2 autres
-      // versions (Rabbinat, Martin) restent cache-à-la-consultation.
-      ...Array.from({ length: 39 }, (_, i) => `${base}/data/tanakh-fr/${i + 1}.json`)
+      // livres consommés par services/tanakhFrenchService.
+      ...Array.from({ length: 39 }, (_, i) => `${base}/data/tanakh-fr/${i + 1}.json`),
+      // Rabbinat 1899 pré-caché aussi : le sélecteur Segond ⇄ Rabbinat
+      // marche alors hors-ligne. Martin 1744 reste cache-à-la-consultation.
+      ...Array.from({ length: 39 }, (_, i) => `${base}/data/tanakh-fr-rabbinat/${i + 1}.json`)
     ]);
   });
 });
