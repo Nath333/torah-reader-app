@@ -263,7 +263,7 @@ const VerseRow = ({
             <button
               className="icon-btn mastery-btn"
               onClick={() => incrementMastery(selectedBook, selectedChapter, verse.verse)}
-              aria-label={`Mastery: ${MASTERY_LEVELS[getVerseMastery(selectedBook, selectedChapter, verse.verse)].name}`}
+              aria-label={`Maîtrise : ${MASTERY_LEVELS[getVerseMastery(selectedBook, selectedChapter, verse.verse)].name}`}
               title={`${MASTERY_LEVELS[getVerseMastery(selectedBook, selectedChapter, verse.verse)].name}: ${MASTERY_LEVELS[getVerseMastery(selectedBook, selectedChapter, verse.verse)].description}`}
               style={{ color: MASTERY_LEVELS[getVerseMastery(selectedBook, selectedChapter, verse.verse)].color }}
             >
