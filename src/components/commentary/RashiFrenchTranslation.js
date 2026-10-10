@@ -2,6 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import { translateEnglishToFrench } from '../../services/dictionaries/englishToFrenchService';
 import SafeText from '../core/SafeText';
 
+// Le texte anglais de Rashi chez Sefaria commence par le dibbour HÉBREU
+// (« בראשית IN THE BEGINNING — Rabbi Isaac said: … ») — envoyé tel quel au
+// traducteur EN→FR, il produisait « Traduction non disponible ». On retire
+// le préambule hébreu avant de traduire.
+const stripDibbur = (text) => {
+  const cleaned = text.replace(/^[֐-׿־ׇ"”'’\s—–-]+/, '').trim();
+  return cleaned || text;
+};
+
 /**
  * RashiFrenchTranslation - Displays French translation of Rashi commentary
  * Translates the English Rashi text to French when showFrench is enabled
@@ -22,7 +31,7 @@ const RashiFrenchTranslation = React.memo(({ englishText }) => {
     let isMounted = true;
 
     setIsLoading(true);
-    translateEnglishToFrench(englishText).then(fr => {
+    translateEnglishToFrench(stripDibbur(englishText)).then(fr => {
       if (isMounted) {
         if (fr) setFrenchTrans(fr);
         setIsLoading(false);

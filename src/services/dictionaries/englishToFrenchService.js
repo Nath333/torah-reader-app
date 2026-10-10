@@ -417,8 +417,13 @@ export const translateEnglishToFrench = async (text) => {
   if (!text?.trim()) return null;
   const t = text.trim();
   if (t.length > CONFIG.MAX_LEN) {
-    const short = t.split(/[,;.]/)[0].trim();
-    return short.length <= 200 ? translateEnglishToFrench(short) : null;
+    // Troncature par MOTS à ~MAX_LEN — l'ancienne coupure au premier
+    // « ,;. » cassait les débuts de type « R. Yitzchak opened: » (fragment
+    // « R » → traduction impossible) et jetait presque tout le contenu.
+    let short = t.slice(0, CONFIG.MAX_LEN);
+    const lastSpace = short.lastIndexOf(' ');
+    if (lastSpace > CONFIG.MAX_LEN / 2) short = short.slice(0, lastSpace);
+    return translateEnglishToFrench(short);
   }
   const r = await enqueue(t);
   return r?.translation || null;
