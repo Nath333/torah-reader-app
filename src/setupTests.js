@@ -121,6 +121,14 @@ vi.mock('./services/dictionaries/dictionaryLoader', () => {
     getBDBData: vi.fn(() => ({ byWord: bdbData, byStrongs: strongsData.byNumber })),
     getJastrowData: vi.fn(() => jastrowData),
     getStrongsData: vi.fn(() => strongsData),
+    // Statut du cache (consommé par scholarlyLexiconService.getDictionaryStats)
+    getCacheStatus: vi.fn(() => ({
+      bdb: true, jastrow: true, strongs: true,
+      calAramaic: true, jastrowAramaic: true, bdbLexicon: true, bdbAramaic: true,
+      geseniusLexicon: true, rootMeanings: true, semanticFields: true,
+      rabbiBiographies: true, realia: true, sefariaCache: true,
+      rootMeaningsPro: true, etymologyJastrow: true, wiktionaryCache: true,
+    })),
     // Additional data getters for unifiedLookupService
     getCALAramaicData: vi.fn(() => calAramaicData),
     getJastrowAramaicData: vi.fn(() => jastrowAramaicData),
