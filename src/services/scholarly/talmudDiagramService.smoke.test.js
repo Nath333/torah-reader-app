@@ -54,3 +54,47 @@ describe('données déplacées (talmudDiagramData)', () => {
     expect(typeof stats.size).toBe('number');
   });
 });
+
+describe('surface du split générateurs/extracteurs (20/10)', () => {
+  test('utilitaires de texte exposés et déterministes', async () => {
+    const mod = await import('./talmudDiagramService');
+    expect(mod.stripNikud('מַלְכָּא')).toBe('מלכא');
+    expect(typeof mod.normalizeHebrew('מלך')).toBe('string');
+    expect(typeof mod.cleanForMermaid('abc')).toBe('string');
+    expect(mod.validateMermaidSyntax('graph TB\n  A --> B')).toBeDefined();
+  });
+
+  test('les 10 générateurs + dispatcher sont des fonctions (default export)', async () => {
+    const mod = await import('./talmudDiagramService');
+    // Les générateurs typés ne sont exposés QUE via le default export (contrat historique)
+    for (const fn of ['generateDafDiagram', 'generateOverviewDiagram', 'generateSugyaFlowDiagram',
+      'generateSpeakerNetworkDiagram', 'generateTimelineDiagram', 'generateHalachicChainDiagram',
+      'generateConceptMapDiagram', 'generateMachloketDiagram', 'generateSummaryDiagram',
+      'generateCommentatorNetworkDiagram']) {
+      expect(typeof mod.default[fn]).toBe('function');
+    }
+    // Seuls le dispatcher et le réseau sont aussi des exports nommés
+    expect(typeof mod.generateDafDiagram).toBe('function');
+    expect(typeof mod.generateCommentatorNetworkDiagram).toBe('function');
+    expect(typeof mod.generateDafDiagramsRange).toBe('function');
+  });
+
+  test('extracteurs exposés (default export) + nommés TF-IDF', async () => {
+    const mod = await import('./talmudDiagramService');
+    for (const fn of ['extractSpeakersFromText', 'extractDisputes', 'extractRulingsDynamic',
+      'extractDiscourseElements', 'extractKeyTermsTfIdf', 'extractKeySegments', 'summarizeText']) {
+      expect(typeof mod.default[fn]).toBe('function');
+    }
+    expect(typeof mod.extractKeyTermsTfIdf).toBe('function');
+  });
+
+  test('summarizer TF-IDF : bornes sur texte hébreu', async () => {
+    const { extractKeyTermsTfIdf, summarizeText } = await import('./talmudDiagramService');
+    const text = 'תנן שמר שמר קדש ואהבת לרעך כמוך רבי עקיבא אומר';
+    const terms = extractKeyTermsTfIdf(text, 5);
+    expect(Array.isArray(terms)).toBe(true);
+    expect(terms.length).toBeLessThanOrEqual(5);
+    const summary = summarizeText(text);
+    expect(summary).toBeTruthy();
+  });
+});
