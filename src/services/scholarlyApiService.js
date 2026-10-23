@@ -436,7 +436,6 @@ export async function addVocalization(text, genre = 'rabbinic') {
         keepQampilex: false,
         ktivmale: true
       }),
-      signal: AbortSignal.timeout(15000)
     });
 
     if (!response.ok) {

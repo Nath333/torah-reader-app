@@ -1579,12 +1579,6 @@ const scholarlyLexiconService = {
   // Citations
   formatCitation,
 
-  // Reference data
-  // SCHOLARLY_SOURCES,
-  // COGNATE_LANGUAGES,
-  // BINYAN_INFO,
-  // VERB_TENSES,
-
   // Utils
   cleanWord,
   extractRoot,
