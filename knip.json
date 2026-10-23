@@ -1,10 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "entry": [
-    "src/index.js",
     "src/App.js",
-    "src/setupTests.js",
-    "vite.config.js",
     "public/sw.js",
     "scripts/**/*.js"
   ],
@@ -13,12 +10,5 @@
     "!src/**/*.test.{js,jsx}",
     "!src/__tests__/**",
     "!src/__mocks__/**"
-  ],
-  "ignore": [
-    "scripts/**",
-    "public/**"
-  ],
-  "ignoreDependencies": [
-    "gh-pages"
   ]
 }

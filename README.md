@@ -55,7 +55,7 @@ Tabbed interface that adapts to the book being read:
 ## Technical Stack
 
 - **React 19** — hooks-based architecture, 8 contexts (Torah, Settings, Study, Commentary…)
-- **Vite 6** — dev server and production build (esbuild/rollup); **Vitest 3** for the test suite (19 suites, 746+ tests)
+- **Vite 6** — dev server and production build (esbuild/rollup); **Vitest 3** for the test suite (47 suites, 950+ tests)
 - **Sefaria API** — authentic Jewish text data, with caching layers
 - **Groq AI** (Llama 3.3 70B) — analysis, summaries and translations
 - **CSS Variables** theming; **LocalStorage** persistence
