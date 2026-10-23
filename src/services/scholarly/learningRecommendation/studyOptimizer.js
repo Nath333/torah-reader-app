@@ -1,0 +1,601 @@
+// =============================================================================
+// Moteur de priorité d'étude (PRO SCHOLAR v3) — scoring pondéré (SRS 35 %,
+// difficulté 20 %, fréquence 25 %, racines 10 %, contexte 10 %), sessions
+// optimisées avec interleaving, lacunes de familles de racines, zones faibles,
+// jalons, focus d'étude.
+// (extrait de learningRecommendationService.js — recette docs/DECOUPE-MONOLITHES.md)
+// =============================================================================
+
+import { initializeRecommendations } from './state';
+
+// =============================================================================
+// PRO SCHOLAR v3 - PRIORITY SCORING ENGINE
+// =============================================================================
+
+/** Weight factors for priority scoring */
+export const PRIORITY_WEIGHTS = {
+  SRS_URGENCY: 0.35,    // How overdue is the card
+  DIFFICULTY: 0.20,     // User's struggle level
+  FREQUENCY: 0.25,      // Word importance/commonality
+  ROOT_FAMILY: 0.10,    // Gaps in root family knowledge
+  CONTEXT: 0.10,        // Relevance to current study
+};
+
+/** Session optimization constants */
+export const SESSION_CONFIG = {
+  REVIEW_RATIO: 0.70,         // 70% review cards
+  NEW_RATIO: 0.30,            // 30% new cards
+  MIN_INTERLEAVE: 3,          // Min cards between same type
+  MAX_CONSECUTIVE_HARD: 2,    // Max hard cards in a row
+  OPTIMAL_SESSION_SIZE: 20,   // Default session size
+  COGNITIVE_LOAD_CAP: 100,    // Max cognitive load score
+};
+
+/** Hebrew root families for gap analysis */
+export const ROOT_FAMILIES = {
+  // Common verbal roots
+  'כתב': ['כָּתַב', 'מִכְתָּב', 'כְּתָב', 'כָּתוּב', 'כְּתִיבָה'],
+  'למד': ['לָמַד', 'לִמֵּד', 'תַּלְמִיד', 'לִמּוּד', 'מְלַמֵּד'],
+  'אמר': ['אָמַר', 'מַאֲמָר', 'אֹמֶר', 'אֲמִירָה', 'נֶאֱמָר'],
+  'שמע': ['שָׁמַע', 'שְׁמִיעָה', 'שֵׁמַע', 'מִשְׁמַעַת', 'שׁוֹמֵעַ'],
+  'עשה': ['עָשָׂה', 'מַעֲשֶׂה', 'עֲשִׂיָּה', 'נַעֲשָׂה', 'מַעֲשִׂים'],
+  'ידע': ['יָדַע', 'דַּעַת', 'יְדִיעָה', 'מוֹדָע', 'מַדָּע'],
+  'הלך': ['הָלַךְ', 'הֲלִיכָה', 'מַהֲלָךְ', 'הוֹלֵךְ', 'הִלּוּכָה'],
+  'בוא': ['בָּא', 'בִּיאָה', 'מָבוֹא', 'תְּבוּאָה', 'יָבוֹא'],
+  'נתן': ['נָתַן', 'מַתָּנָה', 'נְתִינָה', 'נָתוּן', 'מִתָּן'],
+  'שוב': ['שָׁב', 'תְּשׁוּבָה', 'שִׁיבָה', 'מְשֻׁבָּה', 'שָׁבִים'],
+  // Key Torah terms
+  'קדש': ['קָדוֹשׁ', 'קְדֻשָּׁה', 'קִדּוּשׁ', 'מִקְדָּשׁ', 'הִתְקַדֵּשׁ'],
+  'ברך': ['בָּרַךְ', 'בְּרָכָה', 'בָּרוּךְ', 'מְבָרֵךְ', 'הִתְבָּרֵךְ'],
+  'צדק': ['צֶדֶק', 'צַדִּיק', 'צְדָקָה', 'הִצְטַדֵּק', 'צִדּוּק'],
+};
+
+/** Word frequency tiers (higher = more common) */
+export const FREQUENCY_TIERS = {
+  ULTRA_COMMON: { min: 1000, score: 1.0 },    // את, אל, כי, etc.
+  VERY_COMMON: { min: 500, score: 0.85 },
+  COMMON: { min: 200, score: 0.70 },
+  MODERATE: { min: 50, score: 0.55 },
+  UNCOMMON: { min: 10, score: 0.40 },
+  RARE: { min: 1, score: 0.25 },
+};
+
+/**
+ * Calculate priority score for a word/card
+ * @returns {Object} { score, breakdown, urgency }
+ */
+export function calculatePriorityScore(word, options = {}) {
+  const {
+    srsCard = null,
+    wordFrequency = 100,
+    currentContext = null,
+    rootFamily = null,
+    masteredRoots = [],
+  } = options;
+
+  const breakdown = {};
+
+  // 1. SRS Urgency (35%)
+  let srsScore = 0;
+  if (srsCard) {
+    const now = Date.now();
+    const dueDate = srsCard.nextReview || now;
+    const daysPastDue = Math.max(0, (now - dueDate) / (1000 * 60 * 60 * 24));
+
+    if (daysPastDue > 7) srsScore = 1.0;
+    else if (daysPastDue > 3) srsScore = 0.85;
+    else if (daysPastDue > 1) srsScore = 0.70;
+    else if (daysPastDue > 0) srsScore = 0.55;
+    else srsScore = 0.3; // Not due yet but still valuable
+  }
+  breakdown.srsUrgency = srsScore;
+
+  // 2. Difficulty (20%) - inverse of ease factor
+  let difficultyScore = 0.5;
+  if (srsCard?.easeFactor) {
+    // Ease factor typically 1.3 to 2.5; lower = harder = higher priority
+    difficultyScore = Math.max(0, Math.min(1, (2.5 - srsCard.easeFactor) / 1.2));
+  }
+  breakdown.difficulty = difficultyScore;
+
+  // 3. Frequency (25%) - more common words are higher priority
+  let frequencyScore = 0.5;
+  for (const [, config] of Object.entries(FREQUENCY_TIERS)) {
+    if (wordFrequency >= config.min) {
+      frequencyScore = config.score;
+      break;
+    }
+  }
+  breakdown.frequency = frequencyScore;
+
+  // 4. Root Family Gap (10%)
+  let rootScore = 0.5;
+  if (rootFamily && ROOT_FAMILIES[rootFamily]) {
+    const familyWords = ROOT_FAMILIES[rootFamily];
+    const masteredCount = familyWords.filter(w => masteredRoots.includes(w)).length;
+    const gapRatio = 1 - (masteredCount / familyWords.length);
+    rootScore = gapRatio > 0.5 ? 0.8 : gapRatio > 0.2 ? 0.5 : 0.2;
+  }
+  breakdown.rootFamily = rootScore;
+
+  // 5. Context Relevance (10%)
+  let contextScore = 0.5;
+  if (currentContext) {
+    // Boost if word appears in current parsha or topic
+    if (currentContext.currentWords?.includes(word)) {
+      contextScore = 1.0;
+    } else if (currentContext.recentTopics?.some(t => word.includes(t))) {
+      contextScore = 0.75;
+    }
+  }
+  breakdown.context = contextScore;
+
+  // Calculate weighted total
+  const totalScore =
+    (breakdown.srsUrgency * PRIORITY_WEIGHTS.SRS_URGENCY) +
+    (breakdown.difficulty * PRIORITY_WEIGHTS.DIFFICULTY) +
+    (breakdown.frequency * PRIORITY_WEIGHTS.FREQUENCY) +
+    (breakdown.rootFamily * PRIORITY_WEIGHTS.ROOT_FAMILY) +
+    (breakdown.context * PRIORITY_WEIGHTS.CONTEXT);
+
+  return {
+    word,
+    score: Math.round(totalScore * 100) / 100,
+    breakdown,
+    urgency: srsScore > 0.7 ? 'high' : srsScore > 0.4 ? 'medium' : 'low',
+    recommended: totalScore > 0.6,
+  };
+}
+
+/**
+ * Create an optimized study session with interleaving
+ * @returns {Object} { cards, stats, estimatedTime }
+ */
+export function createOptimizedSession(allCards, options = {}) {
+  const {
+    sessionSize = SESSION_CONFIG.OPTIMAL_SESSION_SIZE,
+    includeNew = true,
+    maxCognitiveLoad = SESSION_CONFIG.COGNITIVE_LOAD_CAP,
+    currentContext = null,
+  } = options;
+
+  // Separate review and new cards
+  const reviewCards = allCards.filter(c => c.reviewCount > 0);
+  const newCards = allCards.filter(c => c.reviewCount === 0);
+
+  // Calculate how many of each type
+  const reviewCount = Math.floor(sessionSize * SESSION_CONFIG.REVIEW_RATIO);
+  const newCount = includeNew ? Math.floor(sessionSize * SESSION_CONFIG.NEW_RATIO) : 0;
+
+  // Score and sort review cards by priority
+  const scoredReviewCards = reviewCards.map(card => ({
+    ...card,
+    priority: calculatePriorityScore(card.word, {
+      srsCard: card,
+      currentContext,
+    }),
+  }));
+  scoredReviewCards.sort((a, b) => b.priority.score - a.priority.score);
+
+  // Select top review cards
+  const selectedReview = scoredReviewCards.slice(0, reviewCount);
+
+  // Select new cards (prefer high-frequency, contextual)
+  const scoredNewCards = newCards.map(card => ({
+    ...card,
+    priority: calculatePriorityScore(card.word, {
+      wordFrequency: card.frequency || 100,
+      currentContext,
+    }),
+  }));
+  scoredNewCards.sort((a, b) => b.priority.score - a.priority.score);
+  const selectedNew = scoredNewCards.slice(0, newCount);
+
+  // Interleave cards for optimal learning
+  const interleavedSession = interleaveCards([...selectedReview, ...selectedNew]);
+
+  // Calculate session stats
+  const totalCognitiveLoad = interleavedSession.reduce((sum, card) => {
+    const difficulty = card.priority?.breakdown?.difficulty || 0.5;
+    return sum + (difficulty * 5);
+  }, 0);
+
+  // Trim if cognitive load too high
+  let finalSession = interleavedSession;
+  if (totalCognitiveLoad > maxCognitiveLoad) {
+    const ratio = maxCognitiveLoad / totalCognitiveLoad;
+    finalSession = interleavedSession.slice(0, Math.floor(interleavedSession.length * ratio));
+  }
+
+  return {
+    cards: finalSession,
+    stats: {
+      total: finalSession.length,
+      review: finalSession.filter(c => c.reviewCount > 0).length,
+      new: finalSession.filter(c => c.reviewCount === 0).length,
+      cognitiveLoad: Math.round(totalCognitiveLoad),
+      averagePriority: finalSession.length > 0
+        ? Math.round(finalSession.reduce((sum, c) => sum + (c.priority?.score || 0), 0) / finalSession.length * 100) / 100
+        : 0,
+    },
+    estimatedTime: {
+      minutes: Math.ceil(finalSession.length * 0.5), // ~30 seconds per card
+      label: finalSession.length <= 10 ? 'Quick review' :
+             finalSession.length <= 20 ? 'Standard session' : 'Deep study',
+    },
+  };
+}
+
+/**
+ * Interleave cards for better retention
+ * Spaces out similar cards, avoids consecutive hard cards
+ */
+function interleaveCards(cards) {
+  if (cards.length <= 3) return cards;
+
+  const result = [];
+  const remaining = [...cards];
+  let hardStreak = 0;
+
+  while (remaining.length > 0) {
+    let selectedIndex = 0;
+    const lastCard = result[result.length - 1];
+
+    // Find a good next card
+    for (let i = 0; i < remaining.length; i++) {
+      const candidate = remaining[i];
+      const isHard = (candidate.priority?.breakdown?.difficulty || 0) > 0.7;
+
+      // Avoid consecutive hard cards
+      if (isHard && hardStreak >= SESSION_CONFIG.MAX_CONSECUTIVE_HARD) {
+        continue;
+      }
+
+      // Avoid same root family consecutively
+      if (lastCard && candidate.rootFamily === lastCard.rootFamily) {
+        continue;
+      }
+
+      selectedIndex = i;
+      hardStreak = isHard ? hardStreak + 1 : 0;
+      break;
+    }
+
+    result.push(remaining.splice(selectedIndex, 1)[0]);
+  }
+
+  return result;
+}
+
+/**
+ * Analyze root family gaps
+ * @returns {Object} { gaps, recommendations, coverage }
+ */
+export function analyzeRootFamilyGaps(masteredWords = []) {
+  const analysis = {
+    gaps: [],
+    recommendations: [],
+    coverage: {},
+    overallCoverage: 0,
+  };
+
+  let totalWords = 0;
+  let masteredCount = 0;
+
+  for (const [root, words] of Object.entries(ROOT_FAMILIES)) {
+    const mastered = words.filter(w => masteredWords.includes(w));
+    const coverage = mastered.length / words.length;
+
+    totalWords += words.length;
+    masteredCount += mastered.length;
+
+    analysis.coverage[root] = {
+      root,
+      total: words.length,
+      mastered: mastered.length,
+      percentage: Math.round(coverage * 100),
+      missing: words.filter(w => !masteredWords.includes(w)),
+    };
+
+    // Identify gaps (< 50% coverage)
+    if (coverage < 0.5 && mastered.length > 0) {
+      analysis.gaps.push({
+        root,
+        coverage: Math.round(coverage * 100),
+        known: mastered,
+        toLearn: words.filter(w => !masteredWords.includes(w)),
+        priority: mastered.length > 0 ? 'high' : 'medium', // Has foundation
+      });
+    }
+
+    // Recommendation: complete partially learned families first
+    if (coverage > 0 && coverage < 1) {
+      analysis.recommendations.push({
+        type: 'complete-family',
+        root,
+        message: `Complete the ${root} root family (${Math.round(coverage * 100)}% learned)`,
+        words: words.filter(w => !masteredWords.includes(w)),
+      });
+    }
+  }
+
+  analysis.overallCoverage = totalWords > 0 ? Math.round((masteredCount / totalWords) * 100) : 0;
+
+  // Sort gaps by priority
+  analysis.gaps.sort((a, b) => {
+    if (a.priority !== b.priority) return a.priority === 'high' ? -1 : 1;
+    return b.known.length - a.known.length;
+  });
+
+  return analysis;
+}
+
+/**
+ * Identify weak areas in learning
+ * @returns {Object} { weakAreas, strengthAreas, recommendations }
+ */
+export function identifyWeakAreas(studyHistory = [], srsCards = []) {
+  const analysis = {
+    weakAreas: [],
+    strengthAreas: [],
+    recommendations: [],
+    patterns: {},
+  };
+
+  // Analyze by word type
+  const wordTypeStats = {};
+  const rootStats = {};
+  const timeOfDayStats = {};
+
+  srsCards.forEach(card => {
+    // Categorize by type
+    const type = card.type || 'general';
+    if (!wordTypeStats[type]) {
+      wordTypeStats[type] = { total: 0, difficult: 0, easy: 0 };
+    }
+    wordTypeStats[type].total++;
+    if (card.easeFactor < 1.8) wordTypeStats[type].difficult++;
+    if (card.easeFactor > 2.3) wordTypeStats[type].easy++;
+
+    // Track root family performance
+    if (card.rootFamily) {
+      if (!rootStats[card.rootFamily]) {
+        rootStats[card.rootFamily] = { total: 0, avgEase: 0, easeSum: 0 };
+      }
+      rootStats[card.rootFamily].total++;
+      rootStats[card.rootFamily].easeSum += card.easeFactor || 2.5;
+      rootStats[card.rootFamily].avgEase =
+        rootStats[card.rootFamily].easeSum / rootStats[card.rootFamily].total;
+    }
+  });
+
+  // Analyze study history for time patterns
+  studyHistory.forEach(session => {
+    const hour = new Date(session.timestamp).getHours();
+    const timeSlot = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
+
+    if (!timeOfDayStats[timeSlot]) {
+      timeOfDayStats[timeSlot] = { sessions: 0, avgPerformance: 0, perfSum: 0 };
+    }
+    timeOfDayStats[timeSlot].sessions++;
+    timeOfDayStats[timeSlot].perfSum += session.performance || 0.5;
+    timeOfDayStats[timeSlot].avgPerformance =
+      timeOfDayStats[timeSlot].perfSum / timeOfDayStats[timeSlot].sessions;
+  });
+
+  // Identify weak areas (types with high difficulty ratio)
+  for (const [type, stats] of Object.entries(wordTypeStats)) {
+    const difficultyRatio = stats.difficult / Math.max(stats.total, 1);
+    if (difficultyRatio > 0.4 && stats.total >= 5) {
+      analysis.weakAreas.push({
+        area: type,
+        type: 'word-type',
+        severity: difficultyRatio > 0.6 ? 'high' : 'medium',
+        stats: {
+          total: stats.total,
+          difficult: stats.difficult,
+          ratio: Math.round(difficultyRatio * 100),
+        },
+        recommendation: `Focus more on ${type} words - ${Math.round(difficultyRatio * 100)}% are challenging`,
+      });
+    }
+    if (difficultyRatio < 0.2 && stats.total >= 5) {
+      analysis.strengthAreas.push({
+        area: type,
+        type: 'word-type',
+        stats: { total: stats.total, easy: stats.easy },
+      });
+    }
+  }
+
+  // Identify weak root families
+  for (const [root, stats] of Object.entries(rootStats)) {
+    if (stats.avgEase < 1.8 && stats.total >= 3) {
+      analysis.weakAreas.push({
+        area: root,
+        type: 'root-family',
+        severity: stats.avgEase < 1.5 ? 'high' : 'medium',
+        stats: {
+          total: stats.total,
+          avgEase: Math.round(stats.avgEase * 100) / 100,
+        },
+        recommendation: `The ${root} root family needs more practice`,
+      });
+    }
+  }
+
+  // Best time to study
+  let bestTime = 'morning';
+  let bestPerformance = 0;
+  for (const [time, stats] of Object.entries(timeOfDayStats)) {
+    if (stats.avgPerformance > bestPerformance && stats.sessions >= 3) {
+      bestPerformance = stats.avgPerformance;
+      bestTime = time;
+    }
+  }
+  analysis.patterns.bestStudyTime = bestTime;
+  analysis.patterns.timeStats = timeOfDayStats;
+
+  // Generate recommendations
+  if (analysis.weakAreas.length > 0) {
+    const topWeak = analysis.weakAreas.slice(0, 3);
+    analysis.recommendations = topWeak.map(weak => ({
+      priority: weak.severity === 'high' ? 1 : 2,
+      action: `Practice ${weak.area}`,
+      reason: weak.recommendation,
+      type: weak.type,
+    }));
+  }
+
+  // Add time-based recommendation
+  if (bestPerformance > 0.6) {
+    analysis.recommendations.push({
+      priority: 3,
+      action: `Schedule study sessions in the ${bestTime}`,
+      reason: `You perform ${Math.round(bestPerformance * 100)}% better during this time`,
+      type: 'schedule',
+    });
+  }
+
+  return analysis;
+}
+
+/**
+ * Generate learning milestones
+ * @returns {Array} Milestone objects with progress
+ */
+export function generateMilestones(progress) {
+  const milestones = [
+    {
+      id: 'first-100-words',
+      title: '100 premiers mots',
+      hebrewTitle: 'מאה מילים ראשונות',
+      target: 100,
+      current: progress.vocabularyMastered || 0,
+      type: 'vocabulary',
+      reward: '🏆 Initié du vocabulaire',
+    },
+    {
+      id: 'review-100',
+      title: '100 révisions de vocabulaire',
+      hebrewTitle: 'מאה חזרות',
+      target: 100,
+      current: progress.totalReviews || 0,
+      type: 'reviews',
+      reward: '🔁 Répétiteur assidu',
+    },
+    {
+      id: 'weekly-streak',
+      title: 'Série de 7 jours',
+      hebrewTitle: 'רצף שבועי',
+      target: 7,
+      current: progress.studyStreak || 0,
+      type: 'streak',
+      reward: '🔥 Érudit assidu',
+    },
+    {
+      id: 'parsha-5',
+      title: '5 premières parashiot',
+      hebrewTitle: 'חמש פרשיות',
+      target: 5,
+      current: progress.currentParsha || 0,
+      type: 'parsha',
+      reward: '📜 Lecteur de la Torah',
+    },
+    {
+      id: 'commentator-trio',
+      title: 'Trois commentateurs',
+      hebrewTitle: 'שלושה פרשנים',
+      target: 3,
+      current: progress.commentatorsExplored?.length || 0,
+      type: 'commentators',
+      reward: '📚 Explorateur des commentaires',
+    },
+    {
+      id: 'verse-100',
+      title: '100 versets étudiés',
+      hebrewTitle: 'מאה פסוקים',
+      target: 100,
+      current: progress.versesStudied || 0,
+      type: 'verses',
+      reward: '✨ Savant des versets',
+    },
+    {
+      id: 'master-500',
+      title: 'Maître du vocabulaire',
+      hebrewTitle: 'בעל אוצר מילים',
+      target: 500,
+      current: progress.vocabularyMastered || 0,
+      type: 'vocabulary',
+      reward: '👑 Maître du lexique',
+    },
+  ];
+
+  return milestones.map(m => ({
+    ...m,
+    progress: Math.min(100, Math.round((m.current / m.target) * 100)),
+    completed: m.current >= m.target,
+    remaining: Math.max(0, m.target - m.current),
+  }));
+}
+
+/**
+ * Get personalized study focus
+ * @returns {Object} Focus area with action items
+ */
+export function getStudyFocus(options = {}) {
+  const { srsCards = [], studyHistory = [], masteredWords = [] } = options;
+
+  // Get weak areas
+  const weakAnalysis = identifyWeakAreas(studyHistory, srsCards);
+
+  // Get root family gaps
+  const rootAnalysis = analyzeRootFamilyGaps(masteredWords);
+
+  // Determine primary focus
+  let primaryFocus = {
+    area: 'general-review',
+    reason: 'Maintain your progress with regular review',
+    actions: [],
+  };
+
+  if (weakAnalysis.weakAreas.length > 0) {
+    const topWeak = weakAnalysis.weakAreas[0];
+    primaryFocus = {
+      area: topWeak.area,
+      type: topWeak.type,
+      reason: topWeak.recommendation,
+      severity: topWeak.severity,
+      actions: [
+        `Practice ${topWeak.area} words specifically`,
+        `Use slower review for these cards`,
+        `Create mnemonics for difficult ones`,
+      ],
+    };
+  } else if (rootAnalysis.gaps.length > 0) {
+    const topGap = rootAnalysis.gaps[0];
+    primaryFocus = {
+      area: `${topGap.root} root family`,
+      type: 'root-completion',
+      reason: `Complete the ${topGap.root} root family for deeper understanding`,
+      actions: [
+        `Learn: ${topGap.toLearn.slice(0, 3).join(', ')}`,
+        `Review known: ${topGap.known.join(', ')}`,
+        `Look for these roots in your reading`,
+      ],
+    };
+  }
+
+  return {
+    focus: primaryFocus,
+    secondaryGoals: [
+      ...(weakAnalysis.recommendations || []).slice(1, 3),
+      ...(rootAnalysis.recommendations || []).slice(0, 2),
+    ],
+    bestStudyTime: weakAnalysis.patterns?.bestStudyTime || 'morning',
+  };
+}
+
+// Initialize on module load
+initializeRecommendations();
+
