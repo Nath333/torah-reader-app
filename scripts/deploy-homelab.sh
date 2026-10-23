@@ -23,6 +23,7 @@ echo "Deploy de origin/master ($REF) vers $HOTE:$STACK"
 # Nettoyage complet d'un run precedent : la junction node_modules empeche
 # `git worktree remove` de partir — la demonter d'abord.
 demonter() {
+  cd "$REPO" 2>/dev/null || true   # jamais supprimer le worktree depuis l'intérieur
   cmd //c "rmdir ${WT}\\node_modules" >/dev/null 2>&1 || true
   git worktree remove --force "$WT" 2>/dev/null || rm -rf "$WT"
   git worktree prune
